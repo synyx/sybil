@@ -10,4 +10,5 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile group: 'com.tinkerforge', name: 'tinkerforge', version: '2.1.2'
 }
