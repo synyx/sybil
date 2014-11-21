@@ -14,7 +14,4 @@ public interface SingleStatusOutput {
      * @param  statusInformation  The StatusInformation to display.
      */
     void showStatus(StatusInformation statusInformation);
-
-
-    void close();
 }

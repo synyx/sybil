@@ -7,22 +7,15 @@ import org.synyx.sybil.in.StatusInformation;
 /**
  * @author  Tobias Theuer
  */
-public class SingleLEDOutput implements SingleStatusOutput {
+public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
     private Color color;
-    private LEDOutput ledOutput;
+    private OutputLEDStrip outputLEDStrip;
 
-    public SingleLEDOutput(String host, int port, String uid, int chipType, int frameDuration, int length) {
+    public SingleStatusOnLEDStrip(OutputLEDStrip outputLEDStrip) {
 
-        ledOutput = new LEDOutput(host, port, uid, chipType, frameDuration, length);
+        this.outputLEDStrip = outputLEDStrip;
     }
-
-    @Override
-    public void close() {
-
-        ledOutput.close();
-    }
-
 
     @Override
     public void showStatus(StatusInformation statusInformation) {
@@ -35,6 +28,6 @@ public class SingleLEDOutput implements SingleStatusOutput {
             color = new Color(0, 0, 0);
         }
 
-        ledOutput.setColor(color);
+        outputLEDStrip.setColor(color);
     }
 }

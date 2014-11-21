@@ -1,12 +1,8 @@
 package org.synyx.sybil.out;
 
-import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.BrickletLEDStrip;
-import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
-
-import java.io.IOException;
 
 import java.util.Arrays;
 
@@ -16,69 +12,39 @@ import java.util.Arrays;
  *
  * @author  Tobias Theuer
  */
-public class LEDOutput {
+public class OutputLEDStrip {
 
-    private int length;
-    private IPConnection ipConnection;
     private BrickletLEDStrip ledStrip;
     private short[] pixelsRed;
     private short[] pixelsGreen;
     private short[] pixelsBlue;
 
     /**
-     * Makes new LEDOutput object.
+     * Makes new OutputLEDStrip object.
      *
-     * @param  host  IP address or hostname of the Tinkerforge brick.
-     * @param  port  Port the Tinkerforge brick is listening at.
-     * @param  uid  UID of the LED Strip (discoverable in the viewer)
-     * @param  chipType  Type of the chip on the LED Strip, either 2801, 2811 or 2812
-     * @param  frameDuration  How long one set of colors is shown, in milliseconds. Minimum is 10(?).
+     * @param  ledStrip  The LED Strip we want to control.
      * @param  length  How many LEDs are on the LED Strip.
      */
-    public LEDOutput(String host, int port, String uid, int chipType, int frameDuration, int length) {
+    public OutputLEDStrip(BrickletLEDStrip ledStrip, int length) {
 
-        this.length = length;
+        this.ledStrip = ledStrip;
 
-        ipConnection = new IPConnection();
+        int differenceToMultipleOfSixteen = length % 16;
 
-        try {
-            ipConnection.connect(host, port);
+        if (differenceToMultipleOfSixteen > 0) {
+            length = length + (16 - differenceToMultipleOfSixteen);
+        }
 
-            ledStrip = new BrickletLEDStrip(uid, ipConnection);
+        pixelsRed = new short[length];
+        pixelsGreen = new short[length];
+        pixelsBlue = new short[length];
 
-            ledStrip.setChipType(chipType);
-
-            ledStrip.setFrameDuration(frameDuration);
-
-            int differenceToMultipleOfSixteen = length % 16;
-
-            if (differenceToMultipleOfSixteen > 0) {
-                length = length + (16 - differenceToMultipleOfSixteen);
-            }
-
-            pixelsRed = new short[length];
-            pixelsGreen = new short[length];
-            pixelsBlue = new short[length];
-
-            for (int i = 0; i < pixelsRed.length; i++) {
-                pixelsRed[i] = (short) 0;
-                pixelsGreen[i] = (short) 0;
-                pixelsRed[i] = (short) 0;
-            }
-        } catch (IOException | NotConnectedException | TimeoutException | AlreadyConnectedException e) {
-            e.printStackTrace();
+        for (int i = 0; i < pixelsRed.length; i++) {
+            pixelsRed[i] = (short) 0;
+            pixelsGreen[i] = (short) 0;
+            pixelsRed[i] = (short) 0;
         }
     }
-
-    public void close() {
-
-        try {
-            this.ipConnection.disconnect();
-        } catch (NotConnectedException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     /**
      * Shows a single color on the whole LED Strip.
