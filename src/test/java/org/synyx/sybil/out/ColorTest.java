@@ -10,7 +10,7 @@ public class ColorTest {
     @Test
     public void testGetRed() throws Exception {
 
-        assert (color.getRed() == 255);
+        assert (color.getRed() == 127);
     }
 
 

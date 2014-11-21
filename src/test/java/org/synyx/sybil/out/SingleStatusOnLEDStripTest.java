@@ -54,13 +54,16 @@ public class SingleStatusOnLEDStripTest {
         SingleStatusOutput out = new SingleStatusOnLEDStrip(outputLEDStrip);
         System.out.println("Setting to WARNING");
         out.showStatus(new StatusInformation("Test 1", Status.WARNING));
+        assert (outputLEDStrip.getPixel(0).getGreen() == 16);
         System.out.println("Sleeping now");
         Thread.sleep(5000);
         System.out.println("Setting to CRITICAL");
         out.showStatus(new StatusInformation("Test 1", Status.CRITICAL));
+        assert (outputLEDStrip.getPixel(0).getRed() == 16);
         System.out.println("Sleeping now");
         Thread.sleep(5000);
         System.out.println("Setting to OKAY");
         out.showStatus(new StatusInformation("Test 1", Status.OKAY));
+        assert (outputLEDStrip.getPixel(0).getRed() == 0);
     }
 }

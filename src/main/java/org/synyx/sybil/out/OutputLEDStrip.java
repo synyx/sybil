@@ -18,6 +18,7 @@ public class OutputLEDStrip {
     private short[] pixelsRed;
     private short[] pixelsGreen;
     private short[] pixelsBlue;
+    private double brightness;
 
     /**
      * Makes new OutputLEDStrip object.
@@ -27,12 +28,14 @@ public class OutputLEDStrip {
      */
     public OutputLEDStrip(BrickletLEDStrip ledStrip, int length) {
 
+        brightness = 1.0;
+
         this.ledStrip = ledStrip;
 
         int differenceToMultipleOfSixteen = length % 16;
 
         if (differenceToMultipleOfSixteen > 0) {
-            length = length + (16 - differenceToMultipleOfSixteen);
+            length = length + (16 - differenceToMultipleOfSixteen); // make sure the length is a multiple of sixteen
         }
 
         pixelsRed = new short[length];
@@ -45,24 +48,6 @@ public class OutputLEDStrip {
             pixelsRed[i] = (short) 0;
         }
     }
-
-    /**
-     * Shows a single color on the whole LED Strip.
-     *
-     * @param  color  The color the strip should be
-     */
-
-    public void setColor(Color color) {
-
-        for (int i = 0; i < pixelsRed.length; i++) {
-            pixelsRed[i] = color.getRed();
-            pixelsGreen[i] = color.getGreen();
-            pixelsBlue[i] = color.getBlue();
-        }
-
-        updateDisplay();
-    }
-
 
     /**
      * Updated the LED Strip with the current content of the pixelbuffer.
@@ -78,12 +63,39 @@ public class OutputLEDStrip {
             greenArray = Arrays.copyOfRange(pixelsGreen, i, i + 16);
             blueArray = Arrays.copyOfRange(pixelsBlue, i, i + 16);
 
+            for (int j = 0; j < 16; j++) {
+                redArray[j] *= brightness;
+                greenArray[j] *= brightness;
+                blueArray[j] *= brightness;
+            }
+
             try {
                 ledStrip.setRGBValues(i, (short) 16, blueArray, redArray, greenArray);
             } catch (TimeoutException | NotConnectedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    /**
+     * Sets the brightness of the (white) background illumination, between 0.0 and 2.0.
+     *
+     * @param  brightness  Brightness, between 0.0 (completely dark) and 2.0 (twice as bright as normal)
+     */
+    public void setBrightness(double brightness) {
+
+        if (brightness < 0.0) {
+            brightness = 0.0;
+        }
+
+        if (brightness > 2.0) {
+            brightness = 2.0;
+        }
+
+        this.brightness = brightness;
+
+        updateDisplay();
     }
 
 
@@ -123,5 +135,21 @@ public class OutputLEDStrip {
         }
 
         return color;
+    }
+
+
+    /**
+     * Shows a single color on the whole LED Strip.
+     *
+     * @param  color  The color the strip should be
+     */
+
+    public void setColor(Color color) {
+
+        Arrays.fill(pixelsRed, color.getRed());
+        Arrays.fill(pixelsGreen, color.getGreen());
+        Arrays.fill(pixelsBlue, color.getBlue());
+
+        updateDisplay();
     }
 }

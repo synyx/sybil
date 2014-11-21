@@ -62,11 +62,10 @@ public class OutputLEDStripTest {
 
         OutputLEDStrip outputLEDStrip = new OutputLEDStrip(ledStrip, 30);
 
-        Color black = new Color(0, 0, 0);
         Color red = new Color(16, 0, 0);
 
 //        System.out.println("Setting to black");
-        outputLEDStrip.setColor(black);
+        outputLEDStrip.setColor(Color.BLACK);
         assert (outputLEDStrip.getPixel(18).getBlue() == 0);
 
 //        System.out.println("Setting pixel 18 to red");
@@ -74,7 +73,7 @@ public class OutputLEDStripTest {
         assert (outputLEDStrip.getPixel(18).getRed() == 16);
 
 //        System.out.println("Setting to black");
-        outputLEDStrip.setColor(black);
+        outputLEDStrip.setColor(Color.BLACK);
 
         for (int i = 0; i < 30; i++) {
             outputLEDStrip.setPixel(i, red);
@@ -86,6 +85,13 @@ public class OutputLEDStripTest {
             assert (outputLEDStrip.getPixel(i).getRed() == 16);
         }
 
-        outputLEDStrip.setColor(black);
+        for (double i = 0.0; i < 2.0; i += .05) {
+            outputLEDStrip.setBrightness(0);
+            outputLEDStrip.setBrightness(i);
+            System.out.println("Setting brightness to: " + i);
+            Thread.sleep(1000);
+        }
+
+        outputLEDStrip.setColor(Color.BLACK);
     }
 }

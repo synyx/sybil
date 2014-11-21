@@ -20,29 +20,29 @@ public class Color {
     /**
      * Converts R, G and B into the right format.
      *
-     * @param  red  red: int, between 0 and 255
-     * @param  green  green: int, between 0 and 255
-     * @param  blue  blue: int, between 0 and 255
+     * @param  red  red: int, between 0 and 127
+     * @param  green  green: int, between 0 and 127
+     * @param  blue  blue: int, between 0 and 127
      */
     public Color(int red, int green, int blue) {
 
         if (red < 0)
             red = 0;
 
-        if (red > 255)
-            red = 255;
+        if (red > 127)
+            red = 127;
 
         if (green < 0)
             green = 0;
 
-        if (green > 255)
-            green = 255;
+        if (green > 127)
+            green = 127;
 
         if (blue < 0)
             blue = 0;
 
-        if (blue > 255)
-            blue = 255;
+        if (blue > 127)
+            blue = 127;
 
         this.red = (short) red;
         this.green = (short) green;
