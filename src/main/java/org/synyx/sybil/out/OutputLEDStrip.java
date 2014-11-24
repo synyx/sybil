@@ -14,7 +14,7 @@ import java.util.Arrays;
  */
 public class OutputLEDStrip {
 
-    private BrickletLEDStrip ledStrip;
+    private final BrickletLEDStrip ledStrip;
     private short[] pixelsRed;
     private short[] pixelsGreen;
     private short[] pixelsBlue;

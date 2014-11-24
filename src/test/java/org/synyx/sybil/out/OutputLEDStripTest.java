@@ -18,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 public class OutputLEDStripTest {
 
     private IPConnection ipConnection;
-    private BrickletLEDStrip ledStrip;
     private OutputLEDStrip outputLEDStrip;
 
     @Before
@@ -28,7 +27,7 @@ public class OutputLEDStripTest {
 
         ipConnection.connect("localhost", 4223);
 
-        ledStrip = new BrickletLEDStrip("p3c", ipConnection);
+        BrickletLEDStrip ledStrip = new BrickletLEDStrip("p3c", ipConnection);
 
         ledStrip.setChipType(2812);
 

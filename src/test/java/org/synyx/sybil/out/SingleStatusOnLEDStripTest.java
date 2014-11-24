@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 public class SingleStatusOnLEDStripTest {
 
     private IPConnection ipConnection;
-    private BrickletLEDStrip ledStrip;
     private OutputLEDStrip outputLEDStrip;
     private SingleStatusOutput out;
 
@@ -32,7 +31,7 @@ public class SingleStatusOnLEDStripTest {
 
         ipConnection.connect("localhost", 4223);
 
-        ledStrip = new BrickletLEDStrip("p3c", ipConnection);
+        BrickletLEDStrip ledStrip = new BrickletLEDStrip("p3c", ipConnection);
 
         ledStrip.setChipType(2812);
 

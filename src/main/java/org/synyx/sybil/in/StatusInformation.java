@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
  */
 public class StatusInformation {
 
-    private Status status;
-    private String source;
-    private LocalDateTime date;
-    private int priority;
+    private final Status status;
+    private final String source;
+    private final LocalDateTime date;
+    private final int priority;
 
     /**
      * Creates a new StatusInformation object.

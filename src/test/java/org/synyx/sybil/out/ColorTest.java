@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ColorTest {
 
-    Color color;
+    private Color color;
 
     @Before
     public void setup() {

@@ -14,9 +14,9 @@ public class Color {
     public static final Color BLACK = new Color(0, 0, 0);
     public static final Color WHITE = new Color(127, 127, 127);
 
-    private short red;
-    private short green;
-    private short blue;
+    private final short red;
+    private final short green;
+    private final short blue;
 
     /**
      * Converts R, G and B into the right format.

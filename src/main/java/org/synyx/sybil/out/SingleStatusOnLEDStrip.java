@@ -9,8 +9,7 @@ import org.synyx.sybil.in.StatusInformation;
  */
 public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
-    private Color color;
-    private OutputLEDStrip outputLEDStrip;
+    private final OutputLEDStrip outputLEDStrip;
 
     public SingleStatusOnLEDStrip(OutputLEDStrip outputLEDStrip) {
 
@@ -19,6 +18,8 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
     @Override
     public void showStatus(StatusInformation statusInformation) {
+
+        Color color;
 
         if (statusInformation.getStatus() == Status.CRITICAL) {
             color = new Color(127, 0, 0);
