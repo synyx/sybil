@@ -21,9 +21,9 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     public void showStatus(StatusInformation statusInformation) {
 
         if (statusInformation.getStatus() == Status.CRITICAL) {
-            color = new Color(16, 0, 0);
+            color = new Color(127, 0, 0);
         } else if (statusInformation.getStatus() == Status.WARNING) {
-            color = new Color(16, 16, 0);
+            color = new Color(127, 127, 0);
         } else {
             color = new Color(0, 0, 0);
         }

@@ -12,11 +12,14 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertTrue;
+
 
 public class OutputLEDStripTest {
 
     private IPConnection ipConnection;
     private BrickletLEDStrip ledStrip;
+    private OutputLEDStrip outputLEDStrip;
 
     @Before
     public void setup() throws AlreadyConnectedException, IOException, TimeoutException, NotConnectedException {
@@ -30,11 +33,15 @@ public class OutputLEDStripTest {
         ledStrip.setChipType(2812);
 
         ledStrip.setFrameDuration(10);
+
+        outputLEDStrip = new OutputLEDStrip(ledStrip, 30);
     }
 
 
     @After
     public void close() throws NotConnectedException {
+
+        outputLEDStrip.setColor(Color.BLACK);
 
         if (ipConnection != null) {
             ipConnection.disconnect();
@@ -45,53 +52,65 @@ public class OutputLEDStripTest {
     @Test
     public void testSetColor() throws Exception {
 
-        OutputLEDStrip outputLEDStrip = new OutputLEDStrip(ledStrip, 30);
-
         outputLEDStrip.setColor(new Color(16, 32, 8));
 
-        assert (outputLEDStrip.getPixel(0).getRed() == 16);
-        assert (outputLEDStrip.getPixel(0).getGreen() == 32);
-        assert (outputLEDStrip.getPixel(0).getBlue() == 8);
-
-        outputLEDStrip.setColor(new Color(0, 0, 0));
+        assertTrue("Pixel 0 should be 16, 32, 8.",
+            outputLEDStrip.getPixel(0).getRed() == 16 && outputLEDStrip.getPixel(0).getGreen() == 32
+            && outputLEDStrip.getPixel(0).getBlue() == 8);
     }
 
 
     @Test
     public void testSetPixel() throws Exception {
 
-        OutputLEDStrip outputLEDStrip = new OutputLEDStrip(ledStrip, 30);
+        Color color = new Color(16, 35, 77);
 
-        Color red = new Color(16, 0, 0);
+        outputLEDStrip.setPixel(1, color);
 
-//        System.out.println("Setting to black");
-        outputLEDStrip.setColor(Color.BLACK);
-        assert (outputLEDStrip.getPixel(18).getBlue() == 0);
+        assertTrue("Pixel 1 should be 16, 35, 77; Pixel 0 should be 0, 0, 0",
+            outputLEDStrip.getPixel(1).getRed() == 16 && outputLEDStrip.getPixel(1).getGreen() == 35
+            && outputLEDStrip.getPixel(1).getBlue() == 77 && outputLEDStrip.getPixel(0).getRed() == 0
+            && outputLEDStrip.getPixel(0).getGreen() == 0 && outputLEDStrip.getPixel(0).getBlue() == 0);
+    }
 
-//        System.out.println("Setting pixel 18 to red");
-        outputLEDStrip.setPixel(18, red);
-        assert (outputLEDStrip.getPixel(18).getRed() == 16);
 
-//        System.out.println("Setting to black");
-        outputLEDStrip.setColor(Color.BLACK);
+    @Test
+    public void testSetBrightnessHalf() throws Exception {
 
-        for (int i = 0; i < 30; i++) {
-            outputLEDStrip.setPixel(i, red);
-//            Thread.sleep(100);
-//            System.out.println(outputLEDStrip.getPixel(i).getRed());
-        }
+        outputLEDStrip.setColor(Color.WHITE);
 
-        for (int i = 0; i < 30; i++) {
-            assert (outputLEDStrip.getPixel(i).getRed() == 16);
-        }
+        outputLEDStrip.setBrightness(.5);
 
-        for (double i = 0.0; i < 2.0; i += .05) {
-            outputLEDStrip.setBrightness(0);
-            outputLEDStrip.setBrightness(i);
-            System.out.println("Setting brightness to: " + i);
-            Thread.sleep(1000);
-        }
+        assertTrue("Pixel 0 should be half as bright as a full white (127, 127, 127).",
+            outputLEDStrip.getPixel(0).getRed() == (short) (127 * .5)
+            && outputLEDStrip.getPixel(0).getGreen() == (short) (127 * .5)
+            && outputLEDStrip.getPixel(0).getBlue() == (short) (127 * .5));
+    }
 
-        outputLEDStrip.setColor(Color.BLACK);
+
+    @Test
+    public void testSetBrightnessFull() throws Exception {
+
+        outputLEDStrip.setColor(Color.WHITE);
+
+        outputLEDStrip.setBrightness(1);
+
+        assertTrue("Pixel 0 should be full white (127, 127, 127).",
+            outputLEDStrip.getPixel(0).getRed() == 127 && outputLEDStrip.getPixel(0).getGreen() == 127
+            && outputLEDStrip.getPixel(0).getBlue() == 127);
+    }
+
+
+    @Test
+    public void testSetBrightnessDouble() throws Exception {
+
+        outputLEDStrip.setColor(Color.WHITE);
+
+        outputLEDStrip.setBrightness(2);
+
+        assertTrue("Pixel 0 should be double as bright as a full white (127, 127, 127).",
+            outputLEDStrip.getPixel(0).getRed() == (short) (127 * 2)
+            && outputLEDStrip.getPixel(0).getGreen() == (short) (127 * 2)
+            && outputLEDStrip.getPixel(0).getBlue() == (short) (127 * 2));
     }
 }

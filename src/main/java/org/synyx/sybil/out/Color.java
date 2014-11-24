@@ -12,6 +12,7 @@ import com.tinkerforge.BrickletLEDStrip;
 public class Color {
 
     public static final Color BLACK = new Color(0, 0, 0);
+    public static final Color WHITE = new Color(127, 127, 127);
 
     private short red;
     private short green;

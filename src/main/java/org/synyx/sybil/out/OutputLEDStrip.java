@@ -50,7 +50,7 @@ public class OutputLEDStrip {
     }
 
     /**
-     * Updated the LED Strip with the current content of the pixelbuffer.
+     * Updates the LED Strip with the current content of the pixelbuffer.
      */
     private void updateDisplay() {
 
@@ -79,7 +79,7 @@ public class OutputLEDStrip {
 
 
     /**
-     * Sets the brightness of the (white) background illumination, between 0.0 and 2.0.
+     * Sets the brightness of the LEDs.
      *
      * @param  brightness  Brightness, between 0.0 (completely dark) and 2.0 (twice as bright as normal)
      */

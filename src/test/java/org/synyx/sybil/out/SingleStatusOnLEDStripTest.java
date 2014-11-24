@@ -15,12 +15,15 @@ import org.synyx.sybil.in.StatusInformation;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertTrue;
+
 
 public class SingleStatusOnLEDStripTest {
 
     private IPConnection ipConnection;
     private BrickletLEDStrip ledStrip;
     private OutputLEDStrip outputLEDStrip;
+    private SingleStatusOutput out;
 
     @Before
     public void setup() throws AlreadyConnectedException, IOException, TimeoutException, NotConnectedException {
@@ -36,11 +39,15 @@ public class SingleStatusOnLEDStripTest {
         ledStrip.setFrameDuration(10);
 
         outputLEDStrip = new OutputLEDStrip(ledStrip, 30);
+
+        out = new SingleStatusOnLEDStrip(outputLEDStrip);
     }
 
 
     @After
     public void close() throws NotConnectedException {
+
+        outputLEDStrip.setColor(Color.BLACK); // turn off the LEDs
 
         if (ipConnection != null) {
             ipConnection.disconnect();
@@ -49,21 +56,31 @@ public class SingleStatusOnLEDStripTest {
 
 
     @Test
-    public void testShowStatus() throws Exception {
+    public void testShowStatusWarning() throws Exception {
 
-        SingleStatusOutput out = new SingleStatusOnLEDStrip(outputLEDStrip);
-        System.out.println("Setting to WARNING");
-        out.showStatus(new StatusInformation("Test 1", Status.WARNING));
-        assert (outputLEDStrip.getPixel(0).getGreen() == 16);
-        System.out.println("Sleeping now");
-        Thread.sleep(5000);
-        System.out.println("Setting to CRITICAL");
-        out.showStatus(new StatusInformation("Test 1", Status.CRITICAL));
-        assert (outputLEDStrip.getPixel(0).getRed() == 16);
-        System.out.println("Sleeping now");
-        Thread.sleep(5000);
-        System.out.println("Setting to OKAY");
-        out.showStatus(new StatusInformation("Test 1", Status.OKAY));
-        assert (outputLEDStrip.getPixel(0).getRed() == 0);
+        out.showStatus(new StatusInformation("Yellow Alert", Status.WARNING));
+        assertTrue("LED Strip should be yellow",
+            outputLEDStrip.getPixel(0).getRed() == 127 && outputLEDStrip.getPixel(0).getGreen() == 127
+            && outputLEDStrip.getPixel(0).getBlue() == 0);
+    }
+
+
+    @Test
+    public void testShowStatusCritical() throws Exception {
+
+        out.showStatus(new StatusInformation("Red Alert", Status.CRITICAL));
+        assertTrue("LED Strip should be red",
+            outputLEDStrip.getPixel(0).getRed() == 127 && outputLEDStrip.getPixel(0).getGreen() == 0
+            && outputLEDStrip.getPixel(0).getBlue() == 0);
+    }
+
+
+    @Test
+    public void testShowStatusOkay() throws Exception {
+
+        out.showStatus(new StatusInformation("Everything's shiny, Cap'n, not to fret.", Status.OKAY));
+        assertTrue("LED Strip should be black",
+            outputLEDStrip.getPixel(0).getRed() == 0 && outputLEDStrip.getPixel(0).getGreen() == 0
+            && outputLEDStrip.getPixel(0).getBlue() == 0);
     }
 }
