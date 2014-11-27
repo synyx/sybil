@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ $# -lt 1 ]
+    then
+    echo "Usage: $0 url"
+    echo "  url: URL to delete"
+    exit
+fi
+curl -v -X DELETE $1

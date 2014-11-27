@@ -1,0 +1,47 @@
+#!/bin/sh
+if [ "$1" = "--help" ] #show help and exit
+    then
+    echo "Usage: $0 [option] [time]"
+    echo "  option:"
+    echo "      -v: verbose"
+    echo "      -q: quiet"
+    echo "  time: The amount of time to wait between changing statuses (as used by sleep), defaults to 1m"
+    exit
+elif [ "$1" = "-q" ] #quiet mode
+    then
+    OPTION="-q"
+    shift
+    if [ "$1" = "-v" ] #can't be both, so we ignore it
+        then
+        shift
+    fi
+elif [ "$1" = "-v" ] #verbose mode
+    then
+    OPTION="-v"
+    shift
+    if [ "$1" = "-q" ] #can't be both, so we ignore it
+        then
+        shift
+    fi
+fi
+
+TIME=${1-1m} #
+
+while [ true ]
+do
+    if ! [ $OPTION ]
+        then echo -n "WARNING : "
+    fi
+    ./send_status $OPTION 1
+    sleep $TIME
+    if ! [ $OPTION ]
+        then echo -n "CRITICAL: "
+    fi
+    ./send_status $OPTION 2
+    sleep $TIME
+    if ! [ $OPTION ]
+        then echo -n "OKAY    : "
+    fi
+    ./send_status $OPTION 0
+    sleep $TIME
+done

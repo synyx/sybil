@@ -1,0 +1,69 @@
+#!/bin/sh
+
+#CONFIG
+DEFAULT_URL="http://httpbin.org/put "
+COMMAND="./put"
+GREP_COMMAND="grep --color=never -o -P"
+CUT_COMMAND="cut -c 3-"
+
+if [ $# = 0 ]
+    then
+    echo "Defaulting to sending OKAY to default URL. Try $0 --help for more information."
+fi
+
+
+if [ "$1" = "--help" ] #show help and exit
+    then
+    echo "Usage: $0 [option] [status] [url]"
+    echo "  option:"
+    echo "      -v: verbose"
+    echo "      -q: quiet"
+    echo "  status: either 0 (OKAY), 1 (WARNING) or 2 (CRITICAL), defaults to 0"
+    echo "  url: defaults to $DEFAULT_URL" 
+    exit
+elif [ "$1" = "-q" ] #quiet mode
+    then
+    QUIET=true
+    shift
+    if [ "$1" = "-v" ] #can't be both, so we ignore it
+        then
+        shift
+    fi
+elif [ "$1" = "-v" ] #verbose mode
+    then
+    VERBOSE=true
+    shift
+    if [ "$1" = "-q" ] #can't be both, so we ignore it
+        then
+        shift
+    fi
+fi
+
+STATUS=${1-0} #if first argument is empty, set to STATUS to 0
+URL=${2-$DEFAULT_URL} #if second argument is empty set URL to default URL
+
+
+case $STATUS in
+    0 ) REQUEST="OKAY";;
+    1 ) REQUEST="WARNING";;
+    2 ) REQUEST="CRITICAL";;
+    * ) echo "Error: Illegal status"; $0 --help; exit;;
+esac
+
+if [ $VERBOSE ]
+    then
+    echo "Sending status: $REQUEST"
+fi
+
+$COMMAND $URL status=$REQUEST  2> /tmp/status_stderr 1>/tmp/status_stdout
+
+if ! [ $QUIET ]
+    then
+    $GREP_COMMAND '< HTTP.{0,20}' /tmp/status_stderr|$CUT_COMMAND
+fi
+
+if [ $VERBOSE ]
+    then
+    cat /tmp/status_stdout
+    echo
+fi

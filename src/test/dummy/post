@@ -1,0 +1,9 @@
+#!/bin/sh
+if [ $# -lt 2 ]
+    then
+    echo "Usage: $0 url data"
+    echo "  url: URL to post to"
+    echo "  data: form-encoded data (param1=value1&param2=value2&...)"
+    exit
+fi
+curl -v --data $2 $1

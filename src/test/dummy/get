@@ -1,0 +1,9 @@
+#!/bin/sh
+if [ $# -lt 1 ]
+    then
+    echo "Usage: $0 url [data]"
+    echo "  url: URL to get from"
+    echo "  data: form-encoded data (param1=value1&param2=value2&...)"
+    exit
+fi
+curl -v $1?$2
