@@ -6,4 +6,8 @@ if [ $# -lt 1 ]
     echo "  data: form-encoded data (param1=value1&param2=value2&...)"
     exit
 fi
-curl -v $1?$2
+if [ $# -gt 1 ]
+    then
+    PARAMETERS="?$2"
+fi
+curl -v $1$PARAMETERS
