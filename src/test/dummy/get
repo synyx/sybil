@@ -1,13 +1,13 @@
 #!/bin/sh
-if [ $# -lt 1 ]
+if [ $# -lt 1 ] || [ "$1" = "--help" ]
     then
     echo "Usage: $0 url [data]"
     echo "  url: URL to get from"
-    echo "  data: form-encoded data (param1=value1&param2=value2&...)"
+    echo " data: form-encoded data (param1=value1&param2=value2&...)"
     exit
 fi
 if [ $# -gt 1 ]
     then
     PARAMETERS="?$2"
 fi
-curl -v $1$PARAMETERS
+curl -is $1$PARAMETERS

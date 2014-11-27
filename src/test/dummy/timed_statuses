@@ -5,7 +5,7 @@ if [ "$1" = "--help" ] #show help and exit
     echo "  option:"
     echo "      -v: verbose"
     echo "      -q: quiet"
-    echo "  time: The amount of time to wait between changing statuses (as used by sleep), defaults to 1m"
+    echo "    time: The amount of time to wait between changing statuses (as used by sleep), defaults to 1m"
     exit
 elif [ "$1" = "-q" ] #quiet mode
     then

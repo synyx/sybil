@@ -3,14 +3,6 @@
 #CONFIG
 DEFAULT_URL="http://httpbin.org/put "
 COMMAND="./put"
-GREP_COMMAND="grep --color=never -o -P"
-CUT_COMMAND="cut -c 3-"
-
-if [ $# = 0 ]
-    then
-    echo "Defaulting to sending OKAY to default URL. Try $0 --help for more information."
-fi
-
 
 if [ "$1" = "--help" ] #show help and exit
     then
@@ -19,7 +11,7 @@ if [ "$1" = "--help" ] #show help and exit
     echo "      -v: verbose"
     echo "      -q: quiet"
     echo "  status: either 0 (OKAY), 1 (WARNING) or 2 (CRITICAL), defaults to 0"
-    echo "  url: defaults to $DEFAULT_URL" 
+    echo "     url: defaults to $DEFAULT_URL" 
     exit
 elif [ "$1" = "-q" ] #quiet mode
     then
@@ -39,6 +31,13 @@ elif [ "$1" = "-v" ] #verbose mode
     fi
 fi
 
+if [ $# = 0 ]
+    then
+    $0 --help
+    exit
+fi
+
+
 STATUS=${1-0} #if first argument is empty, set to STATUS to 0
 URL=${2-$DEFAULT_URL} #if second argument is empty set URL to default URL
 
@@ -52,18 +51,21 @@ esac
 
 if [ $VERBOSE ]
     then
+    echo "------ REQUEST -------"
     echo "Sending status: $REQUEST"
+    echo "to $URL"
 fi
 
-$COMMAND $URL status=$REQUEST  2> /tmp/status_stderr 1>/tmp/status_stdout
+$COMMAND $URL status=$REQUEST > /tmp/status_out
 
-if ! [ $QUIET ]
+if ! ( [ $QUIET ] || [ $VERBOSE ] ) #if neither quiet nor verbose, i.e. normal operation
     then
-    $GREP_COMMAND '< HTTP.{0,20}' /tmp/status_stderr|$CUT_COMMAND
+    head -n 1 /tmp/status_out #output only the HTTP status code
 fi
 
 if [ $VERBOSE ]
     then
-    cat /tmp/status_stdout
+    echo "------ RESPONSE ------"
+    cat /tmp/status_out
     echo
 fi
