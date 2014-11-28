@@ -1,9 +1,9 @@
 #!/bin/sh
 if [ $# -lt 1 ] || [ "$1" = "--help" ]
     then
-    echo "Usage: $0 url [data]"
-    echo "  url: URL to get from"
-    echo " data: form-encoded data (param1=value1&param2=value2&...)"
+    echo "Usage: $0 URL [ARGS]"
+    echo "  URL: URL to get from"
+    echo " ARGS: form-encoded arguments (param1=value1&param2=value2&...)"
     exit
 fi
 if [ $# -gt 1 ]

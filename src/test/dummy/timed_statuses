@@ -1,13 +1,21 @@
 #!/bin/sh
+
+#CONFIG
+DEFAULT_URL="http://httpbin.org/put "
+COMMAND="./send_status"
+
 if [ "$1" = "--help" ] #show help and exit
     then
-    echo "Usage: $0 [option] [time]"
-    echo "  option:"
+    echo "Usage: $0 [OPTION] [-t TIME] [URL]"
+    echo "  OPTION:"
     echo "      -v: verbose"
     echo "      -q: quiet"
-    echo "    time: The amount of time to wait between changing statuses (as used by sleep), defaults to 1m"
+    echo " -t TIME: length of time to wait between changing statuses, as used by sleep; defaults to 1m"
+    echo "     URL: URL to send statuses to; defaults to $DEFAULT_URL"
     exit
-elif [ "$1" = "-q" ] #quiet mode
+fi
+
+if [ "$1" = "-q" ] #quiet mode
     then
     OPTION="-q"
     shift
@@ -25,23 +33,32 @@ elif [ "$1" = "-v" ] #verbose mode
     fi
 fi
 
-TIME=${1-1m} #
+if [ "$1" = "-t" ]
+    then
+    shift
+    TIME=$1
+    shift
+else
+    TIME="1m"
+fi
+
+URL=${1-$DEFAULT_URL} #if no argument is given, use default URL
 
 while [ true ]
 do
     if ! [ $OPTION ]
         then echo -n "WARNING : "
     fi
-    ./send_status $OPTION 1
+    $COMMAND $OPTION 1 $URL
     sleep $TIME
     if ! [ $OPTION ]
         then echo -n "CRITICAL: "
     fi
-    ./send_status $OPTION 2
+    $COMMAND $OPTION 2 $URL
     sleep $TIME
     if ! [ $OPTION ]
         then echo -n "OKAY    : "
     fi
-    ./send_status $OPTION 0
+    $COMMAND $OPTION 0 $URL
     sleep $TIME
 done

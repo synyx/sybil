@@ -1,8 +1,8 @@
 #!/bin/sh
 if [ $# -lt 1 ] || [ "$1" = "--help" ]
     then
-    echo "Usage: $0 url"
-    echo "  url: URL to delete"
+    echo "Usage: $0 URL"
+    echo "  URL: URL to delete"
     exit
 fi
 curl -is -X DELETE $1

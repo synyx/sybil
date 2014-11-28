@@ -6,12 +6,12 @@ COMMAND="./put"
 
 if [ "$1" = "--help" ] #show help and exit
     then
-    echo "Usage: $0 [option] [status] [url]"
-    echo "  option:"
+    echo "Usage: $0 [OPTION] STATUS [URL]"
+    echo "  OPTION:"
     echo "      -v: verbose"
     echo "      -q: quiet"
-    echo "  status: either 0 (OKAY), 1 (WARNING) or 2 (CRITICAL), defaults to 0"
-    echo "     url: defaults to $DEFAULT_URL" 
+    echo "  STATUS: either 0 (OKAY), 1 (WARNING) or 2 (CRITICAL)"
+    echo "     URL: URL to send status to; defaults to $DEFAULT_URL"
     exit
 elif [ "$1" = "-q" ] #quiet mode
     then
@@ -37,11 +37,9 @@ if [ $# = 0 ]
     exit
 fi
 
-
 URL=${2-$DEFAULT_URL} #if second argument is empty set URL to default URL
 
-
-case $STATUS in
+case $1 in
     0 ) REQUEST="OKAY";;
     1 ) REQUEST="WARNING";;
     2 ) REQUEST="CRITICAL";;
