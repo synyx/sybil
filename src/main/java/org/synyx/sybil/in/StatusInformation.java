@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 /**
  * Represents a certain status at a certain time. Immutable.
  *
- * @author  Tobias Theuer
+ * @author  Tobias Theuer - theuer@synyx.de
  */
 public class StatusInformation {
 
