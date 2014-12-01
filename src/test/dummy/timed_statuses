@@ -33,20 +33,20 @@ elif [ "$1" = "-v" ] #verbose mode
     fi
 fi
 
-if [ "$1" = "-t" ]
+if [ "$1" = "-t" ] #set delay
     then
     shift
     TIME=$1
     shift
 else
-    TIME="1m"
+    TIME="1m" #default delay
 fi
 
-URL=${1-$DEFAULT_URL} #if no argument is given, use default URL
+URL=${1-$DEFAULT_URL} #if no further command line parameter is given, use default URL
 
-while [ true ]
+while [ true ] #loop until ^C
 do
-    if ! [ $OPTION ]
+    if ! [ $OPTION ] #default operation
         then echo -n "WARNING : "
     fi
     $COMMAND $OPTION 1 $URL

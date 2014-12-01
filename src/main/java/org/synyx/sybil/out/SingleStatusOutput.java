@@ -4,7 +4,9 @@ import org.synyx.sybil.in.StatusInformation;
 
 
 /**
- * @author  Tobias Theuer
+ * Shows a single status.
+ *
+ * @author  Tobias Theuer - theuer@synyx.de
  */
 public interface SingleStatusOutput {
 

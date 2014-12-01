@@ -31,13 +31,13 @@ elif [ "$1" = "-v" ] #verbose mode
     fi
 fi
 
-if [ $# = 0 ]
+if [ $# = 0 ] #when called without command line parameters...
     then
-    $0 --help
+    $0 --help #... show help
     exit
 fi
 
-URL=${2-$DEFAULT_URL} #if second argument is empty set URL to default URL
+URL=${2-$DEFAULT_URL} #if second command line parameter is empty set URL to default URL
 
 case $1 in
     0 ) REQUEST="OKAY";;
@@ -53,7 +53,7 @@ if [ $VERBOSE ]
     echo "to: $URL"
 fi
 
-$COMMAND $URL status=$REQUEST > /tmp/status_out
+$COMMAND $URL status=$REQUEST > /tmp/status_out #send status to URL, pipe output into temp-file
 
 if ! ( [ $QUIET ] || [ $VERBOSE ] ) #if neither quiet nor verbose, i.e. normal operation
     then

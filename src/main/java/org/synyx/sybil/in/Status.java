@@ -1,7 +1,7 @@
 package org.synyx.sybil.in;
 
 /**
- * Status enum.
+ * Status enum: OKAY, WARNING or CRITICAL.
  *
  * @author  Tobias Theuer
  */

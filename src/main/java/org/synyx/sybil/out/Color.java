@@ -4,10 +4,10 @@ import com.tinkerforge.BrickletLEDStrip;
 
 
 /**
- * Color object for LED strips. Tinkerforge LED Strips expect the colors to be shorts, to this Class has them in the
+ * Color object for LED strips. Tinkerforge LED Strips expect the colors to be shorts, so this Class has them in the
  * right format.
  *
- * @author  Tobias Theuerkeeps
+ * @author  Tobias Theuer - theuer@synyx.de
  */
 public class Color {
 
@@ -19,7 +19,7 @@ public class Color {
     private final short blue;
 
     /**
-     * Converts R, G and B into the right format.
+     * Converts Red, Green and Blue into the right format.
      *
      * @param  red  red: int, between 0 and 127
      * @param  green  green: int, between 0 and 127
@@ -50,6 +50,12 @@ public class Color {
         this.blue = (short) blue;
     }
 
+
+    /**
+     * Converts Tinkerforge colors into the right format.
+     *
+     * @param  rgbValues  Tinkerforge-returned color-object.
+     */
 
     public Color(BrickletLEDStrip.RGBValues rgbValues) {
 

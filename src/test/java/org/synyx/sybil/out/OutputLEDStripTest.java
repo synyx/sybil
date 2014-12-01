@@ -41,6 +41,7 @@ public class OutputLEDStripTest {
     public void close() throws NotConnectedException {
 
         outputLEDStrip.setColor(Color.BLACK);
+        outputLEDStrip.updateDisplay();
 
         if (ipConnection != null) {
             ipConnection.disconnect();
@@ -52,6 +53,7 @@ public class OutputLEDStripTest {
     public void testSetColor() throws Exception {
 
         outputLEDStrip.setColor(new Color(16, 32, 8));
+        outputLEDStrip.updateDisplay();
 
         assertTrue("Pixel 0 should be 16, 32, 8.",
             outputLEDStrip.getPixel(0).getRed() == 16 && outputLEDStrip.getPixel(0).getGreen() == 32
@@ -65,6 +67,7 @@ public class OutputLEDStripTest {
         Color color = new Color(16, 35, 77);
 
         outputLEDStrip.setPixel(1, color);
+        outputLEDStrip.updateDisplay();
 
         assertTrue("Pixel 1 should be 16, 35, 77; Pixel 0 should be 0, 0, 0",
             outputLEDStrip.getPixel(1).getRed() == 16 && outputLEDStrip.getPixel(1).getGreen() == 35
@@ -79,6 +82,7 @@ public class OutputLEDStripTest {
         outputLEDStrip.setColor(Color.WHITE);
 
         outputLEDStrip.setBrightness(.5);
+        outputLEDStrip.updateDisplay();
 
         assertTrue("Pixel 0 should be half as bright as a full white (127, 127, 127).",
             outputLEDStrip.getPixel(0).getRed() == (short) (127 * .5)
@@ -93,6 +97,7 @@ public class OutputLEDStripTest {
         outputLEDStrip.setColor(Color.WHITE);
 
         outputLEDStrip.setBrightness(1);
+        outputLEDStrip.updateDisplay();
 
         assertTrue("Pixel 0 should be full white (127, 127, 127).",
             outputLEDStrip.getPixel(0).getRed() == 127 && outputLEDStrip.getPixel(0).getGreen() == 127
@@ -106,6 +111,7 @@ public class OutputLEDStripTest {
         outputLEDStrip.setColor(Color.WHITE);
 
         outputLEDStrip.setBrightness(2);
+        outputLEDStrip.updateDisplay();
 
         assertTrue("Pixel 0 should be double as bright as a full white (127, 127, 127).",
             outputLEDStrip.getPixel(0).getRed() == (short) (127 * 2)

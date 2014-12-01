@@ -10,14 +10,14 @@ import java.util.Arrays;
 /**
  * Controls a single LED strip.
  *
- * @author  Tobias Theuer
+ * @author  Tobias Theuer - theuer@synyx.de
  */
 public class OutputLEDStrip {
 
     private final BrickletLEDStrip ledStrip;
-    private short[] pixelsRed;
-    private short[] pixelsGreen;
-    private short[] pixelsBlue;
+    private short[] pixelBufferRed;
+    private short[] pixelBufferGreen;
+    private short[] pixelBufferBlue;
     private double brightness;
 
     /**
@@ -38,30 +38,31 @@ public class OutputLEDStrip {
             length = length + (16 - differenceToMultipleOfSixteen); // make sure the length is a multiple of sixteen
         }
 
-        pixelsRed = new short[length];
-        pixelsGreen = new short[length];
-        pixelsBlue = new short[length];
+        pixelBufferRed = new short[length];
+        pixelBufferGreen = new short[length];
+        pixelBufferBlue = new short[length];
 
-        for (int i = 0; i < pixelsRed.length; i++) {
-            pixelsRed[i] = (short) 0;
-            pixelsGreen[i] = (short) 0;
-            pixelsRed[i] = (short) 0;
+        for (int i = 0; i < pixelBufferRed.length; i++) {
+            pixelBufferRed[i] = (short) 0;
+            pixelBufferGreen[i] = (short) 0;
+            pixelBufferRed[i] = (short) 0;
         }
     }
 
     /**
-     * Updates the LED Strip with the current content of the pixelbuffer.
+     * Updates the LED Strip with the current content of the pixelbuffer. Needs to be called for changes made with a
+     * setter to show.
      */
-    private void updateDisplay() {
+    public void updateDisplay() {
 
         short[] redArray;
         short[] greenArray;
         short[] blueArray;
 
-        for (int i = 0; i < pixelsRed.length; i += 16) { // loop over the list in steps of 16
-            redArray = Arrays.copyOfRange(pixelsRed, i, i + 16);
-            greenArray = Arrays.copyOfRange(pixelsGreen, i, i + 16);
-            blueArray = Arrays.copyOfRange(pixelsBlue, i, i + 16);
+        for (int i = 0; i < pixelBufferRed.length; i += 16) { // loop over the pixelbuffer in steps of 16
+            redArray = Arrays.copyOfRange(pixelBufferRed, i, i + 16);
+            greenArray = Arrays.copyOfRange(pixelBufferGreen, i, i + 16);
+            blueArray = Arrays.copyOfRange(pixelBufferBlue, i, i + 16);
 
             for (int j = 0; j < 16; j++) {
                 redArray[j] *= brightness;
@@ -94,8 +95,6 @@ public class OutputLEDStrip {
         }
 
         this.brightness = brightness;
-
-        updateDisplay();
     }
 
 
@@ -108,11 +107,9 @@ public class OutputLEDStrip {
      */
     public void setPixel(int position, Color color) {
 
-        pixelsRed[position] = color.getRed();
-        pixelsGreen[position] = color.getGreen();
-        pixelsBlue[position] = color.getBlue();
-
-        updateDisplay();
+        pixelBufferRed[position] = color.getRed();
+        pixelBufferGreen[position] = color.getGreen();
+        pixelBufferBlue[position] = color.getBlue();
     }
 
 
@@ -146,10 +143,8 @@ public class OutputLEDStrip {
 
     public void setColor(Color color) {
 
-        Arrays.fill(pixelsRed, color.getRed());
-        Arrays.fill(pixelsGreen, color.getGreen());
-        Arrays.fill(pixelsBlue, color.getBlue());
-
-        updateDisplay();
+        Arrays.fill(pixelBufferRed, color.getRed());
+        Arrays.fill(pixelBufferGreen, color.getGreen());
+        Arrays.fill(pixelBufferBlue, color.getBlue());
     }
 }

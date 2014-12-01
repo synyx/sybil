@@ -5,17 +5,29 @@ import org.synyx.sybil.in.StatusInformation;
 
 
 /**
- * @author  Tobias Theuer
+ * Shows a status as a single color on an entire LED strip.
+ *
+ * @author  Tobias Theuer - theuer@synyx.de
  */
 public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
     private final OutputLEDStrip outputLEDStrip;
 
+    /**
+     * Constructor.
+     *
+     * @param  outputLEDStrip  The output (in this case a LED strip) to show statuses on
+     */
     public SingleStatusOnLEDStrip(OutputLEDStrip outputLEDStrip) {
 
         this.outputLEDStrip = outputLEDStrip;
     }
 
+    /**
+     * Show the status on the LED strip.
+     *
+     * @param  statusInformation  The StatusInformation to display.
+     */
     @Override
     public void showStatus(StatusInformation statusInformation) {
 
@@ -30,5 +42,6 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
         }
 
         outputLEDStrip.setColor(color);
+        outputLEDStrip.updateDisplay();
     }
 }
