@@ -64,6 +64,13 @@ public class Color {
         blue = rgbValues.r[0];
     }
 
+    @Override
+    public String toString() {
+
+        return ("(" + red + ", " + green + ", " + blue + ")");
+    }
+
+
     public short getBlue() {
 
         return blue;

@@ -55,9 +55,9 @@ public class OutputLEDStripTest {
         outputLEDStrip.setColor(new Color(16, 32, 8));
         outputLEDStrip.updateDisplay();
 
+        Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("Pixel 0 should be 16, 32, 8.",
-            outputLEDStrip.getPixel(0).getRed() == 16 && outputLEDStrip.getPixel(0).getGreen() == 32
-            && outputLEDStrip.getPixel(0).getBlue() == 8);
+            pixel.getRed() == 16 && pixel.getGreen() == 32 && pixel.getBlue() == 8);
     }
 
 
@@ -69,10 +69,11 @@ public class OutputLEDStripTest {
         outputLEDStrip.setPixel(1, color);
         outputLEDStrip.updateDisplay();
 
+        Color pixel0 = outputLEDStrip.getPixel(0);
+        Color pixel1 = outputLEDStrip.getPixel(1);
         assertTrue("Pixel 1 should be 16, 35, 77; Pixel 0 should be 0, 0, 0",
-            outputLEDStrip.getPixel(1).getRed() == 16 && outputLEDStrip.getPixel(1).getGreen() == 35
-            && outputLEDStrip.getPixel(1).getBlue() == 77 && outputLEDStrip.getPixel(0).getRed() == 0
-            && outputLEDStrip.getPixel(0).getGreen() == 0 && outputLEDStrip.getPixel(0).getBlue() == 0);
+            pixel1.getRed() == 16 && pixel1.getGreen() == 35 && pixel1.getBlue() == 77 && pixel0.getRed() == 0
+            && pixel0.getGreen() == 0 && pixel0.getBlue() == 0);
     }
 
 
@@ -84,10 +85,10 @@ public class OutputLEDStripTest {
         outputLEDStrip.setBrightness(.5);
         outputLEDStrip.updateDisplay();
 
+        Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("Pixel 0 should be half as bright as a full white (127, 127, 127).",
-            outputLEDStrip.getPixel(0).getRed() == (short) (127 * .5)
-            && outputLEDStrip.getPixel(0).getGreen() == (short) (127 * .5)
-            && outputLEDStrip.getPixel(0).getBlue() == (short) (127 * .5));
+            pixel.getRed() == (short) (127 * .5) && pixel.getGreen() == (short) (127 * .5)
+            && pixel.getBlue() == (short) (127 * .5));
     }
 
 
@@ -99,9 +100,9 @@ public class OutputLEDStripTest {
         outputLEDStrip.setBrightness(1);
         outputLEDStrip.updateDisplay();
 
+        Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("Pixel 0 should be full white (127, 127, 127).",
-            outputLEDStrip.getPixel(0).getRed() == 127 && outputLEDStrip.getPixel(0).getGreen() == 127
-            && outputLEDStrip.getPixel(0).getBlue() == 127);
+            pixel.getRed() == 127 && pixel.getGreen() == 127 && pixel.getBlue() == 127);
     }
 
 
@@ -113,9 +114,9 @@ public class OutputLEDStripTest {
         outputLEDStrip.setBrightness(2);
         outputLEDStrip.updateDisplay();
 
+        Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("Pixel 0 should be double as bright as a full white (127, 127, 127).",
-            outputLEDStrip.getPixel(0).getRed() == (short) (127 * 2)
-            && outputLEDStrip.getPixel(0).getGreen() == (short) (127 * 2)
-            && outputLEDStrip.getPixel(0).getBlue() == (short) (127 * 2));
+            pixel.getRed() == (short) (127 * 2) && pixel.getGreen() == (short) (127 * 2)
+            && pixel.getBlue() == (short) (127 * 2));
     }
 }

@@ -47,6 +47,7 @@ public class SingleStatusOnLEDStripTest {
     public void close() throws NotConnectedException {
 
         outputLEDStrip.setColor(Color.BLACK); // turn off the LEDs
+        outputLEDStrip.updateDisplay();
 
         if (ipConnection != null) {
             ipConnection.disconnect();
@@ -57,29 +58,30 @@ public class SingleStatusOnLEDStripTest {
     @Test
     public void testShowStatusWarning() throws Exception {
 
-        out.showStatus(new StatusInformation("Yellow Alert", Status.WARNING));
+        out.showStatus(new StatusInformation("Unittest", Status.WARNING));
+
+        Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("LED Strip should be yellow",
-            outputLEDStrip.getPixel(0).getRed() == 127 && outputLEDStrip.getPixel(0).getGreen() == 127
-            && outputLEDStrip.getPixel(0).getBlue() == 0);
+            pixel.getRed() == 127 && pixel.getGreen() == 127 && pixel.getBlue() == 0);
     }
 
 
     @Test
     public void testShowStatusCritical() throws Exception {
 
-        out.showStatus(new StatusInformation("Red Alert", Status.CRITICAL));
-        assertTrue("LED Strip should be red",
-            outputLEDStrip.getPixel(0).getRed() == 127 && outputLEDStrip.getPixel(0).getGreen() == 0
-            && outputLEDStrip.getPixel(0).getBlue() == 0);
+        out.showStatus(new StatusInformation("Unittest", Status.CRITICAL));
+
+        Color pixel = outputLEDStrip.getPixel(0);
+        assertTrue("LED Strip should be red", pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
     }
 
 
     @Test
     public void testShowStatusOkay() throws Exception {
 
-        out.showStatus(new StatusInformation("Everything's shiny, Cap'n, not to fret.", Status.OKAY));
-        assertTrue("LED Strip should be black",
-            outputLEDStrip.getPixel(0).getRed() == 0 && outputLEDStrip.getPixel(0).getGreen() == 0
-            && outputLEDStrip.getPixel(0).getBlue() == 0);
+        out.showStatus(new StatusInformation("Unittest.", Status.OKAY));
+
+        Color pixel = outputLEDStrip.getPixel(0);
+        assertTrue("LED Strip should be black", pixel.getRed() == 0 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
     }
 }

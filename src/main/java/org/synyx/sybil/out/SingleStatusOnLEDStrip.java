@@ -1,5 +1,8 @@
 package org.synyx.sybil.out;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.in.StatusInformation;
 
@@ -11,7 +14,8 @@ import org.synyx.sybil.in.StatusInformation;
  */
 public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
-    private final OutputLEDStrip outputLEDStrip;
+    private static final Logger LOG = LoggerFactory.getLogger(SingleStatusOnLEDStrip.class);
+    final OutputLEDStrip outputLEDStrip;
 
     /**
      * Constructor.
@@ -31,6 +35,8 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     @Override
     public void showStatus(StatusInformation statusInformation) {
 
+        LOG.debug("Show status information: {}", statusInformation.getStatus());
+
         Color color;
 
         if (statusInformation.getStatus() == Status.CRITICAL) {
@@ -40,6 +46,8 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
         } else {
             color = new Color(0, 0, 0);
         }
+
+        LOG.debug("Set color to: {}", color);
 
         outputLEDStrip.setColor(color);
         outputLEDStrip.updateDisplay();

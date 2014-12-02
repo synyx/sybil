@@ -4,6 +4,9 @@ import com.tinkerforge.BrickletLEDStrip;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 
 
@@ -14,11 +17,13 @@ import java.util.Arrays;
  */
 public class OutputLEDStrip {
 
+    private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStrip.class);
     private final BrickletLEDStrip ledStrip;
     private short[] pixelBufferRed;
     private short[] pixelBufferGreen;
     private short[] pixelBufferBlue;
     private double brightness;
+    private String uid = null;
 
     /**
      * Makes new OutputLEDStrip object.
@@ -28,9 +33,17 @@ public class OutputLEDStrip {
      */
     public OutputLEDStrip(BrickletLEDStrip ledStrip, int length) {
 
+        try {
+            uid = ledStrip.getIdentity().uid;
+        } catch (TimeoutException | NotConnectedException e) {
+            LOG.error("Error connecting to LEDStrip:", e);
+        }
+
         brightness = 1.0;
 
         this.ledStrip = ledStrip;
+
+        LOG.debug("Creating new OuputLEDStrip {}", uid);
 
         int differenceToMultipleOfSixteen = length % 16;
 
@@ -55,6 +68,8 @@ public class OutputLEDStrip {
      */
     public void updateDisplay() {
 
+        LOG.debug("Updating display of LEDstrip {}", uid);
+
         short[] redArray;
         short[] greenArray;
         short[] blueArray;
@@ -73,7 +88,7 @@ public class OutputLEDStrip {
             try {
                 ledStrip.setRGBValues(i, (short) 16, blueArray, redArray, greenArray);
             } catch (TimeoutException | NotConnectedException e) {
-                e.printStackTrace();
+                LOG.error("Error connecting to LEDStrip:", e);
             }
         }
     }
@@ -85,6 +100,8 @@ public class OutputLEDStrip {
      * @param  brightness  Brightness, between 0.0 (completely dark) and 2.0 (twice as bright as normal)
      */
     public void setBrightness(double brightness) {
+
+        LOG.debug("Setting brightness  of LEDstrip {} to {}", uid, brightness);
 
         if (brightness < 0.0) {
             brightness = 0.0;
@@ -107,6 +124,8 @@ public class OutputLEDStrip {
      */
     public void setPixel(int position, Color color) {
 
+        LOG.debug("Setting pixel {} of LEDstrip {} to {}", position, uid, color);
+
         pixelBufferRed[position] = color.getRed();
         pixelBufferGreen[position] = color.getGreen();
         pixelBufferBlue[position] = color.getBlue();
@@ -123,12 +142,14 @@ public class OutputLEDStrip {
      */
     Color getPixel(int position) {
 
+        LOG.debug("Retrieving color of pixel {} of LEDstrip {}", position, uid);
+
         Color color = null;
 
         try {
             color = new Color(ledStrip.getRGBValues(position, (short) 1));
         } catch (TimeoutException | NotConnectedException e) {
-            e.printStackTrace();
+            LOG.error("Error connecting to LEDStrip:", e);
         }
 
         return color;
@@ -142,6 +163,8 @@ public class OutputLEDStrip {
      */
 
     public void setColor(Color color) {
+
+        LOG.debug("Setting LEDstrip {} to color {}", uid, color);
 
         Arrays.fill(pixelBufferRed, color.getRed());
         Arrays.fill(pixelBufferGreen, color.getGreen());
