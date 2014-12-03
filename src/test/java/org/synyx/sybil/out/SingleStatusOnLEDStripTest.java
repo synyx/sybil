@@ -22,7 +22,7 @@ public class SingleStatusOnLEDStripTest {
 
     private IPConnection ipConnection;
     private OutputLEDStrip outputLEDStrip;
-    private SingleStatusOutput out;
+    private SingleStatusOutput singleStatusOutput;
 
     @Before
     public void setup() throws AlreadyConnectedException, IOException, TimeoutException, NotConnectedException {
@@ -39,7 +39,7 @@ public class SingleStatusOnLEDStripTest {
 
         outputLEDStrip = new OutputLEDStrip(ledStrip, 30);
 
-        out = new SingleStatusOnLEDStrip(outputLEDStrip);
+        singleStatusOutput = new SingleStatusOnLEDStrip(outputLEDStrip);
     }
 
 
@@ -58,7 +58,7 @@ public class SingleStatusOnLEDStripTest {
     @Test
     public void testShowStatusWarning() throws Exception {
 
-        out.showStatus(new StatusInformation("Unittest", Status.WARNING));
+        singleStatusOutput.showStatus(new StatusInformation("Unittest", Status.WARNING));
 
         Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("LED Strip should be yellow",
@@ -69,7 +69,7 @@ public class SingleStatusOnLEDStripTest {
     @Test
     public void testShowStatusCritical() throws Exception {
 
-        out.showStatus(new StatusInformation("Unittest", Status.CRITICAL));
+        singleStatusOutput.showStatus(new StatusInformation("Unittest", Status.CRITICAL));
 
         Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("LED Strip should be red", pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
@@ -79,7 +79,7 @@ public class SingleStatusOnLEDStripTest {
     @Test
     public void testShowStatusOkay() throws Exception {
 
-        out.showStatus(new StatusInformation("Unittest.", Status.OKAY));
+        singleStatusOutput.showStatus(new StatusInformation("Unittest.", Status.OKAY));
 
         Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("LED Strip should be black", pixel.getRed() == 0 && pixel.getGreen() == 0 && pixel.getBlue() == 0);

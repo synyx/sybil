@@ -1,13 +1,13 @@
 <!-- <configuration scan="true"> --><!-- enable this to have the config file reread every minute -->
 <configuration>
 
-`    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    
-</appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+        
+    </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         
@@ -36,4 +36,5 @@
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
+
 </configuration>
