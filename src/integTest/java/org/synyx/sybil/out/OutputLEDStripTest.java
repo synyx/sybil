@@ -1,51 +1,32 @@
 package org.synyx.sybil.out;
 
-import com.tinkerforge.AlreadyConnectedException;
-import com.tinkerforge.BrickletLEDStrip;
-import com.tinkerforge.IPConnection;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
-
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
+import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:META-INF/spring/applicationContext.xml")
 public class OutputLEDStripTest {
 
-    private IPConnection ipConnection;
+    @Autowired
     private OutputLEDStrip outputLEDStrip;
 
-    @Before
-    public void setup() throws AlreadyConnectedException, IOException, TimeoutException, NotConnectedException {
-
-        ipConnection = new IPConnection();
-
-        ipConnection.connect("localhost", 4223);
-
-        BrickletLEDStrip ledStrip = new BrickletLEDStrip("p3c", ipConnection);
-
-        ledStrip.setChipType(2812);
-
-        ledStrip.setFrameDuration(10);
-
-        outputLEDStrip = new OutputLEDStrip(ledStrip, 30);
-    }
-
-
     @After
-    public void close() throws NotConnectedException {
+    public void close() { // throws NotConnectedException {
 
+        outputLEDStrip.setBrightness(1.0);
         outputLEDStrip.setColor(Color.BLACK);
         outputLEDStrip.updateDisplay();
-
-        if (ipConnection != null) {
-            ipConnection.disconnect();
-        }
     }
 
 
@@ -56,8 +37,9 @@ public class OutputLEDStripTest {
         outputLEDStrip.updateDisplay();
 
         Color pixel = outputLEDStrip.getPixel(0);
-        assertTrue("Pixel 0 should be 16, 32, 8.",
-            pixel.getRed() == 16 && pixel.getGreen() == 32 && pixel.getBlue() == 8);
+        assertEquals("Pixel 0.red should be 16", 16, pixel.getRed());
+        assertEquals("Pixel 0.green should be 32", 32, pixel.getGreen());
+        assertEquals("Pixel 0.blue should be 8", 8, pixel.getBlue());
     }
 
 
@@ -71,9 +53,13 @@ public class OutputLEDStripTest {
 
         Color pixel0 = outputLEDStrip.getPixel(0);
         Color pixel1 = outputLEDStrip.getPixel(1);
-        assertTrue("Pixel 1 should be 16, 35, 77; Pixel 0 should be 0, 0, 0",
-            pixel1.getRed() == 16 && pixel1.getGreen() == 35 && pixel1.getBlue() == 77 && pixel0.getRed() == 0
-            && pixel0.getGreen() == 0 && pixel0.getBlue() == 0);
+
+        assertEquals("Pixel 0.red should be 0", 0, pixel0.getRed());
+        assertEquals("Pixel 0.green should be 0", 0, pixel0.getGreen());
+        assertEquals("Pixel 0.blue should be 0", 0, pixel0.getBlue());
+        assertEquals("Pixel 1.red should be 16", 16, pixel1.getRed());
+        assertEquals("Pixel 1.green should be 35", 35, pixel1.getGreen());
+        assertEquals("Pixel 1.blue should be 77", 77, pixel1.getBlue());
     }
 
 

@@ -1,57 +1,38 @@
 package org.synyx.sybil.out;
 
-import com.tinkerforge.AlreadyConnectedException;
-import com.tinkerforge.BrickletLEDStrip;
-import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+
+import org.junit.runner.RunWith;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.in.StatusInformation;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertTrue;
 
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:META-INF/spring/applicationContext.xml")
 public class SingleStatusOnLEDStripTest {
 
-    private IPConnection ipConnection;
-    private OutputLEDStrip outputLEDStrip;
+    @Autowired
     private SingleStatusOutput singleStatusOutput;
 
-    @Before
-    public void setup() throws AlreadyConnectedException, IOException, TimeoutException, NotConnectedException {
-
-        ipConnection = new IPConnection();
-
-        ipConnection.connect("localhost", 4223);
-
-        BrickletLEDStrip ledStrip = new BrickletLEDStrip("p3c", ipConnection);
-
-        ledStrip.setChipType(2812);
-
-        ledStrip.setFrameDuration(10);
-
-        outputLEDStrip = new OutputLEDStrip(ledStrip, 30);
-
-        singleStatusOutput = new SingleStatusOnLEDStrip(outputLEDStrip);
-    }
-
+    @Autowired
+    private OutputLEDStrip outputLEDStrip;
 
     @After
     public void close() throws NotConnectedException {
 
         outputLEDStrip.setColor(Color.BLACK); // turn off the LEDs
         outputLEDStrip.updateDisplay();
-
-        if (ipConnection != null) {
-            ipConnection.disconnect();
-        }
     }
 
 

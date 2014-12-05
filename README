@@ -3,8 +3,8 @@ Sybil: Synyx Büro - Information & Licht
 A project to illuminate and inform the people in the office(s).
 
 So far:
-* Outputs Statuses on LED Strips via Tinkerforge (see org.synyx.sybil.out.SingleStatusOnLEDStripTest)
-* Outputs arbitrary pixel data " " (see org.synyx.sybil.out.OutputLEDStripTest)
+* Outputs Statuses on LED Strips via Tinkerforge (see integration test org.synyx.sybil.out.SingleStatusOnLEDStripTest)
+* Outputs arbitrary pixel data " " (see integration test org.synyx.sybil.out.OutputLEDStripTest)
 
 Does not have a main yet, but tests run. E.g.:
-gradlew test --tests org.synyx.sybil.out.OutputLEDStripTest
+gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
