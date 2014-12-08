@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import org.synyx.sybil.config.SpringConfigDev;
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.in.StatusInformation;
 
@@ -19,7 +20,9 @@ import static org.junit.Assert.assertTrue;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:META-INF/spring/applicationContext.xml")
+
+//@ContextConfiguration(locations = "classpath:META-INF/spring/applicationContext.xml")
+@ContextConfiguration(classes = SpringConfigDev.class)
 public class SingleStatusOnLEDStripTest {
 
     @Autowired

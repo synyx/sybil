@@ -22,6 +22,7 @@ task integTest(type: Test) {
 
     systemProperty 'logLevel', 'DEBUG'
     systemProperty 'logDirectory', 'build/logs/'
+    systemProperty 'spring.profiles.active', 'dev'
 }
 
 //uncomment to run integration tests with the build task
@@ -32,6 +33,7 @@ test {
     //enable debug logging for tests
     systemProperty 'logLevel', 'DEBUG'
     systemProperty 'logDirectory', 'build/logs/'
+    systemProperty 'spring.profiles.active', 'dev'
 //    testLogging.showStandardStreams = true
 }
 
