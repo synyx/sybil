@@ -20,9 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-
-//@ContextConfiguration(locations = "classpath:META-INF/spring/applicationContext.xml")
-@ContextConfiguration(classes = SpringConfigDev.class)
+@ContextConfiguration(classes = { SpringConfigDev.class })
 public class SingleStatusOnLEDStripTest {
 
     @Autowired
