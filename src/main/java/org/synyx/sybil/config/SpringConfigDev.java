@@ -43,7 +43,7 @@ public class SpringConfigDev {
     @Autowired
     Environment env;
 
-    @Bean
+    @Bean(destroyMethod = "disconnect")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public IPConnection ipConnection() throws AlreadyConnectedException, IOException {
 
