@@ -28,9 +28,9 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
                     in/                     Inputs, fairly self-explanatory.
                     out/                    Outputs.
                         Color               Color object, for LEDs.
-                        OutputLEDStrip      LED Strip object, communicates with Tinkerforge bricks & its LEDs.
-                        SingleStatusOutput  Interface for displaying a single status on an output.
+                        OutputLEDStrip      LED Strip object, communicates with LEDs.
+                        SingleStatusOutput  Interface for displaying a single status.
                         SingleStatusOnLEDStrip  Display a single status on a LED Strip.
             resources/                      Resources.
                 logback.xml                 Configures the logback logging engine.
-                SpringConfigDev.properties  Configuration values for the Tinkerforge components for Development profile.
+                SpringConfigDev.properties  Configuration values for Development profile.
