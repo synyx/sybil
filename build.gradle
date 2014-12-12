@@ -1,50 +1,51 @@
-apply plugin: 'java'
-apply plugin: 'war'
+apply plugin: 'java' //Java plugin
+apply plugin: 'war' //war plugin
 
-sourceCompatibility = 1.8
-version = '0.1'
+sourceCompatibility = 1.8 //Java 8
+version = '0.1' 
 
 repositories {
     mavenCentral()
 }
 
-//Integration tests
 sourceSets {
-    integTest {
+    integTest { //add sources for Integration Tests, unlike main/ and test/ these are not provided by the java plugin
         java.srcDir file('src/integTest/java')
         resources.srcDir file('src/integTest/resources')
     }
 }
 
-task integTest(type: Test) {
+task integTest(type: Test) { //define the integTest task as a Test task
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
 
-    systemProperty 'logLevel', 'DEBUG'
-    systemProperty 'logDirectory', 'build/logs/'
-    systemProperty 'spring.profiles.active', 'dev'
+//    systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
+    systemProperty 'logDirectory', 'build/logs/' //set log directory 
+    systemProperty 'spring.profiles.active', 'dev' //set active Spring profile to development
+//    testLogging.showStandardStreams = true //show STDOUT and STDERR while gradle is running
 }
 
-//uncomment to run integration tests with the build task
+//uncomment to run integration tests with the build task. Check is a subtask of the build task, provided by java plugin
 //check.dependsOn integTest
 
 //Unit tests
 test {
-    //enable debug logging for tests
-    systemProperty 'logLevel', 'DEBUG'
-    systemProperty 'logDirectory', 'build/logs/'
-    systemProperty 'spring.profiles.active', 'dev'
-//    testLogging.showStandardStreams = true
+    systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
+    systemProperty 'logDirectory', 'build/logs/' //set log directory 
+    systemProperty 'spring.profiles.active', 'dev'  //set active Spring profile to development
+//    testLogging.showStandardStreams = true //show STDOUT and STDERR while gradle is running
 }
 
 dependencies {
     compile group: 'org.springframework', name: 'spring-web', version: '4.1.3.RELEASE'
+    compile group: 'org.springframework', name: 'spring-aspects', version: '4.1.3.RELEASE'
     compile group: 'com.tinkerforge', name: 'tinkerforge', version: '2.1.2'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.2'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile group: 'org.springframework', name: 'spring-test', version: '4.1.3.RELEASE'
 
+    //make sure the integTest task has the same dependencies
     integTestCompile sourceSets.main.output
     integTestCompile configurations.testCompile
     integTestCompile sourceSets.test.output
