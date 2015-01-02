@@ -1,4 +1,4 @@
-<!-- <configuration scan="true"> --><!-- enable this to have the config file reread every minute -->
+<!-- <configuration scan="true"> --><!-- replace line below with this to have the config file reread every minute -->
 <configuration>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -29,7 +29,7 @@
 
     </appender>
 
-
+    
     <appender name="FILEJSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
         
         <!-- set log directory to logs/ unless system property says otherwise -->
@@ -63,7 +63,7 @@
     <!-- set logging level to INFO unless system property says otherwise -->
     <logger name="org.synyx.sybil" level="${logLevel:-INFO}">
         <appender-ref ref="FILECLEAR" />
-        <appender-ref ref="FILEJSON" />
+        <!-- appender-ref ref="FILEJSON" /--><!-- dis-/enable json logging -->
     </logger>
     
     <root level="INFO">
