@@ -31,6 +31,7 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
         |           +---OutputLEDStrip      LED Strip object, communicates with LEDs.
         |           +---SingleStatusOutput  Interface for displaying a single status.
         |           +---SingleStatusOnLEDStrip  Display a single status on a LED Strip.
+        |           +---Sprite1D            Sprite object.
         +---resources/                      Resources.
             +---logback.xml                 Configures the logback logging engine.
             +---SpringConfigDev.properties  Configuration values for Development profile.
