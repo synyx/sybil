@@ -63,7 +63,7 @@
     <!-- set logging level to INFO unless system property says otherwise -->
     <logger name="org.synyx.sybil" level="${logLevel:-INFO}">
         <appender-ref ref="FILECLEAR" />
-        <!-- appender-ref ref="FILEJSON" /--><!-- dis-/enable json logging -->
+        <!-- appender-ref ref="FILEJSON" /--><!-- enable for json logging -->
     </logger>
     
     <root level="INFO">

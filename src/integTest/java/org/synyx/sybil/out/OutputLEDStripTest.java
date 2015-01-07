@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.core.env.Environment;
+
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -22,6 +24,9 @@ public class OutputLEDStripTest {
 
     @Autowired
     private OutputLEDStrip outputLEDStrip;
+
+    @Autowired
+    Environment env;
 
     @After
     public void close() { // throws NotConnectedException {
@@ -106,5 +111,112 @@ public class OutputLEDStripTest {
         assertTrue("Pixel 0 should be double as bright as a full white (127, 127, 127).",
             pixel.getRed() == (short) (127 * 2) && pixel.getGreen() == (short) (127 * 2)
             && pixel.getBlue() == (short) (127 * 2));
+    }
+
+
+    @Test
+    public void testDrawSprite() {
+
+        Sprite1D sprite = new Sprite1D(10);
+        sprite.setFill(new Color(127, 0, 0));
+
+        outputLEDStrip.drawSprite(sprite, 5);
+        outputLEDStrip.updateDisplay();
+
+        for (int i = 0; i < 5; i++) {
+            Color pixel = outputLEDStrip.getPixel(i);
+            assertTrue("Pixel " + i + " should be black",
+                pixel.getRed() == 0 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        }
+
+        for (int i = 5; i < 15; i++) {
+            Color pixel = outputLEDStrip.getPixel(i);
+            assertTrue("Pixel " + i + " should be red",
+                pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        }
+
+        for (int i = 15; i < 30; i++) {
+            Color pixel = outputLEDStrip.getPixel(i);
+            assertTrue("Pixel " + i + " should be black",
+                pixel.getRed() == 0 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        }
+    }
+
+
+    @Test
+    public void testDrawSpriteWithoutWrap() {
+
+        Sprite1D sprite = new Sprite1D(10);
+        sprite.setFill(new Color(127, 0, 0));
+
+        outputLEDStrip.drawSprite(sprite, 25);
+        outputLEDStrip.updateDisplay();
+
+        for (int i = 0; i < 25; i++) {
+            Color pixel = outputLEDStrip.getPixel(i);
+            assertTrue("Pixel " + i + " should be black",
+                pixel.getRed() == 0 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        }
+
+        for (int i = 25; i < 30; i++) {
+            Color pixel = outputLEDStrip.getPixel(i);
+            assertTrue("Pixel " + i + " should be red",
+                pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        }
+    }
+
+
+    @Test
+    public void testDrawSpriteWithWrap() {
+
+        Sprite1D sprite = new Sprite1D(10);
+        sprite.setFill(new Color(127, 0, 0));
+
+        outputLEDStrip.drawSprite(sprite, 25, true);
+        outputLEDStrip.updateDisplay();
+
+        for (int i = 0; i < 5; i++) {
+            Color pixel = outputLEDStrip.getPixel(i);
+            assertTrue("Pixel " + i + " should be red",
+                pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        }
+
+        for (int i = 5; i < 25; i++) {
+            Color pixel = outputLEDStrip.getPixel(i);
+            assertTrue("Pixel " + i + " should be black",
+                pixel.getRed() == 0 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        }
+
+        for (int i = 25; i < 30; i++) {
+            Color pixel = outputLEDStrip.getPixel(i);
+            assertTrue("Pixel " + i + " should be red",
+                pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        }
+    }
+
+
+    @Test
+    public void testDrawSpriteOverlong() {
+
+        Sprite1D sprite = new Sprite1D(50);
+        sprite.setFill(new Color(127, 0, 0));
+
+        outputLEDStrip.drawSprite(sprite, 25, true);
+        outputLEDStrip.updateDisplay();
+
+        for (int i = 0; i < 30; i++) {
+            Color pixel = outputLEDStrip.getPixel(i);
+            assertTrue("Pixel " + i + " should be red",
+                pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        }
+    }
+
+
+    @Test
+    public void testGetLength() {
+
+        int ledStripLength = outputLEDStrip.getLength();
+        int expectedLength = env.getRequiredProperty("outputledstrip.length", Integer.class);
+        assertEquals(expectedLength, ledStripLength);
     }
 }

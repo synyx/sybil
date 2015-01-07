@@ -23,6 +23,7 @@ public class OutputLEDStrip {
     private short[] pixelBufferGreen;
     private short[] pixelBufferBlue;
     private double brightness;
+    private int length;
     private String uid = null;
 
     /**
@@ -42,6 +43,8 @@ public class OutputLEDStrip {
         brightness = 1.0;
 
         this.ledStrip = ledStrip;
+
+        this.length = length;
 
         LOG.debug("Creating new OuputLEDStrip {}", uid);
 
@@ -91,6 +94,65 @@ public class OutputLEDStrip {
                 LOG.error("Error connecting to LEDStrip:", e);
             }
         }
+    }
+
+
+    /**
+     * Draws a one-dimensional sprite onto the LED Strip.
+     *
+     * @param  sprite  The sprite object
+     * @param  position  The position to draw the sprite at, starting at 0 for the pixel closest to the controller
+     * @param  wrap  whether the sprite wraps around the end of the LED strip and the rest is drawn at the beginning
+     */
+    public void drawSprite(Sprite1D sprite, int position, boolean wrap) {
+
+        int spriteLength = sprite.getLength();
+        short[] red = sprite.getRed();
+        short[] green = sprite.getGreen();
+        short[] blue = sprite.getBlue();
+
+        int i = 0;
+
+        while (i < spriteLength) {
+            if (position < this.length) {
+                pixelBufferRed[position] = red[i];
+                pixelBufferGreen[position] = green[i];
+                pixelBufferBlue[position] = blue[i];
+            } else if (wrap) {
+                position = 0; // reset the position to the beginning of the LED strip
+                pixelBufferRed[position] = red[i];
+                pixelBufferGreen[position] = green[i];
+                pixelBufferBlue[position] = blue[i];
+            } else {
+                break;
+            }
+
+            i++;
+            position++;
+        }
+    }
+
+
+    /**
+     * Draws a one-dimensional sprite onto the LED Strip. Defaults to no wraparound.
+     *
+     * @param  sprite  The sprite object
+     * @param  position  The position to draw the sprite at, starting at 0 for the pixel closest to the controller
+     */
+    public void drawSprite(Sprite1D sprite, int position) {
+
+        drawSprite(sprite, position, false);
+    }
+
+
+    /**
+     * Gets the length of the LED strip.
+     *
+     * @return  The length of the LED strip
+     */
+    public int getLength() {
+
+        return length;
     }
 
 
