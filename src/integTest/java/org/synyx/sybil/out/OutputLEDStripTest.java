@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(classes = { SpringConfigDev.class })
 public class OutputLEDStripTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SpringConfigDev.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStripTest.class);
 
     @Autowired
     private OutputLEDStrip outputLEDStrip;
