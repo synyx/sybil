@@ -19,11 +19,11 @@ public class OutputLEDStrip {
 
     private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStrip.class);
     private final BrickletLEDStrip ledStrip;
-    private short[] pixelBufferRed;
-    private short[] pixelBufferGreen;
-    private short[] pixelBufferBlue;
+    private final short[] pixelBufferRed;
+    private final short[] pixelBufferGreen;
+    private final short[] pixelBufferBlue;
     private double brightness;
-    private int length;
+    private final int length;
     private String uid = null;
 
     /**
@@ -46,7 +46,7 @@ public class OutputLEDStrip {
 
         this.length = length;
 
-        LOG.debug("Creating new OuputLEDStrip {}", uid);
+        LOG.debug("Creating new OutputLEDStrip {}", uid);
 
         int differenceToMultipleOfSixteen = length % 16;
 
@@ -57,12 +57,6 @@ public class OutputLEDStrip {
         pixelBufferRed = new short[length];
         pixelBufferGreen = new short[length];
         pixelBufferBlue = new short[length];
-
-        for (int i = 0; i < pixelBufferRed.length; i++) {
-            pixelBufferRed[i] = (short) 0;
-            pixelBufferGreen[i] = (short) 0;
-            pixelBufferRed[i] = (short) 0;
-        }
     }
 
     /**

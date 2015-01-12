@@ -15,7 +15,7 @@ import org.synyx.sybil.in.StatusInformation;
 public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
     private static final Logger LOG = LoggerFactory.getLogger(SingleStatusOnLEDStrip.class);
-    final OutputLEDStrip outputLEDStrip;
+    private final OutputLEDStrip outputLEDStrip;
 
     /**
      * Constructor.

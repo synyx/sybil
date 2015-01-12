@@ -15,7 +15,7 @@ public class Sprite1DTest {
 
         for (int i = 0; i < 3; i++) {
             Color pixel = sprite.getPixel(i);
-            assertTrue("Pixel " + i + " shoould be (64, 64, 0)",
+            assertTrue("Pixel " + i + " should be (64, 64, 0)",
                 pixel.getRed() == 64 && pixel.getGreen() == 64 && pixel.getBlue() == 0);
         }
     }
@@ -35,10 +35,10 @@ public class Sprite1DTest {
         short[] green = sprite.getGreen();
         short[] blue = sprite.getBlue();
 
-        assertTrue("Pixel 0 shoould be black", red[0] == 0 && green[0] == 0 && blue[0] == 0);
-        assertTrue("Pixel 1 shoould be white", red[1] == 127 && green[1] == 127 && blue[1] == 127);
-        assertTrue("Pixel 2 shoould be red", red[2] == 64 && green[2] == 0 && blue[2] == 0);
-        assertTrue("Pixel 3 shoould be green", red[3] == 0 && green[3] == 64 && blue[3] == 0);
-        assertTrue("Pixel 4 shoould be blue", red[4] == 0 && green[4] == 0 && blue[4] == 64);
+        assertTrue("Pixel 0 should be black", red[0] == 0 && green[0] == 0 && blue[0] == 0);
+        assertTrue("Pixel 1 should be white", red[1] == 127 && green[1] == 127 && blue[1] == 127);
+        assertTrue("Pixel 2 should be red", red[2] == 64 && green[2] == 0 && blue[2] == 0);
+        assertTrue("Pixel 3 should be green", red[3] == 0 && green[3] == 64 && blue[3] == 0);
+        assertTrue("Pixel 4 should be blue", red[4] == 0 && green[4] == 0 && blue[4] == 64);
     }
 }

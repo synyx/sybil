@@ -8,12 +8,12 @@ import java.util.Arrays;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
-public class Sprite1D {
+class Sprite1D {
 
-    private short[] red;
-    private short[] green;
-    private short[] blue;
-    private int length;
+    private final short[] red;
+    private final short[] green;
+    private final short[] blue;
+    private final int length;
 
     /**
      * Creates a new sprite, all black.
