@@ -24,7 +24,7 @@ public class OutputLEDStrip {
     private final short[] pixelBufferBlue;
     private double brightness;
     private final int length;
-    private String uid = null;
+    private String name;
 
     /**
      * Makes new OutputLEDStrip object.
@@ -32,13 +32,9 @@ public class OutputLEDStrip {
      * @param  ledStrip  The LED Strip we want to control.
      * @param  length  How many LEDs are on the LED Strip.
      */
-    public OutputLEDStrip(BrickletLEDStrip ledStrip, int length) {
+    public OutputLEDStrip(BrickletLEDStrip ledStrip, int length, String name) {
 
-        try {
-            uid = ledStrip.getIdentity().uid;
-        } catch (TimeoutException | NotConnectedException e) {
-            LOG.error("Error connecting to LEDStrip:", e);
-        }
+        this.name = name;
 
         brightness = 1.0;
 
@@ -46,7 +42,7 @@ public class OutputLEDStrip {
 
         this.length = length;
 
-        LOG.debug("Creating new OutputLEDStrip {}", uid);
+        LOG.debug("Creating new OutputLEDStrip {}", name);
 
         int differenceToMultipleOfSixteen = length % 16;
 
@@ -65,7 +61,7 @@ public class OutputLEDStrip {
      */
     public void updateDisplay() {
 
-        LOG.debug("Updating display of LEDstrip {}", uid);
+        LOG.debug("Updating display of LEDstrip {}", name);
 
         short[] redArray;
         short[] greenArray;
@@ -99,6 +95,8 @@ public class OutputLEDStrip {
      * @param  wrap  whether the sprite wraps around the end of the LED strip and the rest is drawn at the beginning
      */
     public void drawSprite(Sprite1D sprite, int position, boolean wrap) {
+
+        LOG.debug("Drawing Sprite {} to LEDstrip {}", sprite.getName(), name);
 
         int spriteLength = sprite.getLength();
         short[] red = sprite.getRed();
@@ -157,7 +155,7 @@ public class OutputLEDStrip {
      */
     public void setBrightness(double brightness) {
 
-        LOG.debug("Setting brightness  of LEDstrip {} to {}", uid, brightness);
+        LOG.debug("Setting brightness of LEDstrip {} to {}", name, brightness);
 
         if (brightness < 0.0) {
             brightness = 0.0;
@@ -180,7 +178,7 @@ public class OutputLEDStrip {
      */
     public void setPixel(int position, Color color) {
 
-        LOG.debug("Setting pixel {} of LEDstrip {} to {}", position, uid, color);
+        LOG.debug("Setting pixel {} of LEDstrip {} to {}", position, name, color);
 
         pixelBufferRed[position] = color.getRed();
         pixelBufferGreen[position] = color.getGreen();
@@ -198,7 +196,7 @@ public class OutputLEDStrip {
      */
     Color getPixel(int position) {
 
-        LOG.debug("Retrieving color of pixel {} of LEDstrip {}", position, uid);
+        LOG.debug("Retrieving color of pixel {} of LEDstrip {}", position, name);
 
         Color color = null;
 
@@ -220,7 +218,7 @@ public class OutputLEDStrip {
 
     public void setFill(Color color) {
 
-        LOG.debug("Setting LEDstrip {} to color {}", uid, color);
+        LOG.debug("Setting LEDstrip {} to color {}", name, color);
 
         Arrays.fill(pixelBufferRed, color.getRed());
         Arrays.fill(pixelBufferGreen, color.getGreen());

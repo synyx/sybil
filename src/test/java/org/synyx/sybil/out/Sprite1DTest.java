@@ -2,6 +2,7 @@ package org.synyx.sybil.out;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
@@ -40,5 +41,13 @@ public class Sprite1DTest {
         assertTrue("Pixel 2 should be red", red[2] == 64 && green[2] == 0 && blue[2] == 0);
         assertTrue("Pixel 3 should be green", red[3] == 0 && green[3] == 64 && blue[3] == 0);
         assertTrue("Pixel 4 should be blue", red[4] == 0 && green[4] == 0 && blue[4] == 64);
+    }
+
+
+    @Test
+    public void testGetNameNoneGiven() {
+
+        Sprite1D sprite = new Sprite1D(1);
+        assertEquals("Should be Unnamed", "Unnamed", sprite.getName());
     }
 }

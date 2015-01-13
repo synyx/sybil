@@ -8,12 +8,29 @@ import java.util.Arrays;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
-class Sprite1D {
+public class Sprite1D {
 
     private final short[] red;
     private final short[] green;
     private final short[] blue;
     private final int length;
+    private final String name;
+
+    /**
+     * Creates a new sprite, all black.
+     *
+     * @param  length  The number of pixels the sprite will be long
+     * @param  name  The name of the Sprite (optional)
+     */
+    public Sprite1D(int length, String name) {
+
+        this.length = length;
+        red = new short[length];
+        green = new short[length];
+        blue = new short[length];
+        this.name = name;
+    }
+
 
     /**
      * Creates a new sprite, all black.
@@ -26,6 +43,7 @@ class Sprite1D {
         red = new short[length];
         green = new short[length];
         blue = new short[length];
+        name = "Unnamed";
     }
 
     /**
@@ -95,5 +113,11 @@ class Sprite1D {
     public short[] getBlue() {
 
         return blue;
+    }
+
+
+    public String getName() {
+
+        return name;
     }
 }

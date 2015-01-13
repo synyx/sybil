@@ -73,7 +73,8 @@ public class SpringConfigDev {
     @Bean
     public OutputLEDStrip outputLEDStrip(BrickletLEDStrip brickletLEDStrip) {
 
-        return new OutputLEDStrip(brickletLEDStrip, env.getRequiredProperty("outputledstrip.length", Integer.class));
+        return new OutputLEDStrip(brickletLEDStrip, env.getRequiredProperty("outputledstrip.length", Integer.class),
+                "Devkit");
     }
 
 
