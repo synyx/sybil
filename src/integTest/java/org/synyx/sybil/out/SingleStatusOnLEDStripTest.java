@@ -3,11 +3,10 @@ package org.synyx.sybil.out;
 import com.tinkerforge.NotConnectedException;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import org.junit.runner.RunWith;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,11 +22,16 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(classes = { SpringConfigDev.class })
 public class SingleStatusOnLEDStripTest {
 
-    @Autowired
     private SingleStatusOutput singleStatusOutput;
-
-    @Autowired
     private OutputLEDStrip outputLEDStrip;
+
+    @Before
+    public void setup() {
+
+        outputLEDStrip = OutputLEDStripRegistry.get("Devkit");
+        singleStatusOutput = new SingleStatusOnLEDStrip(outputLEDStrip);
+    }
+
 
     @After
     public void close() throws NotConnectedException {
@@ -40,7 +44,7 @@ public class SingleStatusOnLEDStripTest {
     @Test
     public void testShowStatusWarning() throws Exception {
 
-        singleStatusOutput.showStatus(new StatusInformation("Unittest", Status.WARNING));
+        singleStatusOutput.showStatus(new StatusInformation("Integration Test", Status.WARNING));
 
         Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("LED Strip should be yellow",
@@ -51,7 +55,7 @@ public class SingleStatusOnLEDStripTest {
     @Test
     public void testShowStatusCritical() throws Exception {
 
-        singleStatusOutput.showStatus(new StatusInformation("Unittest", Status.CRITICAL));
+        singleStatusOutput.showStatus(new StatusInformation("Integration Test", Status.CRITICAL));
 
         Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("LED Strip should be red", pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
@@ -61,7 +65,7 @@ public class SingleStatusOnLEDStripTest {
     @Test
     public void testShowStatusOkay() throws Exception {
 
-        singleStatusOutput.showStatus(new StatusInformation("Unittest.", Status.OKAY));
+        singleStatusOutput.showStatus(new StatusInformation("Integration Test", Status.OKAY));
 
         Color pixel = outputLEDStrip.getPixel(0);
         assertTrue("LED Strip should be black", pixel.getRed() == 0 && pixel.getGreen() == 0 && pixel.getBlue() == 0);

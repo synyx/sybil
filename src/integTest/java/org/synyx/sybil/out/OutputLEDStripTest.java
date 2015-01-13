@@ -1,37 +1,21 @@
 package org.synyx.sybil.out;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import org.junit.runner.RunWith;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.core.env.Environment;
-
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import org.synyx.sybil.config.SpringConfigDev;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { SpringConfigDev.class })
 public class OutputLEDStripTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStripTest.class);
 
-    @Autowired
     private OutputLEDStrip outputLEDStrip;
-
-    @Autowired
-    Environment env;
 
     @After
     public void close() { // throws NotConnectedException {
@@ -39,6 +23,13 @@ public class OutputLEDStripTest {
         outputLEDStrip.setBrightness(1.0);
         outputLEDStrip.setFill(Color.BLACK);
         outputLEDStrip.updateDisplay();
+    }
+
+
+    @Before
+    public void setup() {
+
+        outputLEDStrip = OutputLEDStripRegistry.get("Devkit");
     }
 
 
@@ -257,7 +248,6 @@ public class OutputLEDStripTest {
     public void testGetLength() {
 
         int ledStripLength = outputLEDStrip.getLength();
-        int expectedLength = env.getRequiredProperty("outputledstrip.length", Integer.class);
-        assertEquals(expectedLength, ledStripLength);
+        assertEquals(30, ledStripLength);
     }
 }
