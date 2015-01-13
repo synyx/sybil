@@ -32,7 +32,7 @@ public class SingleStatusOnLEDStripTest {
     @After
     public void close() throws NotConnectedException {
 
-        outputLEDStrip.setColor(Color.BLACK); // turn off the LEDs
+        outputLEDStrip.setFill(Color.BLACK); // turn off the LEDs
         outputLEDStrip.updateDisplay();
     }
 

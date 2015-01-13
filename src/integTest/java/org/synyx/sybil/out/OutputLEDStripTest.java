@@ -37,7 +37,7 @@ public class OutputLEDStripTest {
     public void close() { // throws NotConnectedException {
 
         outputLEDStrip.setBrightness(1.0);
-        outputLEDStrip.setColor(Color.BLACK);
+        outputLEDStrip.setFill(Color.BLACK);
         outputLEDStrip.updateDisplay();
     }
 
@@ -47,7 +47,7 @@ public class OutputLEDStripTest {
 
         LOG.info("START Test testSetColor");
 
-        outputLEDStrip.setColor(new Color(16, 32, 8));
+        outputLEDStrip.setFill(new Color(16, 32, 8));
         outputLEDStrip.updateDisplay();
 
         Color pixel = outputLEDStrip.getPixel(0);
@@ -88,7 +88,7 @@ public class OutputLEDStripTest {
 
         LOG.info("START Test testBrightnessHalf");
 
-        outputLEDStrip.setColor(Color.WHITE);
+        outputLEDStrip.setFill(Color.WHITE);
 
         outputLEDStrip.setBrightness(.5);
         outputLEDStrip.updateDisplay();
@@ -107,7 +107,7 @@ public class OutputLEDStripTest {
 
         LOG.info("START Test testBrightnessFull");
 
-        outputLEDStrip.setColor(Color.WHITE);
+        outputLEDStrip.setFill(Color.WHITE);
 
         outputLEDStrip.setBrightness(1);
         outputLEDStrip.updateDisplay();
@@ -125,7 +125,7 @@ public class OutputLEDStripTest {
 
         LOG.info("START Test testBrightnessDouble");
 
-        outputLEDStrip.setColor(Color.WHITE);
+        outputLEDStrip.setFill(Color.WHITE);
 
         outputLEDStrip.setBrightness(2);
         outputLEDStrip.updateDisplay();

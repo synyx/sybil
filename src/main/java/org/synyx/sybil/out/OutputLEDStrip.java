@@ -218,7 +218,7 @@ public class OutputLEDStrip {
      * @param  color  The color the strip should be
      */
 
-    public void setColor(Color color) {
+    public void setFill(Color color) {
 
         LOG.debug("Setting LEDstrip {} to color {}", uid, color);
 

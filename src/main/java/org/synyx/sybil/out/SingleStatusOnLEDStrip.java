@@ -49,7 +49,7 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
         LOG.debug("Set color to: {}", color);
 
-        outputLEDStrip.setColor(color);
+        outputLEDStrip.setFill(color);
         outputLEDStrip.updateDisplay();
     }
 }
