@@ -6,6 +6,7 @@ version = '0.1'
 
 repositories {
     mavenCentral()
+    maven { url "https://repo.spring.io/libs-release" }
 }
 
 sourceSets {
@@ -39,7 +40,8 @@ test {
 dependencies {
     //spring
     compile group: 'org.springframework', name: 'spring-web', version: '4.1.4.RELEASE'
-    //compile group: 'org.springframework', name: 'spring-aspects', version: '4.1.4.RELEASE'
+    compile group: 'org.springframework.data', name: 'spring-data-neo4j', version: '3.2.1.RELEASE'
+    compile group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final'
     
     //tinkerforge
     compile group: 'com.tinkerforge', name: 'tinkerforge', version: '2.1.2'

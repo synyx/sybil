@@ -3,6 +3,8 @@ package org.synyx.sybil.common;
 import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.IPConnection;
 
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 
 import java.util.HashMap;
@@ -14,9 +16,11 @@ import java.util.Map;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
+
+@Service
 public class IPConnectionRegistry {
 
-    private static Map<String, IPConnection> ipConnections = new HashMap<>();
+    private Map<String, IPConnection> ipConnections = new HashMap<>();
 
     /**
      * Get an IPConnection object, instantiate a new one if necessary.
@@ -29,7 +33,7 @@ public class IPConnectionRegistry {
      * @throws  AlreadyConnectedException  A connection already exists to this host.
      * @throws  IOException  IO Error.
      */
-    public static IPConnection get(String hostname, int port) throws AlreadyConnectedException, IOException {
+    public IPConnection get(String hostname, int port) throws AlreadyConnectedException, IOException {
 
         if (!ipConnections.containsKey(hostname)) {
             IPConnection ipConnection = new IPConnection();
@@ -51,7 +55,7 @@ public class IPConnectionRegistry {
      * @throws  AlreadyConnectedException  A connection already exists to this host.
      * @throws  IOException  IO Error.
      */
-    public static IPConnection get(String hostname) throws IOException, AlreadyConnectedException {
+    public IPConnection get(String hostname) throws IOException, AlreadyConnectedException {
 
         return get(hostname, 4223);
     }

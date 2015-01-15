@@ -6,21 +6,34 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import org.synyx.sybil.config.SpringConfig;
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.in.StatusInformation;
 
 import static org.junit.Assert.assertTrue;
 
 
+@ContextConfiguration(classes = SpringConfig.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class SingleStatusOnLEDStripTest {
 
-    private SingleStatusOutput singleStatusOutput;
     private OutputLEDStrip outputLEDStrip;
+    private SingleStatusOutput singleStatusOutput;
+
+    @Autowired
+    OutputLEDStripRegistry outputLEDStripRegistry;
 
     @Before
     public void setup() {
 
-        outputLEDStrip = OutputLEDStripRegistry.get("Devkit");
+        outputLEDStrip = outputLEDStripRegistry.get("Devkit");
         singleStatusOutput = new SingleStatusOnLEDStrip(outputLEDStrip);
     }
 

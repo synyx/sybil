@@ -5,7 +5,12 @@ import com.tinkerforge.BrickletLEDStrip;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
 import org.synyx.sybil.common.IPConnectionRegistry;
+import org.synyx.sybil.database.OutputLEDStripRepository;
 
 import java.io.IOException;
 
@@ -18,9 +23,21 @@ import java.util.Map;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
+
+@Service
 public class OutputLEDStripRegistry {
 
-    private static Map<String, OutputLEDStrip> ledStrips = new HashMap<>();
+    private Map<String, OutputLEDStrip> ledStrips = new HashMap<>();
+    private OutputLEDStripRepository outputLEDStripRepository;
+    private IPConnectionRegistry ipConnectionRegistry;
+
+    @Autowired
+    public OutputLEDStripRegistry(OutputLEDStripRepository outputLEDStripRepository,
+        IPConnectionRegistry ipConnectionRegistry) {
+
+        this.outputLEDStripRepository = outputLEDStripRepository;
+        this.ipConnectionRegistry = ipConnectionRegistry;
+    }
 
     /**
      * Get a LED strip object, instantiate a new one if necessary.
@@ -29,13 +46,13 @@ public class OutputLEDStripRegistry {
      *
      * @return  The LED strip object.
      */
-    public static OutputLEDStrip get(String Identifier) {
+    public OutputLEDStrip get(String Identifier) {
 
         if (!ledStrips.containsKey(Identifier)) {
             BrickletLEDStrip brickletLEDStrip = null;
 
             try {
-                brickletLEDStrip = new BrickletLEDStrip("p3c", IPConnectionRegistry.get("localhost"));
+                brickletLEDStrip = new BrickletLEDStrip("p5V", ipConnectionRegistry.get("localhost"));
                 brickletLEDStrip.setFrameDuration(10);
                 brickletLEDStrip.setChipType(2812);
             } catch (TimeoutException | NotConnectedException | IOException | AlreadyConnectedException e) {

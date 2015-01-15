@@ -4,18 +4,32 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import org.synyx.sybil.config.SpringConfig;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
+@ContextConfiguration(classes = SpringConfig.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class OutputLEDStripTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStripTest.class);
 
     private OutputLEDStrip outputLEDStrip;
+
+    @Autowired
+    private OutputLEDStripRegistry outputLEDStripRegistry;
 
     @After
     public void close() { // throws NotConnectedException {
@@ -29,7 +43,7 @@ public class OutputLEDStripTest {
     @Before
     public void setup() {
 
-        outputLEDStrip = OutputLEDStripRegistry.get("Devkit");
+        outputLEDStrip = outputLEDStripRegistry.get("Devkit");
     }
 
 
