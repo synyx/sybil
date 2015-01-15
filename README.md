@@ -10,7 +10,7 @@ Uses WS2812 LED Strips connected to Tinkerforge bricks.
 ### Working so far ###
 
 * Outputs Statuses on LED Strips via Tinkerforge (see integration test org.synyx.sybil.out.SingleStatusOnLEDStripTest)
-* Outputs arbitrary pixel data " " (see integration test org.synyx.sybil.out.OutputLEDStripTest)
+* Outputs arbitrary pixels and sprites " " (see integration test org.synyx.sybil.out.OutputLEDStripTest)
 
 To run, run an integration test, e.g.:
 
@@ -22,16 +22,18 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
     +---test/                               Unit tests.
     +---main/                               Main.
         +---java/                           Code.
-        |   +---org/synyx/sybil/            Package.
+        |   +---org/synyx/sybil/            Base package.
+        |       +---common/                 Common modules.
+        |           +---IPConnectionRegistry    Handles Tinkerforge connections. 
         |       +---config/                 Configuration files.
-        |       |   +---SpringConfigDev     Spring configuration, Development profile.
+        |       |   +---SpringConfig        Spring configuration.
         |       +---in/                     Inputs, fairly self-explanatory.
         |       +---out/                    Outputs.
         |           +---Color               Color object, for LEDs.
         |           +---OutputLEDStrip      LED Strip object, communicates with LEDs.
+        |           +---OutputLEDStripRegistry  Handles OutputLEDStrip objects.
         |           +---SingleStatusOutput  Interface for displaying a single status.
         |           +---SingleStatusOnLEDStrip  Display a single status on a LED Strip.
         |           +---Sprite1D            Sprite object.
         +---resources/                      Resources.
             +---logback.xml                 Configures the logback logging engine.
-            +---SpringConfigDev.properties  Configuration values for Development profile.
