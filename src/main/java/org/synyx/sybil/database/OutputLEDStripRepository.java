@@ -4,7 +4,7 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 
 import org.springframework.stereotype.Repository;
 
-import org.synyx.sybil.domain.OutputLEDStrip;
+import org.synyx.sybil.domain.OutputLEDStripDomain;
 
 
 /**
@@ -14,7 +14,7 @@ import org.synyx.sybil.domain.OutputLEDStrip;
  */
 
 @Repository
-public interface OutputLEDStripRepository extends GraphRepository<OutputLEDStrip> {
+public interface OutputLEDStripRepository extends GraphRepository<OutputLEDStripDomain> {
 
-    OutputLEDStrip findByName(String name);
+    OutputLEDStripDomain findByName(String name);
 }
