@@ -11,6 +11,6 @@ import org.springframework.context.annotation.Configuration;
  */
 
 @Configuration
-@ComponentScan(basePackages = "org.synyx.sybil")
+@ComponentScan(basePackages = "org.synyx.sybil") // scan for annotated classes, like @Service, @Configuration, etc.
 public class SpringConfig {
 }

@@ -40,12 +40,12 @@ public class OutputLEDStripTest {
     private OutputLEDStripRepository outputLEDStripRepository;
 
     @After
-    public void close() { // throws NotConnectedException {
+    public void close() {
 
-        for (OutputLEDStrip outputLEDStrip : outputLEDStrips) {
-            outputLEDStrip.setBrightness(1.0);
-            outputLEDStrip.setFill(Color.BLACK);
-            outputLEDStrip.updateDisplay();
+        for (OutputLEDStrip outputLEDStrip : outputLEDStrips) { // iterate over list of strips
+            outputLEDStrip.setBrightness(1.0); // set brightness to normal
+            outputLEDStrip.setFill(Color.BLACK); // set color to black (i.e. turn all LEDs off)
+            outputLEDStrip.updateDisplay(); // make it so!
         }
     }
 
@@ -55,14 +55,17 @@ public class OutputLEDStripTest {
 
         outputLEDStripRepository.deleteAll(); // clear the test database
 
+        // define LED Strips
         OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("DevkitOne", "p5V", 30, "localhost");
         OutputLEDStripDomain devkitTwo = new OutputLEDStripDomain("DevkitTwo", "p3c", 30, "synerforge001");
         OutputLEDStripDomain devkitDummy = new OutputLEDStripDomain("DevkitDummy", "p3B", 30, "synerforge001");
 
+        // add them to the database
         outputLEDStripRepository.save(devkitOne);
         outputLEDStripRepository.save(devkitTwo);
         outputLEDStripRepository.save(devkitDummy);
 
+        // initialise LED Strips (fetching them from the database on the way) and add them to the list
         outputLEDStrips.add(outputLEDStripRegistry.get("DevkitOne"));
         outputLEDStrips.add(outputLEDStripRegistry.get("DevkitTwo"));
         outputLEDStrips.add(outputLEDStripRegistry.get("DevkitDummy"));

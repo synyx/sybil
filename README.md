@@ -26,7 +26,12 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
         |       +---common/                 Common modules.
         |           +---IPConnectionRegistry    Handles Tinkerforge connections. 
         |       +---config/                 Configuration files.
+        |       |   +---Neo4jConfig         Database configuration.
         |       |   +---SpringConfig        Spring configuration.
+        |       +---database/               Database interfaces.
+        |       |   +---OutputLEDStripRepository    Interface for LED Strips.
+        |       +---domain/                 Domain classes.
+                |   +---OutputLEDStripDomain    Domain for LED Strips.
         |       +---in/                     Inputs, fairly self-explanatory.
         |       +---out/                    Outputs.
         |           +---Color               Color object, for LEDs.

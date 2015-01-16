@@ -13,8 +13,8 @@ import org.synyx.sybil.domain.OutputLEDStripDomain;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Repository
+@Repository // annotated so Spring finds it and can inject it.
 public interface OutputLEDStripRepository extends GraphRepository<OutputLEDStripDomain> {
 
-    OutputLEDStripDomain findByName(String name);
+    OutputLEDStripDomain findByName(String name); // Spring builds a self-explanatory method out of this. MAGIC!
 }

@@ -26,6 +26,9 @@ public class OutputLEDStripDomain {
 
     private int length;
 
+    /**
+     * DO NOT CALL THIS! Exists only to placate Neo4j.
+     */
     protected OutputLEDStripDomain() {
     }
 
