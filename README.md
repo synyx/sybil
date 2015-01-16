@@ -24,7 +24,7 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
         +---java/                           Code.
         |   +---org/synyx/sybil/            Base package.
         |       +---common/                 Common modules.
-        |           +---IPConnectionRegistry    Handles Tinkerforge connections. 
+        |       |   +---IPConnectionRegistry    Handles Tinkerforge connections. 
         |       +---config/                 Configuration files.
         |       |   +---Neo4jConfig         Database configuration.
         |       |   +---SpringConfig        Spring configuration.
