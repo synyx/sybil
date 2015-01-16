@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.common.IPConnectionRegistry;
 import org.synyx.sybil.database.OutputLEDStripRepository;
+import org.synyx.sybil.domain.OutputLEDStripDomain;
 
 import java.io.IOException;
 
@@ -51,15 +52,19 @@ public class OutputLEDStripRegistry {
         if (!ledStrips.containsKey(Identifier)) {
             BrickletLEDStrip brickletLEDStrip = null;
 
+            OutputLEDStripDomain outputLEDStripDomain = outputLEDStripRepository.findByName(Identifier);
+
             try {
-                brickletLEDStrip = new BrickletLEDStrip("p5V", ipConnectionRegistry.get("localhost"));
+                brickletLEDStrip = new BrickletLEDStrip(outputLEDStripDomain.getUid(),
+                        ipConnectionRegistry.get(outputLEDStripDomain.getHostname(), outputLEDStripDomain.getPort()));
                 brickletLEDStrip.setFrameDuration(10);
                 brickletLEDStrip.setChipType(2812);
             } catch (TimeoutException | NotConnectedException | IOException | AlreadyConnectedException e) {
                 e.printStackTrace();
             }
 
-            OutputLEDStrip outputLedStrip = new OutputLEDStrip(brickletLEDStrip, 30, Identifier);
+            OutputLEDStrip outputLedStrip = new OutputLEDStrip(brickletLEDStrip, outputLEDStripDomain.getLength(),
+                    Identifier);
             ledStrips.put(Identifier, outputLedStrip);
         }
 

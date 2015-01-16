@@ -224,4 +224,10 @@ public class OutputLEDStrip {
         Arrays.fill(pixelBufferGreen, color.getGreen());
         Arrays.fill(pixelBufferBlue, color.getBlue());
     }
+
+
+    public String getName() {
+
+        return name;
+    }
 }

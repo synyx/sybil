@@ -14,6 +14,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.synyx.sybil.config.SpringConfig;
+import org.synyx.sybil.database.OutputLEDStripRepository;
+import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.in.StatusInformation;
 
@@ -30,10 +32,19 @@ public class SingleStatusOnLEDStripTest {
     @Autowired
     OutputLEDStripRegistry outputLEDStripRegistry;
 
+    @Autowired
+    OutputLEDStripRepository outputLEDStripRepository;
+
     @Before
     public void setup() {
 
-        outputLEDStrip = outputLEDStripRegistry.get("Devkit");
+        outputLEDStripRepository.deleteAll(); // clear the test database
+
+        OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("DevkitOne", "p5V", 30, "localhost");
+
+        outputLEDStripRepository.save(devkitOne);
+
+        outputLEDStrip = outputLEDStripRegistry.get("DevkitOne");
         singleStatusOutput = new SingleStatusOnLEDStrip(outputLEDStrip);
     }
 
