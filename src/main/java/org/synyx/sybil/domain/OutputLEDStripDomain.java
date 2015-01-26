@@ -2,6 +2,7 @@ package org.synyx.sybil.domain;
 
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 
 
 /**
@@ -11,20 +12,21 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  */
 
 @NodeEntity
-public class OutputLEDStripDomain {
+public class OutputLEDStripDomain implements BrickletDomain {
 
     @GraphId
     private Long id;
+
+    private final String type = "OutputLEDStrip";
 
     private String name;
 
     private String uid;
 
-    private String hostname;
-
-    private int port;
-
     private int length;
+
+    @RelatedTo(type = "IS_PART_OF")
+    private BrickDomain brickDomain;
 
     /**
      * DO NOT CALL THIS! Exists only to placate Neo4j.
@@ -36,44 +38,25 @@ public class OutputLEDStripDomain {
     /**
      * Instantiates a new OutputLEDStrip domain.
      *
-     * @param  name  The name
+     * @param  name  The name to address the Bricklet with
      * @param  uid  The Bricklet's UID
      * @param  length  The length, i.e. the number of LEDs
-     * @param  hostname  The hostname
-     * @param  port  The port (optional, defaults to 4223)
+     * @param  brickDomain  The domain associated with the connected Brick
      */
-    public OutputLEDStripDomain(String name, String uid, int length, String hostname, int port) {
+    public OutputLEDStripDomain(String name, String uid, int length, BrickDomain brickDomain) {
 
         this.name = name;
         this.uid = uid;
         this.length = length;
-        this.hostname = hostname;
-        this.port = port;
-    }
-
-
-    /**
-     * Instantiates a new OutputLEDStrip domain.
-     *
-     * @param  name  The name
-     * @param  uid  The Bricklet's UID
-     * @param  length  The length, i.e. the number of LEDs
-     * @param  hostname  The hostname
-     */
-    public OutputLEDStripDomain(String name, String uid, int length, String hostname) {
-
-        this.name = name;
-        this.uid = uid;
-        this.length = length;
-        this.hostname = hostname;
-        this.port = 4223;
+        this.brickDomain = brickDomain;
     }
 
     /**
-     * Gets the name.
+     * Gets the name under which the Bricklet is addressable.
      *
      * @return  The name
      */
+    @Override
     public String getName() {
 
         return name;
@@ -81,35 +64,14 @@ public class OutputLEDStripDomain {
 
 
     /**
-     * Gets the BrickletLEDStrip's UID.
+     * Gets the Bricklet's UID.
      *
-     * @return  The uid
+     * @return  The Bricklet's UID
      */
+    @Override
     public String getUid() {
 
         return uid;
-    }
-
-
-    /**
-     * Gets the hostname of the brick the LEDs are connected to.
-     *
-     * @return  The hostname
-     */
-    public String getHostname() {
-
-        return hostname;
-    }
-
-
-    /**
-     * Gets the port of the brick the LEDs are connected to.
-     *
-     * @return  The port
-     */
-    public int getPort() {
-
-        return port;
     }
 
 
@@ -121,5 +83,28 @@ public class OutputLEDStripDomain {
     public int getLength() {
 
         return length;
+    }
+
+
+    /**
+     * Gets the BrickDomain of the connected Brick.
+     *
+     * @return  the brick domain
+     */
+    @Override
+    public BrickDomain getBrickDomain() {
+
+        return brickDomain;
+    }
+
+
+    /**
+     * Gets the bricklet's type.
+     *
+     * @return  the type
+     */
+    public String getType() {
+
+        return type;
     }
 }

@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import org.synyx.sybil.common.BrickletRegistry;
 import org.synyx.sybil.config.SpringConfig;
+import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
+import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.in.StatusInformation;
@@ -26,64 +29,88 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SingleStatusOnLEDStripTest {
 
-    private OutputLEDStrip outputLEDStrip;
-    private SingleStatusOutput singleStatusOutput;
+    private OutputLEDStrip devkitOne;
+    private OutputLEDStrip devkitTwo;
+    private SingleStatusOutput singleStatusOutputOne;
+    private SingleStatusOutput singleStatusOutputTwo;
 
     @Autowired
-    OutputLEDStripRegistry outputLEDStripRegistry;
+    BrickletRegistry brickletRegistry;
 
     @Autowired
     OutputLEDStripRepository outputLEDStripRepository;
 
+    @Autowired
+    private BrickRepository brickRepository;
+
     @Before
     public void setup() {
 
-        outputLEDStripRepository.deleteAll(); // clear the test database
+        // clear the test database
+        outputLEDStripRepository.deleteAll();
+        brickRepository.deleteAll();
 
-        OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("DevkitOne", "p5V", 30, "localhost");
+        // define Bricks
+        BrickDomain localUSB = new BrickDomain("localhost");
+        BrickDomain synerforge001 = new BrickDomain("synerforge001");
+
+        // add them to the database
+        brickRepository.save(localUSB);
+        brickRepository.save(synerforge001);
+
+        OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("DevkitOne", "p5V", 30, localUSB);
+        OutputLEDStripDomain devkitTwo = new OutputLEDStripDomain("DevkitTwo", "p3c", 30, synerforge001);
 
         outputLEDStripRepository.save(devkitOne);
+        outputLEDStripRepository.save(devkitTwo);
 
-        outputLEDStrip = outputLEDStripRegistry.get("DevkitOne");
-        singleStatusOutput = new SingleStatusOnLEDStrip(outputLEDStrip);
+        this.devkitOne = (OutputLEDStrip) brickletRegistry.get(devkitOne);
+        this.devkitTwo = (OutputLEDStrip) brickletRegistry.get(devkitTwo);
+
+        singleStatusOutputOne = new SingleStatusOnLEDStrip(this.devkitOne);
+        singleStatusOutputTwo = new SingleStatusOnLEDStrip(this.devkitTwo);
     }
 
 
     @After
     public void close() throws NotConnectedException {
 
-        outputLEDStrip.setFill(Color.BLACK); // turn off the LEDs
-        outputLEDStrip.updateDisplay();
+        devkitOne.setFill(Color.BLACK); // turn off the LEDs
+        devkitOne.updateDisplay();
+        devkitTwo.setFill(Color.BLACK); // turn off the LEDs
+        devkitTwo.updateDisplay();
     }
 
 
     @Test
     public void testShowStatusWarning() throws Exception {
 
-        singleStatusOutput.showStatus(new StatusInformation("Integration Test", Status.WARNING));
+        singleStatusOutputOne.showStatus(new StatusInformation("Integration Test", Status.WARNING));
 
-        Color pixel = outputLEDStrip.getPixel(0);
+        Color pixel = devkitOne.getPixel(0);
         assertTrue("LED Strip should be yellow",
             pixel.getRed() == 127 && pixel.getGreen() == 127 && pixel.getBlue() == 0);
+        // Thread.sleep(2000);
     }
 
 
     @Test
     public void testShowStatusCritical() throws Exception {
 
-        singleStatusOutput.showStatus(new StatusInformation("Integration Test", Status.CRITICAL));
+        singleStatusOutputTwo.showStatus(new StatusInformation("Integration Test", Status.CRITICAL));
 
-        Color pixel = outputLEDStrip.getPixel(0);
+        Color pixel = devkitTwo.getPixel(0);
         assertTrue("LED Strip should be red", pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        // Thread.sleep(2000);
     }
 
 
     @Test
     public void testShowStatusOkay() throws Exception {
 
-        singleStatusOutput.showStatus(new StatusInformation("Integration Test", Status.OKAY));
+        singleStatusOutputOne.showStatus(new StatusInformation("Integration Test", Status.OKAY));
 
-        Color pixel = outputLEDStrip.getPixel(0);
+        Color pixel = devkitOne.getPixel(0);
         assertTrue("LED Strip should be black", pixel.getRed() == 0 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
     }
 }

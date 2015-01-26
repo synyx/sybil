@@ -7,6 +7,8 @@ import com.tinkerforge.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.synyx.sybil.common.Bricklet;
+
 import java.util.Arrays;
 
 
@@ -15,7 +17,7 @@ import java.util.Arrays;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
-public class OutputLEDStrip {
+public class OutputLEDStrip implements Bricklet {
 
     private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStrip.class);
     private final BrickletLEDStrip ledStrip;
@@ -226,6 +228,7 @@ public class OutputLEDStrip {
     }
 
 
+    @Override
     public String getName() {
 
         return name;

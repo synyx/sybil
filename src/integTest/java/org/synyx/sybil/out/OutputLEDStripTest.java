@@ -14,8 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import org.synyx.sybil.common.BrickletRegistry;
 import org.synyx.sybil.config.SpringConfig;
+import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
+import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 
 import java.util.ArrayList;
@@ -34,10 +37,13 @@ public class OutputLEDStripTest {
     private List<OutputLEDStrip> outputLEDStrips = new ArrayList<>();
 
     @Autowired
-    private OutputLEDStripRegistry outputLEDStripRegistry;
+    private BrickletRegistry brickletRegistry;
 
     @Autowired
     private OutputLEDStripRepository outputLEDStripRepository;
+
+    @Autowired
+    private BrickRepository brickRepository;
 
     @After
     public void close() {
@@ -53,22 +59,37 @@ public class OutputLEDStripTest {
     @Before
     public void setup() {
 
-        outputLEDStripRepository.deleteAll(); // clear the test database
+        // clear the test database
+        outputLEDStripRepository.deleteAll();
+        brickRepository.deleteAll();
 
-        // define LED Strips
-        OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("DevkitOne", "p5V", 30, "localhost");
-        OutputLEDStripDomain devkitTwo = new OutputLEDStripDomain("DevkitTwo", "p3c", 30, "synerforge001");
-        OutputLEDStripDomain devkitDummy = new OutputLEDStripDomain("DevkitDummy", "p3B", 30, "synerforge001");
+        // define Bricks
+        BrickDomain localUSB = new BrickDomain("localhost");
+        BrickDomain synerforge001 = new BrickDomain("synerforge001");
+
+        // define LED Strips (bricklets)
+        OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("DevkitOne", "p5V", 30, localUSB);
+        OutputLEDStripDomain devkitTwo = new OutputLEDStripDomain("DevkitTwo", "p3c", 30, synerforge001);
+        OutputLEDStripDomain devkitDummy = new OutputLEDStripDomain("DevkitDummy", "p3B", 30, synerforge001);
 
         // add them to the database
-        outputLEDStripRepository.save(devkitOne);
-        outputLEDStripRepository.save(devkitTwo);
-        outputLEDStripRepository.save(devkitDummy);
+        devkitOne = outputLEDStripRepository.save(devkitOne);
+        devkitTwo = outputLEDStripRepository.save(devkitTwo);
+        devkitDummy = outputLEDStripRepository.save(devkitDummy);
 
-        // initialise LED Strips (fetching them from the database on the way) and add them to the list
-        outputLEDStrips.add(outputLEDStripRegistry.get("DevkitOne"));
-        outputLEDStrips.add(outputLEDStripRegistry.get("DevkitTwo"));
-        outputLEDStrips.add(outputLEDStripRegistry.get("DevkitDummy"));
+        // add bricklets to bricks
+        localUSB.addBricklet(devkitOne);
+        synerforge001.addBricklet(devkitTwo);
+        synerforge001.addBricklet(devkitDummy);
+
+        // add bricks to the database
+        brickRepository.save(localUSB);
+        brickRepository.save(synerforge001);
+
+        // initialise LED Strips (fetching them from the database on the way), cast and add them to the list
+        outputLEDStrips.add((OutputLEDStrip) brickletRegistry.get(devkitOne));
+        outputLEDStrips.add((OutputLEDStrip) brickletRegistry.get(devkitTwo));
+        outputLEDStrips.add((OutputLEDStrip) brickletRegistry.get(devkitDummy));
     }
 
 
