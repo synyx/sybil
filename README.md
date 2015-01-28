@@ -36,15 +36,17 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
       |   +-domain/                     Domain classes.
       |   | +-BrickDomain               Domain for Tinkerforge Bricks.
       |   | +-BrickletDomain            Interface all Bricklet domains inherit from.
-      |   | +-OutputLEDStripDomain      Domain for LED Strips.
-      |   +-in/                         Inputs, fairly self-explanatory.
+      |   | +-OutputLEDStripDomain      Domain for LED Strips, inherits from BrickletDomain.
+      |   +-in/                         Inputs.
+      |     +-Status                    Enum for statuses (OKAY, WARNING & CRITICAL)
+      |     +-StatusInformation         Status with additional information.       
       |   +-out/                        Outputs.
       |     +-Color                     Color object, for LEDs.
       |     +-OutputLEDStrip            LED Strip object, communicates with LEDs.
-      |     +-OutputLEDStripRegistry    Handles OutputLEDStrip objects.
-      |     +-SingleStatusOnLEDStrip    Display a single status on a LED Strip.
+      |     +-OutputLEDStripRegistry    Provides OutputLEDStrip objects.
+      |     +-SingleStatusOnLEDStrip    Display a single statusInformation on a LED Strip.
       |     +-SingleStatusOutput        Interface for displaying a single status.
-      |     +-Sprite1D                  Sprite object.
+      |     +-Sprite1D                  Sprite object, for LED Strips.
       +-resources/                      Resources.
         +-logback.xml                   Configures the logback logging engine.
 
