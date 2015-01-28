@@ -39,8 +39,8 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
       |   | +-BrickletDomain            Interface all Bricklet domains inherit from.
       |   | +-OutputLEDStripDomain      Domain for LED Strips, inherits from BrickletDomain.
       |   +-in/                         Inputs.
-      |     +-Status                    Enum for statuses (OKAY, WARNING & CRITICAL)
-      |     +-StatusInformation         Status with additional information.       
+      |   | +-Status                    Enum for statuses (OKAY, WARNING & CRITICAL)
+      |   | +-StatusInformation         Status with additional information.       
       |   +-out/                        Outputs.
       |     +-Color                     Color object, for LEDs.
       |     +-OutputLEDStrip            LED Strip object, communicates with LEDs.
