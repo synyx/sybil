@@ -9,8 +9,9 @@ Uses WS2812 LED Strips connected to Tinkerforge bricks.
 
 ### Working so far ###
 
-* Outputs Statuses on LED Strips via Tinkerforge (see integration test org.synyx.sybil.out.SingleStatusOnLEDStripTest)
-* Outputs arbitrary pixels and sprites " " (see integration test org.synyx.sybil.out.OutputLEDStripTest)
+* Saves and loads Tinkerforge bricks and LED Strips bricklets to/from Neo4j database.
+* Outputs Statuses on LED Strips *(see integration test org.synyx.sybil.out.SingleStatusOnLEDStripTest)*
+* Outputs arbitrary pixels and sprites " " *(see integration test org.synyx.sybil.out.OutputLEDStripTest)*
 
 To run, run an integration test, e.g.:
 
