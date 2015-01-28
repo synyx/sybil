@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.synyx.sybil.common.BrickletRegistry;
 import org.synyx.sybil.config.SpringConfig;
 import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
@@ -35,7 +34,7 @@ public class SingleStatusOnLEDStripTest {
     private SingleStatusOutput singleStatusOutputTwo;
 
     @Autowired
-    BrickletRegistry brickletRegistry;
+    OutputLEDStripRegistry outputLEDStripRegistry;
 
     @Autowired
     OutputLEDStripRepository outputLEDStripRepository;
@@ -64,8 +63,8 @@ public class SingleStatusOnLEDStripTest {
         outputLEDStripRepository.save(devkitOne);
         outputLEDStripRepository.save(devkitTwo);
 
-        this.devkitOne = (OutputLEDStrip) brickletRegistry.get(devkitOne);
-        this.devkitTwo = (OutputLEDStrip) brickletRegistry.get(devkitTwo);
+        this.devkitOne = outputLEDStripRegistry.get(devkitOne);
+        this.devkitTwo = outputLEDStripRegistry.get(devkitTwo);
 
         singleStatusOutputOne = new SingleStatusOnLEDStrip(this.devkitOne);
         singleStatusOutputTwo = new SingleStatusOnLEDStrip(this.devkitTwo);

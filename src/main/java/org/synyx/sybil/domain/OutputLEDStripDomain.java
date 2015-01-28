@@ -1,5 +1,6 @@
 package org.synyx.sybil.domain;
 
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
@@ -12,12 +13,10 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
  */
 
 @NodeEntity
-public class OutputLEDStripDomain implements BrickletDomain {
+public class OutputLEDStripDomain {
 
     @GraphId
     private Long id;
-
-    private final String type = "OutputLEDStrip";
 
     private String name;
 
@@ -25,6 +24,7 @@ public class OutputLEDStripDomain implements BrickletDomain {
 
     private int length;
 
+    @Fetch
     @RelatedTo(type = "IS_PART_OF")
     private BrickDomain brickDomain;
 
@@ -56,7 +56,6 @@ public class OutputLEDStripDomain implements BrickletDomain {
      *
      * @return  The name
      */
-    @Override
     public String getName() {
 
         return name;
@@ -68,7 +67,6 @@ public class OutputLEDStripDomain implements BrickletDomain {
      *
      * @return  The Bricklet's UID
      */
-    @Override
     public String getUid() {
 
         return uid;
@@ -91,20 +89,8 @@ public class OutputLEDStripDomain implements BrickletDomain {
      *
      * @return  the brick domain
      */
-    @Override
     public BrickDomain getBrickDomain() {
 
         return brickDomain;
-    }
-
-
-    /**
-     * Gets the bricklet's type.
-     *
-     * @return  the type
-     */
-    public String getType() {
-
-        return type;
     }
 }

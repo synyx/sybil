@@ -1,5 +1,8 @@
 package org.synyx.sybil.out;
 
+import com.tinkerforge.AlreadyConnectedException;
+import com.tinkerforge.NotConnectedException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,12 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.synyx.sybil.common.BrickletRegistry;
+import org.synyx.sybil.common.BrickRegistry;
 import org.synyx.sybil.config.SpringConfig;
 import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
 import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
+
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +42,7 @@ public class OutputLEDStripTest {
     private List<OutputLEDStrip> outputLEDStrips = new ArrayList<>();
 
     @Autowired
-    private BrickletRegistry brickletRegistry;
+    private OutputLEDStripRegistry outputLEDStripRegistry;
 
     @Autowired
     private OutputLEDStripRepository outputLEDStripRepository;
@@ -45,16 +50,8 @@ public class OutputLEDStripTest {
     @Autowired
     private BrickRepository brickRepository;
 
-    @After
-    public void close() {
-
-        for (OutputLEDStrip outputLEDStrip : outputLEDStrips) { // iterate over list of strips
-            outputLEDStrip.setBrightness(1.0); // set brightness to normal
-            outputLEDStrip.setFill(Color.BLACK); // set color to black (i.e. turn all LEDs off)
-            outputLEDStrip.updateDisplay(); // make it so!
-        }
-    }
-
+    @Autowired
+    private BrickRegistry brickRegistry;
 
     @Before
     public void setup() {
@@ -67,6 +64,10 @@ public class OutputLEDStripTest {
         BrickDomain localUSB = new BrickDomain("localhost");
         BrickDomain synerforge001 = new BrickDomain("synerforge001");
 
+        // add them to the database
+        brickRepository.save(localUSB);
+        brickRepository.save(synerforge001);
+
         // define LED Strips (bricklets)
         OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("DevkitOne", "p5V", 30, localUSB);
         OutputLEDStripDomain devkitTwo = new OutputLEDStripDomain("DevkitTwo", "p3c", 30, synerforge001);
@@ -77,19 +78,28 @@ public class OutputLEDStripTest {
         devkitTwo = outputLEDStripRepository.save(devkitTwo);
         devkitDummy = outputLEDStripRepository.save(devkitDummy);
 
-        // add bricklets to bricks
-        localUSB.addBricklet(devkitOne);
-        synerforge001.addBricklet(devkitTwo);
-        synerforge001.addBricklet(devkitDummy);
-
-        // add bricks to the database
-        brickRepository.save(localUSB);
-        brickRepository.save(synerforge001);
-
         // initialise LED Strips (fetching them from the database on the way), cast and add them to the list
-        outputLEDStrips.add((OutputLEDStrip) brickletRegistry.get(devkitOne));
-        outputLEDStrips.add((OutputLEDStrip) brickletRegistry.get(devkitTwo));
-        outputLEDStrips.add((OutputLEDStrip) brickletRegistry.get(devkitDummy));
+        outputLEDStrips.add(outputLEDStripRegistry.get(devkitOne));
+        outputLEDStrips.add(outputLEDStripRegistry.get(devkitTwo));
+        outputLEDStrips.add(outputLEDStripRegistry.get(devkitDummy));
+    }
+
+
+    @After
+    public void close() {
+
+        for (OutputLEDStrip outputLEDStrip : outputLEDStrips) { // iterate over list of strips
+            outputLEDStrip.setBrightness(1.0); // set brightness to normal
+            outputLEDStrip.setFill(Color.BLACK); // set color to black (i.e. turn all LEDs off)
+            outputLEDStrip.updateDisplay(); // make it so!
+        }
+
+        // disconnect all bricks & bricklets
+        try {
+            brickRegistry.disconnectAll();
+        } catch (NotConnectedException e) {
+            LOG.error(e.toString());
+        }
     }
 
 
@@ -334,5 +344,90 @@ public class OutputLEDStripTest {
         }
 
         LOG.info("FINISH Test testGetLength");
+    }
+
+
+    @Test
+    public void testDisconnectAll() throws NotConnectedException, IOException, AlreadyConnectedException {
+
+        LOG.info("START Test testDisconnectALL");
+
+        brickRegistry.disconnectAll();
+
+        Color color = new Color(16, 35, 77);
+
+        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("DevkitOne"));
+
+        outputLEDStrip.setPixel(1, color);
+        outputLEDStrip.updateDisplay();
+
+        Color pixel0 = outputLEDStrip.getPixel(0);
+        Color pixel1 = outputLEDStrip.getPixel(1);
+
+        assertEquals(outputLEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRed());
+        assertEquals(outputLEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreen());
+        assertEquals(outputLEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlue());
+        assertEquals(outputLEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRed());
+        assertEquals(outputLEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreen());
+        assertEquals(outputLEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlue());
+
+        LOG.info("START Test testDisconnectALL");
+    }
+
+
+    @Test
+    public void testConnectAll() throws NotConnectedException, IOException, AlreadyConnectedException {
+
+        LOG.info("START Test testConnectALL");
+
+        brickRegistry.disconnectAll();
+        brickRegistry.connectAll();
+
+        Color color = new Color(16, 35, 77);
+
+        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("DevkitOne"));
+
+        outputLEDStrip.setPixel(1, color);
+        outputLEDStrip.updateDisplay();
+
+        Color pixel0 = outputLEDStrip.getPixel(0);
+        Color pixel1 = outputLEDStrip.getPixel(1);
+
+        assertEquals(outputLEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRed());
+        assertEquals(outputLEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreen());
+        assertEquals(outputLEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlue());
+        assertEquals(outputLEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRed());
+        assertEquals(outputLEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreen());
+        assertEquals(outputLEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlue());
+
+        LOG.info("START Test testConnectALL");
+    }
+
+
+    @Test
+    public void testReconnectAll() throws NotConnectedException, IOException, AlreadyConnectedException {
+
+        LOG.info("START Test testReconnectALL");
+
+        brickRegistry.reconnectAll();
+
+        Color color = new Color(16, 35, 77);
+
+        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("DevkitOne"));
+
+        outputLEDStrip.setPixel(1, color);
+        outputLEDStrip.updateDisplay();
+
+        Color pixel0 = outputLEDStrip.getPixel(0);
+        Color pixel1 = outputLEDStrip.getPixel(1);
+
+        assertEquals(outputLEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRed());
+        assertEquals(outputLEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreen());
+        assertEquals(outputLEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlue());
+        assertEquals(outputLEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRed());
+        assertEquals(outputLEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreen());
+        assertEquals(outputLEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlue());
+
+        LOG.info("START Test testReconnectALL");
     }
 }

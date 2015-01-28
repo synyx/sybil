@@ -1,12 +1,7 @@
 package org.synyx.sybil.domain;
 
-import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 
 /**
@@ -24,10 +19,6 @@ public class BrickDomain {
     private String hostname;
 
     private int port;
-
-    @Fetch
-    @RelatedTo(type = "HAS_BRICKLETS")
-    private Set<BrickletDomain> bricklets = new LinkedHashSet<>();
 
     /**
      * DO NOT CALL THIS! Exists only to placate Neo4j.
@@ -59,23 +50,6 @@ public class BrickDomain {
         this.hostname = hostname;
         this.port = 4223;
     }
-
-    public void addBricklet(BrickletDomain brickletDomain) {
-
-        bricklets.add(brickletDomain);
-    }
-
-
-    /**
-     * Gets the bricklets connected to the Brick.
-     *
-     * @return  the bricklets
-     */
-    public Set<BrickletDomain> getBricklets() {
-
-        return bricklets;
-    }
-
 
     /**
      * Gets the hostname of the brick the LEDs are connected to.
