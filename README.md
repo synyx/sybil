@@ -51,7 +51,7 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
       +-resources/                      Resources.
         +-logback.xml                   Configures the logback logging engine.
 
-The Spring configuratin in o.s.s.config.SpringConfig loads:
+The Spring configuration in o.s.s.config.SpringConfig loads:
 
 * All the **＊Registry** classes, since they're annotated with @Service
 * The database configuration from **o.s.s.config.Neo4jConfig**
