@@ -38,14 +38,14 @@ public class OutputLEDStripDomain {
     /**
      * Instantiates a new OutputLEDStrip domain.
      *
-     * @param  name  The name to address the Bricklet with
+     * @param  name  The name to address the Bricklet with, always lowercase!
      * @param  uid  The Bricklet's UID
      * @param  length  The length, i.e. the number of LEDs
      * @param  brickDomain  The domain associated with the connected Brick
      */
     public OutputLEDStripDomain(String name, String uid, int length, BrickDomain brickDomain) {
 
-        this.name = name;
+        this.name = name.toLowerCase(); // Names are always lowercase!
         this.uid = uid;
         this.length = length;
         this.brickDomain = brickDomain;

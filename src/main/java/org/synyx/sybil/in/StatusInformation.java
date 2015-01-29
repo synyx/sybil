@@ -29,8 +29,6 @@ public class StatusInformation {
         this.source = source;
         this.priority = priority;
         this.date = OffsetDateTime.now(ZoneId.of("UTC"));
-
-        System.out.println(date.toString());
     }
 
 

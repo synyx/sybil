@@ -57,8 +57,8 @@ public class SingleStatusOnLEDStripTest {
         brickRepository.save(localUSB);
         brickRepository.save(synerforge001);
 
-        OutputLEDStripDomain devkitOneDomain = new OutputLEDStripDomain("DevkitOne", "p5V", 30, localUSB);
-        OutputLEDStripDomain devkitTwoDomain = new OutputLEDStripDomain("DevkitTwo", "p3c", 30, synerforge001);
+        OutputLEDStripDomain devkitOneDomain = new OutputLEDStripDomain("devkitone", "p5V", 30, localUSB);
+        OutputLEDStripDomain devkitTwoDomain = new OutputLEDStripDomain("devkittwo", "p3c", 30, synerforge001);
 
         outputLEDStripRepository.save(devkitOneDomain);
         outputLEDStripRepository.save(devkitTwoDomain);

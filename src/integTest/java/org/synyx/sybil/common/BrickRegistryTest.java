@@ -64,9 +64,9 @@ public class BrickRegistryTest {
         brickRepository.save(synerforge001);
 
         // define LED Strips (bricklets)
-        OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("DevkitOne", "p5V", 30, localUSB);
-        OutputLEDStripDomain devkitTwo = new OutputLEDStripDomain("DevkitTwo", "p3c", 30, synerforge001);
-        OutputLEDStripDomain devkitDummy = new OutputLEDStripDomain("DevkitDummy", "p3B", 30, synerforge001);
+        OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("devkitone", "p5V", 30, localUSB);
+        OutputLEDStripDomain devkitTwo = new OutputLEDStripDomain("devkittwo", "p3c", 30, synerforge001);
+        OutputLEDStripDomain devkitDummy = new OutputLEDStripDomain("devkitdummy", "p3B", 30, synerforge001);
 
         // add them to the database
         devkitOne = outputLEDStripRepository.save(devkitOne);
@@ -97,7 +97,7 @@ public class BrickRegistryTest {
 
         Color color = new Color(16, 35, 77);
 
-        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("DevkitOne"));
+        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("devkitone"));
 
         outputLEDStrip.setPixel(1, color);
         outputLEDStrip.updateDisplay();
@@ -126,7 +126,7 @@ public class BrickRegistryTest {
 
         Color color = new Color(16, 35, 77);
 
-        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("DevkitOne"));
+        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("devkitone"));
 
         outputLEDStrip.setPixel(1, color);
         outputLEDStrip.updateDisplay();
@@ -154,7 +154,7 @@ public class BrickRegistryTest {
 
         Color color = new Color(16, 35, 77);
 
-        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("DevkitOne"));
+        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("devkitone"));
 
         outputLEDStrip.setPixel(1, color);
         outputLEDStrip.updateDisplay();
