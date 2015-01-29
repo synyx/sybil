@@ -1,6 +1,7 @@
 package org.synyx.sybil.in;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 
 /**
@@ -12,7 +13,7 @@ public class StatusInformation {
 
     private final Status status;
     private final String source;
-    private final LocalDateTime date;
+    private final OffsetDateTime date;
     private final int priority;
 
     /**
@@ -27,7 +28,9 @@ public class StatusInformation {
         this.status = status;
         this.source = source;
         this.priority = priority;
-        this.date = LocalDateTime.now(); // TODO: UTC?
+        this.date = OffsetDateTime.now(ZoneId.of("UTC"));
+
+        System.out.println(date.toString());
     }
 
 
@@ -39,10 +42,7 @@ public class StatusInformation {
      */
     public StatusInformation(String source, Status status) {
 
-        this.status = status;
-        this.source = source;
-        this.priority = 100;
-        this.date = LocalDateTime.now();
+        this(source, status, 100);
     }
 
     public Status getStatus() {
@@ -57,7 +57,7 @@ public class StatusInformation {
     }
 
 
-    public LocalDateTime getDate() {
+    public OffsetDateTime getDate() {
 
         return date;
     }
