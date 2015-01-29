@@ -27,7 +27,7 @@ public class StatusInformation {
         this.status = status;
         this.source = source;
         this.priority = priority;
-        this.date = LocalDateTime.now();
+        this.date = LocalDateTime.now(); // TODO: UTC?
     }
 
 

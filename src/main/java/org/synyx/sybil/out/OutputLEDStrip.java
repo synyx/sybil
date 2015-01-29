@@ -83,7 +83,7 @@ public class OutputLEDStrip implements Bricklet {
             try {
                 ledStrip.setRGBValues(i, (short) 16, blueArray, redArray, greenArray);
             } catch (TimeoutException | NotConnectedException e) {
-                LOG.error("Error connecting to LEDStrip:", e);
+                LOG.error("Error connecting to LEDStrip during updateDisplay:", e);
             }
         }
     }
@@ -196,7 +196,7 @@ public class OutputLEDStrip implements Bricklet {
      *
      * @return  The color at the specified position.
      */
-    Color getPixel(int position) {
+    public Color getPixel(int position) {
 
         LOG.debug("Retrieving color of pixel {} of LEDstrip {}", position, name);
 
@@ -205,7 +205,7 @@ public class OutputLEDStrip implements Bricklet {
         try {
             color = new Color(ledStrip.getRGBValues(position, (short) 1));
         } catch (TimeoutException | NotConnectedException e) {
-            LOG.error("Error connecting to LEDStrip:", e);
+            LOG.error("Error connecting to LEDStrip during getPixel:", e);
         }
 
         return color;

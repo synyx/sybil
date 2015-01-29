@@ -84,7 +84,9 @@ public class SingleStatusOnLEDStripTest {
     @Test
     public void testShowStatusWarning() throws Exception {
 
-        singleStatusOutputOne.showStatus(new StatusInformation("Integration Test", Status.WARNING));
+        StatusInformation statusInformation = new StatusInformation("Integration Test", Status.WARNING);
+
+        singleStatusOutputOne.showStatus(statusInformation);
 
         Color pixel = devkitOne.getPixel(0);
         assertTrue("LED Strip should be yellow",
@@ -96,7 +98,9 @@ public class SingleStatusOnLEDStripTest {
     @Test
     public void testShowStatusCritical() throws Exception {
 
-        singleStatusOutputTwo.showStatus(new StatusInformation("Integration Test", Status.CRITICAL));
+        StatusInformation statusInformation = new StatusInformation("Integration Test", Status.CRITICAL);
+
+        singleStatusOutputTwo.showStatus(statusInformation);
 
         Color pixel = devkitTwo.getPixel(0);
         assertTrue("LED Strip should be red", pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
@@ -107,7 +111,9 @@ public class SingleStatusOnLEDStripTest {
     @Test
     public void testShowStatusOkay() throws Exception {
 
-        singleStatusOutputOne.showStatus(new StatusInformation("Integration Test", Status.OKAY));
+        StatusInformation statusInformation = new StatusInformation("Integration Test", Status.OKAY);
+
+        singleStatusOutputOne.showStatus(statusInformation);
 
         Color pixel = devkitOne.getPixel(0);
         assertTrue("LED Strip should be black", pixel.getRed() == 0 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
