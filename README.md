@@ -81,8 +81,8 @@ Now you can call the **OutputLEDStrip**'s methods, the most important of which a
 * drawSprite - accepts a **Sprite1D**, it's position on the LED Strip and an optional boolean, deciding whether it
 should wrap around at the end of the LED Strip or not.
 * setBrightness - accepts a number of type double, between 0.0 - off - and 2.0 - full brightness.
-* setFill - sets the given **Color** for the whole LED Strip
-* setPixel -  accepts a number of type int as the position of the pixel on the LED Strip and a **Color**
+* setFill - sets the given **Color** for the whole LED Strip.
+* setPixel -  accepts a number of type int as the position of the pixel on the LED Strip and a **Color**.
 * updateDisplay - this must be called for any of the changes made with above methods to show on the LED Strip.
 
 Additionally, you can create a new **SingleStatusOnLEDStrip** by passing it an **OutputLEDStrip**, and then call it's
