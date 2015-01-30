@@ -57,9 +57,9 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
 
 The Spring configuration in **SpringConfig** loads:
 
-* All the **＊Registry** classes, since they're annotated with @Service
+* All the __*Registry__ classes, since they're annotated with @Service
 * The database configuration from **Neo4jConfig**
-* Which in turn loads the **＊Repository** and **＊Domain** classes.
+* Which in turn loads the __*Repository__ and __*Domain__ classes.
 
 Now you can create new **BrickDomain**s with a host and optionally a port.
 Save those to the **BrickRepository** with it's *save* method.  
