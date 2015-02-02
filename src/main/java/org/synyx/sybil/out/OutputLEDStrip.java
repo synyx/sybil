@@ -33,10 +33,11 @@ public class OutputLEDStrip implements Bricklet {
      *
      * @param  ledStrip  The LED Strip we want to control.
      * @param  length  How many LEDs are on the LED Strip.
+     * @param  name  The name to address the LED Strip with, always lowercase!
      */
     public OutputLEDStrip(BrickletLEDStrip ledStrip, int length, String name) {
 
-        this.name = name;
+        this.name = name.toLowerCase();
 
         brightness = 1.0;
 
