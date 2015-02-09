@@ -1,0 +1,5 @@
+{
+  "name": "jenkins_sybil_web_ui",
+  "type": "status",
+  "source": "jenkins/sybil_web_ui"
+}

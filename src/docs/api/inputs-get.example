@@ -1,0 +1,33 @@
+{
+  "_links": {
+    "self": { "href": "/inputs" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "_embedded": {
+    "doc:inputs": [
+      {
+        "_links": { "self": { "href": "/inputs/nagios_boreas" } },
+        "doc:type": "status",
+        "doc:state": "WARNING"
+      },
+      {
+        "_links": { "self": { "href": "/inputs/jenkins_puppetdb" } },
+        "doc:type": "status",
+        "doc:state": "OK"
+      },
+      {
+        "_links": { "self": { "href": "/inputs/hauptschalter" } },
+        "doc:type": "binary",
+        "doc:state": true
+      }
+    ]
+  }
+}
+                  
+            

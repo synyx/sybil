@@ -1,0 +1,14 @@
+{
+  "_links": {
+    "self": {"href": "/"},
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ],
+    "doc:inputs": {"href": "/inputs"},
+    "doc:outputs": {"href": "/outputs"}
+  }
+}

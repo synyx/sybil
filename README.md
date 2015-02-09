@@ -21,6 +21,8 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
 
 ### Structure ###
     src/
+    +-docs/                             Documentation sources.
+    | +-api/                            Source for the API documentation.
     +-integTest/                        Integration tests.
     +-test/                             Unit tests.
     +-main/                             Main.
@@ -57,7 +59,7 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
 
 The Spring configuration in **SpringConfig** loads:
 
-* All the __*Registry__ classes, since they're annotated with @Service
+* All the **\*Registry** classes, since they're annotated with @Service
 * The database configuration from **Neo4jConfig**
 * Which in turn loads the __*Repository__ and __*Domain__ classes.
 

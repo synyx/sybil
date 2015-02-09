@@ -1,0 +1,113 @@
+#%RAML 0.8
+---
+title: Sybil
+baseUri: https://api.sybil.synyx.coffee/
+version: v1
+mediaType: application/vnd.synyx.sybil-v1+hal+json
+
+traits:
+  - paginated:
+      queryParameters:
+        offset:
+          type: number
+          description: The starting entry
+          required: false
+          example: 20
+        limit:
+          type: number
+          description: The number of entries
+          required: false
+          example: 10
+
+/:
+  description: API root
+  get:
+    description: Retrieve the API root.
+    responses:
+      200:
+        body:
+          example: !include root-get.example
+
+/inputs:
+  description: Inputs
+  get:
+    description: Retrieve the list of inputs. 
+      **Note:** This list does not contain the complete input objects.
+    is: [ paginated ]
+    queryParameters:
+      type:
+        type: string
+        description: The type of the Input
+        required: false
+        example: status
+    responses:
+      200:
+        body:
+          example: !include inputs-get.example      
+  post:
+    description: Create a new input
+    body:
+      application/vnd.synyx.sybil-v1+json:
+        schema: !include inputs-post-request.schema
+        example: !include inputs-post-request.example
+    responses:
+      201:
+        headers:
+          Location:
+            example: /inputs/jenkins_sybil_web_ui
+        body:
+          example: !include inputs-post-response.example
+  
+  /{inputname}:
+    description: A single input item
+    get:
+    put:
+    delete:
+  
+    /outputs:
+      get:
+        is: [ paginated ]
+        queryParameters:
+          type:
+            type: string
+            description: The type of the Output
+            required: false
+            example: light
+      post:
+  
+      /{outputname}:
+        get:
+        put:
+        delete:
+
+/outputs:
+  get:
+    is: [ paginated ]
+    queryParameters:
+      type:
+        type: string
+        description: The type of the Output
+        required: false
+        example: ledstrip
+  post:
+  
+  /{outputname}:
+    get:
+    put:
+    delete:
+  
+    /inputs:
+      get:
+        is: [ paginated ]
+        queryParameters:
+          type:
+            type: string
+            description: The type of the Input
+            required: false
+            example: binary
+      post:
+  
+      /{inputname}:
+        get:
+        put:
+        delete:
