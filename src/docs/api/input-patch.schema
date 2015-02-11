@@ -3,18 +3,18 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "properties": {
     "name": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "type": {
       "type": "string",
-      "enum": ["status", "binary"],
-      "required": true
+      "enum": ["status", "binary"]
     },
     "source": {
+      "type": "string"
+    },
+    "state": {
       "type": "string",
-      "required": true
+      "enum": [ true, false, "OK", "WARNING", "CRITICAL"]
     }
-  },
-  "required": [ "name", "type", "source"]
+  }
 }

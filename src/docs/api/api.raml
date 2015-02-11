@@ -1,7 +1,7 @@
 #%RAML 0.8
 ---
 title: Sybil
-baseUri: https://api.sybil.synyx.coffee/
+baseUri: https://api.sybil.synyx.coffee
 version: v1
 mediaType: application/vnd.synyx.sybil-v1+hal+json
 
@@ -10,14 +10,14 @@ traits:
       queryParameters:
         offset:
           type: number
-          description: The starting entry
+          description: The first entry to be retrieved
           required: false
-          example: 20
+          example: offset=20
         limit:
           type: number
-          description: The number of entries
+          description: The number of entries that will be retrieved
           required: false
-          example: 10
+          example: limit=10
 
 /:
   description: API root
@@ -25,45 +25,115 @@ traits:
     description: Retrieve the API root.
     responses:
       200:
+        description: Success - OK
         body:
           example: !include root-get.example
 
 /inputs:
   description: Inputs
   get:
-    description: Retrieve the list of inputs. 
-      **Note:** This list does not contain the complete input objects.
+    description: |
+      Retrieve the list of inputs.   
+      **Note:** This returns only truncated input objects.
     is: [ paginated ]
     queryParameters:
       type:
         type: string
         description: The type of the Input
         required: false
-        example: status
+        example: type=status
     responses:
       200:
+        description: Success - OK
         body:
           example: !include inputs-get.example      
   post:
-    description: Create a new input
+    description: Create a new input.
     body:
       application/vnd.synyx.sybil-v1+json:
         schema: !include inputs-post-request.schema
         example: !include inputs-post-request.example
     responses:
       201:
+        description: Success - CREATED
         headers:
           Location:
             example: /inputs/jenkins_sybil_web_ui
         body:
-          example: !include inputs-post-response.example
+          example: !include input.example
+      400:
+        description: Error - BAD REQUEST
+        body:
+          application/problem+json:
+            example: !include inputs-post-validation-error.example
   
   /{inputname}:
-    description: A single input item
+    description: A specific input
     get:
+      description: Retrieve a specific input.
+      responses:
+        200:
+          description: Success - OK
+          body:
+            example: !include input.example
+        404:
+          description: Error - NOT FOUND
+          body:
+            application/problem+json:
+              example: !include input-not-found.example
     put:
+      description: Update a whole input.
+      body:
+        application/vnd.synyx.sybil-v1+json:
+          schema: !include input.schema
+          example: !include input-put.example
+      responses:
+        200:
+          description: Success - OK
+          body:
+            example: !include input.example
+        400:
+          description: Error - BAD REQUEST
+          body:
+            application/problem+json:
+              example: !include input-patch-validation-error.example
+        404:
+          description: Error - NOT FOUND
+          body:
+            application/problem+json:
+              example: !include input-not-found.example
+    patch:
+      description: Partially update an input.
+      body:
+        application/vnd.synyx.sybil-v1+json:
+          schema: !include input-patch.schema
+          example: !include input-patch-request.example
+      responses:
+        200:
+          description: Success - OK
+          body:
+            example: !include input-patch-response.example
+        400:
+          description: Error - BAD REQUEST
+          body:
+            application/problem+json:
+              example: !include input-patch-validation-error.example
+        404:
+          description: Error - NOT FOUND
+          body:
+            application/problem+json:
+              example: !include input-not-found.example
     delete:
-  
+      description: Delete an input.
+      responses:
+        204:
+          description: Success - NO CONTENT
+        404:
+          description: Error - NOT FOUND
+          body:
+            application/problem+json:
+              example: !include input-not-found.example
+        
     /outputs:
       get:
         is: [ paginated ]
@@ -72,7 +142,7 @@ traits:
             type: string
             description: The type of the Output
             required: false
-            example: light
+            example: type=light
       post:
   
       /{outputname}:
@@ -82,13 +152,21 @@ traits:
 
 /outputs:
   get:
+    description: |
+      Retrieve the list of outputs.   
+      **Note:** This returns only truncated output objects.
     is: [ paginated ]
     queryParameters:
       type:
         type: string
         description: The type of the Output
         required: false
-        example: ledstrip
+        example: type=ledstrip
+    responses:
+      200:
+        description: Success - OK
+        body:
+          example: !include outputs-get.example      
   post:
   
   /{outputname}:
@@ -104,7 +182,7 @@ traits:
             type: string
             description: The type of the Input
             required: false
-            example: binary
+            example: type=binary
       post:
   
       /{inputname}:

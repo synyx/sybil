@@ -1,0 +1,27 @@
+{
+  "_links": {
+    "self": { "href": "/inputs/jenkins_sybil_web_ui" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "doc:type": "status",
+  "doc:state": "OK",
+  "doc:source": "jenkins/sybil_web_ui",
+  "_embedded": {
+    "doc:outputs": [
+      {
+        "_links": { "self": { "href": "/outputs/ledstrip_indy" } },
+        "doc:type": "ledstrip"
+      },
+      {
+        "_links": { "self": { "href": "/outputs/ledstrip_admins" } },
+        "doc:type": "ledstrip"
+      }
+    ]
+  }
+}

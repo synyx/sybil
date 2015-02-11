@@ -1,0 +1,13 @@
+{
+  "type": "http://sybil.synyx.coffee/errors/validation_error",
+  "title": "Validation Error",
+  "detail": "Input is not formatted as expected.",
+  "fields": [
+    {
+      "field": "type",
+      "type": "http://sybil.synyx.coffee/errors/validation_error#input_type",
+      "title": "type is invalid",
+      "detail": "'bulbasaur' is not a valid type; type must be either 'status' or 'binary'."
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "_links": {
+    "self": { "href": "/outputs" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "_embedded": {
+    "doc:inputs": [
+      {
+        "_links": { "self": { "href": "/outputs/ledstrip_indy" } },
+        "doc:type": "ledstrip"
+      },
+      {
+        "_links": { "self": { "href": "/outputs/ledstrip_admins" } },
+        "doc:type": "ledstrip"
+      },
+      {
+        "_links": { "self": { "href": "/outputs/tisch_contargo" } },
+        "doc:type": "lights"
+      }
+    ]
+  }
+}
+                  
+            
