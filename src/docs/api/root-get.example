@@ -8,7 +8,7 @@
         "templated": true
       }
     ],
-    "doc:inputs": {"href": "/inputs"},
-    "doc:outputs": {"href": "/outputs"}
+    "doc:inputs_root": {"href": "/inputs"},
+    "doc:outputs_root": {"href": "/outputs"}
   }
 }

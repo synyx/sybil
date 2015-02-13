@@ -7,7 +7,7 @@
       "field": "state",
       "type": "http://sybil.synyx.coffee/errors/validation_error#input_state",
       "title": "state is invalid",
-      "detail": "'shiny' is not a valid state; state must be either true, false, 'OK', 'WARNING' or 'CRITICAL'."
+      "detail": "'shiny' is not a valid state; state for this resource must be either true or false."
     }
   ]
 }

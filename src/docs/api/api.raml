@@ -26,11 +26,14 @@ traits:
     responses:
       200:
         description: Success - OK
+        headers:
+          Allow:
+            example: GET
         body:
           example: !include root-get.example
 
 /inputs:
-  description: Inputs
+  description: Inputs, controlling outputs.
   get:
     description: |
       Retrieve the list of inputs.   
@@ -45,6 +48,9 @@ traits:
     responses:
       200:
         description: Success - OK
+        headers:
+          Allow:
+            example: GET, POST
         body:
           example: !include inputs-get.example      
   post:
@@ -60,7 +66,7 @@ traits:
           Location:
             example: /inputs/jenkins_sybil_web_ui
         body:
-          example: !include input.example
+          example: !include input-get.example
       400:
         description: Error - BAD REQUEST
         body:
@@ -74,15 +80,18 @@ traits:
       responses:
         200:
           description: Success - OK
+          headers:
+            Allow:
+              example: GET, PUT, PATCH, DELETE
           body:
-            example: !include input.example
+            example: !include input-get.example
         404:
           description: Error - NOT FOUND
           body:
             application/problem+json:
               example: !include input-not-found.example
     put:
-      description: Update a whole input.
+      description: Wholly update an input.
       body:
         application/vnd.synyx.sybil-v1+json:
           schema: !include input.schema
@@ -91,7 +100,7 @@ traits:
         200:
           description: Success - OK
           body:
-            example: !include input.example
+            example: !include input-get.example
         400:
           description: Error - BAD REQUEST
           body:
@@ -135,7 +144,9 @@ traits:
               example: !include input-not-found.example
         
     /outputs:
+      description: The outputs this input is controlling.
       get:
+        description: Retrieve the list of this input's associated outputs.
         is: [ paginated ]
         queryParameters:
           type:
@@ -143,12 +154,60 @@ traits:
             description: The type of the Output
             required: false
             example: type=light
+        responses:
+          200:
+            description: Success - OK
+            headers:
+              Allow:
+                example: GET, POST
+            body:
+              example: !include input-outputs-get.example
       post:
+        description: Associate a new output with this input.
+        body:
+          application/vnd.synyx.sybil-v1+json:
+            schema: !include input-outputs.schema
+            example: !include input-outputs-post-request.example
+        responses:
+          201:
+            description: Success - CREATED
+            headers:
+              Location:
+                example: /inputs/hauptschalter/outputs/saeule_admins
+            body:
+              example: !include input-outputs-output-get.example
+          400:
+            description: Error - BAD REQUEST
+            body:
+              application/problem+json:
+                example: !include input-outputs-validation-error.example
   
       /{outputname}:
         get:
-        put:
+          description: Retrieve a specific associated output.
+          responses:
+            200:
+              description: Success - OK
+              headers:
+                Allow:
+                  example: GET, DELETE
+              body:
+                example: !include input-outputs-output-get.example
+            404:
+              description: Error - NOT FOUND
+              body:
+                application/problem+json:
+                  example: !include output-not-found.example
         delete:
+          description: Remove the input's association with this output.
+          responses:
+            204:
+              description: Success - NO CONTENT
+            404:
+              description: Error - NOT FOUND
+              body:
+                application/problem+json:
+                  example: !include output-not-found.example
 
 /outputs:
   get:
@@ -172,6 +231,7 @@ traits:
   /{outputname}:
     get:
     put:
+    patch:
     delete:
   
     /inputs:
@@ -187,5 +247,4 @@ traits:
   
       /{inputname}:
         get:
-        put:
         delete:

@@ -1,0 +1,7 @@
+{
+  "_links": {
+    "self": { "href": "/inputs/hauptschalter/outputs/saeule_admins" },
+    "doc:edit": { "href": "/outputs/saeule_admins" }
+  },
+  "doc:type": "lights"
+}

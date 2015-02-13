@@ -1,16 +1,18 @@
 {
   "_links": {
-    "self": { "href": "/outputs" },
+    "self": { "href": "/outputs?type=ledstrip&limit=3&offset=3" },
     "curies": [
       {
         "name": "doc",
         "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
         "templated": true
       }
-    ]
+    ],
+    "doc:next": { "href": "/outputs?type=ledstrip&limit=3&offset=6" },
+    "doc:previous": { "href": "/outputs?type=ledstrip&limit=3&offset=0" }
   },
   "_embedded": {
-    "doc:inputs": [
+    "doc:outputs": [
       {
         "_links": { "self": { "href": "/outputs/ledstrip_indy" } },
         "doc:type": "ledstrip"
@@ -20,11 +22,9 @@
         "doc:type": "ledstrip"
       },
       {
-        "_links": { "self": { "href": "/outputs/tisch_contargo" } },
-        "doc:type": "lights"
+        "_links": { "self": { "href": "/outputs/ledstrip_contargo" } },
+        "doc:type": "ledstrip"
       }
     ]
   }
 }
-                  
-            

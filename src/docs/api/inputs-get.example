@@ -1,13 +1,15 @@
 {
   "_links": {
-    "self": { "href": "/inputs" },
+    "self": { "href": "/inputs?limit=3&offset=3" },
     "curies": [
       {
         "name": "doc",
         "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
         "templated": true
       }
-    ]
+    ],
+    "doc:next": { "href": "/inputs?limit=3&offset=6" },
+    "doc:previous": { "href": "/inputs?limit=3&offset=0" }
   },
   "_embedded": {
     "doc:inputs": [

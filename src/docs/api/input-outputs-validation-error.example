@@ -1,0 +1,13 @@
+{
+  "type": "http://sybil.synyx.coffee/errors/validation_error",
+  "title": "Validation Error",
+  "detail": "Input is not formatted as expected.",
+  "fields": [
+    {
+      "field": "name",
+      "type": "http://sybil.synyx.coffee/errors/validation_error#outputs_does_not_exist",
+      "title": "Output does not exist",
+      "detail": "'serenity' is not an existing output; you must specify an existing output to associate with this input."
+    }
+  ]
+}
