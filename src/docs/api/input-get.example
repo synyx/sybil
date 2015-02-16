@@ -10,9 +10,14 @@
     ]
   },
   "doc:type": "status",
-  "doc:state": "OK",
   "doc:source": "jenkins/sybil_web_ui",
   "_embedded": {
+    "doc:states": [
+      {
+        "_links": { "self": { "href": "/inputs/jenkins_sybil_web_ui/state" } },
+        "doc:state": "OK"
+      }
+    ],  
     "doc:outputs": [
       {
         "_links": { "self": { "href": "/inputs/jenkins_sybil_web_ui/outputs/ledstrip_indy" } },

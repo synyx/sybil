@@ -8,6 +8,8 @@
         "templated": true
       }
     ],
+    "doc:first": { "href": "/outputs?type=ledstrip&limit=3&offset=0" },
+    "doc:last": { "href": "/outputs?type=ledstrip&limit=3&offset=12" },
     "doc:next": { "href": "/outputs?type=ledstrip&limit=3&offset=6" },
     "doc:previous": { "href": "/outputs?type=ledstrip&limit=3&offset=0" }
   },

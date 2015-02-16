@@ -8,6 +8,8 @@
         "templated": true
       }
     ],
+    "doc:first": { "href": "/inputs?limit=3&offset=0" },
+    "doc:last": { "href": "/inputs?limit=3&offset=21" },
     "doc:next": { "href": "/inputs?limit=3&offset=6" },
     "doc:previous": { "href": "/inputs?limit=3&offset=0" }
   },
@@ -15,18 +17,15 @@
     "doc:inputs": [
       {
         "_links": { "self": { "href": "/inputs/nagios_boreas" } },
-        "doc:type": "status",
-        "doc:state": "WARNING"
+        "doc:type": "status"
       },
       {
         "_links": { "self": { "href": "/inputs/jenkins_puppetdb" } },
-        "doc:type": "status",
-        "doc:state": "OK"
+        "doc:type": "status"
       },
       {
         "_links": { "self": { "href": "/inputs/hauptschalter" } },
-        "doc:type": "binary",
-        "doc:state": true
+        "doc:type": "binary"
       }
     ]
   }

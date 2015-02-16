@@ -1,0 +1,30 @@
+{
+  "_links": {
+    "self": { "href": "/outputs/saeule_admins/inputs" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "_embedded": {
+    "doc:inputs": [
+      {
+        "_links": { 
+          "self": { "href": "/outputs/saeule_admins/inputs/hauptschalter" },
+          "doc:edit": { "href": "/inputs/hauptschalter" }
+        },
+        "doc:type": "binary"
+      },
+      {
+        "_links": { 
+          "self": { "href": "/outputs/saeule_admins/inputs/button_admins" },
+          "doc:edit": { "href": "/inputs/button_admins" }
+        },
+        "doc:type": "binary"
+      }
+    ]
+  }
+}

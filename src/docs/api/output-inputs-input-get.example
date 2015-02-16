@@ -1,0 +1,7 @@
+{
+  "_links": {
+    "self": { "href": "/outputs/saeule_admins/inputs/hauptschalter" },
+    "doc:edit": { "href": "/inputs/hauptschalter" }
+  },
+  "doc:type": "binary"
+}

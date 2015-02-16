@@ -2,10 +2,10 @@
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "properties": {
-    "type": {
+    "state": {
       "type": "string",
-      "enum": [ "light", "ledstrip" ]
+      "enum": [ "OK", "WARNING", "CRITICAL", true, false ]
     }
   },
-  "required": [ "type" ]
+  "required": [ "state" ]
 }

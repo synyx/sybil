@@ -1,0 +1,5 @@
+{
+  "type": "http://sybil.synyx.coffee/errors/link_not_found",
+  "title": "Associated link Not found",
+  "detail": "The input 'erdbebensensor' you tried to associate with this output to does not exist. You can only link to existing inputs."
+}

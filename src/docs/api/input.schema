@@ -2,20 +2,13 @@
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "properties": {
-    "name": {
-      "type": "string"
-    },
     "type": {
       "type": "string",
       "enum": ["status", "binary"]
     },
     "source": {
       "type": "string"
-    },
-    "state": {
-      "type": "string",
-      "enum": [ true, false, "OK", "WARNING", "CRITICAL"]              
     }
   },
-  "required": [ "name", "type", "source"]
+  "required": [ "type", "source"]
 }
