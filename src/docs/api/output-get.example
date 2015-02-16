@@ -1,0 +1,28 @@
+{
+  "_links": {
+    "self": { "href": "/outputs/saeule_admins" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "doc:type": "light",
+  "doc:source": "synerforge013/x5ga",
+  "_embedded": {
+    "doc:inputs": [
+      {
+        "_links": { "self": { "href": "/outputs/saeule_admins/inputs/hauptschalter" } },
+        "doc:type": "binary",
+        "doc:state": "true"
+      },
+      {
+        "_links": { "self": { "href": "/outputs/saeule_admins/inputs/schalter_admins" } },
+        "doc:type": "binary",
+        "doc:state": "true"
+      }
+    ]
+  }
+}

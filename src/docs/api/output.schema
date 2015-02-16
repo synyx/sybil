@@ -7,7 +7,7 @@
     },
     "type": {
       "type": "string",
-      "enum": ["status", "binary"]
+      "enum": ["light", "ledstrip"]
     },
     "source": {
       "type": "string"

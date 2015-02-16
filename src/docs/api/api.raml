@@ -5,6 +5,44 @@ baseUri: https://api.sybil.synyx.coffee
 version: v1
 mediaType: application/vnd.synyx.sybil-v1+hal+json
 
+documentation:
+ - title: Introduction
+   content: |
+    This API maps Inputs to Outputs.  
+    **Inputs** can bei either *status*es, from Jenkins builds or systems watched by Nagios, or *binary*s, e.g. buttons &
+    switches, either on a web-interface or actual physical objects.  
+    **Outputs** can be either *light*s (white light, illuminating the room at large) or *ledstrip*s (multi-colored
+    lights, used mostly for information).
+    
+    Each Input can control zero or more Outputs, and each Output can be controlled by zero or more Inputs.  
+    Accordingly, each Input has a list of associated Outputs and each Output a list of associated Inputs.
+    
+ 
+ - title: Missing examples
+   content: Examples for the HTTP **HEAD** and **OPTIONS** verbs are not provided, as these are subsets of the **GET**
+    verb.
+ 
+ - title: Unsupported methods
+   content: |
+    Using an unsupported verb on a ressource will result in this error message:
+
+    > #### HTTP status code [405](http://httpstatus.es/405)
+    > ---
+    > Error - METHOD NOT ALLOWED
+    >
+    > Body
+    >
+    > **Type: application/problem+json**
+    >
+    > **Example:**
+    >
+    >     {
+    >       "type": "http://sybil.synyx.coffee/errors/method_not_allowed",
+    >       "title": "Method Not Allowed",
+    >       "detail": "This resource does not support PUT"
+    >     }
+        
+
 traits:
   - paginated:
       queryParameters:
@@ -210,6 +248,7 @@ traits:
                   example: !include output-not-found.example
 
 /outputs:
+  description: Outputs.
   get:
     description: |
       Retrieve the list of outputs.   
@@ -227,12 +266,96 @@ traits:
         body:
           example: !include outputs-get.example      
   post:
+    description: Create a new output.
+    body:
+      application/vnd.synyx.sybil-v1+json:
+        schema: !include outputs-post-request.schema
+        example: !include outputs-post-request.example
+    responses:
+      201:
+        description: Success - CREATED
+        headers:
+          Location:
+            example: /outputs/saeule_admins
+        body:
+          example: !include output-get.example
+      400:
+        description: Error - BAD REQUEST
+        body:
+          application/problem+json:
+            example: !include outputs-post-validation-error.example
+
   
   /{outputname}:
+    description: A specific output
     get:
+      description: Retrieve a specific output.
+      responses:
+        200:
+          description: Success - OK
+          headers:
+            Allow:
+              example: GET, PUT, PATCH, DELETE
+          body:
+            example: !include output-get.example
+        404:
+          description: Error - NOT FOUND
+          body:
+            application/problem+json:
+              example: !include output-not-found.example
     put:
+      description: Wholly update an output.
+      body:
+        application/vnd.synyx.sybil-v1+json:
+          schema: !include output.schema
+          example: !include output-put.example
+      responses:
+        200:
+          description: Success - OK
+          body:
+            example: !include output-get.example
+        400:
+          description: Error - BAD REQUEST
+          body:
+            application/problem+json:
+              example: !include outputs-post-validation-error.example
+        404:
+          description: Error - NOT FOUND
+          body:
+            application/problem+json:
+              example: !include output-not-found.example
+    #TODO
     patch:
+      description: Partially update an input.
+      body:
+        application/vnd.synyx.sybil-v1+json:
+          schema: !include input-patch.schema
+          example: !include input-patch-request.example
+      responses:
+        200:
+          description: Success - OK
+          body:
+            example: !include input-patch-response.example
+        400:
+          description: Error - BAD REQUEST
+          body:
+            application/problem+json:
+              example: !include input-patch-validation-error.example
+        404:
+          description: Error - NOT FOUND
+          body:
+            application/problem+json:
+              example: !include input-not-found.example
     delete:
+      description: Delete an input.
+      responses:
+        204:
+          description: Success - NO CONTENT
+        404:
+          description: Error - NOT FOUND
+          body:
+            application/problem+json:
+              example: !include input-not-found.example
   
     /inputs:
       get:
@@ -248,3 +371,4 @@ traits:
       /{inputname}:
         get:
         delete:
+  
