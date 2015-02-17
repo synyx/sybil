@@ -1,0 +1,27 @@
+{
+  "_links": {
+    "self": { "href": "https://api.sybil.synyx.coffee/configuration/buttons" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "_embedded": {
+    "doc:buttons": [
+      {
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/configuration/buttons/hauptschalter" } }
+      },
+      {
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/configuration/buttons/tuer_sued" } }
+      },
+      {
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/configuration/buttons/10_vorne" } }
+      }
+    ]
+  }
+}
+                  
+            

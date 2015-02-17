@@ -1,4 +1,4 @@
 {
   "type": "status",
-  "source": "jenkins/sybil_web_ui"
+  "source": [ "jenkins" , "sybil_web_ui" ]
 }

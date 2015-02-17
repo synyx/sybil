@@ -1,0 +1,13 @@
+{
+  "_links": {
+    "self": { "href": "https://api.sybil.synyx.coffee/configuration/bricks/synerforge001" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "doc:port": 4223
+}

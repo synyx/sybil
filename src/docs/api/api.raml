@@ -26,17 +26,21 @@ documentation:
         
     or, in some cases, no body at all.
     
-    Request should have the type
+    Request bodies should have the type
     
         application/vnd.synyx.sybil-v1+json
+        
+    if applicable.
         
     In case of an error, the body of the response will be of the type
     
         application/problem+json
+        
+    and the API will of course return a HTTP error status code.
  
  - title: Missing examples
-   content: Examples for the HTTP **HEAD** and **OPTIONS** verbs are not provided, as these are subsets of the **GET**
-    verb.
+   content: Examples for the HTTP **HEAD** and **OPTIONS** verbs are not provided, as their responses are subsets of the
+    one provided by **GET**.
  
  - title: Unsupported methods
    content: |
@@ -117,7 +121,7 @@ traits:
           description: Success - OK
           headers:
             Allow:
-              example: GET, PUT, DELETE
+              example: GET, PUT, PATCH, DELETE
           body:
             example: !include input-get.example
         404:
@@ -126,7 +130,10 @@ traits:
             application/problem+json:
               example: !include input-not-found.example
     put:
-      description: Create or update an input.
+      description: |
+        Create or update an input.
+        
+        A newly created input's state, if not supplied, will be either "OK" or false, depending on it's type.
       body:
         application/vnd.synyx.sybil-v1+json:
           schema: !include input.schema
@@ -134,18 +141,42 @@ traits:
       responses:
         200:
           description: |
-            Success - OK
+            Success - OK  
+            Input updated.
             
             **Example:** See below.
         201:
-          description: Success - CREATED
+          description: |
+            Success - CREATED  
+            Input created.
           body:
-            example: !include input-get.example
+            example: !include input-put-response.example
         400:
           description: Error - BAD REQUEST
           body:
             application/problem+json:
               example: !include input-put-validation-error.example
+    patch:
+      description: Change an input's state.
+      body:
+        application/vnd.synyx.sybil-v1+json:
+          schema: !include input-patch.schema
+          example: !include input-patch-request.example
+      responses:
+        200:
+          description: Success - OK
+          body:
+            example: !include input-patch-response.example
+        400:
+          description: Error - BAD REQUEST
+          body:
+            application/problem+json:
+              example: !include input-patch-validation-error.example
+        404:
+          description: Error - NOT FOUND
+          body:
+            application/problem+json:
+              example: !include input-not-found.example
     delete:
       description: Delete an input.
       responses:
@@ -156,36 +187,6 @@ traits:
           body:
             application/problem+json:
               example: !include input-not-found.example
-
-    /state:
-      description: | 
-       *Singleton:* The input's state
-      get:
-        description: Retrieve the input's state
-        responses:
-          200:
-            description: Success - OK
-            headers:
-              Allow:
-                example: GET, PUT
-            body:
-              example: !include input-state-get.example
-      put:
-        description: Update the input's state
-        body:
-          application/vnd.synyx.sybil-v1+json:
-            schema: !include input-state.schema
-            example: !include input-state-put.example
-        responses:
-          200:
-            description: Success - OK
-            body:
-              example: !include input-state-get.example
-          400:
-            description: Error - BAD REQUEST
-            body:
-              application/problem+json:
-                example: !include input-state-validation-error.example
         
     /outputs:
       description: Links to the outputs this input is controlling.
@@ -203,7 +204,7 @@ traits:
             description: Success - OK
             headers:
               Allow:
-                example: GET, POST
+                example: GET
             body:
               example: !include input-outputs-get.example
   
@@ -306,7 +307,7 @@ traits:
           description: Error - BAD REQUEST
           body:
             application/problem+json:
-              example: !include outputs-post-validation-error.example
+              example: !include outputs-output-put-validation-error.example
     delete:
       description: Delete an output.
       responses:
@@ -378,3 +379,331 @@ traits:
               body:
                 application/problem+json:
                   example: !include input-not-found.example
+
+/configuration:
+  description: Configuration of the underlying Tinkerforge hardware.
+  get:
+    description: Retrieve the configuration root.
+    responses:
+      200:
+        description: Success - OK
+        headers:
+          Allow:
+            example: GET
+        body:
+          example: !include configuration-get.example
+          
+  /bricks:
+    description: List of Tinkerforge Master bricks. Used internally.
+    get:
+      description: Retrieve the list of bricks.
+      is: [ paginated ]
+      responses:
+        200:
+          description: Success - OK
+          headers:
+            Allow:
+              example: GET
+          body:
+            example: !include bricks-get.example
+    
+    /{hostname}:
+      description: A specific brick.
+      get:
+        description: Retrieve a specific brick.
+        responses:
+          200:
+            description: Success - OK
+            headers:
+              Allow:
+                example: GET, PUT, DELETE
+            body:
+              example: !include brick-get.example
+          404:
+            description: Error - NOT FOUND
+            body:
+              application/problem+json:
+                example: !include brick-not-found.example
+      put:
+        description: Create or update a brick. The resource name has to be the same as the brick's hostname.
+        body:
+         application/vnd.synyx.sybil-v1+json:
+           schema: !include brick.schema
+        responses:
+         200:
+           description: |
+             Success - OK
+             
+             **Example:** See below.
+         201:
+           description: Success - CREATED
+           body:
+             example: !include brick-get.example
+         400:
+           description: Error - BAD REQUEST
+           body:
+             application/problem+json:
+               example: !include brick-put-validation-error.example
+      delete:
+        description: Delete a brick.
+        responses:
+         204:
+           description: Success - NO CONTENT
+         404:
+           description: Error - NOT FOUND
+           body:
+             application/problem+json:
+               example: !include brick-not-found.example
+
+  /ledstrips:
+    description: List of LED Strips; ledstrip-type output names must match these.
+    get:
+      description: Retrieve the list of ledstrips.
+      is: [ paginated ]
+      responses:
+        200:
+          description: Success - OK
+          headers:
+            Allow:
+              example: GET
+          body:
+            example: !include ledstrips-get.example
+    
+    /{outputname}:
+      description: A specific LED Strip.
+      get:
+        description: Retrieve a specific LED Strip.
+        responses:
+          200:
+            description: Success - OK
+            headers:
+              Allow:
+                example: GET, PUT, DELETE
+            body:
+              example: !include ledstrip-get.example
+          404:
+            description: Error - NOT FOUND
+            body:
+              application/problem+json:
+                example: !include ledstrip-not-found.example
+      put:
+        description: Create or update a LED Strip.
+        body:
+         application/vnd.synyx.sybil-v1+json:
+           schema: !include ledstrip.schema
+           example: !include ledstrip-put.example
+        responses:
+         200:
+           description: |
+             Success - OK
+             
+             **Example:** See below.
+         201:
+           description: Success - CREATED
+           body:
+             example: !include ledstrip-get.example
+         400:
+           description: Error - BAD REQUEST
+           body:
+             application/problem+json:
+               example: !include ledstrip-put-validation-error.example
+      delete:
+        description: Delete a LED Strip.
+        responses:
+         204:
+           description: Success - NO CONTENT
+         404:
+           description: Error - NOT FOUND
+           body:
+             application/problem+json:
+               example: !include ledstrip-not-found.example
+      
+      
+  /lights:
+    description: List of lights; light-type output names must match these.
+    get:
+      description: Retrieve the list of lights.
+      is: [ paginated ]
+      responses:
+        200:
+          description: Success - OK
+          headers:
+            Allow:
+              example: GET
+          body:
+            example: !include lights-get.example
+                  
+    /{outputname}:
+      description: A specific light.
+      get:
+        description: Retrieve a specific light.
+        responses:
+          200:
+            description: Success - OK
+            headers:
+              Allow:
+                example: GET, PUT, DELETE
+            body:
+              example: !include light-get.example
+          404:
+            description: Error - NOT FOUND
+            body:
+              application/problem+json:
+                example: !include light-not-found.example
+      put:
+        description: Create or update a light.
+        body:
+         application/vnd.synyx.sybil-v1+json:
+           schema: !include light.schema
+           example: !include light-put.example
+        responses:
+         200:
+           description: |
+             Success - OK
+             
+             **Example:** See below.
+         201:
+           description: Success - CREATED
+           body:
+             example: !include light-get.example
+         400:
+           description: Error - BAD REQUEST
+           body:
+             application/problem+json:
+               example: !include light-put-validation-error.example
+      delete:
+        description: Delete a light.
+        responses:
+         204:
+           description: Success - NO CONTENT
+         404:
+           description: Error - NOT FOUND
+           body:
+             application/problem+json:
+               example: !include light-not-found.example
+
+  /buttons:
+    description: A list of buttons; binary-type input names must match these.
+    get:
+      description: Retrieve the list of buttons.
+      is: [ paginated ]
+      responses:
+        200:
+          description: Success - OK
+          headers:
+            Allow:
+              example: GET
+          body:
+            example: !include buttons-get.example
+                      
+    /{inputname}:
+      description: A specific button.
+      get:
+        description: Retrieve a specific button.
+        responses:
+          200:
+            description: Success - OK
+            headers:
+              Allow:
+                example: GET, PUT, DELETE
+            body:
+              example: !include button-get.example
+          404:
+            description: Error - NOT FOUND
+            body:
+              application/problem+json:
+                example: !include button-not-found.example
+      put:
+        description: Create or update a button.
+        body:
+         application/vnd.synyx.sybil-v1+json:
+           schema: !include button.schema
+           example: !include button-put.example
+        responses:
+         200:
+           description: |
+             Success - OK
+             
+             **Example:** See below.
+         201:
+           description: Success - CREATED
+           body:
+             example: !include button-get.example
+         400:
+           description: Error - BAD REQUEST
+           body:
+             application/problem+json:
+               example: !include button-put-validation-error.example
+      delete:
+        description: Delete a button.
+        responses:
+         204:
+           description: Success - NO CONTENT
+         404:
+           description: Error - NOT FOUND
+           body:
+             application/problem+json:
+               example: !include button-not-found.example
+
+  /sensors:
+    description: List of sensors. Used internally.
+    get:
+      description: Retrieve the list of sensors.
+      is: [ paginated ]
+      responses:
+        200:
+          description: Success - OK
+          headers:
+            Allow:
+              example: GET
+          body:
+            example: !include sensors-get.example
+                      
+    /{sensorname}:
+      description: A specific sensor.
+      get:
+        description: Retrieve a specific sensor.
+        responses:
+          200:
+            description: Success - OK
+            headers:
+              Allow:
+                example: GET, PUT, DELETE
+            body:
+              example: !include sensor-get.example
+          404:
+            description: Error - NOT FOUND
+            body:
+              application/problem+json:
+                example: !include sensor-not-found.example
+      put:
+        description: Create or update a sensor.
+        body:
+         application/vnd.synyx.sybil-v1+json:
+           schema: !include sensor.schema
+           example: !include sensor-put.example
+        responses:
+         200:
+           description: |
+             Success - OK
+             
+             **Example:** See below.
+         201:
+           description: Success - CREATED
+           body:
+             example: !include sensor-get.example
+         400:
+           description: Error - BAD REQUEST
+           body:
+             application/problem+json:
+               example: !include sensor-put-validation-error.example
+      delete:
+        description: Delete a sensor.
+        responses:
+         204:
+           description: Success - NO CONTENT
+         404:
+           description: Error - NOT FOUND
+           body:
+             application/problem+json:
+               example: !include sensor-not-found.example

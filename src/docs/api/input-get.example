@@ -1,6 +1,6 @@
 {
   "_links": {
-    "self": { "href": "/inputs/jenkins_sybil_web_ui" },
+    "self": { "href": "https://api.sybil.synyx.coffee/inputs/jenkins_sybil_web_ui" },
     "curies": [
       {
         "name": "doc",
@@ -10,21 +10,16 @@
     ]
   },
   "doc:type": "status",
-  "doc:source": "jenkins/sybil_web_ui",
+  "doc:source": [ "jenkins", "sybil_web_ui" ],
+  "doc:state": "OK",
   "_embedded": {
-    "doc:states": [
-      {
-        "_links": { "self": { "href": "/inputs/jenkins_sybil_web_ui/state" } },
-        "doc:state": "OK"
-      }
-    ],  
     "doc:outputs": [
       {
-        "_links": { "self": { "href": "/inputs/jenkins_sybil_web_ui/outputs/ledstrip_indy" } },
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/inputs/jenkins_sybil_web_ui/outputs/ledstrip_indy" } },
         "doc:type": "ledstrip"
       },
       {
-        "_links": { "self": { "href": "/inputs/jenkins_sybil_web_ui/outputs/ledstrip_admins" } },
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/inputs/jenkins_sybil_web_ui/outputs/ledstrip_admins" } },
         "doc:type": "ledstrip"
       }
     ]

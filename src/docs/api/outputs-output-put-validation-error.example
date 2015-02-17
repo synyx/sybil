@@ -1,7 +1,7 @@
 {
   "type": "http://sybil.synyx.coffee/errors/validation_error",
   "title": "Validation Error",
-  "detail": "Output is not formatted as expected.",
+  "detail": "Input is not formatted as expected.",
   "fields": [
     {
       "field": "type",

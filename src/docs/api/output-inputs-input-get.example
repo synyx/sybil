@@ -1,7 +1,7 @@
 {
   "_links": {
-    "self": { "href": "/outputs/saeule_admins/inputs/hauptschalter" },
-    "doc:edit": { "href": "/inputs/hauptschalter" }
+    "self": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_admins/inputs/hauptschalter" },
+    "doc:edit": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter" }
   },
   "doc:type": "binary"
 }

@@ -1,6 +1,6 @@
 {
   "_links": {
-    "self": {"href": "/"},
+    "self": {"href": "https://api.sybil.synyx.coffee/"},
     "curies": [
       {
         "name": "doc",
@@ -8,7 +8,8 @@
         "templated": true
       }
     ],
-    "doc:inputs_root": {"href": "/inputs"},
-    "doc:outputs_root": {"href": "/outputs"}
+    "doc:index_inputs": {"href": "https://api.sybil.synyx.coffee/inputs"},
+    "doc:index_outputs": {"href": "https://api.sybil.synyx.coffee/outputs"},
+    "doc:configuration": {"href": "https://api.sybil.synyx.coffee/configuration"}
   }
 }

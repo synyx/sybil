@@ -1,0 +1,17 @@
+{
+  "_links": {
+    "self": {"href": "https://api.sybil.synyx.coffee/configuration"},
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ],
+    "doc:bricks": {"href": "https://api.sybil.synyx.coffee/configuration/bricks"},
+    "doc:ledstrips": {"href": "https://api.sybil.synyx.coffee/configuration/ledstrips"},
+    "doc:lights": {"href": "https://api.sybil.synyx.coffee/configuration/lights"},
+    "doc:sensors": {"href": "https://api.sybil.synyx.coffee/configuration/sensors"},
+    "doc:buttons": {"href": "https://api.sybil.synyx.coffee/configuration/buttons"}
+  }
+}

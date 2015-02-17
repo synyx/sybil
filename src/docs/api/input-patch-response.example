@@ -1,0 +1,27 @@
+{
+  "_links": {
+    "self": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "doc:type": "binary",
+  "doc:state": "false",
+  "doc:source": [ "triggers", "hauptschalter" ],
+  "_embedded": {
+    "doc:outputs": [
+      {
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_nord_1" } },
+        "doc:type": "light"
+      },
+      {
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/outputs/tisch_contargo" } },
+        "doc:type": "light"
+      }
+    ]
+  }
+}

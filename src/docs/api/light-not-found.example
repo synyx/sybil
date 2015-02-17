@@ -1,5 +1,5 @@
 {
   "type": "http://sybil.synyx.coffee/errors/not_found",
   "title": "Not found",
-  "detail": "Input 'this_land' does not exist."
+  "detail": "Light 'bendy' does not exist."
 }

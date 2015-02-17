@@ -7,8 +7,17 @@
       "enum": ["status", "binary"]
     },
     "source": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "state": {
+      "type": "string",
+      "enum": [ true, false, "OK", "WARNING", "CRITICAL"]
     }
   },
-  "required": [ "type", "source"]
+  "required": [ "type", "source" ]
 }

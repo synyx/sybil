@@ -1,6 +1,6 @@
 {
   "_links": {
-    "self": { "href": "/inputs/hauptschalter/outputs?type=light&limit=3&offset=3" },
+    "self": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs?type=light&limit=3&offset=3" },
     "curies": [
       {
         "name": "doc",
@@ -8,31 +8,31 @@
         "templated": true
       }
     ],
-    "doc:first": { "href": "/inputs/hauptschalter/outputs?type=light&limit=3&offset=0" },
-    "doc:last": { "href": "/inputs/hauptschalter/outputs?type=light&limit=3&offset=15" },
-    "doc:next": { "href": "/inputs/hauptschalter/outputs?type=light&limit=3&offset=6" },
-    "doc:previous": { "href": "/inputs/hauptschalter/outputs?type=light&limit=3&offset=0" }
+    "doc:first": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs?type=light&limit=3&offset=0" },
+    "doc:last": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs?type=light&limit=3&offset=15" },
+    "doc:next": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs?type=light&limit=3&offset=6" },
+    "doc:previous": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs?type=light&limit=3&offset=0" }
   },
   "_embedded": {
     "doc:outputs": [
       {
         "_links": { 
-          "self": { "href": "/inputs/hauptschalter/outputs/saeule_indy" },
-          "doc:edit": { "href": "/outputs/saeule_indy" }
+          "self": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs/saeule_indy" },
+          "doc:edit": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_indy" }
         },
         "doc:type": "ledstrip"
       },
       {
         "_links": { 
-          "self": { "href": "/inputs/hauptschalter/outputs/saeule_bmw" },
-          "doc:edit": { "href": "/outputs/saeule_bmw" }
+          "self": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs/saeule_bmw" },
+          "doc:edit": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_bmw" }
         },
         "doc:type": "ledstrip"
       },
       {
         "_links": {
-          "self": { "href": "/inputs/hauptschalter/outputs/tisch_contargo" },
-          "doc:edit": { "href": "/outputs/tisch_contargo" }
+          "self": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs/tisch_contargo" },
+          "doc:edit": { "href": "https://api.sybil.synyx.coffee/outputs/tisch_contargo" }
         },
         "doc:type": "lights"
       }

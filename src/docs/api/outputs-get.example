@@ -1,6 +1,6 @@
 {
   "_links": {
-    "self": { "href": "/outputs?type=ledstrip&limit=3&offset=3" },
+    "self": { "href": "https://api.sybil.synyx.coffee/outputs?type=ledstrip&limit=3&offset=3" },
     "curies": [
       {
         "name": "doc",
@@ -8,23 +8,23 @@
         "templated": true
       }
     ],
-    "doc:first": { "href": "/outputs?type=ledstrip&limit=3&offset=0" },
-    "doc:last": { "href": "/outputs?type=ledstrip&limit=3&offset=12" },
-    "doc:next": { "href": "/outputs?type=ledstrip&limit=3&offset=6" },
-    "doc:previous": { "href": "/outputs?type=ledstrip&limit=3&offset=0" }
+    "doc:first": { "href": "https://api.sybil.synyx.coffee/outputs?type=ledstrip&limit=3&offset=0" },
+    "doc:last": { "href": "https://api.sybil.synyx.coffee/outputs?type=ledstrip&limit=3&offset=12" },
+    "doc:next": { "href": "https://api.sybil.synyx.coffee/outputs?type=ledstrip&limit=3&offset=6" },
+    "doc:previous": { "href": "https://api.sybil.synyx.coffee/outputs?type=ledstrip&limit=3&offset=0" }
   },
   "_embedded": {
     "doc:outputs": [
       {
-        "_links": { "self": { "href": "/outputs/ledstrip_indy" } },
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/outputs/ledstrip_indy" } },
         "doc:type": "ledstrip"
       },
       {
-        "_links": { "self": { "href": "/outputs/ledstrip_admins" } },
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/outputs/ledstrip_admins" } },
         "doc:type": "ledstrip"
       },
       {
-        "_links": { "self": { "href": "/outputs/ledstrip_contargo" } },
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/outputs/ledstrip_contargo" } },
         "doc:type": "ledstrip"
       }
     ]

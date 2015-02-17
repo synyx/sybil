@@ -1,0 +1,15 @@
+{
+  "_links": {
+    "self": { "href": "https://api.sybil.synyx.coffee/configuration/buttons/10_vorne" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "doc:uid": "96omkl",
+  "doc:brick": "synerforge037",
+  "doc:type": "toggle"
+}

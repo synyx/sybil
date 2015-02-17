@@ -1,0 +1,13 @@
+{
+  "type": "http://sybil.synyx.coffee/errors/validation_error",
+  "title": "Validation Error",
+  "detail": "Input is not formatted as expected.",
+  "fields": [
+    {
+      "field": "type",
+      "type": "http://sybil.synyx.coffee/errors/validation_error#brick_port",
+      "title": "port is invalid",
+      "detail": "'Marseille' is not a valid port; port must be an integer."
+    }
+  ]
+}

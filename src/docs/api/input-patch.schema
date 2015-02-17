@@ -2,10 +2,9 @@
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "properties": {
-    "state": {
+    "action": {
       "type": "string",
-      "enum": [ "OK", "WARNING", "CRITICAL", true, false ]
+      "enum": [ "on", "off", "toggle" ]
     }
-  },
-  "required": [ "state" ]
+  }
 }

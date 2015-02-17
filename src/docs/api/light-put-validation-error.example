@@ -1,0 +1,13 @@
+{
+  "type": "http://sybil.synyx.coffee/errors/validation_error",
+  "title": "Validation Error",
+  "detail": "Input is not formatted as expected.",
+  "fields": [
+    {
+      "field": "brick",
+      "type": "http://sybil.synyx.coffee/errors/validation_error#light_brick",
+      "title": "brick is invalid",
+      "detail": "'shadow' is not an existing brick. Lights have to connect to an existing brick."
+    }
+  ]
+}

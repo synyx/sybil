@@ -1,0 +1,15 @@
+{
+  "_links": {
+    "self": { "href": "https://api.sybil.synyx.coffee/configuration/ledstrips/ledstrip_indy" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "doc:uid": "x5d",
+  "doc:length": 30,
+  "doc:brick": "synerforge001"
+}

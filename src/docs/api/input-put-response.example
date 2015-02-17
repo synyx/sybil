@@ -1,0 +1,18 @@
+{
+  "_links": {
+    "self": { "href": "https://api.sybil.synyx.coffee/inputs/jenkins_sybil_web_ui" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "doc:type": "status",
+  "doc:source": [ "jenkins", "sybil_web_ui" ],
+  "doc:state": "OK",
+  "_embedded": {
+    "doc:outputs": []
+  }
+}

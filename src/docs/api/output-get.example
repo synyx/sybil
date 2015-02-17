@@ -1,6 +1,6 @@
 {
   "_links": {
-    "self": { "href": "/outputs/saeule_admins" },
+    "self": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_admins" },
     "curies": [
       {
         "name": "doc",
@@ -13,12 +13,12 @@
   "_embedded": {
     "doc:inputs": [
       {
-        "_links": { "self": { "href": "/outputs/saeule_admins/inputs/hauptschalter" } },
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_admins/inputs/hauptschalter" } },
         "doc:type": "binary",
         "doc:state": "true"
       },
       {
-        "_links": { "self": { "href": "/outputs/saeule_admins/inputs/schalter_admins" } },
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_admins/inputs/schalter_admins" } },
         "doc:type": "binary",
         "doc:state": "true"
       }

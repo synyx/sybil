@@ -1,0 +1,15 @@
+{
+  "_links": {
+    "self": { "href": "https://api.sybil.synyx.coffee/configuration/lights/tisch_contargo" },
+    "curies": [
+      {
+        "name": "doc",
+        "href": "http://sybil.synyx.coffee/docs/rels/{rel}",
+        "templated": true
+      }
+    ]
+  },
+  "doc:uid": "ah3",
+  "doc:brick": "synerforge001",
+  "doc:relay": 1
+}
