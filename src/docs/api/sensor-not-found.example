@@ -1,5 +1,5 @@
 {
-  "type": "http://sybil.synyx.coffee/errors/not_found",
+  "type": "http://wiki.sybil.synyx.coffee/errors/not_found",
   "title": "Not found",
   "detail": "Sensor 'luminance_sickbay' does not exist."
 }

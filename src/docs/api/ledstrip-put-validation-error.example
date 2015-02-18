@@ -1,11 +1,11 @@
 {
-  "type": "http://sybil.synyx.coffee/errors/validation_error",
+  "type": "http://wiki.sybil.synyx.coffee/errors/validation_error",
   "title": "Validation Error",
   "detail": "Input is not formatted as expected.",
   "fields": [
     {
       "field": "length",
-      "type": "http://sybil.synyx.coffee/errors/validation_error#ledstrip_length",
+      "type": "http://wiki.sybil.synyx.coffee/errors/validation_error#ledstrip_length",
       "title": "length is invalid",
       "detail": "'23.17' is not a valid length; length must be an integer."
     }

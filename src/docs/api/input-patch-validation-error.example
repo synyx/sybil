@@ -1,11 +1,11 @@
 {
-  "type": "http://sybil.synyx.coffee/errors/validation_error",
+  "type": "http://wiki.sybil.synyx.coffee/errors/validation_error",
   "title": "Validation Error",
   "detail": "Input is not formatted as expected.",
   "fields": [
     {
       "field": "action",
-      "type": "http://sybil.synyx.coffee/errors/validation_error#input_action",
+      "type": "http://wiki.sybil.synyx.coffee/errors/validation_error#input_action",
       "title": "action is invalid",
       "detail": "'gorram' is not a valid action; action for this resource must be either 'on', 'off', or 'toggle'."
     }
