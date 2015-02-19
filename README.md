@@ -1,9 +1,6 @@
 Sybil
 =====
 
-synyx Büro - Information & Licht
---------------------------------
-
 A project to illuminate and inform the people in the office(s).
 Uses WS2812 LED Strips connected to Tinkerforge bricks.
 
