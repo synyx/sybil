@@ -4,8 +4,11 @@
   "properties": {
     "type": {
       "type": "string",
-      "enum": [ "light", "ledstrip" ]
+      "enum": [ "light", "ledstrip", "notification" ]
+    },
+    "destination": {
+      "type": "array"
     }
   },
-  "required": [ "type" ]
+  "required": [ "type", "destination" ]
 }

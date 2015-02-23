@@ -10,6 +10,7 @@
     ]
   },
   "doc:type": "light",
+  "doc:destination": [ "saeule_admins", 2 ],
   "_embedded": {
     "doc:inputs": [
       {

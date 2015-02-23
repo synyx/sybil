@@ -34,7 +34,7 @@
           "self": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs/tisch_contargo" },
           "doc:edit": { "href": "https://api.sybil.synyx.coffee/outputs/tisch_contargo" }
         },
-        "doc:type": "lights"
+        "doc:type": "light"
       }
     ]
   }

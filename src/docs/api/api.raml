@@ -2,36 +2,147 @@
 ---
 title: Sybil
 baseUri: https://api.sybil.synyx.coffee
-version: v1
+version: DRAFT 1
 mediaType: application/vnd.synyx.sybil-v1+hal+json
 
 documentation:
  - title: Introduction
    content: |
+    ---
+    This is only a short overview, the whole documentation will (hopefully soon) be available at http://wiki.sybil.synyx.coffee/
+    
     This API maps Inputs to Outputs.  
-    **Inputs** can bei either *status*es, from Jenkins builds or systems watched by Nagios, or *binary*s, e.g. buttons &
-    switches, either on a web-interface or actual physical objects.  
-    **Outputs** can be either *light*s (white light, illuminating the room at large) or *ledstrip*s (multi-colored
-    lights, used mostly for information).
+    **Inputs** can bei either *status*es, from Jenkins builds or systems watched by Nagios, or *binary*s, e.g. buttons,
+    either on a web-interface or actual physical objects.  
+    **Outputs** can be either *light*s (white light, illuminating the room at large), *ledstrip*s (multi-colored
+    lights, used mostly for information), or *notification*s (direct notifications in any manner of ways).
     
     Each Input can control zero or more Outputs, and each Output can be controlled by zero or more Inputs.  
     Accordingly, each Input has a list of associated Outputs and each Output a list of associated Inputs.
+    
+ - title: Resources
+   content: |
+    ---
+    All resource names must be lowercase and contain only alphanumeric characters and underscores.
 
+ - title: Configuration
+   content: |
+    ---
+    The configuration resources consist of "bricks", the base Tinkerforge base platform, and several types of
+    "bricklets", the components attached to the bricks.
+    
+    Bricklets can only be added to existing bricks, so we have to configure the bricks first.  
+    
+    ### Bricks
+    ---
+    
+    A brick resources has a unique name, which is equivalent to the brick's **hostname**.
+    It has one optional property:
+        
+    * port - The network port on which the brick communicates, defaults to 4223 if not specified otherwise.
+    
+    ### Bricklets
+    ---
+    
+    #### **LED Strips**
+    
+    A ledstrip resource has a unique name, under which it can be addressed by an output resource's *destination* property.
+    It has the following properties:
+    
+    * uid - The bricklet's unique ID. It can be found through the Tinkerforge brick viewer.
+    * brick - The name of the brick the bricklet is connected to. Must already be configured.
+    * length - The number of RGB LEDs connected to the bricklet.
+    
+    #### **Lights**
+    
+    A light resource has a unique name, under which it can be addressed by an output resource's *destination* property.
+    It has the following properties:
+    
+    * uid - The bricklet's unique ID. It can be found through the Tinkerforge brick viewer.
+    * brick - The name of the brick the bricklet is connected to. Must already be configured.    
+    
+    #### **Buttons**
+    
+    A button resource has a unique name, under which it can be addressed by an input resource's *source* property.
+    It has the following properties:
+    
+    * uid - The bricklet's unique ID. It can be found through the Tinkerforge brick viewer.
+    * brick - The name of the brick the bricklet is connected to. Must already be configured.    
+    * type - A button can be one of the following types:
+      * on - The buttons turns it's associated outputs on.
+      * off - The button turns it's associated outputs off.
+      * toggle - The button toggles it's associated outputs from on to off or from off to on.
+      
+    #### **Sensors**
+    
+    A sensor resource has a unique name and has the following properties:
+    
+    * uid - The bricklet's unique ID. It can be found through the Tinkerforge brick viewer.
+    * brick - The name of the brick the bricklet is connected to. Must already be configured.    
+    * type - A sensor can be of the following types:
+      * luminance - The sensor measures brightness.
+      * motion - The sensor is a motion detector.
+        
+ - title: Inputs & Outputs
+   content: |
+    ---
+    
+    #### **Inputs**
+    
+    An input resource has a unique name, under which outputs can link to it.
+    It also has the following properties:
+    
+    * type - Dictates the *state*s the input can take:
+      * binary - *state* is either *false* or *true*, representing off and on respectively.
+      * status - *state* is either "OK", "WARNING", or "CRITICAL".
+    
+    
+    * source - An array, dictating where the input's state comes from.  
+      The first element of the array must be one of four strings, following elements further specify the source.
+      * [ "jenkins", "{job name}" ]
+      * [ "nagios", "{hostname}", "{optional servicename}" ]
+      * [ "button", "{button name}" ]
+      * [ "trigger" ]
+  
+    
+    * state - The input's state, deciding the associated outputs' behaviour:
+      * true
+      * false
+      * "OK"
+      * "WARNING"
+      * "CRITICAL"
+
+    #### **Outputs**
+    
+    An output resource has a unique name, under which inputs can link to it.
+    It also has the following properties:
+    
+    * type - The type of the output:
+      * ledstrip
+      * light
+      * notification
+    
+    
+    * destination - Which is an array, pointing to the actual hardware or communication channel.
+      * [ "{ledstrip resource}" ]
+      * [ "{light resource}", "{relay number: 1|2}" ]
+      * [ "{notification protocol}", "{user/channel/etc.}" ]
     
  - title: Media Types
    content: |
-    Responses will usually contain a body of the type
-    
-        application/vnd.synyx.sybil-v1+hal+json
-        
-    or, in some cases, no body at all.
-    
+    ---
     Request bodies should have the type
     
         application/vnd.synyx.sybil-v1+json
         
     if applicable.
         
+    Responses will usually contain a body of the type
+    
+        application/vnd.synyx.sybil-v1+hal+json
+        
+    or, in some cases, no body at all.
+    
     In case of an error, the body of the response will be of the type
     
         application/problem+json
@@ -39,12 +150,15 @@ documentation:
     and the API will of course return a HTTP error status code.
  
  - title: Missing examples
-   content: Examples for the HTTP **HEAD** and **OPTIONS** verbs are not provided, as their responses are subsets of the
+   content: |
+    ---
+    Examples for the HTTP **HEAD** and **OPTIONS** verbs are not provided, as their responses are subsets of the
     one provided by **GET**.
  
  - title: Unsupported methods
    content: |
-    Using an unsupported verb on a ressource will result in this error message:
+    ---
+    Using an unsupported verb on a resource will result in this error message:
 
     > #### HTTP status code [405](http://httpstatus.es/405)
     > ---
@@ -456,7 +570,7 @@ traits:
                example: !include brick-not-found.example
 
   /ledstrips:
-    description: List of LED Strips; ledstrip-type output names must match these.
+    description: List of LED Strips; ledstrip-type outputs can have these as their destination.
     get:
       description: Retrieve the list of ledstrips.
       is: [ paginated ]
@@ -520,7 +634,7 @@ traits:
       
       
   /lights:
-    description: List of lights; light-type output names must match these.
+    description: List of lights; light-type outputs can have these as their destination.
     get:
       description: Retrieve the list of lights.
       is: [ paginated ]
@@ -583,7 +697,7 @@ traits:
                example: !include light-not-found.example
 
   /buttons:
-    description: A list of buttons; binary-type input names must match these.
+    description: A list of buttons; binary-type inputs can have these as their source.
     get:
       description: Retrieve the list of buttons.
       is: [ paginated ]

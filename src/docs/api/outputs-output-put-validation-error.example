@@ -7,7 +7,7 @@
       "field": "type",
       "type": "http://wiki.sybil.synyx.coffee/errors/validation_error#output_type",
       "title": "type is invalid",
-      "detail": "'firefly' is not a valid type; type must be either 'light' or 'ledstrip'."
+      "detail": "'firefly' is not a valid type; type must be either 'light', 'ledstrip' or 'notification'."
     }
   ]
 }

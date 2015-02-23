@@ -15,10 +15,10 @@
         "_links": { "self": { "href": "https://api.sybil.synyx.coffee/configuration/lights/tisch_contargo" } }
       },
       {
-        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/configuration/lights/saeule_admins_1" } }
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/configuration/lights/saeule_admins" } }
       },
       {
-        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/configuration/lights/saeule_admins_2" } }
+        "_links": { "self": { "href": "https://api.sybil.synyx.coffee/configuration/lights/saeule_indy" } }
       }
     ]
   }

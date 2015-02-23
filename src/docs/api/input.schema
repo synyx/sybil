@@ -7,12 +7,7 @@
       "enum": ["status", "binary"]
     },
     "source": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "minItems": 2,
-      "maxItems": 2
+      "type": "array"
     },
     "state": {
       "type": "string",
