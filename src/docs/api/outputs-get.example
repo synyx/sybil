@@ -17,15 +17,18 @@
     "doc:outputs": [
       {
         "_links": { "self": { "href": "https://api.sybil.synyx.coffee/outputs/ledstrip_indy" } },
-        "doc:type": "ledstrip"
+        "doc:type": "ledstrip",
+        "doc:state": true
       },
       {
         "_links": { "self": { "href": "https://api.sybil.synyx.coffee/outputs/ledstrip_admins" } },
-        "doc:type": "ledstrip"
+        "doc:type": "ledstrip",
+        "doc:state": true
       },
       {
         "_links": { "self": { "href": "https://api.sybil.synyx.coffee/outputs/ledstrip_contargo" } },
-        "doc:type": "ledstrip"
+        "doc:type": "ledstrip",
+        "doc:state": false
       }
     ]
   }

@@ -11,7 +11,7 @@
   },
   "doc:type": "binary",
   "doc:state": "false",
-  "doc:source": [ "button", "hauptschalter" ],
+  "doc:source": [ "button", "hauptschalter", 0 ],
   "_embedded": {
     "doc:outputs": [
       {

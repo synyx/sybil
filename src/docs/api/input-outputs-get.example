@@ -20,21 +20,24 @@
           "self": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs/saeule_indy" },
           "doc:edit": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_indy" }
         },
-        "doc:type": "ledstrip"
+        "doc:type": "ledstrip",
+        "doc:state": true
       },
       {
         "_links": { 
           "self": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs/saeule_bmw" },
           "doc:edit": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_bmw" }
         },
-        "doc:type": "ledstrip"
+        "doc:type": "ledstrip",
+        "doc:state": true
       },
       {
         "_links": {
           "self": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs/tisch_contargo" },
           "doc:edit": { "href": "https://api.sybil.synyx.coffee/outputs/tisch_contargo" }
         },
-        "doc:type": "light"
+        "doc:type": "light",
+        "doc:state": false
       }
     ]
   }

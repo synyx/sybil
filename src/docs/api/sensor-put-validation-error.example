@@ -5,7 +5,7 @@
   "fields": [
     {
       "field": "type",
-      "type": "http://wiki.sybil.synyx.coffee/errors/validation_error#button_type",
+      "type": "http://wiki.sybil.synyx.coffee/errors/validation_error#sensor_type",
       "title": "type is invalid",
       "detail": "'co2' is not a valid type; type must be either 'motion' or 'luminance'."
     }

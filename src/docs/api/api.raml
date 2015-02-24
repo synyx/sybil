@@ -97,11 +97,11 @@ documentation:
       * status - *state* is either "OK", "WARNING", or "CRITICAL".
     
     
-    * source - An array, dictating where the input's state comes from.  
-      The first element of the array must be one of four strings, following elements further specify the source.
+    * source - An array, dictating where the input's state comes from.
+      The first element of the array must be one of four strings, following elements further specify the source:
       * [ "jenkins", "{job name}" ]
       * [ "nagios", "{hostname}", "{optional servicename}" ]
-      * [ "button", "{button name}" ]
+      * [ "button", "{button name}", "{input number: 0-3} ]
       * [ "trigger" ]
   
     
@@ -123,10 +123,15 @@ documentation:
       * notification
     
     
-    * destination - Which is an array, pointing to the actual hardware or communication channel.
+    * destination - Which is an array, pointing to the actual hardware or communication channel:
       * [ "{ledstrip resource}" ]
       * [ "{light resource}", "{relay number: 1|2}" ]
       * [ "{notification protocol}", "{user/channel/etc.}" ]
+
+
+    * state - The output's state:
+      * false - The output is not active: All the linked inputs have their states false or "OK".
+      * true - The output is active: At least one of the inputs has its state true, "WARNING", or "CRITICAL"
     
  - title: Media Types
    content: |

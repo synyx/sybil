@@ -16,11 +16,13 @@
     "doc:outputs": [
       {
         "_links": { "self": { "href": "https://api.sybil.synyx.coffee/inputs/jenkins_sybil_web_ui/outputs/ledstrip_indy" } },
-        "doc:type": "ledstrip"
+        "doc:type": "ledstrip",
+        "doc:state": true
       },
       {
         "_links": { "self": { "href": "https://api.sybil.synyx.coffee/inputs/jenkins_sybil_web_ui/outputs/ledstrip_admins" } },
-        "doc:type": "ledstrip"
+        "doc:type": "ledstrip",
+        "doc:state": true
       }
     ]
   }

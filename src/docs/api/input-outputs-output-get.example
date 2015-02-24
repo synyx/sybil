@@ -4,5 +4,6 @@
     "doc:edit": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_admins" }
   },
   "doc:type": "light",
-  "doc:destination": [ "saeule_admins", 2 ]
+  "doc:destination": [ "saeule_admins", 2 ],
+  "doc:state": true
 }
