@@ -25,6 +25,7 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
     +-main/                             Main.
       +-java/                           Code.
       | +-org/synyx/sybil/              Base package.
+      |   +-api/                        Controllers for the REST API.
       |   +-common/                     Common modules.
       |   | +-Bricklet                  Interface all Bricklets inherit from. 
       |   | +-BrickletRegistry          Interface all registries for bricklets inherit from.
@@ -37,7 +38,6 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
       |   | +-OutputLEDStripRepository  Interface for LED Strips.
       |   +-domain/                     Domain classes.
       |   | +-BrickDomain               Domain for Tinkerforge Bricks.
-      |   | +-BrickletDomain            Interface all Bricklet domains inherit from.
       |   | +-OutputLEDStripDomain      Domain for LED Strips, inherits from BrickletDomain.
       |   +-in/                         Inputs.
       |   | +-Status                    Enum for statuses (OKAY, WARNING & CRITICAL)
