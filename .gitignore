@@ -3,3 +3,5 @@
 .gradle/
 *.iml
 build/
+logs/
+out/
