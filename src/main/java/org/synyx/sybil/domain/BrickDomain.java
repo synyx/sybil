@@ -3,6 +3,8 @@ package org.synyx.sybil.domain;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
+import org.springframework.hateoas.core.Relation;
+
 
 /**
  * IPConnection domain. Persistence for the Tinkerforge IPConnection data, but not the actual object.
@@ -11,6 +13,7 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  */
 
 @NodeEntity
+@Relation(collectionRelation = "bricks")
 public class BrickDomain {
 
     @GraphId
