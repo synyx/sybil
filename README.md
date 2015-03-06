@@ -11,10 +11,36 @@ This project is under heavy development and further documentation is forthcoming
 * Saves and loads Tinkerforge bricks and LED Strips bricklets to/from Neo4j database.
 * Outputs Statuses on LED Strips *(see integration test org.synyx.sybil.out.SingleStatusOnLEDStripTest)*
 * Outputs arbitrary pixels and sprites " " *(see integration test org.synyx.sybil.out.OutputLEDStripTest)*
+* Serves a *very barebones* REST API for configuring the bricks and bricklets. 
 
-To run, run an integration test, e.g.:
+### Running ###
 
-gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
+#### Colored Lights ####
+
+To see colored lights on the LED Strips, run an integration test:
+
+`gradlew integTest`
+
+#### REST API ####
+
+To run the server serving the REST API:
+
+`gradlew appRun`
+
+#### Debugging ####
+
+First run
+
+`gradlew appStartDebug`
+
+Now connect your debugger to port 5005.
+
+e.g. in IntelliJ IDEA create a Run Configuration of type `Remote`, leave all the defaults.
+Now you can run this Configuration with the Debug command.
+
+When you are done, run
+
+`gradlew appStop`
 
 ### Structure ###
     src/
@@ -26,6 +52,7 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
       +-java/                           Code.
       | +-org/synyx/sybil/              Base package.
       |   +-api/                        Controllers for the REST API.
+      |   | +-resources/                API Resources, wrappers around other objects.
       |   +-common/                     Common modules.
       |   | +-Bricklet                  Interface all Bricklets inherit from. 
       |   | +-BrickletRegistry          Interface all registries for bricklets inherit from.
@@ -56,7 +83,9 @@ gradlew integTest --tests org.synyx.sybil.out.OutputLEDStripTest
 
 The Spring configuration in **SpringConfig** loads:
 
-* All the **\*Registry** classes, since they're annotated with @Service
+* All the __*Registry__ classes, since they're annotated with @Service
+* The **ApiWebAppInitializer**, since it extends a ServletInitializer
+* Which in turn loads the **WebConfig**
 * The database configuration from **Neo4jConfig**
 * Which in turn loads the __*Repository__ and __*Domain__ classes.
 
@@ -87,3 +116,6 @@ should wrap around at the end of the LED Strip or not.
 Additionally, you can create a new **SingleStatusOnLEDStrip** by passing it an **OutputLEDStrip**, and then call it's
 *showStatus* method with a **StatusInformation** object, which is instantiated with a source String, a **Status** and
 optionally a priority.
+
+Bricks saved in the database can be listed via the REST API at /configuration/bricks and
+/configuration/bricks/{hostname} respectively. 
