@@ -9,21 +9,14 @@ This project is under heavy development and further documentation is forthcoming
 ### Working so far ###
 
 * Saves and loads Tinkerforge bricks and LED Strips bricklets to/from Neo4j database.
+* Reads configuration from JSON files.
 * Outputs Statuses on LED Strips *(see integration test org.synyx.sybil.out.SingleStatusOnLEDStripTest)*
 * Outputs arbitrary pixels and sprites " " *(see integration test org.synyx.sybil.out.OutputLEDStripTest)*
-* Serves a *very barebones* REST API for configuring the bricks and bricklets. 
+* Serves a *very barebones* REST API showing the configured the bricks and bricklets. 
 
 ### Running ###
 
-#### Colored Lights ####
-
-To see colored lights on the LED Strips, run an integration test:
-
-`gradlew integTest`
-
-#### REST API ####
-
-To run the server serving the REST API:
+To run the server:
 
 `gradlew appRun`
 
@@ -41,6 +34,16 @@ Now you can run this Configuration with the Debug command.
 When you are done, run
 
 `gradlew appStop`
+
+#### Colored Lights ####
+
+To see colored lights on the connected & configured LED Strips, run an integration test:
+
+`gradlew integTest`
+
+*(Might not currently work as expected!  
+**TODO: Fix Integration tests**)*
+
 
 ### Structure ###
     src/
@@ -78,18 +81,32 @@ When you are done, run
       |     +-Sprite1D                  Sprite object, for LED Strips.
       +-resources/                      Resources.
         +-logback.xml                   Configures the logback logging engine.
+        +-config.properties             Contains the path to the config files.
 
 ### How to use ###
 
 The Spring configuration in **SpringConfig** loads:
 
-* All the __*Registry__ classes, since they're annotated with @Service
-* The **ApiWebAppInitializer**, since it extends a ServletInitializer
-* Which in turn loads the **WebConfig**
-* The database configuration from **Neo4jConfig**
+* All the __*Registry__ classes, since they're annotated with @Service.
+* The **ApiWebAppInitializer**, since it extends a ServletInitializer.
+* Which in turn loads the **WebConfig**.
+* The database configuration from **Neo4jConfig**.
 * Which in turn loads the __*Repository__ and __*Domain__ classes.
+* The **StartupLoader** class, since it's annotated with @Component.
+* Which in turn loads the **JSONConfigLoader**'s *loadConfig* method.
 
-Now you can create new **BrickDomain**s with a host and optionally a port.
+The *loadConfig* method loads the bricks & LED Strip configurations from JSON files (the location of which is defined in
+the **config.properties** file) and saves them to the database.
+
+Bricks saved in the database can be listed via the REST API at /configuration/bricks and
+/configuration/bricks/{hostname} respectively. Same goes for LED Strips at /configuration/ledstrips and 
+/configuration/ledstrips/{name}.
+
+#### Extending Sybil ####
+
+If you want to extend Sybil's functionality, here's how you operate it "manually":
+
+You can create new **BrickDomain**s with a host and optionally a port.
 Save those to the **BrickRepository** with it's *save* method.  
 Create new **OutputLEDStripDomain**s with a name to identify the Output, a Bricklet's UID, the number of LEDs on the 
 Strip and the **BrickDomain** you created earlier.
@@ -116,6 +133,3 @@ should wrap around at the end of the LED Strip or not.
 Additionally, you can create a new **SingleStatusOnLEDStrip** by passing it an **OutputLEDStrip**, and then call it's
 *showStatus* method with a **StatusInformation** object, which is instantiated with a source String, a **Status** and
 optionally a priority.
-
-Bricks saved in the database can be listed via the REST API at /configuration/bricks and
-/configuration/bricks/{hostname} respectively. 
