@@ -28,7 +28,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 
 /**
- * ConfigurationController.
+ * ConfigurationBricksController.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
@@ -86,8 +86,7 @@ public class ConfigurationBricksController {
         BrickDomain brick = brickRepository.findByHostname(hostname);
 
         Link self = linkTo(methodOn(ConfigurationBricksController.class).brick(brick.getHostname())).withSelfRel();
-        BrickResource resource = new BrickResource(brick, self);
 
-        return resource;
+        return new BrickResource(brick, self);
     }
 }

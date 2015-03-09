@@ -1,21 +1,14 @@
 apply plugin: 'java' //Java plugin
 apply plugin: 'war' //war plugin
+apply from: 'https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.plugin' //jetty 9 & other cool stuff
 
 sourceCompatibility = 1.8 //Java 8
 version = '0.1'
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.bmuschko:gradle-tomcat-plugin:2.1'
-    }
+gretty {
+    recompileOnSourceChange = false; // not terribly useful with an autosaving IDE.
+    contextPath = "/" // make the project available at / URL instead of /$projectname/
 }
-
-apply plugin: 'com.bmuschko.tomcat'
-
 
 repositories {
     mavenCentral()
@@ -81,9 +74,4 @@ dependencies {
     integTestCompile configurations.testCompile
     integTestCompile sourceSets.test.output
     integTestRuntime configurations.testRuntime
-
-    def tomcatVersion = '7.0.59'
-    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 }

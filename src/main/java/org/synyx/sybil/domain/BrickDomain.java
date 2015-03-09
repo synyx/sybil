@@ -21,7 +21,7 @@ public class BrickDomain {
 
     private String hostname;
 
-    private int port;
+    private int port = 4223; // default port
 
     /**
      * DO NOT CALL THIS! Exists only to placate Neo4j.
@@ -51,7 +51,6 @@ public class BrickDomain {
     public BrickDomain(String hostname) {
 
         this.hostname = hostname;
-        this.port = 4223;
     }
 
     /**
