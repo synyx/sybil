@@ -16,9 +16,35 @@ This project is under heavy development and further documentation is forthcoming
 
 ### Running ###
 
+*Note:* To run or deploy the server you need `bricks.json` and `ledstrips.json` in the `config/` directory.
+
 To run the server:
 
 `gradlew appRun`
+
+#### Deployment ####
+
+Run
+
+`gradlew buildProduct`
+
+and it will produce a self-contained web-app with all the required dependencies in `build/output/sybil`, that can run
+on any computer that has Java 8 installed.
+
+Copy this directory to wherever you want to deploy Sybil and run
+
+`start.sh` or `start.bat`.
+
+Run
+
+`restart.sh` or `restart.bat`
+
+to restart the server or
+
+`stop.sh` or `stop.bat`
+
+to stop the server.
+
 
 #### Debugging ####
 
@@ -85,15 +111,17 @@ To see colored lights on the connected & configured LED Strips, run an integrati
 
 ### How to use ###
 
-The Spring configuration in **SpringConfig** loads:
+The Servlet Container loads the configuration from **ApiWebAppInitializer**, since it extends a ServletInitializer.
+This then loads:
 
-* All the __*Registry__ classes, since they're annotated with @Service.
-* The **ApiWebAppInitializer**, since it extends a ServletInitializer.
-* Which in turn loads the **WebConfig**.
-* The database configuration from **Neo4jConfig**.
-* Which in turn loads the __*Repository__ and __*Domain__ classes.
-* The **StartupLoader** class, since it's annotated with @Component.
-* Which in turn loads the **JSONConfigLoader**'s *loadConfig* method.
+* The **WebConfig** class.
+    * Which in turn loads all the __*Controller__ classes, since they're annotated with @RestController
+* The Spring configuration in **SpringConfig**, which loads:
+    * All the __*Registry__ classes, since they're annotated with @Service.
+    * The database configuration from **Neo4jConfig**.
+        * Which in turn loads the __*Repository__ and __*Domain__ classes.
+    * The **StartupLoader** class, since it's annotated with @Component.
+        * Which in turn runs the **JSONConfigLoader**'s *loadConfig* method.
 
 The *loadConfig* method loads the bricks & LED Strip configurations from JSON files (the location of which is defined in
 the **config.properties** file) and saves them to the database.
