@@ -5,9 +5,11 @@ apply from: 'https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.p
 sourceCompatibility = 1.8 //Java 8
 version = '0.1'
 
-gretty {
+gretty { // configure gretty
     recompileOnSourceChange = false; // not terribly useful with an autosaving IDE.
     contextPath = "/" // make the project available at / URL instead of /$projectname/
+    logDir = "logs" // put server logs in the same place as app logs
+    logFileName = "server" // sybil.log is already used by the app log
 }
 
 repositories {
