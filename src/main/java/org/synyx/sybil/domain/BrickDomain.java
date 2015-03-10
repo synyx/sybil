@@ -3,6 +3,8 @@ package org.synyx.sybil.domain;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
+import org.springframework.hateoas.core.Relation;
+
 
 /**
  * IPConnection domain. Persistence for the Tinkerforge IPConnection data, but not the actual object.
@@ -11,6 +13,7 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  */
 
 @NodeEntity
+@Relation(collectionRelation = "bricks")
 public class BrickDomain {
 
     @GraphId
@@ -18,7 +21,7 @@ public class BrickDomain {
 
     private String hostname;
 
-    private int port;
+    private int port = 4223; // default port
 
     /**
      * DO NOT CALL THIS! Exists only to placate Neo4j.
@@ -48,7 +51,6 @@ public class BrickDomain {
     public BrickDomain(String hostname) {
 
         this.hostname = hostname;
-        this.port = 4223;
     }
 
     /**

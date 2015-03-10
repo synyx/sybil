@@ -1,9 +1,13 @@
 package org.synyx.sybil.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
+
+import org.springframework.hateoas.core.Relation;
 
 
 /**
@@ -13,6 +17,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
  */
 
 @NodeEntity
+@Relation(collectionRelation = "ledstrips")
 public class OutputLEDStripDomain {
 
     @GraphId
@@ -26,6 +31,7 @@ public class OutputLEDStripDomain {
 
     @Fetch
     @RelatedTo(type = "IS_PART_OF")
+    @JsonProperty("brick")
     private BrickDomain brickDomain;
 
     /**
