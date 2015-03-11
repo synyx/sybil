@@ -14,9 +14,14 @@ This project is under heavy development and further documentation is forthcoming
 * Outputs arbitrary pixels and sprites " " *(see integration test org.synyx.sybil.out.OutputLEDStripTest)*
 * Serves a *very barebones* REST API showing the configured the bricks and bricklets. 
 
-### Running ###
+### Execution ###
 
-*Note:* To run or deploy the server you need `bricks.json` and `ledstrips.json` in the `config/` directory.
+#### Configuration ####
+
+To run or deploy the server you need `bricks.json`, `ledstrips.json`, and `jenkins.json` in the `config/` directory.  
+Note that all the names used in the configuration files *must* be lowercase.
+
+#### Running ####
 
 To run the server:
 

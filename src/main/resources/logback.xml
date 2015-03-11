@@ -4,7 +4,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         
             <encoder>
-                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
             </encoder>
         
     </appender>
@@ -24,41 +24,35 @@
         </rollingPolicy>
 
         <encoder>
-        <pattern>%d{HH:mm:ss.SSS} %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+        <pattern>%d{HH:mm:ss.SSS} %level %logger{10} [%file:%line] %msg%n</pattern>
         </encoder>
 
     </appender>
 
     
-    <appender name="FILEJSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- appender name="FILEJSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
         
-        <!-- set log directory to logs/ unless system property says otherwise -->
         <file>${logDirectory:-logs/}sybil.json</file>
         
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
             <fileNamePattern>${logDirectory:-logs/}%d{yyyy-MM-dd}.log</fileNamePattern>
 
-            <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>
 
-        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
                 <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
-                    <!-- prettyPrint is probably ok in dev, but usually not ideal in production: -->
-                    <prettyPrint>true</prettyPrint>
+                    <prettyPrint>false</prettyPrint>
                 </jsonFormatter>
                 <context>api</context>
                 <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</timestampFormat>
                 <timestampFormatTimezoneId>UTC</timestampFormatTimezoneId>
                 <appendLineSeparator>true</appendLineSeparator>
             </layout>
-            <!-- <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern> -->
         </encoder>
 
-    </appender>
+    </appender --><!-- enable for json logging -->
 
     <!-- set logging level to INFO unless system property says otherwise -->
     <logger name="org.synyx.sybil" level="${logLevel:-INFO}">
