@@ -58,6 +58,10 @@ public class OutputLEDStripRegistry implements BrickletRegistry {
      */
     public OutputLEDStrip get(OutputLEDStripDomain outputLEDStripDomain) {
 
+        if (outputLEDStripDomain == null) {
+            return null;
+        }
+
         // if there is no LED Strip with that id in the HashMap yet...
         if (!outputLEDStrips.containsKey(outputLEDStripDomain)) {
             BrickletLEDStrip brickletLEDStrip = null; // since there is a try, it might end up undefined

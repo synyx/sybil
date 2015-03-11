@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.common.JSONConfigLoader;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 
 
@@ -32,7 +34,7 @@ public class StartupLoader {
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws IOException {
 
         LOG.info("Loading Startup Configuration");
 
