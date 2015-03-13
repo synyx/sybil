@@ -57,6 +57,49 @@ public class OutputLEDStripDomain {
         this.brickDomain = brickDomain;
     }
 
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        OutputLEDStripDomain that = (OutputLEDStripDomain) o;
+
+        if (length != that.length)
+            return false;
+
+        if (!brickDomain.equals(that.brickDomain))
+            return false;
+
+        if (!id.equals(that.id))
+            return false;
+
+        if (!name.equals(that.name))
+            return false;
+
+        if (!uid.equals(that.uid))
+            return false;
+
+        return true;
+    }
+
+
+    @Override
+    public int hashCode() {
+
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + uid.hashCode();
+        result = 31 * result + length;
+        result = 31 * result + brickDomain.hashCode();
+
+        return result;
+    }
+
+
     /**
      * Gets the name under which the Bricklet is addressable.
      *

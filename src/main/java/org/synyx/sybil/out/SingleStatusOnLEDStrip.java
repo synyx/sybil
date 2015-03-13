@@ -29,6 +29,41 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
         this.outputLEDStrip = outputLEDStrip;
     }
 
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        SingleStatusOnLEDStrip ledStrip = (SingleStatusOnLEDStrip) o;
+
+        if (color != null ? !color.equals(ledStrip.color) : ledStrip.color != null)
+            return false;
+
+        if (outputLEDStrip != null ? !outputLEDStrip.equals(ledStrip.outputLEDStrip) : ledStrip.outputLEDStrip != null)
+            return false;
+
+        if (status != ledStrip.status)
+            return false;
+
+        return true;
+    }
+
+
+    @Override
+    public int hashCode() {
+
+        int result = outputLEDStrip != null ? outputLEDStrip.hashCode() : 0;
+        result = 31 * result + (color != null ? color.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+
+        return result;
+    }
+
+
     /**
      * Show the status on the LED strip.
      *
@@ -52,7 +87,7 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
             color = Color.OKAY;
         }
 
-        LOG.debug("Set color to: {}", color);
+        LOG.debug("Set ledstrip {} to color {}", outputLEDStrip.getName(), color);
 
         outputLEDStrip.setFill(color);
         outputLEDStrip.updateDisplay();
@@ -67,7 +102,7 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
     public void setStatus(StatusInformation statusInformation) {
 
-        LOG.debug("Show status information: {}", statusInformation.getStatus());
+        LOG.debug("Show status {} on ledstrip {}", statusInformation.getStatus(), outputLEDStrip.getName());
 
         status = statusInformation.getStatus();
     }

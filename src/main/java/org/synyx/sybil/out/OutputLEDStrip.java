@@ -58,6 +58,60 @@ public class OutputLEDStrip implements Bricklet {
         pixelBufferBlue = new short[length];
     }
 
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        OutputLEDStrip that = (OutputLEDStrip) o;
+
+        if (Double.compare(that.brightness, brightness) != 0)
+            return false;
+
+        if (length != that.length)
+            return false;
+
+        if (ledStrip != null ? !ledStrip.equals(that.ledStrip) : that.ledStrip != null)
+            return false;
+
+        if (name != null ? !name.equals(that.name) : that.name != null)
+            return false;
+
+        if (!Arrays.equals(pixelBufferBlue, that.pixelBufferBlue))
+            return false;
+
+        if (!Arrays.equals(pixelBufferGreen, that.pixelBufferGreen))
+            return false;
+
+        if (!Arrays.equals(pixelBufferRed, that.pixelBufferRed))
+            return false;
+
+        return true;
+    }
+
+
+    @Override
+    public int hashCode() {
+
+        int result;
+        long temp;
+        result = ledStrip != null ? ledStrip.hashCode() : 0;
+        result = 31 * result + (pixelBufferRed != null ? Arrays.hashCode(pixelBufferRed) : 0);
+        result = 31 * result + (pixelBufferGreen != null ? Arrays.hashCode(pixelBufferGreen) : 0);
+        result = 31 * result + (pixelBufferBlue != null ? Arrays.hashCode(pixelBufferBlue) : 0);
+        temp = Double.doubleToLongBits(brightness);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + length;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+
+        return result;
+    }
+
+
     /**
      * Updates the LED Strip with the current content of the pixelbuffer. Needs to be called for changes made with a
      * setter to show.

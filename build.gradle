@@ -11,6 +11,7 @@ gretty { // configure gretty
     logDir = "logs" // put server logs in the same place as app logs
     logFileName = "server" // sybil.log is already used by the app log
     integrationTestTask = 'integTest'
+    systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
 }
 
 repositories {
