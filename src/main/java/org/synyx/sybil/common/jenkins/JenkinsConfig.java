@@ -2,10 +2,12 @@ package org.synyx.sybil.common.jenkins;
 
 import org.springframework.stereotype.Component;
 
-import org.synyx.sybil.out.StatusesOnLEDStrip;
+import org.synyx.sybil.out.SingleStatusOnLEDStrip;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -18,11 +20,19 @@ import java.util.Map;
 @Component
 public class JenkinsConfig {
 
-    private Map<String, StatusesOnLEDStrip> mapping = new HashMap<>();
+    private Map<String, List<SingleStatusOnLEDStrip>> mapping = new HashMap<>();
 
-    public void put(String job, StatusesOnLEDStrip statusesOnLEDStrip) {
+    public void put(String job, SingleStatusOnLEDStrip singleStatusOnLEDStrip) {
 
-        mapping.put(job, statusesOnLEDStrip);
+        List<SingleStatusOnLEDStrip> statuses = mapping.get(job);
+
+        if (statuses == null) {
+            statuses = new ArrayList<>();
+        }
+
+        statuses.add(singleStatusOnLEDStrip);
+
+        mapping.put(job, statuses);
     }
 
 
@@ -32,13 +42,13 @@ public class JenkinsConfig {
     }
 
 
-    public StatusesOnLEDStrip get(String job) {
+    public List<SingleStatusOnLEDStrip> get(String job) {
 
         return mapping.get(job);
     }
 
 
-    public Collection<StatusesOnLEDStrip> getAll() {
+    public Collection<List<SingleStatusOnLEDStrip>> getAll() {
 
         return mapping.values();
     }

@@ -18,7 +18,7 @@ import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.out.OutputLEDStrip;
 import org.synyx.sybil.out.OutputLEDStripRegistry;
-import org.synyx.sybil.out.StatusesOnLEDStrip;
+import org.synyx.sybil.out.SingleStatusOnLEDStripRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,28 +52,37 @@ public class JSONConfigLoader {
 
     private OutputLEDStripRegistry outputLEDStripRegistry; // This fetches the actual LED Strip objects for given config data
 
+    private SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry; // Fetches one SingleStatusOnLEDStrip for each LED Strip
+
     private JenkinsConfig jenkinsConfig;
 
     /**
-     * Instantiates a new JSON config loader. Parameters are autowired.
+     * Instantiates a new JSON config loader.
      *
-     * @param  brickRepository  the Brick repository
-     * @param  outputLEDStripRepository  the LED Strip repository
-     * @param  env  the Environment
+     * @param  brickRepository  The Brick repository
+     * @param  outputLEDStripRepository  The OutputLEDStrip repository
+     * @param  env  The Environment (provided by Spring, contains the configuration read from config.properties)
+     * @param  outputLEDStripRegistry  the OutputLEDStrip registry
+     * @param  jenkinsConfig  the jenkins configuration
+     * @param  singleStatusOnLEDStripRegistry  the SingleStatusOnLEDStrip registry
      */
     @Autowired
     public JSONConfigLoader(BrickRepository brickRepository, OutputLEDStripRepository outputLEDStripRepository,
-        Environment env, OutputLEDStripRegistry outputLEDStripRegistry, JenkinsConfig jenkinsConfig) {
+        Environment env, OutputLEDStripRegistry outputLEDStripRegistry, JenkinsConfig jenkinsConfig,
+        SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry) {
 
         this.brickRepository = brickRepository;
         this.outputLEDStripRepository = outputLEDStripRepository;
         configDir = env.getProperty("path.to.configfiles");
         this.outputLEDStripRegistry = outputLEDStripRegistry;
         this.jenkinsConfig = jenkinsConfig;
+        this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
     }
 
     /**
      * Load the complete configuration from JSON files.
+     *
+     * @throws  IOException  the iO exception
      */
     public void loadConfig() throws IOException {
 
@@ -85,6 +94,11 @@ public class JSONConfigLoader {
     }
 
 
+    /**
+     * Load bricks config.
+     *
+     * @throws  IOException  the iO exception
+     */
     public void loadBricksConfig() throws IOException {
 
         LOG.info("Loading Brick configuration");
@@ -97,6 +111,11 @@ public class JSONConfigLoader {
     }
 
 
+    /**
+     * Load lED strip config.
+     *
+     * @throws  IOException  the iO exception
+     */
     public void loadLEDStripConfig() throws IOException {
 
         LOG.info("Loading LED Strip configuration");
@@ -121,6 +140,11 @@ public class JSONConfigLoader {
     }
 
 
+    /**
+     * Load jenkins config.
+     *
+     * @throws  IOException  the iO exception
+     */
     public void loadJenkinsConfig() throws IOException {
 
         LOG.info("Loading Jenkins configuration");
@@ -137,7 +161,7 @@ public class JSONConfigLoader {
             OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripDomain);
 
             if (outputLEDStrip != null) {
-                jenkinsConfig.put(name, new StatusesOnLEDStrip(outputLEDStrip));
+                jenkinsConfig.put(name, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
             } else {
                 LOG.error("Ledstrip " + ledstrip + " does not exist.");
             }

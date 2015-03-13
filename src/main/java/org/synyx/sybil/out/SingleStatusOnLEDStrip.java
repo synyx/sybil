@@ -16,6 +16,8 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
     private static final Logger LOG = LoggerFactory.getLogger(SingleStatusOnLEDStrip.class);
     private final OutputLEDStrip outputLEDStrip;
+    private Color color;
+    private Status status = Status.OKAY;
 
     /**
      * Constructor.
@@ -35,21 +37,45 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     @Override
     public void showStatus(StatusInformation statusInformation) {
 
-        LOG.debug("Show status information: {}", statusInformation.getStatus());
+        setStatus(statusInformation);
+        showStatus();
+    }
 
-        Color color;
 
-        if (statusInformation.getStatus() == Status.CRITICAL) {
-            color = new Color(127, 0, 0);
-        } else if (statusInformation.getStatus() == Status.WARNING) {
-            color = new Color(127, 127, 0);
+    public void showStatus() {
+
+        if (status == Status.CRITICAL) {
+            color = Color.CRITICAL;
+        } else if (status == Status.WARNING) {
+            color = Color.WARNING;
         } else {
-            color = new Color(0, 0, 0);
+            color = Color.OKAY;
         }
 
         LOG.debug("Set color to: {}", color);
 
         outputLEDStrip.setFill(color);
+        outputLEDStrip.updateDisplay();
+    }
+
+
+    public Status getStatus() {
+
+        return status;
+    }
+
+
+    public void setStatus(StatusInformation statusInformation) {
+
+        LOG.debug("Show status information: {}", statusInformation.getStatus());
+
+        status = statusInformation.getStatus();
+    }
+
+
+    public void turnOff() {
+
+        outputLEDStrip.setFill(Color.BLACK);
         outputLEDStrip.updateDisplay();
     }
 }

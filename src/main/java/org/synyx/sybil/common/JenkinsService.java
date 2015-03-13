@@ -22,9 +22,12 @@ import org.synyx.sybil.common.jenkins.JenkinsJob;
 import org.synyx.sybil.common.jenkins.JenkinsProperties;
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.in.StatusInformation;
-import org.synyx.sybil.out.StatusesOnLEDStrip;
+import org.synyx.sybil.out.SingleStatusOnLEDStrip;
 
 import java.nio.charset.Charset;
+
+import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.PreDestroy;
 
@@ -38,18 +41,42 @@ import javax.annotation.PreDestroy;
 @Service
 public class JenkinsService {
 
+    /**
+     * The Rest.
+     */
     RestTemplate rest = new RestTemplate();
 
+    /**
+     * The Headers.
+     */
     HttpHeaders headers = new HttpHeaders();
 
-    HttpEntity<JenkinsProperties[]> request;
+    /**
+     * The Request entity.
+     */
+    HttpEntity<JenkinsProperties[]> requestEntity;
 
+    /**
+     * The Jobs.
+     */
     JenkinsJob[] jobs;
 
+    /**
+     * The Jenkins config.
+     */
     JenkinsConfig jenkinsConfig;
 
+    /**
+     * The Jenkins uRL.
+     */
     String jenkinsURL;
 
+    /**
+     * Instantiates a new Jenkins service.
+     *
+     * @param  jenkinsConfig  the jenkins config
+     * @param  env  the env
+     */
     @Autowired
     public JenkinsService(JenkinsConfig jenkinsConfig, Environment env) {
 
@@ -64,21 +91,21 @@ public class JenkinsService {
             + new String(
                 Base64.encodeBase64((jenkinsUsername + ":" + jenkinsKey).getBytes(Charset.forName("US-ASCII")))));
 
-        request = new HttpEntity<>(headers);
+        requestEntity = new HttpEntity<>(headers);
 
         this.jenkinsConfig = jenkinsConfig;
     }
 
     private JenkinsProperties retrieveJobs() {
 
-        ResponseEntity<JenkinsProperties> response = rest.exchange(jenkinsURL, HttpMethod.GET, request,
+        ResponseEntity<JenkinsProperties> response = rest.exchange(jenkinsURL, HttpMethod.GET, requestEntity,
                 JenkinsProperties.class);
 
         return response.getBody();
     }
 
 
-    private void showStatus(StatusesOnLEDStrip statusesOnLEDStrip, String jobName, String status) {
+    private void updateStatus(List<SingleStatusOnLEDStrip> ledStrips, String jobName, String status) {
 
         StatusInformation statusInformation = null;
 
@@ -96,29 +123,73 @@ public class JenkinsService {
         }
 
         if (statusInformation != null) {
-            statusesOnLEDStrip.showStatus(statusInformation);
+            for (SingleStatusOnLEDStrip ledStrip : ledStrips) {
+                if (ledStrip.getStatus().ordinal() < statusInformation.getStatus().ordinal())
+                    ledStrip.setStatus(statusInformation);
+            }
         }
     }
 
 
+    /**
+     * Destroy void.
+     */
     @PreDestroy
     public void destroy() {
 
-        for (StatusesOnLEDStrip statusesOnLEDStrip : jenkinsConfig.getAll()) {
-            statusesOnLEDStrip.turnOff();
+        Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll();
+
+        for (List<SingleStatusOnLEDStrip> ledStripList : allLEDStrips) {
+            for (SingleStatusOnLEDStrip ledStrip : ledStripList) {
+                ledStrip.turnOff();
+            }
         }
     }
 
 
+    /**
+     * Clear all statuses on SingleStatusOnLEDStrips, so priority sorting can commence.
+     */
+    private void clearLEDStripStatuses() {
+
+        Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll();
+
+        for (List<SingleStatusOnLEDStrip> ledStripList : allLEDStrips) {
+            for (SingleStatusOnLEDStrip ledStrip : ledStripList) {
+                ledStrip.setStatus(new StatusInformation("Clear", Status.OKAY));
+            }
+        }
+    }
+
+
+    private void showStatuses() {
+
+        Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll();
+
+        for (List<SingleStatusOnLEDStrip> ledStripList : allLEDStrips) {
+            for (SingleStatusOnLEDStrip ledStrip : ledStripList) {
+                ledStrip.showStatus();
+            }
+        }
+    }
+
+
+    /**
+     * Handle jobs.
+     */
     @Scheduled(fixedRate = 15000)
     public void handleJobs() {
 
         jobs = retrieveJobs().getJobs();
 
+        clearLEDStripStatuses();
+
         for (JenkinsJob job : jobs) {
             if (jenkinsConfig.contains(job.getName())) {
-                showStatus(jenkinsConfig.get(job.getName()), job.getName(), job.getColor());
+                updateStatus(jenkinsConfig.get(job.getName()), job.getName(), job.getColor());
             }
         }
+
+        showStatuses();
     }
 }

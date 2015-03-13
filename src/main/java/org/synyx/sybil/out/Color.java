@@ -13,6 +13,9 @@ public class Color {
 
     public static final Color BLACK = new Color(0, 0, 0);
     public static final Color WHITE = new Color(127, 127, 127);
+    public static final Color CRITICAL = new Color(127, 0, 0);
+    public static final Color WARNING = new Color(127, 127, 0);
+    public static final Color OKAY = new Color(0, 0, 0);
 
     private final short red;
     private final short green;
