@@ -1,4 +1,4 @@
-package org.synyx.sybil.common;
+package org.synyx.sybil.in;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -20,8 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import org.synyx.sybil.common.jenkins.JenkinsConfig;
 import org.synyx.sybil.common.jenkins.JenkinsJob;
 import org.synyx.sybil.common.jenkins.JenkinsProperties;
-import org.synyx.sybil.in.Status;
-import org.synyx.sybil.in.StatusInformation;
 import org.synyx.sybil.out.SingleStatusOnLEDStrip;
 
 import java.nio.charset.Charset;

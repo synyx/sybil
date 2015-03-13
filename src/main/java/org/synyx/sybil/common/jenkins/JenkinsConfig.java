@@ -52,4 +52,10 @@ public class JenkinsConfig {
 
         return mapping.values();
     }
+
+
+    public void reset() {
+
+        mapping.clear();
+    }
 }

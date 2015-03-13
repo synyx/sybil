@@ -1,4 +1,4 @@
-package org.synyx.sybil.common;
+package org.synyx.sybil.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -150,6 +150,8 @@ public class JSONConfigLoader {
         LOG.info("Loading Jenkins configuration");
 
         Map<String, Object>[] jenkins = mapper.readValue(new File(configDir + "jenkins.json"), Map[].class); // fetch Jenkins configuration data...
+
+        jenkinsConfig.reset();
 
         for (Map line : jenkins) { // ... deserialize the data manually
 

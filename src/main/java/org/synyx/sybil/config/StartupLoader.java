@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Component;
 
-import org.synyx.sybil.common.JSONConfigLoader;
-
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;

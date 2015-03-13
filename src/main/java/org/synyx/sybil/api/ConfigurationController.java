@@ -1,5 +1,7 @@
 package org.synyx.sybil.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 
@@ -7,6 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import org.synyx.sybil.config.JSONConfigLoader;
+
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +31,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RequestMapping("/configuration")
 public class ConfigurationController {
 
+    @Autowired
+    JSONConfigLoader jsonConfigLoader;
+
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     public Resources<Object> configuration() {
@@ -36,5 +45,13 @@ public class ConfigurationController {
         links.add(linkTo(ConfigurationLEDStripController.class).withRel("ledstrips"));
 
         return new Resources<>(Collections.emptySet(), links);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST)
+    public void updateJenkinsConfig() throws IOException {
+
+        jsonConfigLoader.loadJenkinsConfig();
     }
 }
