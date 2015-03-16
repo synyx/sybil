@@ -1,0 +1,26 @@
+{
+  "type": "array",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The LED Strip's unique name. Must be lowercase."
+      },
+      "uid": {
+        "type": "string",
+        "description": "The bricklet's UID. Can be found using the Brick Viewer."
+      },
+      "length": {
+        "type": "integer",
+        "description": "The number of LEDs on the strip."
+      },
+      "brick": {
+        "type": "string",
+        "description": "The brick the LED Strip bricklet is connected to."
+      }
+    },
+    "required": ["name", "uid", "length", "brick"]
+  }
+}

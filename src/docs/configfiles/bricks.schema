@@ -1,0 +1,18 @@
+{
+  "type": "array",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "items": {
+    "type": "object",
+    "properties": {
+      "hostname": {
+        "type": "string",
+        "description": "The brick's hostname"
+      },
+      "port": {
+        "type": "integer",
+        "description": "The brick's network port. Defautls to 4223."
+      }
+    },
+    "required": ["hostname"]
+  }
+}
