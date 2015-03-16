@@ -26,7 +26,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 public class RootController {
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = { "application/json" })
+    @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
     public Resources<Object> root() {
 
         List<Link> links = new ArrayList<>();

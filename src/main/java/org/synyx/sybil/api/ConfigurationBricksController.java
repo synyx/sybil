@@ -48,7 +48,7 @@ public class ConfigurationBricksController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = { "application/json" })
+    @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
     public Resources<BrickResource> bricks() {
 
         List<BrickDomain> bricks;
@@ -80,7 +80,7 @@ public class ConfigurationBricksController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/{hostname}", method = RequestMethod.GET, produces = { "application/json" })
+    @RequestMapping(value = "/{hostname}", method = RequestMethod.GET, produces = { "application/hal+json" })
     public BrickResource brick(@PathVariable String hostname) {
 
         BrickDomain brick = brickRepository.findByHostname(hostname);
