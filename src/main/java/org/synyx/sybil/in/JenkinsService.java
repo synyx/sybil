@@ -109,14 +109,17 @@ public class JenkinsService {
 
         switch (status) {
             case "red":
+            case "red_anime":
                 statusInformation = new StatusInformation(jobName, Status.CRITICAL);
                 break;
 
             case "yellow":
+            case "yello_anime":
                 statusInformation = new StatusInformation(jobName, Status.WARNING);
                 break;
 
             case "blue":
+            case "blue_anime":
                 statusInformation = new StatusInformation(jobName, Status.OKAY);
         }
 
