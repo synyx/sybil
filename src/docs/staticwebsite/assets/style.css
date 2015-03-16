@@ -1,0 +1,47 @@
+html {
+	font-size: 3.4vmin;
+}
+
+body {
+	text-align: center;
+	background-image:url(assets/furley_bg.png);
+		
+	font-family: 'Prociono', Serif;
+	font-weight: 400;
+	font-size: .75em;
+	color: #000000;
+}
+
+a {
+	color: #000000;
+}
+
+.wrapper {
+	width: 33em;
+	text-align: left;
+}
+
+h1 {
+	text-align: center;
+}
+
+.footer {
+	font-size: .8em;
+	color: #666666;
+}
+
+.footer a {
+	color: #666666;
+}
+
+.sm2-bar-ui {
+	font-size: 1em;
+}
+.sm2-bar-ui .sm2-main-controls,
+.sm2-bar-ui .sm2-playlist-drawer {
+	background-color: #555555; /* non-RGBA fallback */
+	background-color: rgba(85, 85, 85, 0.1);
+}
+.sm2-bar-ui .sm2-inline-texture {
+	background: transparent;
+}

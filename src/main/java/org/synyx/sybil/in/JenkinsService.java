@@ -175,7 +175,7 @@ public class JenkinsService {
     /**
      * Handle jobs.
      */
-    @Scheduled(fixedRate = 15000)
+    @Scheduled(fixedRate = 60000) // Run this once per minute
     public void handleJobs() {
 
         jobs = retrieveJobs().getJobs();
