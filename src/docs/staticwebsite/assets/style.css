@@ -1,10 +1,10 @@
 html {
-	font-size: 3.4vmin;
+	font-size: 3vmin;
 }
 
 body {
 	text-align: center;
-	background-image:url(assets/furley_bg.png);
+	background-image:url(furley_bg.png);
 		
 	font-family: 'Prociono', Serif;
 	font-weight: 400;
@@ -32,16 +32,4 @@ h1 {
 
 .footer a {
 	color: #666666;
-}
-
-.sm2-bar-ui {
-	font-size: 1em;
-}
-.sm2-bar-ui .sm2-main-controls,
-.sm2-bar-ui .sm2-playlist-drawer {
-	background-color: #555555; /* non-RGBA fallback */
-	background-color: rgba(85, 85, 85, 0.1);
-}
-.sm2-bar-ui .sm2-inline-texture {
-	background: transparent;
 }
