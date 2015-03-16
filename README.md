@@ -80,6 +80,7 @@ To see colored lights on the connected & configured LED Strips, run an integrati
     src/
     +-docs/                             Documentation sources.
     | +-api/                            Source for the API documentation.
+    |
     +-integTest/                        Integration tests.
     +-test/                             Unit tests.
     +-main/                             Main.
@@ -127,9 +128,15 @@ This then loads:
         * Which in turn loads the __*Repository__ and __*Domain__ classes.
     * The **StartupLoader** class, since it's annotated with @Component.
         * Which in turn runs the **JSONConfigLoader**'s *loadConfig* method.
+    * The **JenkinsService** since it's annotated with @Service.
 
 The *loadConfig* method loads the bricks & LED Strip configurations from JSON files (the location of which is defined in
-the **config.properties** file) and saves them to the database.
+the **config.properties** file) and saves them to the database. It then loads the configured Jenkins jobs from the
+Jenkins JSON configuration file.
+
+The **JenkinsService** has a *handleJobs* method, which is annotated with @Scheduled which means it is run every 60
+seconds. This method gets a list of all jobs from the Jenkins server(s), compares it to the list loaded from
+jenkins.json and then instructs the associated LED strips to show the jobs' statuses. 
 
 Bricks saved in the database can be listed via the REST API at /configuration/bricks and
 /configuration/bricks/{hostname} respectively. Same goes for LED Strips at /configuration/ledstrips and 
