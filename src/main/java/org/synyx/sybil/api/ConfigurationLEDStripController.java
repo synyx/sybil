@@ -49,7 +49,7 @@ public class ConfigurationLEDStripController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, produces = { "application/json" })
     public Resources<LEDStripResource> bricks() {
 
         List<OutputLEDStripDomain> ledStrips;
@@ -82,7 +82,7 @@ public class ConfigurationLEDStripController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/{name}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = { "application/json" })
     public LEDStripResource ledStrip(@PathVariable String name) {
 
         OutputLEDStripDomain ledStripDomain = outputLEDStripRepository.findByName(name);

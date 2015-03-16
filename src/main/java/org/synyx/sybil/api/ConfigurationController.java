@@ -35,7 +35,7 @@ public class ConfigurationController {
     JSONConfigLoader jsonConfigLoader;
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, produces = { "application/json" })
     public Resources<Object> configuration() {
 
         List<Link> links = new ArrayList<>();
@@ -49,7 +49,7 @@ public class ConfigurationController {
 
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST, produces = { "application/json" })
     public void updateJenkinsConfig() throws IOException {
 
         jsonConfigLoader.loadJenkinsConfig();
