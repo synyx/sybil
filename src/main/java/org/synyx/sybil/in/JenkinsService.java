@@ -1,13 +1,8 @@
 package org.synyx.sybil.in;
 
-import org.apache.commons.codec.binary.Base64;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.core.env.Environment;
-
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
@@ -21,8 +16,6 @@ import org.synyx.sybil.common.jenkins.JenkinsConfig;
 import org.synyx.sybil.common.jenkins.JenkinsJob;
 import org.synyx.sybil.common.jenkins.JenkinsProperties;
 import org.synyx.sybil.out.SingleStatusOnLEDStrip;
-
-import java.nio.charset.Charset;
 
 import java.util.Collection;
 import java.util.List;
@@ -45,58 +38,26 @@ public class JenkinsService {
     RestTemplate rest = new RestTemplate();
 
     /**
-     * The Headers.
-     */
-    HttpHeaders headers = new HttpHeaders();
-
-    /**
-     * The Request entity.
-     */
-    HttpEntity<JenkinsProperties[]> requestEntity;
-
-    /**
-     * The Jobs.
-     */
-    JenkinsJob[] jobs;
-
-    /**
      * The Jenkins config.
      */
     JenkinsConfig jenkinsConfig;
 
     /**
-     * The Jenkins uRL.
-     */
-    String jenkinsURL;
-
-    /**
      * Instantiates a new Jenkins service.
      *
-     * @param  jenkinsConfig  the jenkins config
-     * @param  env  the env
+     * @param  jenkinsConfig  the jenkins config bean
      */
     @Autowired
-    public JenkinsService(JenkinsConfig jenkinsConfig, Environment env) {
-
-        jenkinsURL = env.getProperty("jenkins.url");
-
-        String jenkinsUsername = env.getProperty("jenkins.user");
-        String jenkinsKey = env.getProperty("jenkins.key");
-
-        // HTTP Basic Authorization, as demanded by the Jenkins API.
-        headers.set("Authorization",
-            "Basic "
-            + new String(
-                Base64.encodeBase64((jenkinsUsername + ":" + jenkinsKey).getBytes(Charset.forName("US-ASCII")))));
-
-        requestEntity = new HttpEntity<>(headers);
+    public JenkinsService(JenkinsConfig jenkinsConfig) {
 
         this.jenkinsConfig = jenkinsConfig;
     }
 
-    private JenkinsProperties retrieveJobs() {
+    private JenkinsProperties retrieveJobs(String server) {
 
-        ResponseEntity<JenkinsProperties> response = rest.exchange(jenkinsURL, HttpMethod.GET, requestEntity,
+        HttpEntity<JenkinsProperties[]> requestEntity = jenkinsConfig.getServer(server);
+
+        ResponseEntity<JenkinsProperties> response = rest.exchange(server + "/api/json", HttpMethod.GET, requestEntity,
                 JenkinsProperties.class);
 
         return response.getBody();
@@ -138,11 +99,14 @@ public class JenkinsService {
     @PreDestroy
     public void destroy() {
 
-        Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll();
+        for (String server : jenkinsConfig.getServers()) { // iterate over servers
 
-        for (List<SingleStatusOnLEDStrip> ledStripList : allLEDStrips) {
-            for (SingleStatusOnLEDStrip ledStrip : ledStripList) {
-                ledStrip.turnOff();
+            Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll(server);
+
+            for (List<SingleStatusOnLEDStrip> ledStripList : allLEDStrips) {
+                for (SingleStatusOnLEDStrip ledStrip : ledStripList) {
+                    ledStrip.turnOff();
+                }
             }
         }
     }
@@ -151,9 +115,9 @@ public class JenkinsService {
     /**
      * Clear all statuses on SingleStatusOnLEDStrips, so priority sorting can commence.
      */
-    private void clearLEDStripStatuses() {
+    private void clearLEDStripStatuses(String server) {
 
-        Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll();
+        Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll(server);
 
         for (List<SingleStatusOnLEDStrip> ledStripList : allLEDStrips) {
             for (SingleStatusOnLEDStrip ledStrip : ledStripList) {
@@ -163,9 +127,9 @@ public class JenkinsService {
     }
 
 
-    private void showStatuses() {
+    private void showStatuses(String server) {
 
-        Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll();
+        Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll(server);
 
         for (List<SingleStatusOnLEDStrip> ledStripList : allLEDStrips) {
             for (SingleStatusOnLEDStrip ledStrip : ledStripList) {
@@ -181,16 +145,19 @@ public class JenkinsService {
     @Scheduled(fixedRate = 60000) // Run this once per minute
     public void handleJobs() {
 
-        jobs = retrieveJobs().getJobs();
+        for (String server : jenkinsConfig.getServers()) { // iterate over servers
 
-        clearLEDStripStatuses();
+            JenkinsJob[] jobs = retrieveJobs(server).getJobs();
 
-        for (JenkinsJob job : jobs) {
-            if (jenkinsConfig.contains(job.getName())) {
-                updateStatus(jenkinsConfig.get(job.getName()), job.getName(), job.getColor());
+            clearLEDStripStatuses(server);
+
+            for (JenkinsJob job : jobs) {
+                if (jenkinsConfig.contains(server, job.getName())) {
+                    updateStatus(jenkinsConfig.get(server, job.getName()), job.getName(), job.getColor());
+                }
             }
-        }
 
-        showStatuses();
+            showStatuses(server);
+        }
     }
 }

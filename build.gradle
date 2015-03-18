@@ -1,9 +1,29 @@
 apply plugin: 'java' //Java plugin
 apply plugin: 'war' //war plugin
-apply from: 'https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.plugin' //jetty 9 & other cool stuff
+
 
 sourceCompatibility = 1.8 //Java 8
 version = '0.1'
+
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath group: 'org.akhikhl.gretty', name: 'gretty', version: '+'
+    }
+}
+
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.spring.io/libs-release" }
+    jcenter()
+}
+
+apply plugin: 'org.akhikhl.gretty' // gretty = embedded jetty 9
 
 gretty { // configure gretty
     recompileOnSourceChange = false; // not terribly useful with an autosaving IDE.
@@ -15,10 +35,6 @@ gretty { // configure gretty
     jvmArgs = []
 }
 
-repositories {
-    mavenCentral()
-    maven { url "https://repo.spring.io/libs-release" }
-}
 
 sourceSets {
     integTest { //add sources for Integration Tests, unlike main/ and test/ these are not provided by the java plugin
@@ -26,6 +42,7 @@ sourceSets {
         resources.srcDir file('src/integTest/resources')
     }
 }
+
 
 task integTest(type: Test) { //define the integTest task as a Test task
     testClassesDir = sourceSets.integTest.output.classesDir
@@ -37,8 +54,10 @@ task integTest(type: Test) { //define the integTest task as a Test task
     //testLogging.showStandardStreams = true //show STDOUT and STDERR while gradle is running
 }
 
+
 //uncomment to run integration tests with the build task. Check is a subtask of the build task, provided by java plugin
 //check.dependsOn integTest
+
 
 //Unit tests
 test {
@@ -47,6 +66,7 @@ test {
     systemProperty 'spring.profiles.active', 'dev'  //set active Spring profile to development
 //    testLogging.showStandardStreams = true //show STDOUT and STDERR while gradle is running
 }
+
 
 dependencies {
     //spring

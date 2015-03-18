@@ -1,5 +1,6 @@
 package org.synyx.sybil.config;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.slf4j.Logger;
@@ -23,7 +24,7 @@ import org.synyx.sybil.out.SingleStatusOnLEDStripRegistry;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -42,11 +43,9 @@ public class JSONConfigLoader {
 
     private String configDir; // The place where the config files lie, taken from the injected environment (and thus ultimately a properties file)
 
-    private BrickDomain[] bricks; // The configuration data for bricks
+    private String jenkinsConfigFile; // The file where the Jenkins servers are configured
 
     private BrickRepository brickRepository; // The Repository to save said configuration data
-
-    private Map<String, Object>[] ledstrips; // The configuration data for LED Strips
 
     private OutputLEDStripRepository outputLEDStripRepository; // The Repository to save said configuration data
 
@@ -74,6 +73,7 @@ public class JSONConfigLoader {
         this.brickRepository = brickRepository;
         this.outputLEDStripRepository = outputLEDStripRepository;
         configDir = env.getProperty("path.to.configfiles");
+        jenkinsConfigFile = env.getProperty("jenkins.configfile");
         this.outputLEDStripRegistry = outputLEDStripRegistry;
         this.jenkinsConfig = jenkinsConfig;
         this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
@@ -90,6 +90,8 @@ public class JSONConfigLoader {
 
         loadLEDStripConfig();
 
+        loadJenkinsServers();
+
         loadJenkinsConfig();
     }
 
@@ -103,11 +105,13 @@ public class JSONConfigLoader {
 
         LOG.info("Loading Brick configuration");
 
-        bricks = mapper.readValue(new File(configDir + "bricks.json"), BrickDomain[].class); // fetch brick configuration data...
+        List<BrickDomain> bricks = mapper.readValue(new File(configDir + "bricks.json"),
+                new TypeReference<List<BrickDomain>>() {
+                });
 
         brickRepository.deleteAll();
 
-        brickRepository.save(Arrays.asList(bricks)); // ... simply dump them into the database
+        brickRepository.save(bricks); // ... simply dump them into the database
     }
 
 
@@ -120,7 +124,9 @@ public class JSONConfigLoader {
 
         LOG.info("Loading LED Strip configuration");
 
-        ledstrips = mapper.readValue(new File(configDir + "ledstrips.json"), Map[].class); // fetch LED Strip configuration data...
+        List<Map<String, Object>> ledstrips = mapper.readValue(new File(configDir + "ledstrips.json"),
+                new TypeReference<List<Map<String, Object>>>() {
+                });
 
         outputLEDStripRepository.deleteAll();
 
@@ -129,13 +135,28 @@ public class JSONConfigLoader {
             String name = ledstrip.get("name").toString();
             String uid = ledstrip.get("uid").toString();
             int length = (int) ledstrip.get("length"); // TODO: Error Handling
-            BrickDomain brick = brickRepository.findByHostname(ledstrip.get("brick").toString()); // fetch the corresponding bricks fromt the repo
+            BrickDomain brick = brickRepository.findByHostname(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
 
             if (brick != null) { // if there was corresponding brick found in the repo...
                 outputLEDStripRepository.save(new OutputLEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
             } else { // if not...
                 LOG.error("Brick " + ledstrip.get("brick").toString() + " does not exist."); // ... error! TODO: Error Handling
             }
+        }
+    }
+
+
+    public void loadJenkinsServers() throws IOException {
+
+        LOG.info("Loading Jenkins servers");
+
+        List<Map<String, Object>> servers = mapper.readValue(new File(jenkinsConfigFile),
+                new TypeReference<List<Map<String, Object>>>() {
+                });
+
+        for (Map server : servers) {
+            jenkinsConfig.putServer(server.get("hostname").toString(), server.get("user").toString(),
+                server.get("key").toString());
         }
     }
 
@@ -149,23 +170,29 @@ public class JSONConfigLoader {
 
         LOG.info("Loading Jenkins configuration");
 
-        Map<String, Object>[] jenkins = mapper.readValue(new File(configDir + "jenkins.json"), Map[].class); // fetch Jenkins configuration data...
+        Map<String, List<Map<String, Object>>> jenkinsConfigData = mapper.readValue(new File(
+                    configDir + "jenkins.json"), new TypeReference<Map<String, List<Map<String, Object>>>>() {
+                }); // fetch Jenkins configuration data...
 
         jenkinsConfig.reset();
 
-        for (Map line : jenkins) { // ... deserialize the data manually
+        // ... deserialize the data manually
+        for (String server : jenkinsConfigData.keySet()) { // iterate over all the servers
 
-            String name = line.get("name").toString();
-            String ledstrip = line.get("ledstrip").toString();
+            for (Map line : jenkinsConfigData.get(server)) { // get each configuration line for each server
 
-            OutputLEDStripDomain outputLEDStripDomain = outputLEDStripRepository.findByName(ledstrip.toLowerCase()); // names are always lowercase
+                String name = line.get("name").toString();
+                String ledstrip = line.get("ledstrip").toString();
 
-            OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripDomain);
+                OutputLEDStripDomain outputLEDStripDomain = outputLEDStripRepository.findByName(ledstrip.toLowerCase()); // names are always lowercase
 
-            if (outputLEDStrip != null) {
-                jenkinsConfig.put(name, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
-            } else {
-                LOG.error("Ledstrip " + ledstrip + " does not exist.");
+                OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripDomain);
+
+                if (outputLEDStrip != null) {
+                    jenkinsConfig.put(server, name, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
+                } else {
+                    LOG.error("Ledstrip " + ledstrip + " does not exist.");
+                }
             }
         }
     }
