@@ -155,7 +155,7 @@ public class JSONConfigLoader {
                 });
 
         for (Map server : servers) {
-            jenkinsConfig.putServer(server.get("hostname").toString(), server.get("user").toString(),
+            jenkinsConfig.putServer(server.get("url").toString(), server.get("user").toString(),
                 server.get("key").toString());
         }
     }

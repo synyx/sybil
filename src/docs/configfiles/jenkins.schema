@@ -1,18 +1,20 @@
 {
-  "type": "array",
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "items": {
-    "type": "object",
-    "properties": {
-      "name": {
-        "type": "string",
-        "description": "The job's name in Jenkins."
+  "type": "object",
+  "properties": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The job's name in Jenkins."
+        },
+        "ledstrip": {
+          "type": "string",
+          "description": "The name of the LED Strip the job's status should be displayed on, as configured in ledstrips.json."
+        }
       },
-      "ledstrip": {
-        "type": "string",
-        "description": "The name of the LED Strip the job's status should be displayed on, as configured in ledstrips.json."
-      }
-    },
-    "required": ["name", "ledstrip"]
+      "required": ["name", "ledstrip"]
+    }
   }
 }

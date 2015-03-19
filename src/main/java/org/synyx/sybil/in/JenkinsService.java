@@ -1,5 +1,8 @@
 package org.synyx.sybil.in;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpEntity;
@@ -17,8 +20,8 @@ import org.synyx.sybil.common.jenkins.JenkinsJob;
 import org.synyx.sybil.common.jenkins.JenkinsProperties;
 import org.synyx.sybil.out.SingleStatusOnLEDStrip;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PreDestroy;
 
@@ -33,14 +36,19 @@ import javax.annotation.PreDestroy;
 public class JenkinsService {
 
     /**
-     * The Rest.
+     * Logger.
      */
-    RestTemplate rest = new RestTemplate();
+    private static final Logger LOG = LoggerFactory.getLogger(JenkinsService.class);
 
     /**
-     * The Jenkins config.
+     * Spring REST Template.
      */
-    JenkinsConfig jenkinsConfig;
+    private final RestTemplate rest = new RestTemplate();
+
+    /**
+     * The Jenkins config object, contains all the configured servers and jobs.
+     */
+    private final JenkinsConfig jenkinsConfig;
 
     /**
      * Instantiates a new Jenkins service.
@@ -57,10 +65,16 @@ public class JenkinsService {
 
         HttpEntity<JenkinsProperties[]> requestEntity = jenkinsConfig.getServer(server);
 
-        ResponseEntity<JenkinsProperties> response = rest.exchange(server + "/api/json", HttpMethod.GET, requestEntity,
-                JenkinsProperties.class);
+        try {
+            ResponseEntity<JenkinsProperties> response = rest.exchange(server + "/api/json", HttpMethod.GET,
+                    requestEntity, JenkinsProperties.class);
 
-        return response.getBody();
+            return response.getBody();
+        } catch (Exception e) {
+            LOG.error(server + ": " + e.getMessage());
+
+            return null;
+        }
     }
 
 
@@ -75,7 +89,7 @@ public class JenkinsService {
                 break;
 
             case "yellow":
-            case "yello_anime":
+            case "yellow_anime":
                 statusInformation = new StatusInformation(jobName, Status.WARNING);
                 break;
 
@@ -99,15 +113,10 @@ public class JenkinsService {
     @PreDestroy
     public void destroy() {
 
-        for (String server : jenkinsConfig.getServers()) { // iterate over servers
+        Set<SingleStatusOnLEDStrip> allLEDStrips = jenkinsConfig.getAll();
 
-            Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll(server);
-
-            for (List<SingleStatusOnLEDStrip> ledStripList : allLEDStrips) {
-                for (SingleStatusOnLEDStrip ledStrip : ledStripList) {
-                    ledStrip.turnOff();
-                }
-            }
+        for (SingleStatusOnLEDStrip ledStrip : allLEDStrips) {
+            ledStrip.turnOff();
         }
     }
 
@@ -115,26 +124,30 @@ public class JenkinsService {
     /**
      * Clear all statuses on SingleStatusOnLEDStrips, so priority sorting can commence.
      */
-    private void clearLEDStripStatuses(String server) {
+    private void clearLEDStripStatuses() {
 
-        Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll(server);
+        Set<SingleStatusOnLEDStrip> allLEDStrips = jenkinsConfig.getAll();
 
-        for (List<SingleStatusOnLEDStrip> ledStripList : allLEDStrips) {
-            for (SingleStatusOnLEDStrip ledStrip : ledStripList) {
+        if (allLEDStrips != null) {
+            for (SingleStatusOnLEDStrip ledStrip : allLEDStrips) {
                 ledStrip.setStatus(new StatusInformation("Clear", Status.OKAY));
             }
+        } else {
+            LOG.error("No LED Strips configured.");
         }
     }
 
 
-    private void showStatuses(String server) {
+    private void showStatuses() {
 
-        Collection<List<SingleStatusOnLEDStrip>> allLEDStrips = jenkinsConfig.getAll(server);
+        Set<SingleStatusOnLEDStrip> allLEDStrips = jenkinsConfig.getAll();
 
-        for (List<SingleStatusOnLEDStrip> ledStripList : allLEDStrips) {
-            for (SingleStatusOnLEDStrip ledStrip : ledStripList) {
+        if (allLEDStrips != null) {
+            for (SingleStatusOnLEDStrip ledStrip : allLEDStrips) {
                 ledStrip.showStatus();
             }
+        } else {
+            LOG.error("No LED Strips configured.");
         }
     }
 
@@ -145,19 +158,21 @@ public class JenkinsService {
     @Scheduled(fixedRate = 60000) // Run this once per minute
     public void handleJobs() {
 
+        clearLEDStripStatuses();
+
         for (String server : jenkinsConfig.getServers()) { // iterate over servers
 
-            JenkinsJob[] jobs = retrieveJobs(server).getJobs();
+            JenkinsProperties jobs = retrieveJobs(server);
 
-            clearLEDStripStatuses(server);
-
-            for (JenkinsJob job : jobs) {
-                if (jenkinsConfig.contains(server, job.getName())) {
-                    updateStatus(jenkinsConfig.get(server, job.getName()), job.getName(), job.getColor());
+            if (jobs != null) {
+                for (JenkinsJob job : jobs.getJobs()) {
+                    if (jenkinsConfig.contains(server, job.getName())) {
+                        updateStatus(jenkinsConfig.get(server, job.getName()), job.getName(), job.getColor());
+                    }
                 }
             }
-
-            showStatuses(server);
         }
+
+        showStatuses();
     }
 }

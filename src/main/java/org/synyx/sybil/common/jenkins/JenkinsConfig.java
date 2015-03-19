@@ -12,8 +12,8 @@ import org.synyx.sybil.out.SingleStatusOnLEDStrip;
 import java.nio.charset.Charset;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -110,13 +110,17 @@ public class JenkinsConfig {
     }
 
 
-    public Collection<List<SingleStatusOnLEDStrip>> getAll(String server) {
+    public Set<SingleStatusOnLEDStrip> getAll() {
 
-        if (mapping.containsKey(server)) {
-            return mapping.get(server).values();
-        } else {
-            return null;
+        Set<SingleStatusOnLEDStrip> result = new HashSet<>();
+
+        for (Map<String, List<SingleStatusOnLEDStrip>> jobs : mapping.values()) {
+            for (List<SingleStatusOnLEDStrip> ledStrips : jobs.values()) {
+                result.addAll(ledStrips);
+            }
         }
+
+        return result;
     }
 
 

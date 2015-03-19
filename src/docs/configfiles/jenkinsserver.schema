@@ -1,0 +1,21 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "The base URL of the Jenkins server, including protocol (http or https)."
+      },
+      "user": {
+        "type": "string",
+        "description": "The username of the user that has access to the API."
+      },
+      "key": {
+        "type": "string",
+        "description": "The user's API key."
+      }
+    },
+    "required": ["url", "user", "key"]
+  }
+}
