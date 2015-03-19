@@ -43,7 +43,7 @@ public class JenkinsService {
     /**
      * Spring REST Template.
      */
-    private final RestTemplate rest = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     /**
      * The Jenkins config object, contains all the configured servers and jobs.
@@ -53,7 +53,7 @@ public class JenkinsService {
     /**
      * Instantiates a new Jenkins service.
      *
-     * @param  jenkinsConfig  the jenkins config bean
+     * @param  jenkinsConfig  The Jenkins config bean, autowired in.
      */
     @Autowired
     public JenkinsService(JenkinsConfig jenkinsConfig) {
@@ -61,23 +61,37 @@ public class JenkinsService {
         this.jenkinsConfig = jenkinsConfig;
     }
 
-    private JenkinsProperties retrieveJobs(String server) {
+    /**
+     * Retrieve the list of jobs from the Jenkins API.
+     *
+     * @param  serverURL  The Jenkins server URL (e.g. "http://jenkins.company.name")
+     *
+     * @return  A JenkinsProperties object, deserialized from the API.
+     */
+    private JenkinsProperties retrieveJobs(String serverURL) {
 
-        HttpEntity<JenkinsProperties[]> requestEntity = jenkinsConfig.getServer(server);
+        HttpEntity<JenkinsProperties[]> authorizationHeaderEntity = jenkinsConfig.getServer(serverURL);
 
         try {
-            ResponseEntity<JenkinsProperties> response = rest.exchange(server + "/api/json", HttpMethod.GET,
-                    requestEntity, JenkinsProperties.class);
+            ResponseEntity<JenkinsProperties> response = restTemplate.exchange(serverURL + "/api/json", HttpMethod.GET,
+                    authorizationHeaderEntity, JenkinsProperties.class);
 
             return response.getBody();
         } catch (Exception e) {
-            LOG.error(server + ": " + e.getMessage());
+            LOG.error(serverURL + ": " + e.getMessage());
 
             return null;
         }
     }
 
 
+    /**
+     * Update the status of the passed LED Strips, IF the new status is HIGHER than the old one.
+     *
+     * @param  ledStrips  The LED SingleStatusOnLEDStrip objects on which to update the status.
+     * @param  jobName  The name of the job the status came from.
+     * @param  status  The job's status.
+     */
     private void updateStatus(List<SingleStatusOnLEDStrip> ledStrips, String jobName, String status) {
 
         StatusInformation statusInformation = null;
@@ -100,15 +114,21 @@ public class JenkinsService {
 
         if (statusInformation != null) {
             for (SingleStatusOnLEDStrip ledStrip : ledStrips) {
-                if (ledStrip.getStatus().ordinal() < statusInformation.getStatus().ordinal())
+                if (isNewStatusHigherThanCurrent(statusInformation, ledStrip.getStatus()))
                     ledStrip.setStatus(statusInformation);
             }
         }
     }
 
 
+    private boolean isNewStatusHigherThanCurrent(StatusInformation newStatusInformation, Status currentStatus) {
+
+        return currentStatus.ordinal() < newStatusInformation.getStatus().ordinal();
+    }
+
+
     /**
-     * Destroy void.
+     * Destroy void. Is called when the program ends. Turns off all the LED Strips.
      */
     @PreDestroy
     public void destroy() {
@@ -138,6 +158,9 @@ public class JenkinsService {
     }
 
 
+    /**
+     * Show the statuses that were set on the LED Strips.
+     */
     private void showStatuses() {
 
         Set<SingleStatusOnLEDStrip> allLEDStrips = jenkinsConfig.getAll();
@@ -153,15 +176,14 @@ public class JenkinsService {
 
 
     /**
-     * Handle jobs.
+     * Clear the current statuses, iterate over servers and jobs, set their statuses and show them.
      */
-    @Scheduled(fixedRate = 60000) // Run this once per minute
+    @Scheduled(fixedRate = 60000)
     public void handleJobs() {
 
         clearLEDStripStatuses();
 
-        for (String server : jenkinsConfig.getServers()) { // iterate over servers
-
+        for (String server : jenkinsConfig.getServers()) {
             JenkinsProperties jobs = retrieveJobs(server);
 
             if (jobs != null) {
