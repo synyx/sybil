@@ -114,16 +114,16 @@ public class JenkinsService {
 
         if (statusInformation != null) {
             for (SingleStatusOnLEDStrip ledStrip : ledStrips) {
-                if (isNewStatusHigherThanCurrent(statusInformation, ledStrip.getStatus()))
+                if (isNewStatusHigherThanCurrent(statusInformation.getStatus(), ledStrip.getStatus()))
                     ledStrip.setStatus(statusInformation);
             }
         }
     }
 
 
-    private boolean isNewStatusHigherThanCurrent(StatusInformation newStatusInformation, Status currentStatus) {
+    private boolean isNewStatusHigherThanCurrent(Status newStatus, Status currentStatus) {
 
-        return currentStatus.ordinal() < newStatusInformation.getStatus().ordinal();
+        return newStatus.ordinal() > currentStatus.ordinal();
     }
 
 
