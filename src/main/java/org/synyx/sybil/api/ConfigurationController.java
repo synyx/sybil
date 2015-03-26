@@ -1,10 +1,17 @@
 package org.synyx.sybil.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -31,6 +38,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RequestMapping("/configuration")
 public class ConfigurationController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationController.class);
+
     @Autowired
     JSONConfigLoader jsonConfigLoader;
 
@@ -53,5 +62,17 @@ public class ConfigurationController {
     public void updateJenkinsConfig() throws IOException {
 
         jsonConfigLoader.loadJenkinsConfig();
+    }
+
+
+    @ResponseBody
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> LoadingConfigurationFailed(IOException e) {
+
+        LOG.error("Error loading jenkins.json: {}", e.toString());
+
+        String error = "Error loading jenkins.json: " + e.getMessage();
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 }

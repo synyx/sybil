@@ -90,18 +90,35 @@ public class JSONConfigLoader {
 
     /**
      * Load the complete configuration from JSON files.
-     *
-     * @throws  IOException  the iO exception
      */
-    public void loadConfig() throws IOException {
+    public void loadConfig() {
 
-        loadBricksConfig();
+        try {
+            loadBricksConfig();
+        } catch (IOException e) {
+            LOG.error("Error loading bricks.json: {}", e.toString());
+            throw new RuntimeException("Failed to load bricks.json.");
+        }
 
-        loadLEDStripConfig();
+        try {
+            loadLEDStripConfig();
+        } catch (IOException e) {
+            LOG.error("Error loading ledstrips.json: {}", e.toString());
+            throw new RuntimeException("Failed to load ledstrips.json.");
+        }
 
-        loadJenkinsServers();
+        try {
+            loadJenkinsServers();
+        } catch (IOException e) {
+            LOG.error("Error loading jenkinsservers.json: {}", e.toString());
+            throw new RuntimeException("Failed to load jenkinsservers.json.");
+        }
 
-        loadJenkinsConfig();
+        try {
+            loadJenkinsConfig();
+        } catch (IOException e) {
+            LOG.error("Error loading jenkins.json: {}", e.toString());
+        }
     }
 
 

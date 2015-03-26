@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
 import javax.annotation.PostConstruct;
 
 
@@ -36,12 +34,6 @@ public class StartupLoader {
 
         LOG.info("Loading Startup Configuration");
 
-        try {
-            jsonConfigLoader.loadConfig();
-        } catch (IOException e) {
-            LOG.error("Failed to load config files.");
-
-            throw new RuntimeException("Failed to load config files.");
-        }
+        jsonConfigLoader.loadConfig();
     }
 }
