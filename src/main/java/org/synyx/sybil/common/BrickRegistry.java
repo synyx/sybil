@@ -9,6 +9,9 @@ import org.neo4j.graphdb.Transaction;
 
 import org.neo4j.helpers.collection.IteratorUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -34,6 +37,9 @@ import java.util.Set;
 
 @Service // Annotated so Spring finds and injects it.
 public class BrickRegistry {
+
+    // Logger
+    private static final Logger LOG = LoggerFactory.getLogger(BrickRegistry.class);
 
     // map that contains all the Connections with the Domains as their key
     private Map<BrickDomain, IPConnection> ipConnections = new HashMap<>();
@@ -64,12 +70,8 @@ public class BrickRegistry {
      * @param  brickletRegistry  the bricklet registry
      *
      * @return  the iP connection
-     *
-     * @throws  AlreadyConnectedException  A connection already exists to this host.
-     * @throws  AlreadyConnectedException  A connection already exists to this host.
      */
-    public IPConnection get(BrickDomain brickDomain, BrickletRegistry brickletRegistry)
-        throws AlreadyConnectedException, IOException {
+    public IPConnection get(BrickDomain brickDomain, BrickletRegistry brickletRegistry) {
 
         registries.add(brickletRegistry);
 
@@ -83,29 +85,29 @@ public class BrickRegistry {
      * Connect a brick and put it's connection into the HashMap.
      *
      * @param  brickDomain  The Domain of the Brick to be connected
-     *
-     * @throws  AlreadyConnectedException
-     * @throws  IOException
      */
-    private void connect(BrickDomain brickDomain) throws AlreadyConnectedException, IOException {
+    private void connect(BrickDomain brickDomain) {
 
         if (!ipConnections.containsKey(brickDomain)) { // if it isn't in the Map yet...
 
             IPConnection ipConnection = new IPConnection(); // ... make a new one...
-            ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort()); // ... connect it ...
-            ipConnections.put(brickDomain, ipConnection); // ... and add it to the map.
+
+            try {
+                ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort()); // ... connect it ...
+                ipConnections.put(brickDomain, ipConnection); // ... and add it to the map.
+            } catch (IOException e) {
+                LOG.error("I/O Exception connecting to {}: {}", brickDomain.getHostname(), e.getMessage());
+            } catch (AlreadyConnectedException e) {
+                LOG.info("IPConnection to {} already connected: {}", brickDomain.getHostname(), e.toString());
+            }
         }
     }
 
 
     /**
      * Connect all bricks.
-     *
-     * @throws  NotConnectedException  the not connected exception
-     * @throws  IOException  the iO exception
-     * @throws  AlreadyConnectedException  the already connected exception
      */
-    public void connectAll() throws NotConnectedException, IOException, AlreadyConnectedException {
+    public void connectAll() {
 
         List<BrickDomain> brickDomains;
 
@@ -126,14 +128,16 @@ public class BrickRegistry {
 
     /**
      * Disconnect all bricks, clear all the registered bricklets.
-     *
-     * @throws  NotConnectedException  the not connected exception
      */
-    public void disconnectAll() throws NotConnectedException {
+    public void disconnectAll() {
 
         // disconnect all the IPConnections
         for (IPConnection ipConnection : ipConnections.values()) {
-            ipConnection.disconnect();
+            try {
+                ipConnection.disconnect();
+            } catch (NotConnectedException e) {
+                LOG.info("IPConnection {} already disconnected: {}", ipConnection.toString(), e.toString());
+            }
         }
 
         // clear the list of connections
@@ -148,12 +152,8 @@ public class BrickRegistry {
 
     /**
      * Dis- and then reconnect all bricks.
-     *
-     * @throws  NotConnectedException  the not connected exception
-     * @throws  AlreadyConnectedException  the already connected exception
-     * @throws  IOException  the iO exception
      */
-    public void reconnectAll() throws NotConnectedException, AlreadyConnectedException, IOException {
+    public void reconnectAll() {
 
         disconnectAll();
         connectAll();

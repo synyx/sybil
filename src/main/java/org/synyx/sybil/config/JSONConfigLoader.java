@@ -143,13 +143,19 @@ public class JSONConfigLoader {
 
             String name = ledstrip.get("name").toString();
             String uid = ledstrip.get("uid").toString();
-            int length = (int) ledstrip.get("length"); // TODO: Error Handling
-            BrickDomain brick = brickRepository.findByHostname(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
 
-            if (brick != null) { // if there was corresponding brick found in the repo...
-                outputLEDStripRepository.save(new OutputLEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
-            } else { // if not...
-                LOG.error("Brick " + ledstrip.get("brick").toString() + " does not exist."); // ... error! TODO: Error Handling
+            try {
+                int length = Integer.parseInt(ledstrip.get("length").toString());
+                BrickDomain brick = brickRepository.findByHostname(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
+
+                if (brick != null) { // if there was corresponding brick found in the repo...
+                    outputLEDStripRepository.save(new OutputLEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
+                } else { // if not...
+                    LOG.error("Brick {} does not exist.", ledstrip.get("brick").toString()); // ... error!
+                }
+            } catch (NumberFormatException e) {
+                LOG.error("Failed to load LED Strip config: Length is not an integer.");
+                throw new RuntimeException("Failed to load LED Strip config: " + e.getMessage());
             }
         }
     }
@@ -200,7 +206,7 @@ public class JSONConfigLoader {
                 if (outputLEDStrip != null) {
                     jenkinsConfig.put(server, name, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
                 } else {
-                    LOG.error("Ledstrip " + ledstrip + " does not exist.");
+                    LOG.warn("Ledstrip {} does not exist.", ledstrip);
                 }
             }
         }

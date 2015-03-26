@@ -78,7 +78,7 @@ public class JenkinsService {
 
             return response.getBody();
         } catch (Exception e) {
-            LOG.error(serverURL + ": " + e.getMessage());
+            LOG.warn("{}: {}", serverURL, e.toString());
 
             return null;
         }
@@ -153,7 +153,7 @@ public class JenkinsService {
                 ledStrip.setStatus(new StatusInformation("Clear", Status.OKAY));
             }
         } else {
-            LOG.error("No LED Strips configured.");
+            LOG.warn("No LED Strips configured.");
         }
     }
 
@@ -170,7 +170,7 @@ public class JenkinsService {
                 ledStrip.showStatus();
             }
         } else {
-            LOG.error("No LED Strips configured.");
+            LOG.warn("No LED Strips configured.");
         }
     }
 

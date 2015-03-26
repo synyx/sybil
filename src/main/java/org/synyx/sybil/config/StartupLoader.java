@@ -32,10 +32,16 @@ public class StartupLoader {
     }
 
     @PostConstruct
-    public void init() throws IOException {
+    public void init() {
 
         LOG.info("Loading Startup Configuration");
 
-        jsonConfigLoader.loadConfig();
+        try {
+            jsonConfigLoader.loadConfig();
+        } catch (IOException e) {
+            LOG.error("Failed to load config files.");
+
+            throw new RuntimeException("Failed to load config files.");
+        }
     }
 }

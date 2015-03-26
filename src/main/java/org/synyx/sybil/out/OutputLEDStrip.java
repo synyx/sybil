@@ -27,6 +27,7 @@ public class OutputLEDStrip implements Bricklet {
     private double brightness;
     private final int length;
     private String name;
+    private boolean loggedError = false;
 
     /**
      * Makes new OutputLEDStrip object.
@@ -119,7 +120,12 @@ public class OutputLEDStrip implements Bricklet {
             try {
                 ledStrip.setRGBValues(i, (short) 16, blueArray, redArray, greenArray);
             } catch (TimeoutException | NotConnectedException e) {
-                LOG.error("Error connecting to LEDStrip during updateDisplay:", e);
+                if (loggedError) {
+                    LOG.warn("Error connecting to LEDStrip {} during updateDisplay: {}", name, e.toString());
+                } else {
+                    LOG.error("Error connecting to LEDStrip {} during updateDisplay: {}", name, e.toString());
+                    loggedError = true;
+                }
             }
         }
     }
@@ -241,7 +247,12 @@ public class OutputLEDStrip implements Bricklet {
         try {
             color = new Color(ledStrip.getRGBValues(position, (short) 1));
         } catch (TimeoutException | NotConnectedException e) {
-            LOG.error("Error connecting to LEDStrip during getPixel:", e);
+            if (loggedError) {
+                LOG.warn("Error connecting to LEDStrip {} during getPixel: {}", name, e.toString());
+            } else {
+                LOG.error("Error connecting to LEDStrip {} during getPixel: {}", name, e.toString());
+                loggedError = true;
+            }
         }
 
         return color;

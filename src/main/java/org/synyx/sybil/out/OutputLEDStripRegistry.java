@@ -1,6 +1,5 @@
 package org.synyx.sybil.out;
 
-import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.BrickletLEDStrip;
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
@@ -17,8 +16,6 @@ import org.synyx.sybil.common.BrickRegistry;
 import org.synyx.sybil.common.BrickletRegistry;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 
-import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +30,8 @@ import java.util.Map;
 public class OutputLEDStripRegistry implements BrickletRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStripRegistry.class);
+    private static final int FRAME_DURATION = 10;
+    private static final int CHIP_TYPE = 2812;
 
     private Map<OutputLEDStripDomain, OutputLEDStrip> outputLEDStrips = new HashMap<>();
     private BrickRegistry brickRegistry;
@@ -64,18 +63,19 @@ public class OutputLEDStripRegistry implements BrickletRegistry {
 
         // if there is no LED Strip with that id in the HashMap yet...
         if (!outputLEDStrips.containsKey(outputLEDStripDomain)) {
-            BrickletLEDStrip brickletLEDStrip = null; // since there is a try, it might end up undefined
+            BrickletLEDStrip brickletLEDStrip; // since there is a try, it might end up undefined
 
             try {
-                // get the connectin to the Brick, passing the BrickDomain and the calling object
+                // get the connecting to the Brick, passing the BrickDomain and the calling object
                 IPConnection ipConnection = brickRegistry.get(outputLEDStripDomain.getBrickDomain(), this);
 
                 // Create a new Tinkerforge brickletLEDStrip object with data from the database
                 brickletLEDStrip = new BrickletLEDStrip(outputLEDStripDomain.getUid(), ipConnection);
-                brickletLEDStrip.setFrameDuration(10); // Always go for the minimum (i.e. fastest) frame duration
-                brickletLEDStrip.setChipType(2812); // We only use 2812 chips
-            } catch (TimeoutException | NotConnectedException | IOException | AlreadyConnectedException e) {
-                LOG.error(e.toString());
+                brickletLEDStrip.setFrameDuration(FRAME_DURATION); // Always go for the minimum (i.e. fastest) frame duration
+                brickletLEDStrip.setChipType(CHIP_TYPE); // We only use 2812 chips
+            } catch (TimeoutException | NotConnectedException e) {
+                LOG.warn("Error setting up LED Strip: {}", e.toString());
+                brickletLEDStrip = null; // if there is an error, we don't want to use this
             }
 
             if (brickletLEDStrip != null) {
