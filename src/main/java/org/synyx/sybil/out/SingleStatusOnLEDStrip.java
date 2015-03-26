@@ -102,7 +102,7 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
     public void setStatus(StatusInformation statusInformation) {
 
-        LOG.debug("Show status {} on ledstrip {}", statusInformation.getStatus(), outputLEDStrip.getName());
+        LOG.debug("Set status {} on ledstrip {}", statusInformation.getStatus(), outputLEDStrip.getName());
 
         status = statusInformation.getStatus();
     }

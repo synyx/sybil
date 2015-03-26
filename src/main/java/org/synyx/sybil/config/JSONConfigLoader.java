@@ -37,22 +37,31 @@ import java.util.Map;
 @Component
 public class JSONConfigLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JSONConfigLoader.class); // Logger
+    // Logger
+    private static final Logger LOG = LoggerFactory.getLogger(JSONConfigLoader.class);
 
-    private ObjectMapper mapper = new ObjectMapper(); // JSON<->POJO Mapper
+    // Jackson ObjectMapper, maps JSON to Java Objects
+    private ObjectMapper mapper = new ObjectMapper();
 
-    private String configDir; // The place where the config files lie, taken from the injected environment (and thus ultimately a properties file)
+    // The place where the config files lie, taken from the injected environment (and thus ultimately a properties file)
+    private String configDir;
 
-    private String jenkinsConfigFile; // The file where the Jenkins servers are configured
+    // The file where the Jenkins servers are configured
+    private String jenkinsConfigFile;
 
-    private BrickRepository brickRepository; // The Repository to save said configuration data
+    // The Repository to save Brick configuration data
+    private BrickRepository brickRepository;
 
-    private OutputLEDStripRepository outputLEDStripRepository; // The Repository to save said configuration data
+    // The Repository to save OutputLEDStrip configuration data
+    private OutputLEDStripRepository outputLEDStripRepository;
 
-    private OutputLEDStripRegistry outputLEDStripRegistry; // This fetches the actual LED Strip objects for given config data
+    // This fetches the actual LED Strip objects for given config data
+    private OutputLEDStripRegistry outputLEDStripRegistry;
 
-    private SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry; // Fetches one SingleStatusOnLEDStrip for each LED Strip
+    // Fetches one SingleStatusOnLEDStrip for each LED Strip
+    private SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
 
+    // The object that saves the Jenkins servers and job configurations
     private JenkinsConfig jenkinsConfig;
 
     /**
