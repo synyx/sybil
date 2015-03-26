@@ -87,9 +87,9 @@ dependencies {
 
     //logging
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.2'
-    compile group: 'ch.qos.logback.contrib', name: 'logback-json-classic', version: '0.1.2'
-    compile group: 'ch.qos.logback.contrib', name: 'logback-jackson', version: '0.1.2'
-    compile group: 'javax.mail', name: 'mail', version: '1.4.7'
+    //compile group: 'ch.qos.logback.contrib', name: 'logback-json-classic', version: '0.1.2' //for logback jscon logging
+    //compile group: 'ch.qos.logback.contrib', name: 'logback-jackson', version: '0.1.2' //for logback jscon logging
+    //compile group: 'javax.mail', name: 'mail', version: '1.4.7' // for logback email notifications
     
     //testing dependencies
     testCompile group: 'junit', name: 'junit', version: '4.12'
