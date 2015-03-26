@@ -28,10 +28,9 @@ apply plugin: 'org.akhikhl.gretty' // gretty = embedded jetty 9
 gretty { // configure gretty
     recompileOnSourceChange = false; // not terribly useful with an autosaving IDE.
     contextPath = "/" // make the project available at / URL instead of /$projectname/
-    logDir = "logs" // put server logs in the same place as app logs
-    logFileName = "server" // sybil.log is already used by the app log
+    logbackConfigFile = 'conf/logback.xml'
     integrationTestTask = 'integTest'
-    //systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
+    //systemProperty 'logLevel', 'DEBUG' //enable debug logging
     jvmArgs = []
 }
 
