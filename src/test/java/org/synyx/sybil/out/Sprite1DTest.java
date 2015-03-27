@@ -17,7 +17,7 @@ public class Sprite1DTest {
         for (int i = 0; i < 3; i++) {
             Color pixel = sprite.getPixel(i);
             assertTrue("Pixel " + i + " should be (64, 64, 0)",
-                pixel.getRed() == 64 && pixel.getGreen() == 64 && pixel.getBlue() == 0);
+                pixel.getRedAsShort() == 64 && pixel.getGreenAsShort() == 64 && pixel.getBlueAsShort() == 0);
         }
     }
 

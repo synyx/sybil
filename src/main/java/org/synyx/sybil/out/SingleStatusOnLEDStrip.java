@@ -20,7 +20,7 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     private Status status = Status.OKAY;
 
     /**
-     * Constructor.
+     * Instantiates a new SingleStatusOnLEDStrip.
      *
      * @param  outputLEDStrip  The output (in this case a LED strip) to show statuses on
      */

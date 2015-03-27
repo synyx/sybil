@@ -74,19 +74,19 @@ public class Color {
     }
 
 
-    public short getBlue() {
+    public short getBlueAsShort() {
 
         return blue;
     }
 
 
-    public short getGreen() {
+    public short getGreenAsShort() {
 
         return green;
     }
 
 
-    public short getRed() {
+    public short getRedAsShort() {
 
         return red;
     }

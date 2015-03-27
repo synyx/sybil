@@ -1,4 +1,4 @@
-package org.synyx.sybil.config;
+package org.synyx.sybil.webconfig;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

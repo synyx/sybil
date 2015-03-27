@@ -20,20 +20,20 @@ public class ColorTest {
     @Test
     public void testGetRed() throws Exception {
 
-        assertEquals("Red should be 127", 127, color.getRed());
+        assertEquals("Red should be 127", 127, color.getRedAsShort());
     }
 
 
     @Test
     public void testGetGreen() throws Exception {
 
-        assertEquals("Green should be 32", 32, color.getGreen());
+        assertEquals("Green should be 32", 32, color.getGreenAsShort());
     }
 
 
     @Test
     public void testGetBlue() throws Exception {
 
-        assertEquals("Blue should be 0", 0, color.getBlue());
+        assertEquals("Blue should be 0", 0, color.getBlueAsShort());
     }
 }

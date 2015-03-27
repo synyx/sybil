@@ -21,7 +21,9 @@ import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.in.StatusInformation;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 
 @ContextConfiguration(classes = SpringConfig.class)
@@ -50,18 +52,20 @@ public class SingleStatusOnLEDStripTest {
         brickRepository.deleteAll();
 
         // define Bricks
-        BrickDomain localUSB = new BrickDomain("localhost");
-        BrickDomain synerforge001 = new BrickDomain("synerforge001");
+        BrickDomain devkit1 = new BrickDomain("localhost", 14223);
+        BrickDomain devkit2 = new BrickDomain("localhost", 14224);
 
         // add them to the database
-        brickRepository.save(localUSB);
-        brickRepository.save(synerforge001);
+        brickRepository.save(devkit1);
+        brickRepository.save(devkit2);
 
-        OutputLEDStripDomain devkitOneDomain = new OutputLEDStripDomain("devkitone", "p5V", 30, localUSB);
-        OutputLEDStripDomain devkitTwoDomain = new OutputLEDStripDomain("devkittwo", "p3c", 30, synerforge001);
+        // define LED Strips (bricklets)
+        OutputLEDStripDomain devkitOneDomain = new OutputLEDStripDomain("devkitone", "abc", 30, devkit1);
+        OutputLEDStripDomain devkitTwoDomain = new OutputLEDStripDomain("devkittwo", "def", 30, devkit2);
 
-        outputLEDStripRepository.save(devkitOneDomain);
-        outputLEDStripRepository.save(devkitTwoDomain);
+        // add them to the database
+        devkitOneDomain = outputLEDStripRepository.save(devkitOneDomain);
+        devkitTwoDomain = outputLEDStripRepository.save(devkitTwoDomain);
 
         devkitOne = outputLEDStripRegistry.get(devkitOneDomain);
         devkitTwo = outputLEDStripRegistry.get(devkitTwoDomain);
@@ -89,9 +93,9 @@ public class SingleStatusOnLEDStripTest {
         singleStatusOutputOne.showStatus(statusInformation);
 
         Color pixel = devkitOne.getPixel(0);
-        assertTrue("LED Strip should be yellow",
-            pixel.getRed() == 127 && pixel.getGreen() == 127 && pixel.getBlue() == 0);
-        // Thread.sleep(2000);
+        assertThat(pixel.getRedAsShort(), is((short) 127));
+        assertThat(pixel.getGreenAsShort(), is((short) 127));
+        assertThat(pixel.getBlueAsShort(), is((short) 0));
     }
 
 
@@ -103,8 +107,9 @@ public class SingleStatusOnLEDStripTest {
         singleStatusOutputTwo.showStatus(statusInformation);
 
         Color pixel = devkitTwo.getPixel(0);
-        assertTrue("LED Strip should be red", pixel.getRed() == 127 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
-        // Thread.sleep(2000);
+        assertThat(pixel.getRedAsShort(), is((short) 127));
+        assertThat(pixel.getGreenAsShort(), is((short) 0));
+        assertThat(pixel.getBlueAsShort(), is((short) 0));
     }
 
 
@@ -116,6 +121,8 @@ public class SingleStatusOnLEDStripTest {
         singleStatusOutputOne.showStatus(statusInformation);
 
         Color pixel = devkitOne.getPixel(0);
-        assertTrue("LED Strip should be black", pixel.getRed() == 0 && pixel.getGreen() == 0 && pixel.getBlue() == 0);
+        assertThat(pixel.getRedAsShort(), is((short) 0));
+        assertThat(pixel.getGreenAsShort(), is((short) 16));
+        assertThat(pixel.getBlueAsShort(), is((short) 0));
     }
 }

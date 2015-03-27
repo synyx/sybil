@@ -54,9 +54,9 @@ public class Sprite1D {
 
     public void setFill(Color color) {
 
-        Arrays.fill(red, color.getRed());
-        Arrays.fill(green, color.getGreen());
-        Arrays.fill(blue, color.getBlue());
+        Arrays.fill(red, color.getRedAsShort());
+        Arrays.fill(green, color.getGreenAsShort());
+        Arrays.fill(blue, color.getBlueAsShort());
     }
 
 
@@ -68,9 +68,9 @@ public class Sprite1D {
      */
     public void setPixel(int position, Color color) {
 
-        red[position] = color.getRed();
-        green[position] = color.getGreen();
-        blue[position] = color.getBlue();
+        red[position] = color.getRedAsShort();
+        green[position] = color.getGreenAsShort();
+        blue[position] = color.getBlueAsShort();
     }
 
 

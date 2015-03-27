@@ -29,9 +29,9 @@ gretty { // configure gretty
     recompileOnSourceChange = false; // not terribly useful with an autosaving IDE.
     contextPath = "/" // make the project available at / URL instead of /$projectname/
     logbackConfigFile = 'conf/logback.xml'
-    integrationTestTask = 'integTest'
+    //integrationTestTask = 'integTest'
     //systemProperty 'logLevel', 'DEBUG' //enable debug logging
-    jvmArgs = []
+    //jvmArgs = []
 }
 
 
@@ -43,10 +43,38 @@ sourceSets {
 }
 
 
+
+task startTFStubserver1(type: ExecWait) {
+    command '/home/theuer/bin/stubserver -p 14223 -d /home/theuer/devel/sybil/src/test/TFStubserver/ledstrip1.properties'
+    ready 'BrickThread is running'
+    directory '.'
+}
+
+task startTFStubserver2(type: ExecWait) {
+    command '/home/theuer/bin/stubserver -p 14224 -d /home/theuer/devel/sybil/src/test/TFStubserver/ledstrip2.properties'
+    dependsOn(startTFStubserver1)
+    ready 'BrickThread is running'
+    directory '.'
+}
+
+task startTFStubserver3(type: ExecWait) {
+    command '/home/theuer/bin/stubserver -p 14225 -d /home/theuer/devel/sybil/src/test/TFStubserver/ledstrip3.properties'
+    dependsOn(startTFStubserver2)
+    ready 'BrickThread is running'
+    directory '.'
+}
+
+task stopTFStubservers(type: Exec) {
+    commandLine 'killall', 'stubserver'
+}
+
 task integTest(type: Test) { //define the integTest task as a Test task
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
 
+    dependsOn(startTFStubserver3)
+    finalizedBy(stopTFStubservers)
+    
     systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
     systemProperty 'spring.profiles.active', 'dev' //set active Spring profile to development
@@ -65,7 +93,6 @@ test {
     systemProperty 'spring.profiles.active', 'dev'  //set active Spring profile to development
 //    testLogging.showStandardStreams = true //show STDOUT and STDERR while gradle is running
 }
-
 
 dependencies {
     //spring
@@ -100,4 +127,32 @@ dependencies {
     integTestCompile configurations.testCompile
     integTestCompile sourceSets.test.output
     integTestRuntime configurations.testRuntime
+}
+
+class ExecWait extends DefaultTask {
+    String command
+    String ready
+    String directory
+
+    @TaskAction
+    def spawnProcess() {
+
+        ProcessBuilder builder = new ProcessBuilder(command.split(' '))
+        builder.redirectErrorStream(true)
+        builder.directory(new File(directory))
+        Process process = builder.start()
+
+        InputStream stdout = process.getInputStream()
+        BufferedReader reader = new BufferedReader(new
+                InputStreamReader(stdout))
+
+        def line
+        while ((line = reader.readLine()) != null) {
+            println line
+            if (line.contains(ready)) {
+                println "$command is ready"
+                break;
+            }
+        }
+    }
 }

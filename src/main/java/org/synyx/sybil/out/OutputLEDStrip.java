@@ -218,9 +218,9 @@ public class OutputLEDStrip implements Bricklet {
 
         LOG.debug("Setting pixel {} of LEDstrip {} to {}", position, name, color);
 
-        pixelBufferRed[position] = color.getRed();
-        pixelBufferGreen[position] = color.getGreen();
-        pixelBufferBlue[position] = color.getBlue();
+        pixelBufferRed[position] = color.getRedAsShort();
+        pixelBufferGreen[position] = color.getGreenAsShort();
+        pixelBufferBlue[position] = color.getBlueAsShort();
     }
 
 
@@ -258,9 +258,9 @@ public class OutputLEDStrip implements Bricklet {
 
         LOG.debug("Setting LEDstrip {} to color {}", name, color);
 
-        Arrays.fill(pixelBufferRed, color.getRed());
-        Arrays.fill(pixelBufferGreen, color.getGreen());
-        Arrays.fill(pixelBufferBlue, color.getBlue());
+        Arrays.fill(pixelBufferRed, color.getRedAsShort());
+        Arrays.fill(pixelBufferGreen, color.getGreenAsShort());
+        Arrays.fill(pixelBufferBlue, color.getBlueAsShort());
     }
 
 

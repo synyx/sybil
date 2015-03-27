@@ -1,6 +1,8 @@
-package org.synyx.sybil.config;
+package org.synyx.sybil.webconfig;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+import org.synyx.sybil.config.SpringConfig;
 
 
 /**
