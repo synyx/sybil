@@ -2,11 +2,11 @@
 <configuration>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        
-            <encoder>
-                <pattern>%d{MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
-            </encoder>
-        
+
+        <encoder>
+            <pattern>%d{MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+
     </appender>
 
 
@@ -24,12 +24,12 @@
         </rollingPolicy>
 
         <encoder>
-        <pattern>%d{HH:mm:ss.SSS} %level %logger{10} [%file:%line] %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %level %logger{10} [%file:%line] %msg%n</pattern>
         </encoder>
 
     </appender>
 
-    
+
     <!-- appender name="FILEJSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
         
         <file>${logDirectory:-logs/}sybil.json</file>
@@ -59,7 +59,7 @@
         <appender-ref ref="FILECLEAR" />
         <!-- appender-ref ref="FILEJSON" /--><!-- enable for json logging -->
     </logger>
-    
+
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>

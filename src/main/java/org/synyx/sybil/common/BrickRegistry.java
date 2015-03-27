@@ -16,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.domain.BrickDomain;
+import org.synyx.sybil.in.Status;
 
 import java.io.IOException;
 
@@ -97,6 +99,7 @@ public class BrickRegistry {
                 ipConnections.put(brickDomain, ipConnection); // ... and add it to the map.
             } catch (IOException e) {
                 LOG.error("I/O Exception connecting to {}: {}", brickDomain.getHostname(), e.getMessage());
+                HealthController.setHealth(Status.CRITICAL);
             } catch (AlreadyConnectedException e) {
                 LOG.info("IPConnection to {} already connected: {}", brickDomain.getHostname(), e.toString());
             }

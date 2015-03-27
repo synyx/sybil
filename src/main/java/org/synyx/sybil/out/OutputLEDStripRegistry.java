@@ -69,12 +69,19 @@ public class OutputLEDStripRegistry implements BrickletRegistry {
                 // get the connecting to the Brick, passing the BrickDomain and the calling object
                 IPConnection ipConnection = brickRegistry.get(outputLEDStripDomain.getBrickDomain(), this);
 
-                // Create a new Tinkerforge brickletLEDStrip object with data from the database
-                brickletLEDStrip = new BrickletLEDStrip(outputLEDStripDomain.getUid(), ipConnection);
-                brickletLEDStrip.setFrameDuration(FRAME_DURATION); // Always go for the minimum (i.e. fastest) frame duration
-                brickletLEDStrip.setChipType(CHIP_TYPE); // We only use 2812 chips
+                if (ipConnection != null) {
+                    // Create a new Tinkerforge brickletLEDStrip object with data from the database
+                    brickletLEDStrip = new BrickletLEDStrip(outputLEDStripDomain.getUid(), ipConnection);
+                    brickletLEDStrip.setFrameDuration(FRAME_DURATION); // Always go for the minimum (i.e. fastest) frame duration
+                    brickletLEDStrip.setChipType(CHIP_TYPE); // We only use 2812 chips
+                } else {
+                    LOG.warn("Error setting up LED Strip {}: Brick {} not available.", outputLEDStripDomain.getName(),
+                        outputLEDStripDomain.getBrickDomain().getHostname());
+
+                    brickletLEDStrip = null;
+                }
             } catch (TimeoutException | NotConnectedException e) {
-                LOG.warn("Error setting up LED Strip: {}", e.toString());
+                LOG.warn("Error setting up LED Strip {}: {}", outputLEDStripDomain.getName(), e.toString());
                 brickletLEDStrip = null; // if there is an error, we don't want to use this
             }
 

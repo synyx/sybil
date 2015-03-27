@@ -12,11 +12,13 @@ import org.springframework.core.env.Environment;
 
 import org.springframework.stereotype.Component;
 
+import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.common.jenkins.JenkinsConfig;
 import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
 import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
+import org.synyx.sybil.in.Status;
 import org.synyx.sybil.out.OutputLEDStrip;
 import org.synyx.sybil.out.OutputLEDStripRegistry;
 import org.synyx.sybil.out.SingleStatusOnLEDStripRegistry;
@@ -64,6 +66,9 @@ public class JSONConfigLoader {
     // The object that saves the Jenkins servers and job configurations
     private JenkinsConfig jenkinsConfig;
 
+    // The status of the LED Strip Config
+    private Status LEDStripStatus = Status.OKAY;
+
     /**
      * Instantiates a new JSON config loader.
      *
@@ -97,21 +102,21 @@ public class JSONConfigLoader {
             loadBricksConfig();
         } catch (IOException e) {
             LOG.error("Error loading bricks.json: {}", e.toString());
-            throw new RuntimeException("Failed to load bricks.json.");
+            HealthController.setHealth(Status.CRITICAL);
         }
 
         try {
             loadLEDStripConfig();
         } catch (IOException e) {
             LOG.error("Error loading ledstrips.json: {}", e.toString());
-            throw new RuntimeException("Failed to load ledstrips.json.");
+            HealthController.setHealth(Status.CRITICAL);
         }
 
         try {
             loadJenkinsServers();
         } catch (IOException e) {
             LOG.error("Error loading jenkinsservers.json: {}", e.toString());
-            throw new RuntimeException("Failed to load jenkinsservers.json.");
+            HealthController.setHealth(Status.CRITICAL);
         }
 
         try {
@@ -169,10 +174,13 @@ public class JSONConfigLoader {
                     outputLEDStripRepository.save(new OutputLEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
                 } else { // if not...
                     LOG.error("Brick {} does not exist.", ledstrip.get("brick").toString()); // ... error!
+                    HealthController.setHealth(Status.WARNING);
+                    LEDStripStatus = Status.WARNING;
                 }
             } catch (NumberFormatException e) {
-                LOG.error("Failed to load LED Strip config: Length is not an integer.");
-                throw new RuntimeException("Failed to load LED Strip config: " + e.getMessage());
+                LOG.error("Failed to load config for LED Strip {}: \"length\" is not an integer.", name);
+                HealthController.setHealth(Status.WARNING);
+                LEDStripStatus = Status.WARNING;
             }
         }
     }
@@ -208,6 +216,11 @@ public class JSONConfigLoader {
 
         jenkinsConfig.reset();
 
+        // if there was no WARNING from the LED Strip Config and no CRITICAL from anywhere, we can safely assume any WARNING came from here
+        if (LEDStripStatus == Status.OKAY && HealthController.getHealth() != Status.CRITICAL) {
+            HealthController.setHealth(Status.OKAY);
+        }
+
         // ... deserialize the data manually
         for (String server : jenkinsConfigData.keySet()) { // iterate over all the servers
 
@@ -224,6 +237,7 @@ public class JSONConfigLoader {
                     jenkinsConfig.put(server, name, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
                 } else {
                     LOG.warn("Ledstrip {} does not exist.", ledstrip);
+                    HealthController.setHealth(Status.WARNING);
                 }
             }
         }
