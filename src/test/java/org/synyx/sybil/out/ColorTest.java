@@ -20,7 +20,7 @@ public class ColorTest {
     @Test
     public void testGetRed() throws Exception {
 
-        assertEquals("Red should be 127", 127, color.getRedAsShort());
+        assertEquals("Red should be 255", 255, color.getRedAsShort());
     }
 
 

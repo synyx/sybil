@@ -159,9 +159,9 @@ public class OutputLEDStripTest {
             outputLEDStrip.updateDisplay();
 
             Color pixel = outputLEDStrip.getPixel(0);
-            assertTrue(outputLEDStrip.getName() + " Pixel 0 should be half as bright as a full white (127, 127, 127).",
-                pixel.getRedAsShort() == (short) (127 * .5) && pixel.getGreenAsShort() == (short) (127 * .5)
-                && pixel.getBlueAsShort() == (short) (127 * .5));
+            assertTrue(outputLEDStrip.getName() + " Pixel 0 should be half as bright as a full white (255, 255, 255).",
+                pixel.getRedAsShort() == (short) (255 * .5) && pixel.getGreenAsShort() == (short) (255 * .5)
+                && pixel.getBlueAsShort() == (short) (255 * .5));
         }
 
         LOG.info("FINISH Test testBrightnessHalf");
@@ -180,8 +180,8 @@ public class OutputLEDStripTest {
             outputLEDStrip.updateDisplay();
 
             Color pixel = outputLEDStrip.getPixel(0);
-            assertTrue(outputLEDStrip.getName() + " Pixel 0 should be full white (127, 127, 127).",
-                pixel.getRedAsShort() == 127 && pixel.getGreenAsShort() == 127 && pixel.getBlueAsShort() == 127);
+            assertTrue(outputLEDStrip.getName() + " Pixel 0 should be full white (255, 255, 255).",
+                pixel.getRedAsShort() == 255 && pixel.getGreenAsShort() == 255 && pixel.getBlueAsShort() == 255);
         }
 
         LOG.info("FINISH Test testBrightnessFull");
@@ -201,9 +201,9 @@ public class OutputLEDStripTest {
 
             Color pixel = outputLEDStrip.getPixel(0);
             assertTrue(outputLEDStrip.getName()
-                + " Pixel 0 should be double as bright as a full white (127, 127, 127).",
-                pixel.getRedAsShort() == (short) (127 * 2) && pixel.getGreenAsShort() == (short) (127 * 2)
-                && pixel.getBlueAsShort() == (short) (127 * 2));
+                + " Pixel 0 should be full white (255, 255, 255).",
+                pixel.getRedAsShort() == (short) (255) && pixel.getGreenAsShort() == (short) (255)
+                && pixel.getBlueAsShort() == (short) (255));
         }
 
         LOG.info("FINISH Test testBrightnessDouble");

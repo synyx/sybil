@@ -189,7 +189,7 @@ public class OutputLEDStrip implements Bricklet {
     /**
      * Sets the brightness of the LEDs.
      *
-     * @param  brightness  Brightness, between 0.0 (completely dark) and 2.0 (twice as bright as normal)
+     * @param  brightness  Brightness, between 0.0 (completely dark) and 1.0 (maximum brightness)
      */
     public void setBrightness(double brightness) {
 
@@ -199,8 +199,8 @@ public class OutputLEDStrip implements Bricklet {
             brightness = 0.0;
         }
 
-        if (brightness > 2.0) {
-            brightness = 2.0;
+        if (brightness > 1.0) {
+            brightness = 1.0;
         }
 
         this.brightness = brightness;
