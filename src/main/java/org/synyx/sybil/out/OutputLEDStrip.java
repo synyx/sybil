@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import org.synyx.sybil.common.Bricklet;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -245,6 +247,24 @@ public class OutputLEDStrip implements Bricklet {
         }
 
         return color;
+    }
+
+
+    public double getBrightness() {
+
+        return brightness;
+    }
+
+
+    public List<Color> getPixelBuffer() {
+
+        List<Color> pixelBuffer = new ArrayList<>();
+
+        for (int i = 0; i < length; i++) {
+            pixelBuffer.add(new Color(pixelBufferRed[i], pixelBufferGreen[i], pixelBufferBlue[i]));
+        }
+
+        return pixelBuffer;
     }
 
 

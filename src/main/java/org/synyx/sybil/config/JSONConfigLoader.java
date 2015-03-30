@@ -237,7 +237,10 @@ public class JSONConfigLoader {
                     jenkinsConfig.put(server, name, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
                 } else {
                     LOG.warn("Ledstrip {} does not exist.", ledstrip);
-                    HealthController.setHealth(Status.WARNING);
+
+                    if (HealthController.getHealth() != Status.CRITICAL) {
+                        HealthController.setHealth(Status.WARNING);
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 package org.synyx.sybil.out;
 
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -29,6 +30,22 @@ public class Sprite1D {
         green = new short[length];
         blue = new short[length];
         this.name = name;
+    }
+
+
+    public Sprite1D(int length, String name, List<Color> pixels) {
+
+        this.length = length;
+        red = new short[length];
+        green = new short[length];
+        blue = new short[length];
+        this.name = name;
+
+        for (int i = 0; i < length; i++) {
+            red[i] = pixels.get(i).getRedAsShort();
+            green[i] = pixels.get(i).getGreenAsShort();
+            blue[i] = pixels.get(i).getBlueAsShort();
+        }
     }
 
 

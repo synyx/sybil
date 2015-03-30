@@ -1,5 +1,10 @@
 package org.synyx.sybil.in;
 
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
+
+import org.neo4j.helpers.collection.IteratorUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +23,14 @@ import org.springframework.web.client.RestTemplate;
 import org.synyx.sybil.common.jenkins.JenkinsConfig;
 import org.synyx.sybil.common.jenkins.JenkinsJob;
 import org.synyx.sybil.common.jenkins.JenkinsProperties;
+import org.synyx.sybil.database.OutputLEDStripRepository;
+import org.synyx.sybil.domain.OutputLEDStripDomain;
+import org.synyx.sybil.out.Color;
+import org.synyx.sybil.out.OutputLEDStrip;
+import org.synyx.sybil.out.OutputLEDStripRegistry;
 import org.synyx.sybil.out.SingleStatusOnLEDStrip;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -50,15 +61,25 @@ public class JenkinsService {
      */
     private final JenkinsConfig jenkinsConfig;
 
+    private final OutputLEDStripRepository outputLEDStripRepository;
+
+    private final OutputLEDStripRegistry outputLEDStripRegistry;
+
+    private final GraphDatabaseService graphDatabaseService;
+
     /**
      * Instantiates a new Jenkins service.
      *
      * @param  jenkinsConfig  The Jenkins config bean, autowired in.
      */
     @Autowired
-    public JenkinsService(JenkinsConfig jenkinsConfig) {
+    public JenkinsService(JenkinsConfig jenkinsConfig, OutputLEDStripRegistry outputLEDStripRegistry,
+        OutputLEDStripRepository outputLEDStripRepository, GraphDatabaseService graphDatabaseService) {
 
         this.jenkinsConfig = jenkinsConfig;
+        this.outputLEDStripRegistry = outputLEDStripRegistry;
+        this.outputLEDStripRepository = outputLEDStripRepository;
+        this.graphDatabaseService = graphDatabaseService;
     }
 
     /**
@@ -133,10 +154,23 @@ public class JenkinsService {
     @PreDestroy
     public void destroy() {
 
-        Set<SingleStatusOnLEDStrip> allLEDStrips = jenkinsConfig.getAll();
+        List<OutputLEDStripDomain> ledStripDomains = null;
 
-        for (SingleStatusOnLEDStrip ledStrip : allLEDStrips) {
-            ledStrip.turnOff();
+        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
+
+            // get all Bricks from database and cast them into a list so that they're actually fetched
+            ledStripDomains = new ArrayList<>(IteratorUtil.asCollection(outputLEDStripRepository.findAll()));
+
+            // end transaction
+            tx.success();
+        }
+
+        if (ledStripDomains != null) {
+            for (OutputLEDStripDomain ledStripDomain : ledStripDomains) {
+                OutputLEDStrip ledStrip = outputLEDStripRegistry.get(ledStripDomain);
+                ledStrip.setFill(Color.BLACK);
+                ledStrip.updateDisplay();
+            }
         }
     }
 

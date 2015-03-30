@@ -1,5 +1,7 @@
 package org.synyx.sybil.out;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.tinkerforge.BrickletLEDStrip;
 
 
@@ -17,9 +19,9 @@ public class Color {
     public static final Color WARNING = new Color(127, 127, 0);
     public static final Color OKAY = new Color(0, 16, 0);
 
-    private final short red;
-    private final short green;
-    private final short blue;
+    private short red;
+    private short green;
+    private short blue;
 
     /**
      * Converts Red, Green and Blue into the right format.
@@ -54,6 +56,10 @@ public class Color {
     }
 
 
+    public Color() {
+    }
+
+
     /**
      * Converts Tinkerforge colors into the right format.
      *
@@ -63,6 +69,7 @@ public class Color {
     public Color(BrickletLEDStrip.RGBValues rgbValues) {
 
         red = rgbValues.g[0];
+
         green = rgbValues.b[0];
         blue = rgbValues.r[0];
     }
@@ -74,20 +81,41 @@ public class Color {
     }
 
 
+    @JsonProperty("blue")
     public short getBlueAsShort() {
 
         return blue;
     }
 
 
+    @JsonProperty("green")
     public short getGreenAsShort() {
 
         return green;
     }
 
 
+    @JsonProperty("red")
     public short getRedAsShort() {
 
         return red;
+    }
+
+
+    public void setRed(short red) {
+
+        this.red = red;
+    }
+
+
+    public void setGreen(short green) {
+
+        this.green = green;
+    }
+
+
+    public void setBlue(short blue) {
+
+        this.blue = blue;
     }
 }
