@@ -43,37 +43,36 @@ sourceSets {
 }
 
 
-
 task startTFStubserver1(type: ExecWait) {
-    command '/home/theuer/bin/stubserver -p 14223 -d /home/theuer/devel/sybil/src/test/TFStubserver/ledstrip1.properties'
+    command 'stubserver -p 14223 -d ' + projectDir + '/src/test/TFStubserver/ledstrip1.properties'
     ready 'BrickThread is running'
     directory '.'
 }
 
 task startTFStubserver2(type: ExecWait) {
-    command '/home/theuer/bin/stubserver -p 14224 -d /home/theuer/devel/sybil/src/test/TFStubserver/ledstrip2.properties'
+    command 'stubserver -p 14224 -d ' + projectDir + '/src/test/TFStubserver/ledstrip2.properties'
     dependsOn(startTFStubserver1)
     ready 'BrickThread is running'
     directory '.'
 }
 
 task startTFStubserver3(type: ExecWait) {
-    command '/home/theuer/bin/stubserver -p 14225 -d /home/theuer/devel/sybil/src/test/TFStubserver/ledstrip3.properties'
+    command 'stubserver -p 14225 -d ' + projectDir + '/src/test/TFStubserver/ledstrip3.properties'
     dependsOn(startTFStubserver2)
     ready 'BrickThread is running'
     directory '.'
 }
 
 task stopTFStubservers(type: Exec) {
-    commandLine 'killall', 'stubserver'
+    commandLine 'killall', 'stubserver' // Subtlety was never my strength
 }
 
 task integTest(type: Test) { //define the integTest task as a Test task
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
 
-    dependsOn(startTFStubserver3)
-    finalizedBy(stopTFStubservers)
+    dependsOn(startTFStubserver3) // Start Tinkerforge Stub servers
+    finalizedBy(stopTFStubservers) // Kill said servers afterwards
     
     systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
@@ -129,6 +128,13 @@ dependencies {
     integTestRuntime configurations.testRuntime
 }
 
+/**
+ * ExecWait: Executes a task and waits for a certain output to continue.
+ * 
+ * @param  command  The command to execute
+ * @param  ready  The String to look for in the command's output to continue with the build
+ * @param  directory  The directory to execute the command in
+ */
 class ExecWait extends DefaultTask {
     String command
     String ready

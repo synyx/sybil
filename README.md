@@ -66,15 +66,15 @@ When you are done, run
 
 `gradlew appStop`
 
-#### Colored Lights ####
+#### Integration Tests ####
 
-To see colored lights on the connected & configured LED Strips, run an integration test:
+Integration tests require [TFStubserver](https://github.com/PlayWithIt/TFStubserver) and (the \*nix command) killall.  
+Run them with `gradlew integTest`.  
+This will start three Tinkerforge stub servers (servers that simulate the Tinkerforge hardware in software) and run 
+tests on them.
 
-`gradlew integTest`
-
-*(Might not currently work as expected!  
-**TODO: Fix Integration tests**)*
-
+Integration tests are probably \*nix specific right now.  
+TODO: Make integration tests cross-platform.
 
 ### Structure ###
     src/
