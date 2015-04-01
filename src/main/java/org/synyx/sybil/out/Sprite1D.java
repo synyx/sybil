@@ -1,5 +1,10 @@
 package org.synyx.sybil.out;
 
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+
+import org.springframework.hateoas.core.Relation;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,7 +14,13 @@ import java.util.List;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
+
+@NodeEntity
+@Relation(collectionRelation = "sprites")
 public class Sprite1D {
+
+    @GraphId
+    private Long id;
 
     private final short[] red;
     private final short[] green;

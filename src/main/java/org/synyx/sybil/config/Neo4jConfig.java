@@ -22,7 +22,7 @@ public class Neo4jConfig extends Neo4jConfiguration {
 
     public Neo4jConfig() {
 
-        setBasePackage("org.synyx.sybil.domain"); // this is where the domain classes are
+        setBasePackage("org.synyx.sybil.domain", "org.synyx.sybil.out"); // this is where the domain classes are
     }
 
     // Development Profile Database
