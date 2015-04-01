@@ -49,7 +49,7 @@ public class JSONConfigLoader {
     private String configDir;
 
     // The file where the Jenkins servers are configured
-    private String jenkinsConfigFile;
+    private String jenkinsServerConfigFile;
 
     // The Repository to save Brick configuration data
     private BrickRepository brickRepository;
@@ -87,7 +87,7 @@ public class JSONConfigLoader {
         this.brickRepository = brickRepository;
         this.outputLEDStripRepository = outputLEDStripRepository;
         configDir = env.getProperty("path.to.configfiles");
-        jenkinsConfigFile = env.getProperty("jenkins.configfile");
+        jenkinsServerConfigFile = env.getProperty("jenkins.configfile");
         this.outputLEDStripRegistry = outputLEDStripRegistry;
         this.jenkinsConfig = jenkinsConfig;
         this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
@@ -190,7 +190,7 @@ public class JSONConfigLoader {
 
         LOG.info("Loading Jenkins servers");
 
-        List<Map<String, Object>> servers = mapper.readValue(new File(jenkinsConfigFile),
+        List<Map<String, Object>> servers = mapper.readValue(new File(jenkinsServerConfigFile),
                 new TypeReference<List<Map<String, Object>>>() {
                 });
 

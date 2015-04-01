@@ -7,6 +7,9 @@ import org.neo4j.graphdb.Transaction;
 
 import org.neo4j.helpers.collection.IteratorUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.hateoas.Link;
@@ -50,6 +53,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/configuration/ledstrips")
 public class ConfigurationLEDStripController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStrip.class);
 
     private OutputLEDStripRepository outputLEDStripRepository;
     private GraphDatabaseService graphDatabaseService;
@@ -117,54 +122,23 @@ public class ConfigurationLEDStripController {
 
     @ResponseBody
     @RequestMapping(value = "/{name}/display", method = RequestMethod.GET, produces = { "application/hal+json" })
-    public PatchResource getDisplay(@PathVariable String name) {
+    public DisplayResource getDisplay(@PathVariable String name) {
 
-        SinglePatchResource patch1 = new SinglePatchResource();
-        patch1.setAction("set");
-        patch1.setTarget("brightness");
+        OutputLEDStripDomain ledStripDomain = outputLEDStripRepository.findByName(name);
+        OutputLEDStrip ledStrip = outputLEDStripRegistry.get(ledStripDomain);
 
-        List<String> values = new ArrayList<>();
-        values.add("0.5");
-        values.add("127");
-        values.add("33");
+        Link self = linkTo(methodOn(ConfigurationLEDStripController.class).getDisplay(ledStripDomain.getName()))
+            .withSelfRel();
 
-        patch1.setValues(values);
+        DisplayResource display = new DisplayResource();
 
-        SinglePatchResource patch2 = new SinglePatchResource();
-        patch2.setAction("update");
-        patch2.setTarget("display");
+        display.add(self);
+        display.setPixels(ledStrip.getPixelBuffer());
+        display.setBrightness(ledStrip.getBrightness());
 
-        List<SinglePatchResource> patches = new ArrayList<>();
-
-        patches.add(patch1);
-        patches.add(patch2);
-
-        PatchResource result = new PatchResource();
-
-        result.setPatches(patches);
-
-        return result;
+        return display;
     }
 
-
-//    @ResponseBody
-//    @RequestMapping(value = "/{name}/display", method = RequestMethod.GET, produces = { "application/hal+json" })
-//    public DisplayResource getDisplay(@PathVariable String name) {
-//
-//        OutputLEDStripDomain ledStripDomain = outputLEDStripRepository.findByName(name);
-//        OutputLEDStrip ledStrip = outputLEDStripRegistry.get(ledStripDomain);
-//
-//        Link self = linkTo(methodOn(ConfigurationLEDStripController.class).getDisplay(ledStripDomain.getName()))
-//            .withSelfRel();
-//
-//        DisplayResource display = new DisplayResource();
-//
-//        display.add(self);
-//        display.setPixels(ledStrip.getPixelBuffer());
-//        display.setBrightness(ledStrip.getBrightness());
-//
-//        return display;
-//    }
 
     @ResponseBody
     @RequestMapping(value = "/{name}/display", method = RequestMethod.PUT, produces = { "application/hal+json" })
@@ -248,6 +222,28 @@ public class ConfigurationLEDStripController {
 
                         default:
                             throw new Exception("Unknown target for action update");
+                    }
+
+                    break;
+
+                case "move":
+                    switch (patch.getTarget()) {
+                        case "pixels": {
+                            Sprite1D pixelbuffer = new Sprite1D(ledStrip.getLength(), "pixelbuffer",
+                                    ledStrip.getPixelBuffer());
+
+                            int offset = Integer.parseInt(patch.getValues().get(0));
+
+                            if (offset < 0) {
+                                offset = ledStrip.getLength() + offset;
+                            }
+
+                            if (offset > ledStrip.getLength()) {
+                                offset = offset - ledStrip.getLength();
+                            }
+
+                            ledStrip.drawSprite(pixelbuffer, offset, true);
+                        }
                     }
 
                     break;
