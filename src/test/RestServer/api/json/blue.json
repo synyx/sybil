@@ -1,0 +1,9 @@
+{
+  "jobs": [
+    {
+      "name": "job",
+      "url": "http://jenkins/job/job/",
+      "color": "blue"
+    }
+  ]
+}

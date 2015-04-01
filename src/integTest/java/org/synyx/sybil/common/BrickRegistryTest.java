@@ -51,10 +51,6 @@ public class BrickRegistryTest {
     @Before
     public void setup() {
 
-        // clear the test database
-        outputLEDStripRepository.deleteAll();
-        brickRepository.deleteAll();
-
         // define Bricks
         BrickDomain devkit1 = new BrickDomain("localhost", 14223);
         BrickDomain devkit2 = new BrickDomain("localhost", 14224);
@@ -87,6 +83,8 @@ public class BrickRegistryTest {
 
         // disconnect all bricks & bricklets
         brickRegistry.disconnectAll();
+
+        // TODO: Remove bricks & bricklets from database
     }
 
 

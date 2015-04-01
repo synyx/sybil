@@ -42,6 +42,10 @@ sourceSets {
     }
 }
 
+task deleteDatabase(type: Delete) {
+    delete '/tmp/sybildevdb/'
+}
+
 // kill processes that use certain ports
 task freeAllPorts << {
     def ports = [14223, 14224, 14225]
@@ -56,6 +60,12 @@ task freeAllPorts << {
     }
 }
 
+task startRestServer1(type: ExecWait) {
+    command 'node server/http.js port=8081 index=blue.json verbose=true launch=now'
+    ready '### 0.0.0.0 server listening on port'
+    directory 'src/test/RestServer'
+}
+
 task startTFStubserver1(type: ExecWait) {
     command 'stubserver -p 14223 -d ' + projectDir + '/src/test/TFStubserver/ledstrip1.properties'
     ready 'BrickThread is running'
@@ -64,14 +74,12 @@ task startTFStubserver1(type: ExecWait) {
 
 task startTFStubserver2(type: ExecWait) {
     command 'stubserver -p 14224 -d ' + projectDir + '/src/test/TFStubserver/ledstrip2.properties'
-    dependsOn(startTFStubserver1)
     ready 'BrickThread is running'
     directory '.'
 }
 
 task startTFStubserver3(type: ExecWait) {
     command 'stubserver -p 14225 -d ' + projectDir + '/src/test/TFStubserver/ledstrip3.properties'
-    dependsOn(startTFStubserver2)
     ready 'BrickThread is running'
     directory '.'
 }
@@ -81,11 +89,11 @@ task startTFStubserver3(type: ExecWait) {
 //}
 
 task integTest(type: Test) { //define the integTest task as a Test task
+    dependsOn(deleteDatabase, startTFStubserver1, startTFStubserver2, startTFStubserver3, startRestServer1) // Start test servers
+    finalizedBy(freeAllPorts) // Kill said servers afterwards
+
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
-
-    dependsOn(startTFStubserver3) // Start Tinkerforge Stub servers
-    finalizedBy(freeAllPorts) // Kill said servers afterwards
     
     systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
     systemProperty 'logDirectory', 'build/logs/' //set log directory 

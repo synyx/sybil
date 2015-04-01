@@ -53,33 +53,29 @@ public class OutputLEDStripTest {
     @Before
     public void setup() {
 
-        // clear the test database
-        outputLEDStripRepository.deleteAll();
-        brickRepository.deleteAll();
-
         // define Bricks
-        BrickDomain devkit1 = new BrickDomain("localhost", 14223);
-        BrickDomain devkit2 = new BrickDomain("localhost", 14224);
-        BrickDomain devkit3 = new BrickDomain("localhost", 14225);
+        BrickDomain test1 = new BrickDomain("localhost", 14223);
+        BrickDomain test2 = new BrickDomain("localhost", 14224);
+        BrickDomain test3 = new BrickDomain("localhost", 14225);
 
         // add them to the database
-        brickRepository.save(devkit1);
-        brickRepository.save(devkit2);
-        brickRepository.save(devkit3);
+        brickRepository.save(test1);
+        brickRepository.save(test2);
+        brickRepository.save(test3);
 
         // define LED Strips (bricklets)
-        OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("devkitone", "abc", 30, devkit1);
-        OutputLEDStripDomain devkitTwo = new OutputLEDStripDomain("devkittwo", "def", 30, devkit2);
-        OutputLEDStripDomain devkitThree = new OutputLEDStripDomain("devkitthree", "ghi", 30, devkit3);
+        OutputLEDStripDomain testOne = new OutputLEDStripDomain("devkitone", "abc", 30, test1);
+        OutputLEDStripDomain testTwo = new OutputLEDStripDomain("devkittwo", "def", 30, test2);
+        OutputLEDStripDomain devkitThree = new OutputLEDStripDomain("devkitthree", "ghi", 30, test3);
 
         // add them to the database
-        devkitOne = outputLEDStripRepository.save(devkitOne);
-        devkitTwo = outputLEDStripRepository.save(devkitTwo);
+        testOne = outputLEDStripRepository.save(testOne);
+        testTwo = outputLEDStripRepository.save(testTwo);
         devkitThree = outputLEDStripRepository.save(devkitThree);
 
         // initialise LED Strips (fetching them from the database on the way), cast and add them to the list
-        outputLEDStrips.add(outputLEDStripRegistry.get(devkitOne));
-        outputLEDStrips.add(outputLEDStripRegistry.get(devkitTwo));
+        outputLEDStrips.add(outputLEDStripRegistry.get(testOne));
+        outputLEDStrips.add(outputLEDStripRegistry.get(testTwo));
         outputLEDStrips.add(outputLEDStripRegistry.get(devkitThree));
     }
 
@@ -93,12 +89,8 @@ public class OutputLEDStripTest {
             outputLEDStrip.updateDisplay(); // make it so!
         }
 
-        // disconnect all bricks & bricklets
-//        try {
         brickRegistry.disconnectAll();
-//        } catch (NotConnectedException e) {
-//            LOG.error(e.toString());
-//        }
+        // TODO: Remove bricks & bricklets from database
     }
 
 
