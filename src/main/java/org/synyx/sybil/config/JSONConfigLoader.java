@@ -207,10 +207,6 @@ public class JSONConfigLoader {
 
                     Map<String, Color> colors = new HashMap<>();
 
-                    LOG.info("{} okay: {}", name, okay.toString());
-                    LOG.info("{} warning: {}", name, warning.toString());
-                    LOG.info("{} critical: {}", name, critical.toString());
-
                     colors.put("okay", okay);
                     colors.put("warning", warning);
                     colors.put("critical", critical);
