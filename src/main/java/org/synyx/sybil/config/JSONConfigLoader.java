@@ -19,6 +19,7 @@ import org.synyx.sybil.database.OutputLEDStripRepository;
 import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.in.Status;
+import org.synyx.sybil.out.Color;
 import org.synyx.sybil.out.OutputLEDStrip;
 import org.synyx.sybil.out.OutputLEDStripRegistry;
 import org.synyx.sybil.out.SingleStatusOnLEDStripRegistry;
@@ -26,6 +27,7 @@ import org.synyx.sybil.out.SingleStatusOnLEDStripRegistry;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +70,9 @@ public class JSONConfigLoader {
 
     // The status of the LED Strip Config
     private Status LEDStripStatus = Status.OKAY;
+
+    // Map saving the custom status colors for SingleStatusOnLEDStrips
+    private Map<String, Map<String, Color>> customStatusColors = new HashMap<>();
 
     /**
      * Instantiates a new JSON config loader.
@@ -182,6 +187,41 @@ public class JSONConfigLoader {
                 HealthController.setHealth(Status.WARNING);
                 LEDStripStatus = Status.WARNING;
             }
+
+            if (ledstrip.get("okayRed") != null) {
+                try {
+                    int okayRed = Integer.parseInt(ledstrip.get("okayRed").toString());
+                    int okayGreen = Integer.parseInt(ledstrip.get("okayGreen").toString());
+                    int okayBlue = Integer.parseInt(ledstrip.get("okayBlue").toString());
+                    Color okay = new Color(okayRed, okayGreen, okayBlue);
+
+                    int warningRed = Integer.parseInt(ledstrip.get("warningRed").toString());
+                    int warningGreen = Integer.parseInt(ledstrip.get("warningGreen").toString());
+                    int warningBlue = Integer.parseInt(ledstrip.get("warningBlue").toString());
+                    Color warning = new Color(warningRed, warningGreen, warningBlue);
+
+                    int criticalRed = Integer.parseInt(ledstrip.get("criticalRed").toString());
+                    int criticalGreen = Integer.parseInt(ledstrip.get("criticalGreen").toString());
+                    int criticalBlue = Integer.parseInt(ledstrip.get("criticalBlue").toString());
+                    Color critical = new Color(criticalRed, criticalGreen, criticalBlue);
+
+                    Map<String, Color> colors = new HashMap<>();
+
+                    LOG.info("{} okay: {}", name, okay.toString());
+                    LOG.info("{} warning: {}", name, warning.toString());
+                    LOG.info("{} critical: {}", name, critical.toString());
+
+                    colors.put("okay", okay);
+                    colors.put("warning", warning);
+                    colors.put("critical", critical);
+
+                    customStatusColors.put(name, colors);
+                } catch (NumberFormatException e) {
+                    LOG.error("Failed to load config for LED Strip {}: colors are not properly formatted.", name);
+                    HealthController.setHealth(Status.WARNING);
+                    LEDStripStatus = Status.WARNING;
+                }
+            }
         }
     }
 
@@ -234,7 +274,15 @@ public class JSONConfigLoader {
                 OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripDomain);
 
                 if (outputLEDStrip != null) {
-                    jenkinsConfig.put(server, name, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
+                    Map<String, Color> colors = customStatusColors.get(ledstrip);
+
+                    if (colors != null) {
+                        jenkinsConfig.put(server, name,
+                            singleStatusOnLEDStripRegistry.get(outputLEDStrip, colors.get("okay"),
+                                colors.get("warning"), colors.get("critical")));
+                    } else {
+                        jenkinsConfig.put(server, name, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
+                    }
                 } else {
                     LOG.warn("Ledstrip {} does not exist.", ledstrip);
 

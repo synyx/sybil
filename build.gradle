@@ -42,6 +42,19 @@ sourceSets {
     }
 }
 
+// kill processes that use certain ports
+task freeAllPorts << {
+    def ports = [14223, 14224, 14225]
+
+    ports.each { port ->
+        def cmd = "lsof -Fp -i :$port"
+        def process = cmd.execute()
+        process.in.eachLine { line ->
+            def killProcess = "kill -9 ${ line.substring(1) }".execute()
+            killProcess.waitFor()
+        }
+    }
+}
 
 task startTFStubserver1(type: ExecWait) {
     command 'stubserver -p 14223 -d ' + projectDir + '/src/test/TFStubserver/ledstrip1.properties'
@@ -63,16 +76,16 @@ task startTFStubserver3(type: ExecWait) {
     directory '.'
 }
 
-task stopTFStubservers(type: Exec) {
-    commandLine 'killall', 'stubserver' // Subtlety was never my strength
-}
+//task stopTFStubservers(type: Exec) {
+//    commandLine 'killall', 'stubserver' // Subtlety was never my strength
+//}
 
 task integTest(type: Test) { //define the integTest task as a Test task
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
 
     dependsOn(startTFStubserver3) // Start Tinkerforge Stub servers
-    finalizedBy(stopTFStubservers) // Kill said servers afterwards
+    finalizedBy(freeAllPorts) // Kill said servers afterwards
     
     systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
@@ -162,3 +175,4 @@ class ExecWait extends DefaultTask {
         }
     }
 }
+

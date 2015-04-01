@@ -18,6 +18,26 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     private final OutputLEDStrip outputLEDStrip;
     private Color color;
     private Status status = Status.OKAY;
+    private Color critical;
+    private Color warning;
+    private Color okay;
+
+    /**
+     * Instantiates a new SingleStatusOnLEDStrip with custom status colors.
+     *
+     * @param  outputLEDStrip  The output (in this case a LED strip) to show statuses on
+     * @param  okay  The Color for status OKAY
+     * @param  warning  The Color for status WARNING
+     * @param  critical  The Color for status CRITICAL
+     */
+    public SingleStatusOnLEDStrip(OutputLEDStrip outputLEDStrip, Color okay, Color warning, Color critical) {
+
+        this.okay = okay;
+        this.critical = critical;
+        this.warning = warning;
+        this.outputLEDStrip = outputLEDStrip;
+    }
+
 
     /**
      * Instantiates a new SingleStatusOnLEDStrip.
@@ -27,6 +47,9 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     public SingleStatusOnLEDStrip(OutputLEDStrip outputLEDStrip) {
 
         this.outputLEDStrip = outputLEDStrip;
+        critical = Color.CRITICAL;
+        warning = Color.WARNING;
+        okay = Color.OKAY;
     }
 
     @Override
@@ -77,14 +100,17 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     }
 
 
+    /**
+     * Show status.
+     */
     public void showStatus() {
 
         if (status == Status.CRITICAL) {
-            color = Color.CRITICAL;
+            color = critical;
         } else if (status == Status.WARNING) {
-            color = Color.WARNING;
+            color = warning;
         } else {
-            color = Color.OKAY;
+            color = okay;
         }
 
         LOG.debug("Set ledstrip {} to color {}", outputLEDStrip.getName(), color);
@@ -94,12 +120,22 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     }
 
 
+    /**
+     * Gets status.
+     *
+     * @return  the status
+     */
     public Status getStatus() {
 
         return status;
     }
 
 
+    /**
+     * Sets status.
+     *
+     * @param  statusInformation  the status information
+     */
     public void setStatus(StatusInformation statusInformation) {
 
         LOG.debug("Set status {} on ledstrip {}", statusInformation.getStatus(), outputLEDStrip.getName());
@@ -108,6 +144,9 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     }
 
 
+    /**
+     * Turn off.
+     */
     public void turnOff() {
 
         outputLEDStrip.setFill(Color.BLACK);
