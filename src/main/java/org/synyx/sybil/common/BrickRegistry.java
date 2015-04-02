@@ -112,6 +112,8 @@ public class BrickRegistry {
      */
     public void connectAll() {
 
+        LOG.debug("Connecting all bricks.");
+
         List<BrickDomain> brickDomains;
 
         try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
@@ -133,6 +135,8 @@ public class BrickRegistry {
      * Disconnect all bricks, clear all the registered bricklets.
      */
     public void disconnectAll() {
+
+        LOG.debug("Disconnecting all bricks and bricklets.");
 
         // disconnect all the IPConnections
         for (IPConnection ipConnection : ipConnections.values()) {

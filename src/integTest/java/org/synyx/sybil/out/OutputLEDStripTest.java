@@ -17,7 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.synyx.sybil.common.BrickRegistry;
-import org.synyx.sybil.config.SpringConfig;
+import org.synyx.sybil.config.DevSpringConfig;
 import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
 import org.synyx.sybil.domain.BrickDomain;
@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { SpringConfig.class })
+@ContextConfiguration(classes = { DevSpringConfig.class })
 public class OutputLEDStripTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStripTest.class);
@@ -64,19 +64,19 @@ public class OutputLEDStripTest {
         brickRepository.save(test3);
 
         // define LED Strips (bricklets)
-        OutputLEDStripDomain testOne = new OutputLEDStripDomain("devkitone", "abc", 30, test1);
-        OutputLEDStripDomain testTwo = new OutputLEDStripDomain("devkittwo", "def", 30, test2);
-        OutputLEDStripDomain devkitThree = new OutputLEDStripDomain("devkitthree", "ghi", 30, test3);
+        OutputLEDStripDomain testOne = new OutputLEDStripDomain("testone", "abc", 30, test1);
+        OutputLEDStripDomain testTwo = new OutputLEDStripDomain("testtwo", "def", 30, test2);
+        OutputLEDStripDomain testThree = new OutputLEDStripDomain("testthree", "ghi", 30, test3);
 
         // add them to the database
         testOne = outputLEDStripRepository.save(testOne);
         testTwo = outputLEDStripRepository.save(testTwo);
-        devkitThree = outputLEDStripRepository.save(devkitThree);
+        testThree = outputLEDStripRepository.save(testThree);
 
         // initialise LED Strips (fetching them from the database on the way), cast and add them to the list
         outputLEDStrips.add(outputLEDStripRegistry.get(testOne));
         outputLEDStrips.add(outputLEDStripRegistry.get(testTwo));
-        outputLEDStrips.add(outputLEDStripRegistry.get(devkitThree));
+        outputLEDStrips.add(outputLEDStripRegistry.get(testThree));
     }
 
 
@@ -84,13 +84,17 @@ public class OutputLEDStripTest {
     public void close() throws NotConnectedException {
 
         for (OutputLEDStrip outputLEDStrip : outputLEDStrips) { // iterate over list of strips
+
             outputLEDStrip.setBrightness(1.0); // set brightness to normal
             outputLEDStrip.setFill(Color.BLACK); // set color to black (i.e. turn all LEDs off)
             outputLEDStrip.updateDisplay(); // make it so!
+
+            OutputLEDStripDomain ledStripDomain = outputLEDStripRepository.findByName(outputLEDStrip.getName());
+            brickRepository.delete(ledStripDomain.getBrickDomain());
+            outputLEDStripRepository.delete(ledStripDomain);
         }
 
         brickRegistry.disconnectAll();
-        // TODO: Remove bricks & bricklets from database
     }
 
 

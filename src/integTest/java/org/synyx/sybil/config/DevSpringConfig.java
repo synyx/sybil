@@ -12,19 +12,19 @@ import org.synyx.sybil.webconfig.WebConfig;
 
 
 /**
- * Spring Configuration.
+ * Integration Test Spring Configuration.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Profile("default")
+@Profile("dev")
 @Configuration
-@PropertySource(value = { "classpath:config.properties" })
+@PropertySource(value = { "classpath:devconfig.properties" })
 @EnableScheduling
 @ComponentScan(
     basePackages = { "org.synyx.sybil" }, excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = WebConfig.class)
     }
 ) // scan for annotated classes, like @Service, @Configuration, etc. - while ignoring the WebConfig, which is loaded by the ApiWebAppInitializer
-public class SpringConfig {
+public class DevSpringConfig {
 }

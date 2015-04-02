@@ -13,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.synyx.sybil.config.SpringConfig;
+import org.synyx.sybil.common.BrickRegistry;
+import org.synyx.sybil.config.DevSpringConfig;
 import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
 import org.synyx.sybil.domain.BrickDomain;
@@ -26,12 +27,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 
-@ContextConfiguration(classes = SpringConfig.class)
+@ContextConfiguration(classes = DevSpringConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SingleStatusOnLEDStripTest {
 
-    private OutputLEDStrip devkitOne;
-    private OutputLEDStrip devkitTwo;
+    private OutputLEDStrip testOne;
+    private OutputLEDStrip testTwo;
     private SingleStatusOutput singleStatusOutputOne;
     private SingleStatusOutput singleStatusOutputTwo;
 
@@ -44,42 +45,54 @@ public class SingleStatusOnLEDStripTest {
     @Autowired
     private BrickRepository brickRepository;
 
+    @Autowired
+    private BrickRegistry brickRegistry;
+
     @Before
     public void setup() {
 
         // define Bricks
-        BrickDomain devkit1 = new BrickDomain("localhost", 14223);
-        BrickDomain devkit2 = new BrickDomain("localhost", 14224);
+        BrickDomain test1 = new BrickDomain("localhost", 14223);
+        BrickDomain test2 = new BrickDomain("localhost", 14224);
 
         // add them to the database
-        brickRepository.save(devkit1);
-        brickRepository.save(devkit2);
+        brickRepository.save(test1);
+        brickRepository.save(test2);
 
         // define LED Strips (bricklets)
-        OutputLEDStripDomain devkitOneDomain = new OutputLEDStripDomain("devkitone", "abc", 30, devkit1);
-        OutputLEDStripDomain devkitTwoDomain = new OutputLEDStripDomain("devkittwo", "def", 30, devkit2);
+        OutputLEDStripDomain testOneDomain = new OutputLEDStripDomain("testone", "abc", 30, test1);
+        OutputLEDStripDomain testTwoDomain = new OutputLEDStripDomain("testtwo", "def", 30, test2);
 
         // add them to the database
-        devkitOneDomain = outputLEDStripRepository.save(devkitOneDomain);
-        devkitTwoDomain = outputLEDStripRepository.save(devkitTwoDomain);
+        testOneDomain = outputLEDStripRepository.save(testOneDomain);
+        testTwoDomain = outputLEDStripRepository.save(testTwoDomain);
 
-        devkitOne = outputLEDStripRegistry.get(devkitOneDomain);
-        devkitTwo = outputLEDStripRegistry.get(devkitTwoDomain);
+        testOne = outputLEDStripRegistry.get(testOneDomain);
+        testTwo = outputLEDStripRegistry.get(testTwoDomain);
 
-        singleStatusOutputOne = new SingleStatusOnLEDStrip(devkitOne);
-        singleStatusOutputTwo = new SingleStatusOnLEDStrip(devkitTwo);
+        singleStatusOutputOne = new SingleStatusOnLEDStrip(testOne);
+        singleStatusOutputTwo = new SingleStatusOnLEDStrip(testTwo);
     }
 
 
     @After
     public void close() throws NotConnectedException {
 
-        devkitOne.setFill(Color.BLACK); // turn off the LEDs
-        devkitOne.updateDisplay();
-        devkitTwo.setFill(Color.BLACK); // turn off the LEDs
-        devkitTwo.updateDisplay();
+        testOne.setFill(Color.BLACK);
+        testOne.updateDisplay();
+        testTwo.setFill(Color.BLACK);
+        testTwo.updateDisplay();
 
-        // TODO: Remove bricks & bricklets from database
+        OutputLEDStripDomain testOneDomain = outputLEDStripRepository.findByName(testOne.getName());
+        OutputLEDStripDomain testTwoDomain = outputLEDStripRepository.findByName(testTwo.getName());
+
+        brickRepository.delete(testOneDomain.getBrickDomain());
+        brickRepository.delete(testTwoDomain.getBrickDomain());
+
+        outputLEDStripRepository.delete(testOneDomain);
+        outputLEDStripRepository.delete(testTwoDomain);
+
+        brickRegistry.disconnectAll();
     }
 
 
@@ -90,7 +103,7 @@ public class SingleStatusOnLEDStripTest {
 
         singleStatusOutputOne.showStatus(statusInformation);
 
-        Color pixel = devkitOne.getPixel(0);
+        Color pixel = testOne.getPixel(0);
         assertThat(pixel.getRedAsShort(), is((short) 127));
         assertThat(pixel.getGreenAsShort(), is((short) 127));
         assertThat(pixel.getBlueAsShort(), is((short) 0));
@@ -104,7 +117,7 @@ public class SingleStatusOnLEDStripTest {
 
         singleStatusOutputTwo.showStatus(statusInformation);
 
-        Color pixel = devkitTwo.getPixel(0);
+        Color pixel = testTwo.getPixel(0);
         assertThat(pixel.getRedAsShort(), is((short) 127));
         assertThat(pixel.getGreenAsShort(), is((short) 0));
         assertThat(pixel.getBlueAsShort(), is((short) 0));
@@ -118,7 +131,7 @@ public class SingleStatusOnLEDStripTest {
 
         singleStatusOutputOne.showStatus(statusInformation);
 
-        Color pixel = devkitOne.getPixel(0);
+        Color pixel = testOne.getPixel(0);
         assertThat(pixel.getRedAsShort(), is((short) 0));
         assertThat(pixel.getGreenAsShort(), is((short) 16));
         assertThat(pixel.getBlueAsShort(), is((short) 0));

@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.synyx.sybil.config.SpringConfig;
+import org.synyx.sybil.config.DevSpringConfig;
 import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
 import org.synyx.sybil.domain.BrickDomain;
@@ -30,7 +30,7 @@ import org.synyx.sybil.out.OutputLEDStripRegistry;
 import java.io.IOException;
 
 
-@ContextConfiguration(classes = SpringConfig.class)
+@ContextConfiguration(classes = DevSpringConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class BrickRegistryTest {
 
@@ -52,39 +52,49 @@ public class BrickRegistryTest {
     public void setup() {
 
         // define Bricks
-        BrickDomain devkit1 = new BrickDomain("localhost", 14223);
-        BrickDomain devkit2 = new BrickDomain("localhost", 14224);
-        BrickDomain devkit3 = new BrickDomain("localhost", 14225);
+        BrickDomain test1 = new BrickDomain("localhost", 14223);
+        BrickDomain test2 = new BrickDomain("localhost", 14224);
+        BrickDomain test3 = new BrickDomain("localhost", 14225);
 
         // add them to the database
-        brickRepository.save(devkit1);
-        brickRepository.save(devkit2);
-        brickRepository.save(devkit3);
+        brickRepository.save(test1);
+        brickRepository.save(test2);
+        brickRepository.save(test3);
 
         // define LED Strips (bricklets)
-        OutputLEDStripDomain devkitOne = new OutputLEDStripDomain("devkitone", "abc", 30, devkit1);
-        OutputLEDStripDomain devkitTwo = new OutputLEDStripDomain("devkittwo", "def", 30, devkit2);
-        OutputLEDStripDomain devkitThree = new OutputLEDStripDomain("devkitthree", "ghi", 30, devkit3);
+        OutputLEDStripDomain testOne = new OutputLEDStripDomain("testone", "abc", 30, test1);
+        OutputLEDStripDomain testTwo = new OutputLEDStripDomain("testtwo", "def", 30, test2);
+        OutputLEDStripDomain testThree = new OutputLEDStripDomain("testthree", "ghi", 30, test3);
 
         // add them to the database
-        devkitOne = outputLEDStripRepository.save(devkitOne);
-        devkitTwo = outputLEDStripRepository.save(devkitTwo);
-        devkitThree = outputLEDStripRepository.save(devkitThree);
+        testOne = outputLEDStripRepository.save(testOne);
+        testTwo = outputLEDStripRepository.save(testTwo);
+        testThree = outputLEDStripRepository.save(testThree);
 
         // initialise LED Strips (fetching them from the database on the way)
-        outputLEDStripRegistry.get(devkitOne);
-        outputLEDStripRegistry.get(devkitTwo);
-        outputLEDStripRegistry.get(devkitThree);
+        outputLEDStripRegistry.get(testOne);
+        outputLEDStripRegistry.get(testTwo);
+        outputLEDStripRegistry.get(testThree);
     }
 
 
     @After
     public void close() throws NotConnectedException {
 
+        OutputLEDStripDomain testOneDomain = outputLEDStripRepository.findByName("testone");
+        OutputLEDStripDomain testTwoDomain = outputLEDStripRepository.findByName("testtwo");
+        OutputLEDStripDomain testThreeDomain = outputLEDStripRepository.findByName("testthree");
+
+        brickRepository.delete(testOneDomain.getBrickDomain());
+        brickRepository.delete(testTwoDomain.getBrickDomain());
+        brickRepository.delete(testThreeDomain.getBrickDomain());
+
+        outputLEDStripRepository.delete(testOneDomain);
+        outputLEDStripRepository.delete(testTwoDomain);
+        outputLEDStripRepository.delete(testThreeDomain);
+
         // disconnect all bricks & bricklets
         brickRegistry.disconnectAll();
-
-        // TODO: Remove bricks & bricklets from database
     }
 
 
@@ -97,7 +107,7 @@ public class BrickRegistryTest {
 
         Color color = new Color(16, 35, 77);
 
-        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("devkitone"));
+        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("testone"));
 
         outputLEDStrip.setPixel(1, color);
         outputLEDStrip.updateDisplay();
@@ -126,7 +136,7 @@ public class BrickRegistryTest {
 
         Color color = new Color(16, 35, 77);
 
-        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("devkitone"));
+        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("testone"));
 
         outputLEDStrip.setPixel(1, color);
         outputLEDStrip.updateDisplay();
@@ -154,7 +164,7 @@ public class BrickRegistryTest {
 
         Color color = new Color(16, 35, 77);
 
-        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("devkitone"));
+        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("testone"));
 
         outputLEDStrip.setPixel(1, color);
         outputLEDStrip.updateDisplay();

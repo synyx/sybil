@@ -262,7 +262,7 @@ public class JSONConfigLoader {
 
             for (Map line : jenkinsConfigData.get(server)) { // get each configuration line for each server
 
-                String name = line.get("name").toString();
+                String jobName = line.get("name").toString();
                 String ledstrip = line.get("ledstrip").toString();
 
                 OutputLEDStripDomain outputLEDStripDomain = outputLEDStripRepository.findByName(ledstrip.toLowerCase()); // names are always lowercase
@@ -273,11 +273,11 @@ public class JSONConfigLoader {
                     Map<String, Color> colors = customStatusColors.get(ledstrip);
 
                     if (colors != null) {
-                        jenkinsConfig.put(server, name,
+                        jenkinsConfig.put(server, jobName,
                             singleStatusOnLEDStripRegistry.get(outputLEDStrip, colors.get("okay"),
                                 colors.get("warning"), colors.get("critical")));
                     } else {
-                        jenkinsConfig.put(server, name, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
+                        jenkinsConfig.put(server, jobName, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
                     }
                 } else {
                     LOG.warn("Ledstrip {} does not exist.", ledstrip);

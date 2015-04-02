@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.context.annotation.Profile;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +73,9 @@ public class JenkinsService {
      * Instantiates a new Jenkins service.
      *
      * @param  jenkinsConfig  The Jenkins config bean, autowired in.
+     * @param  outputLEDStripRegistry  the output lED strip registry
+     * @param  outputLEDStripRepository  the output lED strip repository
+     * @param  graphDatabaseService  the graph database service
      */
     @Autowired
     public JenkinsService(JenkinsConfig jenkinsConfig, OutputLEDStripRegistry outputLEDStripRegistry,
@@ -212,7 +217,6 @@ public class JenkinsService {
     /**
      * Clear the current statuses, iterate over servers and jobs, set their statuses and show them.
      */
-    @Scheduled(fixedRate = 60000)
     public void handleJobs() {
 
         clearLEDStripStatuses();
@@ -230,5 +234,27 @@ public class JenkinsService {
         }
 
         showStatuses();
+    }
+
+
+    /**
+     * Run every minute.
+     */
+    @Profile("default")
+    @Scheduled(fixedRate = 60000)
+    public void runEveryMinute() {
+
+        handleJobs();
+    }
+
+
+    /**
+     * Run every ten minutes. Just here to keep the garbage collector from eating this in the dev profile.
+     */
+    @Profile("dev")
+    @Scheduled(fixedRate = 600000)
+    public void runEveryTenMinutes() {
+
+        LOG.debug("Runs every 10 minutes!");
     }
 }

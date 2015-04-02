@@ -17,12 +17,12 @@ import org.springframework.data.neo4j.config.Neo4jConfiguration;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Profile("default")
+@Profile("dev")
 @Configuration
 @EnableNeo4jRepositories(basePackages = "org.synyx.sybil.database") // this is where the repositories are
-public class Neo4jConfig extends Neo4jConfiguration {
+public class DevNeo4jConfig extends Neo4jConfiguration {
 
-    public Neo4jConfig() {
+    public DevNeo4jConfig() {
 
         setBasePackage("org.synyx.sybil.domain", "org.synyx.sybil.out"); // this is where the domain classes are
     }
@@ -30,6 +30,6 @@ public class Neo4jConfig extends Neo4jConfiguration {
     @Bean
     public GraphDatabaseService graphDatabaseService() {
 
-        return new GraphDatabaseFactory().newEmbeddedDatabase("/tmp/sybildb");
+        return new GraphDatabaseFactory().newEmbeddedDatabase("/tmp/sybildevdb");
     }
 }
