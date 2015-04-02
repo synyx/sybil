@@ -39,10 +39,10 @@ import java.util.Map;
  */
 
 @Component
-public class JSONConfigLoader {
+public class ConfigLoader {
 
     // Logger
-    private static final Logger LOG = LoggerFactory.getLogger(JSONConfigLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigLoader.class);
 
     // Jackson ObjectMapper, maps JSON to Java Objects
     private ObjectMapper mapper = new ObjectMapper();
@@ -85,7 +85,7 @@ public class JSONConfigLoader {
      * @param  singleStatusOnLEDStripRegistry  the SingleStatusOnLEDStrip registry
      */
     @Autowired
-    public JSONConfigLoader(BrickRepository brickRepository, OutputLEDStripRepository outputLEDStripRepository,
+    public ConfigLoader(BrickRepository brickRepository, OutputLEDStripRepository outputLEDStripRepository,
         Environment env, OutputLEDStripRegistry outputLEDStripRegistry, JenkinsConfig jenkinsConfig,
         SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry) {
 
@@ -173,7 +173,7 @@ public class JSONConfigLoader {
 
             try {
                 int length = Integer.parseInt(ledstrip.get("length").toString());
-                BrickDomain brick = brickRepository.findByHostname(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
+                BrickDomain brick = brickRepository.findByName(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
 
                 if (brick != null) { // if there was corresponding brick found in the repo...
                     outputLEDStripRepository.save(new OutputLEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.

@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.context.annotation.Profile;
+
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -16,17 +18,18 @@ import javax.annotation.PostConstruct;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
+@Profile("default")
 @Component
 public class StartupLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(StartupLoader.class);
 
-    private JSONConfigLoader jsonConfigLoader;
+    private ConfigLoader configLoader;
 
     @Autowired
-    public StartupLoader(JSONConfigLoader jsonConfigLoader) {
+    public StartupLoader(ConfigLoader configLoader) {
 
-        this.jsonConfigLoader = jsonConfigLoader;
+        this.configLoader = configLoader;
     }
 
     @PostConstruct
@@ -34,6 +37,6 @@ public class StartupLoader {
 
         LOG.info("Loading Startup Configuration");
 
-        jsonConfigLoader.loadConfig();
+        configLoader.loadConfig();
     }
 }

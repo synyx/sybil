@@ -80,10 +80,10 @@ public class ConfigurationBricksController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/{hostname}", method = RequestMethod.GET, produces = { "application/hal+json" })
-    public BrickResource brick(@PathVariable String hostname) {
+    @RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = { "application/hal+json" })
+    public BrickResource brick(@PathVariable String name) {
 
-        BrickDomain brick = brickRepository.findByHostname(hostname);
+        BrickDomain brick = brickRepository.findByName(name);
 
         Link self = linkTo(methodOn(ConfigurationBricksController.class).brick(brick.getHostname())).withSelfRel();
 

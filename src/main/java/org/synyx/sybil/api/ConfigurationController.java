@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.synyx.sybil.config.JSONConfigLoader;
+import org.synyx.sybil.config.ConfigLoader;
 
 import java.io.IOException;
 
@@ -41,7 +41,7 @@ public class ConfigurationController {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationController.class);
 
     @Autowired
-    JSONConfigLoader jsonConfigLoader;
+    ConfigLoader configLoader;
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
@@ -61,7 +61,7 @@ public class ConfigurationController {
     @RequestMapping(method = RequestMethod.POST, produces = { "application/hal+json" })
     public void updateJenkinsConfig() throws IOException {
 
-        jsonConfigLoader.loadJenkinsConfig();
+        configLoader.loadJenkinsConfig();
     }
 
 

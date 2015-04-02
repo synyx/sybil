@@ -19,6 +19,8 @@ public class BrickDomain {
     @GraphId
     private Long id;
 
+    private String name;
+
     private String hostname;
 
     private int port = 4223; // default port
@@ -31,7 +33,22 @@ public class BrickDomain {
 
 
     /**
-     * Instantiates a new IPConnection domain.
+     * Instantiates a new Brick domain.
+     *
+     * @param  hostname  The hostname
+     * @param  port  The port
+     * @param  name  The name
+     */
+    public BrickDomain(String hostname, int port, String name) {
+
+        this.name = name;
+        this.hostname = hostname;
+        this.port = port;
+    }
+
+
+    /**
+     * Instantiates a new Brick domain.
      *
      * @param  hostname  The hostname
      * @param  port  The port (optional, defaults to 4223)
@@ -39,18 +56,20 @@ public class BrickDomain {
     public BrickDomain(String hostname, int port) {
 
         this.hostname = hostname;
+        this.name = hostname;
         this.port = port;
     }
 
 
     /**
-     * Instantiates a new IPConnection domain.
+     * Instantiates a new Brick domain.
      *
      * @param  hostname  The hostname
      */
     public BrickDomain(String hostname) {
 
         this.hostname = hostname;
+        this.name = hostname;
     }
 
     @Override
@@ -89,7 +108,7 @@ public class BrickDomain {
 
 
     /**
-     * Gets the hostname of the brick the LEDs are connected to.
+     * Gets the hostname of the brick.
      *
      * @return  The hostname
      */
@@ -100,12 +119,23 @@ public class BrickDomain {
 
 
     /**
-     * Gets the port of the brick the LEDs are connected to.
+     * Gets the port of the brick.
      *
      * @return  The port
      */
     public int getPort() {
 
         return port;
+    }
+
+
+    /**
+     * Gets the name of the brick.
+     *
+     * @return  The name
+     */
+    public String getName() {
+
+        return name;
     }
 }

@@ -16,5 +16,5 @@ import org.synyx.sybil.domain.BrickDomain;
 @Repository // annotated so Spring finds it and can inject it.
 public interface BrickRepository extends GraphRepository<BrickDomain> {
 
-    BrickDomain findByHostname(String name); // Spring builds a self-explanatory method out of this. MAGIC!
+    BrickDomain findByName(String name); // Spring builds a self-explanatory method out of this. MAGIC!
 }
