@@ -103,7 +103,7 @@ task deleteDatabase(type: Delete) {
 
 // kill processes that use certain ports
 task freeAllPorts << {
-    def ports = [14223, 14224, 14225, 8081]
+    def ports = [14223, 14224, 14225, 8081, 8082, 8083, 8084, 8085, 8086]
 
     ports.each { port ->
         def cmd = "lsof -Fp -i :$port"
@@ -117,6 +117,36 @@ task freeAllPorts << {
 
 task startRestServer1(type: ExecWait) {
     command 'node server/http.js port=8081 index=red.json verbose=true launch=now'
+    ready '### 0.0.0.0 server listening on port'
+    directory 'src/test/RestServer'
+}
+
+task startRestServer2(type: ExecWait) {
+    command 'node server/http.js port=8082 index=red.json verbose=true launch=now'
+    ready '### 0.0.0.0 server listening on port'
+    directory 'src/test/RestServer'
+}
+
+task startRestServer3(type: ExecWait) {
+    command 'node server/http.js port=8083 index=red.json verbose=true launch=now'
+    ready '### 0.0.0.0 server listening on port'
+    directory 'src/test/RestServer'
+}
+
+task startRestServer4(type: ExecWait) {
+    command 'node server/http.js port=8084 index=red.json verbose=true launch=now'
+    ready '### 0.0.0.0 server listening on port'
+    directory 'src/test/RestServer'
+}
+
+task startRestServer5(type: ExecWait) {
+    command 'node server/http.js port=8085 index=red.json verbose=true launch=now'
+    ready '### 0.0.0.0 server listening on port'
+    directory 'src/test/RestServer'
+}
+
+task startRestServer6(type: ExecWait) {
+    command 'node server/http.js port=8086 index=red.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
     directory 'src/test/RestServer'
 }
@@ -140,7 +170,8 @@ task startTFStubserver3(type: ExecWait) {
 }
 
 task integTest(type: Test) { //define the integTest task as a Test task
-    dependsOn(deleteDatabase, startTFStubserver1, startTFStubserver2, startTFStubserver3, startRestServer1) // Start test servers
+    dependsOn(deleteDatabase, startTFStubserver1, startTFStubserver2, startTFStubserver3,
+            startRestServer1, startRestServer2, startRestServer3, startRestServer4, startRestServer5, startRestServer6) // Start test servers
     finalizedBy(freeAllPorts, showResults) // Kill said servers afterwards
 
     testClassesDir = sourceSets.integTest.output.classesDir
@@ -190,10 +221,11 @@ class ExecWait extends DefaultTask {
         BufferedReader reader = new BufferedReader(new
                 InputStreamReader(stdout))
 
+        
+        
         def line
         while ((line = reader.readLine()) != null) {
-            //println line
-            sleep(100) // either the println or this have to be here, or tests fail. WTF!
+            println line
             if (line.contains(ready)) {
                 println "$command is ready"
                 break;
