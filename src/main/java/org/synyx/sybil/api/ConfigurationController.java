@@ -40,13 +40,8 @@ public class ConfigurationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationController.class);
 
-    ConfigLoader configLoader;
-
     @Autowired
-    public ConfigurationController(ConfigLoader configLoader) {
-
-        this.configLoader = configLoader;
-    }
+    ConfigLoader configLoader;
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })

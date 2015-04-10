@@ -82,6 +82,12 @@ public class ConfigLoaderTest {
     @Autowired
     GraphDatabaseService graphDatabaseService;
 
+    @Autowired
+    HealthController healthController;
+
+    @Autowired
+    ConfigurationController configurationController;
+
     @Before
     public void setup() {
 
@@ -213,7 +219,6 @@ public class ConfigLoaderTest {
         /**
          * Test HealthController
          */
-        HealthController healthController = new HealthController();
         MockMvc mockMvc = standaloneSetup(healthController).build();
 
         mockMvc.perform(get("/health/")).andExpect(status().isOk()).andExpect(content().string("\"OKAY\""));
@@ -268,7 +273,6 @@ public class ConfigLoaderTest {
         /**
          * Test HealthController
          */
-        HealthController healthController = new HealthController();
         MockMvc healthMockMvc = standaloneSetup(healthController).build();
 
         healthMockMvc.perform(get("/health")).andExpect(status().isOk()).andExpect(content().string("\"WARNING\""));
@@ -276,7 +280,6 @@ public class ConfigLoaderTest {
         /**
          * Test Web Reloading
          */
-        ConfigurationController configurationController = new ConfigurationController(configLoader);
         MockMvc configMockMvc = standaloneSetup(configurationController).build();
 
         configMockMvc.perform(post("/configuration")).andExpect(status().isOk());
