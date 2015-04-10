@@ -122,31 +122,31 @@ task startRestServer1(type: ExecWait) {
 }
 
 task startRestServer2(type: ExecWait) {
-    command 'node server/http.js port=8082 index=red.json verbose=true launch=now'
+    command 'node server/http.js port=8082 index=red_anine.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
     directory 'src/test/RestServer'
 }
 
 task startRestServer3(type: ExecWait) {
-    command 'node server/http.js port=8083 index=red.json verbose=true launch=now'
+    command 'node server/http.js port=8083 index=yellow.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
     directory 'src/test/RestServer'
 }
 
 task startRestServer4(type: ExecWait) {
-    command 'node server/http.js port=8084 index=red.json verbose=true launch=now'
+    command 'node server/http.js port=8084 index=yellow_anime.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
     directory 'src/test/RestServer'
 }
 
 task startRestServer5(type: ExecWait) {
-    command 'node server/http.js port=8085 index=red.json verbose=true launch=now'
+    command 'node server/http.js port=8085 index=blue.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
     directory 'src/test/RestServer'
 }
 
 task startRestServer6(type: ExecWait) {
-    command 'node server/http.js port=8086 index=red.json verbose=true launch=now'
+    command 'node server/http.js port=8086 index=blue_anime.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
     directory 'src/test/RestServer'
 }

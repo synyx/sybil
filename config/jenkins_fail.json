@@ -1,0 +1,20 @@
+{
+  "http://localhost:8081": [
+    {"name": "job", "brokenstring": "something"}
+  ],
+    "http://localhost:8082": [
+    {"name": "job", "ledstrip": "stubone"}
+  ],
+    "http://localhost:8083": [
+    {"name": "job", "ledstrip": "stubtwo"}
+  ],
+    "http://localhost:8084": [
+    {"name": "job", "ledstrip": "stubtwo"}
+  ],
+    "http://localhost:8085": [
+    {"name": "job", "ledstrip": "stubthree"}
+  ],
+    "http://localhost:8086": [
+    {"name": "job", "ledstrip": "stubthree"}
+  ]
+}

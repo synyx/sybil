@@ -28,10 +28,23 @@ import java.util.Set;
 @Component
 public class JenkinsConfig {
 
+    /**
+     * Map <Servername, Map<Jobname, List<SingleStatusOnLEDStrip>>>.
+     */
     private Map<String, Map<String, List<SingleStatusOnLEDStrip>>> mapping = new HashMap<>();
 
+    /**
+     * Maps Servers to their authentication entities.
+     */
     private Map<String, HttpEntity<JenkinsProperties[]>> servers = new HashMap<>();
 
+    /**
+     * Put server into map, creating Authentication entity.
+     *
+     * @param  server  the server
+     * @param  username  the username
+     * @param  key  the key
+     */
     public void putServer(String server, String username, String key) {
 
         // HTTP Basic Authorization, as demanded by the Jenkins API.
@@ -50,18 +63,37 @@ public class JenkinsConfig {
     }
 
 
+    /**
+     * Gets Authentication entity for server.
+     *
+     * @param  server  the server
+     *
+     * @return  the server
+     */
     public HttpEntity<JenkinsProperties[]> getServer(String server) {
 
         return servers.get(server);
     }
 
 
+    /**
+     * Gets List of all configured servers.
+     *
+     * @return  the servers
+     */
     public Set<String> getServers() {
 
         return servers.keySet();
     }
 
 
+    /**
+     * Put a SingleStatusOnLEDStrip into map, referenced by the server and the job.
+     *
+     * @param  server  the server
+     * @param  job  the job
+     * @param  singleStatusOnLEDStrip  the single status on lED strip
+     */
     public void put(String server, String job, SingleStatusOnLEDStrip singleStatusOnLEDStrip) {
 
         Map<String, List<SingleStatusOnLEDStrip>> jobs = mapping.get(server);
@@ -70,20 +102,28 @@ public class JenkinsConfig {
             jobs = new HashMap<>();
         }
 
-        List<SingleStatusOnLEDStrip> statuses = jobs.get(job);
+        List<SingleStatusOnLEDStrip> singleStatusOnLEDStrips = jobs.get(job);
 
-        if (statuses == null) {
-            statuses = new ArrayList<>();
+        if (singleStatusOnLEDStrips == null) {
+            singleStatusOnLEDStrips = new ArrayList<>();
         }
 
-        statuses.add(singleStatusOnLEDStrip);
+        singleStatusOnLEDStrips.add(singleStatusOnLEDStrip);
 
-        jobs.put(job, statuses);
+        jobs.put(job, singleStatusOnLEDStrips);
 
         mapping.put(server, jobs);
     }
 
 
+    /**
+     * Contains boolean.
+     *
+     * @param  server  the server
+     * @param  job  the job
+     *
+     * @return  the boolean
+     */
     public boolean contains(String server, String job) {
 
         if (mapping.containsKey(server)) {
@@ -94,6 +134,14 @@ public class JenkinsConfig {
     }
 
 
+    /**
+     * Get list.
+     *
+     * @param  server  the server
+     * @param  job  the job
+     *
+     * @return  the list
+     */
     public List<SingleStatusOnLEDStrip> get(String server, String job) {
 
         if (mapping.containsKey(server)) {
@@ -104,12 +152,24 @@ public class JenkinsConfig {
     }
 
 
+    /**
+     * Get map.
+     *
+     * @param  server  the server
+     *
+     * @return  the map
+     */
     public Map<String, List<SingleStatusOnLEDStrip>> get(String server) {
 
         return mapping.get(server);
     }
 
 
+    /**
+     * Gets all.
+     *
+     * @return  the all
+     */
     public Set<SingleStatusOnLEDStrip> getAll() {
 
         Set<SingleStatusOnLEDStrip> result = new HashSet<>();
@@ -124,6 +184,9 @@ public class JenkinsConfig {
     }
 
 
+    /**
+     * Reset void.
+     */
     public void reset() {
 
         mapping.clear();

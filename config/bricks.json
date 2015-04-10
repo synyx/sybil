@@ -1,0 +1,6 @@
+[
+	{"name": "stubone", "hostname": "localhost", "port": 14223},
+	{"name": "stubtwo", "hostname": "localhost", "port": 14224},
+	{"name": "stubthree", "hostname": "localhost", "port": 14225}
+]
+

@@ -237,17 +237,23 @@ public class ConfigLoader {
     }
 
 
+    public void loadJenkinsConfig() throws IOException {
+
+        loadJenkinsConfig("jenkins.json");
+    }
+
+
     /**
      * Load jenkins config.
      *
      * @throws  IOException  the iO exception
      */
-    public void loadJenkinsConfig() throws IOException {
+    public void loadJenkinsConfig(String file) throws IOException {
 
         LOG.info("Loading Jenkins configuration");
 
-        Map<String, List<Map<String, Object>>> jenkinsConfigData = mapper.readValue(new File(
-                    configDir + "jenkins.json"), new TypeReference<Map<String, List<Map<String, Object>>>>() {
+        Map<String, List<Map<String, Object>>> jenkinsConfigData = mapper.readValue(new File(configDir + file),
+                new TypeReference<Map<String, List<Map<String, Object>>>>() {
                 }); // fetch Jenkins configuration data...
 
         jenkinsConfig.reset();

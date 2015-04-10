@@ -1,0 +1,23 @@
+[
+  {
+    "name": "stubone",
+    "uid": "abc", 
+    "length": 5,
+    "brick": "stubone",
+    "okayRed": 16, "okayGreen": 16, "okayBlue": 16,
+    "warningRed": 127, "warningGreen": 127, "warningBlue": 0, 
+    "criticalRed": 0, "criticalGreen": 0, "criticalBlue": 127
+  },
+  {
+    "name": "stubtwo",
+    "uid": "def",
+    "length": 10,
+    "brick": "stubtwo"
+  },
+  {
+    "name": "stubthree",
+    "uid": "ghi",
+    "length": 20,
+    "brick": "stubthree"
+  }
+]
