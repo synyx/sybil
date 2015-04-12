@@ -141,6 +141,10 @@ function deploy(userConfig){
         }
         
         var contentType = path.extname(filename).slice(1);
+
+        if(contentType == ""){
+            contentType = "json"    
+        }
         
         //Only serve specified file types 
         if(!server.config.contentType){

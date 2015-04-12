@@ -4,6 +4,12 @@ apply plugin: 'war' //war plugin
 sourceCompatibility = 1.8 //Java 8
 version = '0.1'
 
+repositories {
+    mavenCentral()
+    maven { url "https://repo.spring.io/libs-release" }
+    jcenter()
+}
+
 dependencies {
     //spring
     compile group: 'org.springframework', name: 'spring-web', version: '4.1.4.RELEASE'
@@ -37,7 +43,7 @@ dependencies {
 
 /*** START Configure unit tests ***/
 task showResults(type: Exec) {
-    commandLine 'bash', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16'
+    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16'
 }
 
 test {
@@ -68,12 +74,6 @@ buildscript {
     dependencies {
         classpath group: 'org.akhikhl.gretty', name: 'gretty', version: '+'
     }
-}
-
-repositories {
-    mavenCentral()
-    maven { url "https://repo.spring.io/libs-release" }
-    jcenter()
 }
 
 apply plugin: 'org.akhikhl.gretty' // gretty = embedded jetty 9
@@ -122,7 +122,7 @@ task startRestServer1(type: ExecWait) {
 }
 
 task startRestServer2(type: ExecWait) {
-    command 'node server/http.js port=8082 index=red_anine.json verbose=true launch=now'
+    command 'node server/http.js port=8082 index=red_anime.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
     directory 'src/test/RestServer'
 }
@@ -171,8 +171,8 @@ task startTFStubserver3(type: ExecWait) {
 
 task integTest(type: Test) { //define the integTest task as a Test task
     dependsOn(deleteDatabase, startTFStubserver1, startTFStubserver2, startTFStubserver3,
-            startRestServer1, startRestServer2, startRestServer3, startRestServer4, startRestServer5, startRestServer6) // Start test servers
-    finalizedBy(freeAllPorts, showResults) // Kill said servers afterwards
+            startRestServer1, startRestServer2, startRestServer3, startRestServer4, startRestServer5, startRestServer6)
+    finalizedBy(freeAllPorts, showResults)
 
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
@@ -220,8 +220,6 @@ class ExecWait extends DefaultTask {
         InputStream stdout = process.getInputStream()
         BufferedReader reader = new BufferedReader(new
                 InputStreamReader(stdout))
-
-        
         
         def line
         while ((line = reader.readLine()) != null) {

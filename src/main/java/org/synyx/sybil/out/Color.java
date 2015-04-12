@@ -118,4 +118,32 @@ public class Color {
 
         this.blue = blue;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Color color = (Color) o;
+
+        return red == color.red && green == color.green && blue == color.blue;
+    }
+
+
+    @Override
+    public int hashCode() {
+
+        int result = (int) red;
+        result = 31 * result + (int) green;
+        result = 31 * result + (int) blue;
+
+        return result;
+    }
 }
