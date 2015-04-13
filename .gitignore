@@ -2,6 +2,6 @@
 .idea/
 .gradle/
 *.iml
-build/
-logs/
-out/
+./build/
+./logs/
+./out/
