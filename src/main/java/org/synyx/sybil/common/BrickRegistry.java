@@ -96,6 +96,10 @@ public class BrickRegistry {
 
             try {
                 ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort()); // ... connect it ...
+
+                ConnectionListener connectionListener = new ConnectionListener(ipConnection);
+
+                ipConnection.addConnectedListener(connectionListener);
                 ipConnections.put(brickDomain, ipConnection); // ... and add it to the map.
             } catch (IOException e) {
                 LOG.error("I/O Exception connecting to {}: {}", brickDomain.getHostname(), e.getMessage());
