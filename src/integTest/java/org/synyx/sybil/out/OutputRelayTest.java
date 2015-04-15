@@ -62,17 +62,17 @@ public class OutputRelayTest {
         brickRepository.save(test2);
         brickRepository.save(test3);
 
-        // define LED Strips (bricklets)
-        OutputRelayDomain testOne = new OutputRelayDomain("testone", "abc", test1);
-        OutputRelayDomain testTwo = new OutputRelayDomain("testtwo", "def", test2);
-        OutputRelayDomain testThree = new OutputRelayDomain("testthree", "ghi", test3);
+        // define relay bricklets
+        OutputRelayDomain testOne = new OutputRelayDomain("testone", "zzz", test1);
+        OutputRelayDomain testTwo = new OutputRelayDomain("testtwo", "yyy", test2);
+        OutputRelayDomain testThree = new OutputRelayDomain("testthree", "xxx", test3);
 
         // add them to the database
         testOne = outputRelayRepository.save(testOne);
         testTwo = outputRelayRepository.save(testTwo);
         testThree = outputRelayRepository.save(testThree);
 
-        // initialise LED Strips (fetching them from the database on the way), cast and add them to the list
+        // initialise relay bricklets (fetching them from the database on the way), and add them to the list
         outputRelays.add(outputRelayRegistry.get(testOne));
         outputRelays.add(outputRelayRegistry.get(testTwo));
         outputRelays.add(outputRelayRegistry.get(testThree));
@@ -99,22 +99,26 @@ public class OutputRelayTest {
 
 
     @Test
-    public void testSetState() {
+    public void testOutputRelay() {
+
+        LOG.debug("START testOutputRelay");
 
         for (OutputRelay outputRelay : outputRelays) {
-            boolean[] states = outputRelay.getStates();
-            assertArrayEquals(new boolean[] { false, false }, states);
+            assertArrayEquals(new boolean[] { false, false }, outputRelay.getStates());
 
-            outputRelay.setStates(true, true);
+            outputRelay.setState(EnumRelay.ONE, true);
 
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            assertArrayEquals(new boolean[] { true, false }, outputRelay.getStates());
 
-            states = outputRelay.getStates();
-            assertArrayEquals(new boolean[] { true, true }, states);
+            outputRelay.setState(EnumRelay.TWO, true);
+
+            assertArrayEquals(new boolean[] { true, true }, outputRelay.getStates());
+
+            outputRelay.setStates(false, true);
+
+            assertArrayEquals(new boolean[] { false, true }, outputRelay.getStates());
         }
+
+        LOG.debug("FINISH testOutputRelay");
     }
 }
