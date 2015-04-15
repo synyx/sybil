@@ -68,9 +68,6 @@ public class ConfigLoader {
     // The object that saves the Jenkins servers and job configurations
     private JenkinsConfig jenkinsConfig;
 
-    // The status of the LED Strip Config
-    private Status LEDStripStatus = Status.OKAY;
-
     // Map saving the custom status colors for SingleStatusOnLEDStrips
     private Map<String, Map<String, Color>> customStatusColors = new HashMap<>();
 
@@ -107,27 +104,34 @@ public class ConfigLoader {
             loadBricksConfig();
         } catch (IOException e) {
             LOG.error("Error loading bricks.json: {}", e.toString());
-            HealthController.setHealth(Status.CRITICAL);
+            HealthController.setHealth(Status.CRITICAL, "loadBricksConfig");
         }
 
-        try {
-            loadLEDStripConfig();
-        } catch (IOException e) {
-            LOG.error("Error loading ledstrips.json: {}", e.toString());
-            HealthController.setHealth(Status.CRITICAL);
+        if (HealthController.getHealth() == Status.OKAY) {
+            try {
+                loadLEDStripConfig();
+            } catch (IOException e) {
+                LOG.error("Error loading ledstrips.json: {}", e.toString());
+                HealthController.setHealth(Status.CRITICAL, "loadLEDStripConfig");
+            }
         }
 
-        try {
-            loadJenkinsServers();
-        } catch (IOException e) {
-            LOG.error("Error loading jenkinsservers.json: {}", e.toString());
-            HealthController.setHealth(Status.CRITICAL);
+        if (HealthController.getHealth() == Status.OKAY) {
+            try {
+                loadJenkinsServers();
+            } catch (IOException e) {
+                LOG.error("Error loading jenkinsservers.json: {}", e.toString());
+                HealthController.setHealth(Status.CRITICAL, "loadJenkinsServers");
+            }
         }
 
-        try {
-            loadJenkinsConfig();
-        } catch (IOException e) {
-            LOG.error("Error loading jenkins.json: {}", e.toString());
+        if (HealthController.getHealth() == Status.OKAY) {
+            try {
+                loadJenkinsConfig();
+            } catch (IOException e) {
+                LOG.error("Error loading jenkins.json: {}", e.toString());
+                HealthController.setHealth(Status.WARNING, "loadJenkinsConfig");
+            }
         }
     }
 
@@ -179,13 +183,11 @@ public class ConfigLoader {
                     outputLEDStripRepository.save(new OutputLEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
                 } else { // if not...
                     LOG.error("Brick {} does not exist.", ledstrip.get("brick").toString()); // ... error!
-                    HealthController.setHealth(Status.WARNING);
-                    LEDStripStatus = Status.WARNING;
+                    HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
                 }
             } catch (NumberFormatException e) {
                 LOG.error("Failed to load config for LED Strip {}: \"length\" is not an integer.", name);
-                HealthController.setHealth(Status.WARNING);
-                LEDStripStatus = Status.WARNING;
+                HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
             }
 
             if (ledstrip.get("okayRed") != null) {
@@ -214,8 +216,7 @@ public class ConfigLoader {
                     customStatusColors.put(name, colors);
                 } catch (NumberFormatException e) {
                     LOG.error("Failed to load config for LED Strip {}: colors are not properly formatted.", name);
-                    HealthController.setHealth(Status.WARNING);
-                    LEDStripStatus = Status.WARNING;
+                    HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
                 }
             }
         }
@@ -258,10 +259,7 @@ public class ConfigLoader {
 
         jenkinsConfig.reset();
 
-        // if there was no WARNING from the LED Strip Config and no CRITICAL from anywhere, we can safely assume any WARNING came from here
-        if (LEDStripStatus == Status.OKAY && HealthController.getHealth() != Status.CRITICAL) {
-            HealthController.setHealth(Status.OKAY);
-        }
+        HealthController.setHealth(Status.OKAY, "loadJenkinsConfig");
 
         // ... deserialize the data manually
         for (String server : jenkinsConfigData.keySet()) { // iterate over all the servers
@@ -289,7 +287,7 @@ public class ConfigLoader {
                     LOG.warn("Ledstrip {} does not exist.", ledstrip);
 
                     if (HealthController.getHealth() != Status.CRITICAL) {
-                        HealthController.setHealth(Status.WARNING);
+                        HealthController.setHealth(Status.WARNING, "loadJenkinsConfig");
                     }
                 }
             }

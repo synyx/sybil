@@ -7,7 +7,9 @@ import com.tinkerforge.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.common.Bricklet;
+import org.synyx.sybil.in.Status;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,24 +65,17 @@ public class OutputLEDStrip implements Bricklet {
     @Override
     public boolean equals(Object o) {
 
-        if (this == o)
+        if (this == o) {
             return true;
+        }
 
-        if (o == null || getClass() != o.getClass())
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         OutputLEDStrip that = (OutputLEDStrip) o;
 
-        if (length != that.length)
-            return false;
-
-        if (!ledStrip.equals(that.ledStrip))
-            return false;
-
-        if (!name.equals(that.name))
-            return false;
-
-        return true;
+        return length == that.length && ledStrip.equals(that.ledStrip) && name.equals(that.name);
     }
 
 
@@ -120,8 +115,10 @@ public class OutputLEDStrip implements Bricklet {
 
             try {
                 ledStrip.setRGBValues(i, (short) 16, blueArray, redArray, greenArray);
+                HealthController.setHealth(Status.OKAY, name);
             } catch (TimeoutException | NotConnectedException e) {
                 LOG.error("Error connecting to LEDStrip {} during updateDisplay: {}", name, e.toString());
+                HealthController.setHealth(Status.WARNING, name);
             }
         }
     }
@@ -242,8 +239,10 @@ public class OutputLEDStrip implements Bricklet {
 
         try {
             color = new Color(ledStrip.getRGBValues(position, (short) 1));
+            HealthController.setHealth(Status.OKAY, name);
         } catch (TimeoutException | NotConnectedException e) {
             LOG.error("Error connecting to LEDStrip {} during getPixel: {}", name, e.toString());
+            HealthController.setHealth(Status.WARNING, name);
         }
 
         return color;

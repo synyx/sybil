@@ -102,8 +102,8 @@ public class BrickRegistry {
                 ipConnection.addConnectedListener(connectionListener);
                 ipConnections.put(brickDomain, ipConnection); // ... and add it to the map.
             } catch (IOException e) {
-                LOG.error("I/O Exception connecting to {}: {}", brickDomain.getHostname(), e.getMessage());
-                HealthController.setHealth(Status.CRITICAL);
+                LOG.error("I/O Exception connecting to brick {}: {}", brickDomain.getName(), e.getMessage());
+                HealthController.setHealth(Status.CRITICAL, "brick" + brickDomain.getName());
             } catch (AlreadyConnectedException e) {
                 LOG.info("IPConnection to {} already connected: {}", brickDomain.getHostname(), e.toString());
             }

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.synyx.sybil.in.Status;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * HealthController.
@@ -24,17 +27,29 @@ import org.synyx.sybil.in.Status;
 @RequestMapping("/health")
 public class HealthController {
 
-    private static Status health = Status.OKAY;
+    private static Map<String, Status> healthSources = new HashMap<>();
 
     public static Status getHealth() {
+
+        Status health = Status.OKAY;
+
+        for (Status status : healthSources.values()) {
+            if (status != null && status.ordinal() > health.ordinal()) {
+                health = status;
+            }
+        }
 
         return health;
     }
 
 
-    public static void setHealth(Status newHealth) {
+    public static void setHealth(Status newHealth, String source) {
 
-        health = newHealth;
+        if (newHealth == Status.OKAY) {
+            healthSources.remove(source);
+        } else {
+            healthSources.put(source, newHealth);
+        }
     }
 
 
@@ -42,6 +57,6 @@ public class HealthController {
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Status> health() {
 
-        return new ResponseEntity<>(health, HttpStatus.OK);
+        return new ResponseEntity<>(getHealth(), HttpStatus.OK);
     }
 }

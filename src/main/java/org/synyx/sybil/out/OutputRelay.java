@@ -7,7 +7,9 @@ import com.tinkerforge.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.common.Bricklet;
+import org.synyx.sybil.in.Status;
 
 
 /**
@@ -80,9 +82,10 @@ public class OutputRelay implements Bricklet {
 
         try {
             bricklet.setSelectedState(selector, state);
-            LOG.debug("Set relay {} of {} to: {}.", selector, this.name, state);
+            HealthController.setHealth(Status.OKAY, name);
         } catch (TimeoutException | NotConnectedException e) {
             LOG.error("Error connecting to relay {} while setting state: {}", name, e.toString());
+            HealthController.setHealth(Status.WARNING, name);
         }
     }
 
@@ -97,9 +100,10 @@ public class OutputRelay implements Bricklet {
 
         try {
             bricklet.setState(stateOne, stateTwo);
-            LOG.debug("Set relays of {} to: {}, {}.", this.name, stateOne, stateTwo);
+            HealthController.setHealth(Status.OKAY, name);
         } catch (TimeoutException | NotConnectedException e) {
             LOG.error("Error connecting to relay {} while setting states: {}", name, e.toString());
+            HealthController.setHealth(Status.WARNING, name);
         }
     }
 
@@ -117,9 +121,10 @@ public class OutputRelay implements Bricklet {
 
         try {
             state = bricklet.getState();
-            LOG.debug("Getting states of relay {}: {}, {}", this.name, state.relay1, state.relay2);
+            HealthController.setHealth(Status.OKAY, name);
         } catch (TimeoutException | NotConnectedException e) {
             LOG.error("Error connecting to relay {} while getting state: {}", name, e.toString());
+            HealthController.setHealth(Status.WARNING, name);
         }
 
         if (state != null) {
@@ -147,9 +152,10 @@ public class OutputRelay implements Bricklet {
 
         try {
             state = bricklet.getState();
-            LOG.debug("Getting states of relay {}: {}, {}", this.name, state.relay1, state.relay2);
+            HealthController.setHealth(Status.OKAY, name);
         } catch (TimeoutException | NotConnectedException e) {
             LOG.error("Error connecting to relay {} while getting state: {}", name, e.toString());
+            HealthController.setHealth(Status.WARNING, name);
         }
 
         if (state != null) {
