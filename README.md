@@ -8,17 +8,20 @@ This project is under heavy development and further documentation is forthcoming
 
 ### Working so far ###
 
-* Saves and loads Tinkerforge bricks and LED Strips bricklets to/from Neo4j database.
+* Saves and loads Tinkerforge bricks, LED Strips bricklets and Dual Relay bricklets to/from Neo4j database.
 * Reads configuration from JSON files.
 * Outputs Statuses on LED Strips *(see integration test org.synyx.sybil.out.SingleStatusOnLEDStripTest)*
+    * Outputs Statuses of Jenkins build jobs, updated every 60 seconds.
 * Outputs arbitrary pixels and sprites " " *(see integration test org.synyx.sybil.out.OutputLEDStripTest)*
+    * Does this via a HTTP API.
 * Serves a *very barebones* REST API showing the configured the bricks and bricklets. 
 
 ### Execution ###
 
 #### Configuration ####
 
-To run or deploy the server you need `bricks.json`, `ledstrips.json`, and `jenkins.json` in the `config/` directory.  
+To run or deploy the server you need `bricks.json`, `ledstrips.json`, and `jenkins.json` in `/home/sybil-config/`, and
+`jenkinsservers.json` in `/home/sybil/`.  
 Note that all the names used in the configuration files *must* be lowercase.
 
 #### Running ####
@@ -68,15 +71,14 @@ When you are done, run
 
 #### Integration Tests ####
 
-Integration tests require [TFStubserver](https://github.com/PlayWithIt/TFStubserver) and (the \*nix command) killall.  
-Run them with `gradlew integTest`.  
-This will start three Tinkerforge stub servers (servers that simulate the Tinkerforge hardware in software) and run 
-tests on them.
+Integration tests require [TFStubserver](https://github.com/PlayWithIt/TFStubserver), [node.js](https://nodejs.org/)
+and (the \*nix commands) `lsof` and `kill`.  
+Run them with `gradlew integTest`.
 
 Integration tests are probably \*nix specific right now.  
 TODO: Make integration tests cross-platform.
 
-### Structure ###
+### Structure (out of date) ###
     src/
     +-docs/                             Documentation sources.
     | +-api/                            Source for the API documentation.
@@ -127,7 +129,7 @@ This then loads:
     * The database configuration from **Neo4jConfig**.
         * Which in turn loads the __*Repository__ and __*Domain__ classes.
     * The **StartupLoader** class, since it's annotated with @Component.
-        * Which in turn runs the **JSONConfigLoader**'s *loadConfig* method.
+        * Which in turn runs the **ConfigLoader**'s *loadConfig* method.
     * The **JenkinsService** since it's annotated with @Service.
 
 The *loadConfig* method loads the bricks & LED Strip configurations from JSON files (the location of which is defined in
@@ -138,9 +140,14 @@ The **JenkinsService** has a *handleJobs* method, which is annotated with @Sched
 seconds. This method gets a list of all jobs from the Jenkins server(s), compares it to the list loaded from
 jenkins.json and then instructs the associated LED strips to show the jobs' statuses. 
 
-Bricks saved in the database can be listed via the REST API at /configuration/bricks and
-/configuration/bricks/{hostname} respectively. Same goes for LED Strips at /configuration/ledstrips and 
-/configuration/ledstrips/{name}.
+Bricks saved in the database can be listed via the REST API at `/configuration/bricks` and
+`/configuration/bricks/{name}` respectively. Same goes for LED Strips at `/configuration/ledstrips` and 
+`/configuration/ledstrips/{name}`.
+
+A direct API for reading the LED strips state and for writing to it (i.e. displaying things on it) is provided under
+`/configuration/ledstrips/{name}/display/`.
+ 
+For further information on this see [the wiki](https://github.com/synyx/sybil-wiki).
 
 #### Extending Sybil ####
 
