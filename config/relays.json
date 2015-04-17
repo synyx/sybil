@@ -1,2 +1,17 @@
 [
+  {
+    "name": "stubone",
+    "uid": "zzz",
+    "brick": "stubone"
+  },
+  {
+    "name": "stubtwo",
+    "uid": "yyy",
+    "brick": "stubtwo"
+  },
+  {
+    "name": "stubthree",
+    "uid": "xxx",
+    "brick": "stubthree"
+  }
 ]

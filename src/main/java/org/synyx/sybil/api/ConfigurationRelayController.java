@@ -153,9 +153,10 @@ public class ConfigurationRelayController {
 
                         case "relays":
                             relay.setStates(!relay.getState(EnumRelay.ONE), !relay.getState(EnumRelay.TWO));
+                            break;
 
                         default:
-                            throw new Exception("Unknown target for action set");
+                            throw new Exception("Unknown target for action toggle");
                     }
 
                     break;
