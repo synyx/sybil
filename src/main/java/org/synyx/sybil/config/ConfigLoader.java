@@ -16,8 +16,10 @@ import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.common.jenkins.JenkinsConfig;
 import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
+import org.synyx.sybil.database.OutputRelayRepository;
 import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
+import org.synyx.sybil.domain.OutputRelayDomain;
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.out.Color;
 import org.synyx.sybil.out.OutputLEDStrip;
@@ -65,6 +67,9 @@ public class ConfigLoader {
     // Fetches one SingleStatusOnLEDStrip for each LED Strip
     private SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
 
+    // The Repository to save OutputRelay configuration data
+    private OutputRelayRepository outputRelayRepository;
+
     // The object that saves the Jenkins servers and job configurations
     private JenkinsConfig jenkinsConfig;
 
@@ -84,7 +89,7 @@ public class ConfigLoader {
     @Autowired
     public ConfigLoader(BrickRepository brickRepository, OutputLEDStripRepository outputLEDStripRepository,
         Environment env, OutputLEDStripRegistry outputLEDStripRegistry, JenkinsConfig jenkinsConfig,
-        SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry) {
+        SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, OutputRelayRepository outputRelayRepository) {
 
         this.brickRepository = brickRepository;
         this.outputLEDStripRepository = outputLEDStripRepository;
@@ -93,6 +98,7 @@ public class ConfigLoader {
         this.outputLEDStripRegistry = outputLEDStripRegistry;
         this.jenkinsConfig = jenkinsConfig;
         this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
+        this.outputRelayRepository = outputRelayRepository;
     }
 
     /**
@@ -113,6 +119,15 @@ public class ConfigLoader {
             } catch (IOException e) {
                 LOG.error("Error loading ledstrips.json: {}", e.toString());
                 HealthController.setHealth(Status.CRITICAL, "loadLEDStripConfig");
+            }
+        }
+
+        if (HealthController.getHealth() == Status.OKAY) {
+            try {
+                loadRelayConfig();
+            } catch (IOException e) {
+                LOG.error("Error loading relays.json: {}", e.toString());
+                HealthController.setHealth(Status.CRITICAL, "loadRelayConfig");
             }
         }
 
@@ -156,7 +171,7 @@ public class ConfigLoader {
 
 
     /**
-     * Load lED strip config.
+     * Load LED Strip configuration.
      *
      * @throws  IOException  the iO exception
      */
@@ -218,6 +233,38 @@ public class ConfigLoader {
                     LOG.error("Failed to load config for LED Strip {}: colors are not properly formatted.", name);
                     HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
                 }
+            }
+        }
+    }
+
+
+    /**
+     * Load Relay configuration.
+     *
+     * @throws  IOException  the iO exception
+     */
+    public void loadRelayConfig() throws IOException {
+
+        LOG.info("Loading Relay configuration");
+
+        List<Map<String, Object>> relays = mapper.readValue(new File(configDir + "relays.json"),
+                new TypeReference<List<Map<String, Object>>>() {
+                });
+
+        outputRelayRepository.deleteAll();
+
+        for (Map relay : relays) { // ... deserialize the data manually
+
+            String name = relay.get("name").toString();
+            String uid = relay.get("uid").toString();
+
+            BrickDomain brick = brickRepository.findByName(relay.get("brick").toString()); // fetch the corresponding bricks from the repo
+
+            if (brick != null) { // if there was corresponding brick found in the repo...
+                outputRelayRepository.save(new OutputRelayDomain(name, uid, brick)); // ... save the LED Strip.
+            } else { // if not...
+                LOG.error("Brick {} does not exist.", relay.get("brick").toString()); // ... error!
+                HealthController.setHealth(Status.WARNING, "loadRelayConfig");
             }
         }
     }

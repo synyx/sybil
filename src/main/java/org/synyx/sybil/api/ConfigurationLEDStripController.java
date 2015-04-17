@@ -1,14 +1,9 @@
 package org.synyx.sybil.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 
 import org.neo4j.helpers.collection.IteratorUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -56,12 +51,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RequestMapping("/configuration/ledstrips")
 public class ConfigurationLEDStripController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStrip.class);
-
     private OutputLEDStripRepository outputLEDStripRepository;
     private GraphDatabaseService graphDatabaseService;
     private OutputLEDStripRegistry outputLEDStripRegistry;
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public ConfigurationLEDStripController(OutputLEDStripRepository outputLEDStripRepository,
@@ -74,7 +66,7 @@ public class ConfigurationLEDStripController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
-    public Resources<LEDStripResource> bricks() {
+    public Resources<LEDStripResource> ledstrips() {
 
         List<OutputLEDStripDomain> ledStrips;
         List<LEDStripResource> resources = new ArrayList<>();
@@ -270,7 +262,7 @@ public class ConfigurationLEDStripController {
 
     @ResponseBody
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> LoadingConfigurationFailed(Exception e) {
+    public ResponseEntity<String> errorHandler(Exception e) {
 
         String error = "Error parsing input: " + e.toString();
 
