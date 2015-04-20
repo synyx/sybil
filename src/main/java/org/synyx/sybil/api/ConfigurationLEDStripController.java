@@ -192,10 +192,9 @@ public class ConfigurationLEDStripController {
 
                         case "pixel": {
                             int index = Integer.parseInt(patch.getValues().get(0));
-                            List<String> values = patch.getValues();
-                            int red = Integer.parseInt(values.get(1));
-                            int green = Integer.parseInt(values.get(2));
-                            int blue = Integer.parseInt(values.get(3));
+                            int red = Integer.parseInt(patch.getValues().get(1));
+                            int green = Integer.parseInt(patch.getValues().get(2));
+                            int blue = Integer.parseInt(patch.getValues().get(3));
                             Color color = new Color(red, green, blue);
 
                             ledStrip.setPixel(index, color);

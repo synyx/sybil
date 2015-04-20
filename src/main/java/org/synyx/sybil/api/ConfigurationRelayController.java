@@ -93,6 +93,45 @@ public class ConfigurationRelayController {
 
 
     @ResponseBody
+    @RequestMapping(method = RequestMethod.PATCH, produces = { "application/hal+json" })
+    public Resources<RelayResource> updateRelays(@RequestBody PatchResource input) throws Exception {
+
+        List<OutputRelayDomain> relays;
+        List<RelayResource> resources = new ArrayList<>();
+        List<Link> links = new ArrayList<>();
+
+        Link self = linkTo(ConfigurationRelayController.class).withSelfRel();
+        links.add(self);
+
+        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
+
+            // get all Bricks from database and cast them into a list so that they're actually fetched
+            relays = new ArrayList<>(IteratorUtil.asCollection(outputRelayRepository.findAll()));
+
+            // end transaction
+            tx.success();
+        }
+
+        for (OutputRelayDomain relayDomain : relays) {
+            for (SinglePatchResource patch : input.getPatches()) {
+                if (patch.getAction().equals("set") && patch.getTarget().equals("relays")) {
+                    OutputRelay relay = outputRelayRegistry.get(relayDomain);
+                    boolean state = patch.getValues().get(0).equals("true");
+                    relay.setStates(state, state);
+                } else {
+                    throw new Exception("Unknown action or target.");
+                }
+            }
+
+            RelayResource resource = getRelay(relayDomain.getName());
+            resources.add(resource);
+        }
+
+        return new Resources<>(resources, links);
+    }
+
+
+    @ResponseBody
     @RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = { "application/hal+json" })
     public RelayResource getRelay(@PathVariable String name) {
 

@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 
 /**
- * ConfigurationLEDStripControllerTest.
+ * ConfigurationRelayControllerTest.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
@@ -248,5 +248,36 @@ public class ConfigurationRelayControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.relay1", is(false)))
             .andExpect(jsonPath("$.relay2", is(false)));
+
+        // test setting ALL relays at once
+        values.clear();
+        values.add("true");
+
+        patch.setAction("set");
+        patch.setTarget("relays");
+        patch.setValues(values);
+
+        patches.clear();
+        patches.add(patch);
+
+        patchResource.setPatches(patches);
+
+        mockMvc.perform(patch("/configuration/relays/").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsBytes(patchResource)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.links", hasSize(1)))
+            .andExpect(jsonPath("$.links[0].rel", is("self")))
+            .andExpect(jsonPath("$.links[0].href", endsWith("/configuration/relays")))
+            .andExpect(jsonPath("$.content", hasSize(3)))
+            .andExpect(jsonPath("$.content[*].name", containsInAnyOrder("stubone", "stubtwo", "stubthree")))
+            .andExpect(jsonPath("$.content[*].uid", containsInAnyOrder("xxx", "yyy", "zzz")))
+            .andExpect(jsonPath("$.content[*].brick.name", containsInAnyOrder("stubone", "stubtwo", "stubthree")))
+            .andExpect(jsonPath("$.content[*].brick.hostname", contains("localhost", "localhost", "localhost")))
+            .andExpect(jsonPath("$.content[*].brick.port", containsInAnyOrder(14223, 14224, 14225)))
+            .andExpect(jsonPath("$.content[0].links[0].href", containsString("/configuration/relays/stub")))
+            .andExpect(jsonPath("$.content[1].links[0].href", containsString("/configuration/relays/stub")))
+            .andExpect(jsonPath("$.content[2].links[0].href", containsString("/configuration/relays/stub")))
+            .andExpect(jsonPath("$.content[*].relay1", containsInAnyOrder(true, true, true)))
+            .andExpect(jsonPath("$.content[*].relay2", containsInAnyOrder(true, true, true)));
     }
 }
