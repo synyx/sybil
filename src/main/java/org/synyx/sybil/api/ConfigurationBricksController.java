@@ -68,7 +68,7 @@ public class ConfigurationBricksController {
         }
 
         for (BrickDomain brick : bricks) {
-            self = linkTo(methodOn(ConfigurationBricksController.class).brick(brick.getHostname())).withSelfRel();
+            self = linkTo(methodOn(ConfigurationBricksController.class).brick(brick.getName())).withSelfRel();
 
             BrickResource resource = new BrickResource(brick, self);
 
@@ -85,7 +85,7 @@ public class ConfigurationBricksController {
 
         BrickDomain brick = brickRepository.findByName(name);
 
-        Link self = linkTo(methodOn(ConfigurationBricksController.class).brick(brick.getHostname())).withSelfRel();
+        Link self = linkTo(methodOn(ConfigurationBricksController.class).brick(brick.getName())).withSelfRel();
 
         return new BrickResource(brick, self);
     }
