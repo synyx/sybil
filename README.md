@@ -6,31 +6,33 @@ Uses WS2812 LED Strips connected to Tinkerforge bricks.
 
 This project is under heavy development and further documentation is forthcoming.
 
-### Working so far ###
+## Working so far ##
 
 * Saves and loads Tinkerforge bricks, LED Strips bricklets and Dual Relay bricklets to/from Neo4j database.
 * Reads configuration from JSON files.
 * Outputs Statuses on LED Strips *(see integration test org.synyx.sybil.out.SingleStatusOnLEDStripTest)*
     * Outputs Statuses of Jenkins build jobs, updated every 60 seconds.
-* Outputs arbitrary pixels and sprites " " *(see integration test org.synyx.sybil.out.OutputLEDStripTest)*
+* Outputs arbitrary pixels and sprites on LED Strips *(see integration test org.synyx.sybil.out.OutputLEDStripTest)*
+    * Does this via a HTTP API.
+* Controls relays
     * Does this via a HTTP API.
 * Serves a *very barebones* REST API showing the configured the bricks and bricklets. 
 
-### Execution ###
+## Execution ##
 
-#### Configuration ####
+### Configuration ###
 
-To run or deploy the server you need `bricks.json`, `ledstrips.json`, and `jenkins.json` in `/home/sybil-config/`, and
-`jenkinsservers.json` in `/home/sybil/`.  
+To run or deploy the server you need `bricks.json`, `ledstrips.json`, `relays.json` and `jenkins.json` in
+`/home/sybil-config/`, and `jenkinsservers.json` in `/home/sybil/`.  
 Note that all the names used in the configuration files *must* be lowercase.
 
-#### Running ####
+### Running ###
 
 To run the server:
 
 `gradlew appRun`
 
-#### Deployment ####
+### Deployment ###
 
 Run
 
@@ -53,8 +55,15 @@ to restart the server or
 
 to stop the server.
 
+**Alternatively**
 
-#### Debugging ####
+Run 
+
+`gradlew build`
+
+and copy the war file from `build/libs/` to an application server of your choice.
+
+### Debugging ###
 
 First run
 
@@ -69,7 +78,7 @@ When you are done, run
 
 `gradlew appStop`
 
-#### Integration Tests ####
+### Integration Tests ###
 
 Integration tests require [TFStubserver](https://github.com/PlayWithIt/TFStubserver), [node.js](https://nodejs.org/)
 and (the \*nix commands) `lsof` and `kill`.  
@@ -78,7 +87,7 @@ Run them with `gradlew integTest`.
 Integration tests are probably \*nix specific right now.  
 TODO: Make integration tests cross-platform.
 
-### Structure (out of date) ###
+## Structure (out of date) ##
     src/
     +-docs/                             Documentation sources.
     | +-api/                            Source for the API documentation.
@@ -117,7 +126,7 @@ TODO: Make integration tests cross-platform.
         +-logback.xml                   Configures the logback logging engine.
         +-config.properties             Contains the path to the config files.
 
-### How to use ###
+## How to use ##
 
 The Servlet Container loads the configuration from **ApiWebAppInitializer**, since it extends a ServletInitializer.
 This then loads:
@@ -132,9 +141,9 @@ This then loads:
         * Which in turn runs the **ConfigLoader**'s *loadConfig* method.
     * The **JenkinsService** since it's annotated with @Service.
 
-The *loadConfig* method loads the bricks & LED Strip configurations from JSON files (the location of which is defined in
-the **config.properties** file) and saves them to the database. It then loads the configured Jenkins jobs from the
-Jenkins JSON configuration file.
+The *loadConfig* method loads the brick, LED Strip, & relay configurations from JSON files (the location of which is
+defined in the **config.properties** file) and saves them to the database. It then loads the configured Jenkins jobs
+from the Jenkins JSON configuration file.
 
 The **JenkinsService** has a *handleJobs* method, which is annotated with @Scheduled which means it is run every 60
 seconds. This method gets a list of all jobs from the Jenkins server(s), compares it to the list loaded from
@@ -142,14 +151,15 @@ jenkins.json and then instructs the associated LED strips to show the jobs' stat
 
 Bricks saved in the database can be listed via the REST API at `/configuration/bricks` and
 `/configuration/bricks/{name}` respectively. Same goes for LED Strips at `/configuration/ledstrips` and 
-`/configuration/ledstrips/{name}`.
+`/configuration/ledstrips/{name}`, and relays at `/configuration/relays` and `/configuration/relays/{name}`.
 
-A direct API for reading the LED strips state and for writing to it (i.e. displaying things on it) is provided under
-`/configuration/ledstrips/{name}/display/`.
+A direct API for reading the LED strips state and for writing to it (i.e. displaying things on it) is provided at
+`/configuration/ledstrips/{name}/display/`.  
+A direct API for switching relays is provided at `/configuration/relays/{name}`.
  
 For further information on this see [the wiki](https://github.com/synyx/sybil-wiki).
 
-#### Extending Sybil ####
+### Extending Sybil ###
 
 If you want to extend Sybil's functionality, here's how you operate it "manually":
 
