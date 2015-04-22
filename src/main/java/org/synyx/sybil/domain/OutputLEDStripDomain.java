@@ -60,30 +60,18 @@ public class OutputLEDStripDomain {
     @Override
     public boolean equals(Object o) {
 
-        if (this == o)
+        if (this == o) {
             return true;
+        }
 
-        if (o == null || getClass() != o.getClass())
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         OutputLEDStripDomain that = (OutputLEDStripDomain) o;
 
-        if (length != that.length)
-            return false;
-
-        if (!brickDomain.equals(that.brickDomain))
-            return false;
-
-        if (!id.equals(that.id))
-            return false;
-
-        if (!name.equals(that.name))
-            return false;
-
-        if (!uid.equals(that.uid))
-            return false;
-
-        return true;
+        return length == that.length && brickDomain.equals(that.brickDomain) && id.equals(that.id)
+            && name.equals(that.name) && uid.equals(that.uid);
     }
 
 

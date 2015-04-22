@@ -54,6 +54,7 @@ test {
         events "passed", "skipped", "failed"
         //showStandardStreams = true //show STDOUT and STDERR while gradle is running
     }
+    //noinspection GroovyAssignabilityCheck
     finalizedBy(showResults)
 }
 

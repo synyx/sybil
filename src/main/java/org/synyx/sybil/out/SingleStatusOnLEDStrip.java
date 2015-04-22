@@ -55,24 +55,19 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     @Override
     public boolean equals(Object o) {
 
-        if (this == o)
+        if (this == o) {
             return true;
+        }
 
-        if (o == null || getClass() != o.getClass())
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         SingleStatusOnLEDStrip ledStrip = (SingleStatusOnLEDStrip) o;
 
-        if (color != null ? !color.equals(ledStrip.color) : ledStrip.color != null)
-            return false;
-
-        if (outputLEDStrip != null ? !outputLEDStrip.equals(ledStrip.outputLEDStrip) : ledStrip.outputLEDStrip != null)
-            return false;
-
-        if (status != ledStrip.status)
-            return false;
-
-        return true;
+        return !(color != null ? !color.equals(ledStrip.color) : ledStrip.color != null)
+            && !(outputLEDStrip != null ? !outputLEDStrip.equals(ledStrip.outputLEDStrip)
+                                        : ledStrip.outputLEDStrip != null) && status == ledStrip.status;
     }
 
 

@@ -75,24 +75,18 @@ public class BrickDomain {
     @Override
     public boolean equals(Object o) {
 
-        if (this == o)
+        if (this == o) {
             return true;
+        }
 
-        if (o == null || getClass() != o.getClass())
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         BrickDomain that = (BrickDomain) o;
 
-        if (port != that.port)
-            return false;
-
-        if (hostname != null ? !hostname.equals(that.hostname) : that.hostname != null)
-            return false;
-
-        if (id != null ? !id.equals(that.id) : that.id != null)
-            return false;
-
-        return true;
+        return port == that.port && !(hostname != null ? !hostname.equals(that.hostname) : that.hostname != null)
+            && !(id != null ? !id.equals(that.id) : that.id != null);
     }
 
 
