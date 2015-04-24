@@ -40,6 +40,7 @@ This project is under heavy development and further documentation is forthcoming
 
 To run or deploy the server you need `bricks.json`, `ledstrips.json`, `relays.json` and `jenkins.json` in
 `/home/sybil-config/`, and `jenkinsservers.json` in `/home/sybil/`.  
+See in `config/` for example files, or `src/docs/configfiles` for simplified schemata.  
 The locations of these configuration files can be configured in `src/main/resources/config.properties`.  
 
 Note that all the names used in the configuration files *must* be lowercase.
