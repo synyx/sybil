@@ -120,50 +120,49 @@ TODO: Make integration tests cross-platform.
     +-integTest/                        Integration tests.
     +-test/                             Unit tests.
     +-main/                             Main.
-      +-java/                           Code.
-      | +-org/synyx/sybil/              Base package.
-      |   +-api/                        Controllers for the REST API.
-      |   | +-resources/                API Resources, wrappers around other objects.
-      |   +-common/                     Common modules.
-      |   | +-jenkins/                  JenkinsService-specific modules
-      |   |   +-JenkinsConfig           Saves the configured Jenkins servers & jobs.
-      |   |   +-JenkinsJob              Object for a single returned Jenkins job.
-      |   |   +-JenkinsProperties       Object for Jenkins jobs returned from Jenkins API.
-      |   | +-Bricklet                  Interface all Bricklets inherit from. 
-      |   | +-BrickletRegistry          Interface all registries for bricklets inherit from.
-      |   | +-BrickRegistry             Registers Tinkerforge bricks & their connections.
-      |   | +-Listener                  Listeners for Tinkerforge callbacks.
-      |   +-config/                     Configuration files.
-      |   | +-ConfigLoader              Loads configuration from JSON files.
-      |   | +-Neo4jConfig               Database configuration.
-      |   | +-SpringConfig              Spring configuration.
-      |   | +-StartupLoader             Pulls up ConfigLoader at startup.
-      |   +-database/                   Database interfaces.
-      |   | +-BrickRepository           DB-Interface for Tinkerforge Bricks.
-      |   | +-OutputLEDStripRepository  DB-Interface for LED Strips 
-      |   | +-OutputRelayRepository     DB-Interface for Relays.
-      |   +-domain/                     Domain classes.
-      |   | +-BrickDomain               Domain for Tinkerforge Bricks.
-      |   | +-OutputLEDStripDomain      Domain for LED Strips, inherits from BrickletDomain.
-      |   | +-OutputRelayDomain         Domain for Relays, inherits from BrickletDomain.
-      |   +-in/                         Inputs.
-      |   | +-JenkinsService            Pulls Jenkins servers and feeds statuses to LEDs.
-      |   | +-Status                    Enum for statuses (OKAY, WARNING & CRITICAL)
-      |   | +-StatusInformation         Status with additional information.       
-      |   +-out/                        Outputs.
-      |   | +-Color                     Color object, for LEDs.
-      |   | +-EnumRelay                 Relay helper Enum.
-      |   | +-OutputLEDStrip            LED Strip object, communicates with LEDs.
-      |   | +-OutputLEDStripRegistry    Provides OutputLEDStrip objects.
-      |   | +-OutputRelay               Relay object, communicates with Relay bricklets.
-      |   | +-OutputRelayRegistry       Provides OutputRelay objects.
-      |   | +-SingleStatusOnLEDStrip    Display a single statusInformation on a LED Strip.
-      |   | +-SingleStatusOn…Registry   Provides SingleStatusOnLEDStrip objects.
-      |   | +-SingleStatusOutput        Interface for displaying a single status.
-      |   | +-Sprite1D                  Sprite object, for LED Strips.
-      |   +-webconfig/                  Web app configuration.
-      |     +-ApiWebAppInitializer      Initializes the API web app.
-      |     +-WebConfig                 Configures the web app.
+      +-java/org/synyx/sybil/           Java code base package.
+      | +-api/                          Controllers for the REST API.
+      | | +-resources/                  API Resources, wrappers around other objects.
+      | +-common/                       Common modules.
+      | | +-jenkins/                    JenkinsService-specific modules
+      | |   +-JenkinsConfig             Saves the configured Jenkins servers & jobs.
+      | |   +-JenkinsJob                Object for a single returned Jenkins job.
+      | |   +-JenkinsProperties         Object for Jenkins jobs returned from Jenkins API.
+      | | +-Bricklet                    Interface all Bricklets inherit from. 
+      | | +-BrickletRegistry            Interface all registries for bricklets inherit from.
+      | | +-BrickRegistry               Registers Tinkerforge bricks & their connections.
+      | | +-Listener                    Listeners for Tinkerforge callbacks.
+      | +-config/                       Configuration files.
+      | | +-ConfigLoader                Loads configuration from JSON files.
+      | | +-Neo4jConfig                 Database configuration.
+      | | +-SpringConfig                Spring configuration.
+      | | +-StartupLoader               Pulls up ConfigLoader at startup.
+      | +-database/                     Database interfaces.
+      | | +-BrickRepository             DB-Interface for Tinkerforge Bricks.
+      | | +-OutputLEDStripRepository    DB-Interface for LED Strips 
+      | | +-OutputRelayRepository       DB-Interface for Relays.
+      | +-domain/                       Domain classes.
+      | | +-BrickDomain                 Domain for Tinkerforge Bricks.
+      | | +-OutputLEDStripDomain        Domain for LED Strips, inherits from BrickletDomain.
+      | | +-OutputRelayDomain           Domain for Relays, inherits from BrickletDomain.
+      | +-in/                           Inputs.
+      | | +-JenkinsService              Pulls Jenkins servers and feeds statuses to LEDs.
+      | | +-Status                      Enum for statuses (OKAY, WARNING & CRITICAL)
+      | | +-StatusInformation           Status with additional information.       
+      | +-out/                          Outputs.
+      | | +-Color                       Color object, for LEDs.
+      | | +-EnumRelay                   Relay helper Enum.
+      | | +-OutputLEDStrip              LED Strip object, communicates with LEDs.
+      | | +-OutputLEDStripRegistry      Provides OutputLEDStrip objects.
+      | | +-OutputRelay                 Relay object, communicates with Relay bricklets.
+      | | +-OutputRelayRegistry         Provides OutputRelay objects.
+      | | +-SingleStatusOnLEDStrip      Display a single statusInformation on a LED Strip.
+      | | +-SingleStatusOn…Registry     Provides SingleStatusOnLEDStrip objects.
+      | | +-SingleStatusOutput          Interface for displaying a single status.
+      | | +-Sprite1D                    Sprite object, for LED Strips.
+      | +-webconfig/                    Web app configuration.
+      |   +-ApiWebAppInitializer        Initializes the API web app.
+      |   +-WebConfig                   Configures the web app.
       +-resources/                      Resources.
         +-logback.xml                   Configures the logback logging engine.
         +-config.properties             Contains the path to the config files.
