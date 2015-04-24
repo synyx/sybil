@@ -12,13 +12,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
-public class ConnectionListener implements IPConnection.ConnectedListener {
+public class Listener implements IPConnection.ConnectedListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ConnectionListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Listener.class);
 
     private IPConnection ipConnection = null;
 
-    public ConnectionListener(IPConnection ipConnection) {
+    public Listener(IPConnection ipConnection) {
 
         this.ipConnection = ipConnection;
     }
