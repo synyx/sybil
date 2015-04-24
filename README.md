@@ -123,6 +123,18 @@ TODO: Make integration tests cross-platform.
       +-java/org/synyx/sybil/           Java code base package.
       | +-api/                          Controllers for the REST API.
       | | +-resources/                  API Resources, wrappers around other objects.
+      | | | +-BrickResource             Spring HATEOAS wrapper around Brick configuration.
+      | | | +-DisplayResource           Spring HATEOAS wrapper for LED Strip direct access.
+      | | | +-LEDStripResource          Spring HATEOAS wrapper around LED Strip config.
+      | | | +-PatchResource             Object for deserialising HTTP PATCH actions. 
+      | | | +-RelayResource             Spring HATEOAS wrapper around Relay configuration.
+      | | | +-SinglePatchResource       Object for deserialising a single PATCH action.
+      | | +-Config…BricksController     MVC Rest Controller for Brick configuration.
+      | | +-ConfigurationController     MVC Rest Controller for /configuration/ root.
+      | | +-Config…LEDStripController   MVC Rest Controller for LED Strip configuration.
+      | | +-Config…RelayController      MVC Rest Controller for Relay configuration.
+      | | +-HealthController            MVC Controller for setting & showing app health.
+      | | +-RootController              MVC Root controller.
       | +-common/                       Common modules.
       | | +-jenkins/                    JenkinsService-specific modules
       | | | +-JenkinsConfig             Saves the configured Jenkins servers & jobs.
