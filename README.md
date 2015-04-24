@@ -7,6 +7,8 @@ Uses WS2812 LED Strips connected to Tinkerforge bricks.
 This project is under heavy development and further documentation is forthcoming.
 
 
+## Table of contents
+
 - [Working so far](#working-so-far)
 - [Execution](#execution)
     - [Configuration](#configuration)
