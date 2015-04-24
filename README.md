@@ -125,9 +125,9 @@ TODO: Make integration tests cross-platform.
       | | +-resources/                  API Resources, wrappers around other objects.
       | +-common/                       Common modules.
       | | +-jenkins/                    JenkinsService-specific modules
-      | |   +-JenkinsConfig             Saves the configured Jenkins servers & jobs.
-      | |   +-JenkinsJob                Object for a single returned Jenkins job.
-      | |   +-JenkinsProperties         Object for Jenkins jobs returned from Jenkins API.
+      | | | +-JenkinsConfig             Saves the configured Jenkins servers & jobs.
+      | | | +-JenkinsJob                Object for a single returned Jenkins job.
+      | | | +-JenkinsProperties         Object for Jenkins jobs returned from Jenkins API.
       | | +-Bricklet                    Interface all Bricklets inherit from. 
       | | +-BrickletRegistry            Interface all registries for bricklets inherit from.
       | | +-BrickRegistry               Registers Tinkerforge bricks & their connections.
