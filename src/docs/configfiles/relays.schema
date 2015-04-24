@@ -1,0 +1,21 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The LED Strip's unique name. Must be lowercase."
+      },
+      "uid": {
+        "type": "string",
+        "description": "The bricklet's UID. Can be found using the Brick Viewer."
+      },
+      "brick": {
+        "type": "string",
+        "description": "The brick the LED Strip bricklet is connected to."
+      }
+    },
+    "required": ["name", "uid", "brick"]
+  }
+}

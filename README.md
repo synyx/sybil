@@ -12,9 +12,11 @@ This project is under heavy development and further documentation is forthcoming
     - [Configuration](#configuration)
     - [Running](#running)
     - [Deployment](#deployment)
+        - [Standalone](#standalone)
+        - [With an application server](#with-an-application-server)
     - [Debugging](#debugging)
     - [Integration Tests](#integration-tests)
-- [Structure (out of date)](#structure-out-of-date)
+- [Structure](#structure)
 - [How to use](#how-to-use)
     - [Extending Sybil](#extending-sybil)
 
@@ -36,6 +38,8 @@ This project is under heavy development and further documentation is forthcoming
 
 To run or deploy the server you need `bricks.json`, `ledstrips.json`, `relays.json` and `jenkins.json` in
 `/home/sybil-config/`, and `jenkinsservers.json` in `/home/sybil/`.  
+The locations of these configuration files can be configured in `src/main/resources/config.properties`.  
+
 Note that all the names used in the configuration files *must* be lowercase.
 
 ### Running
@@ -45,6 +49,8 @@ To run the server:
 `gradlew appRun`
 
 ### Deployment
+
+#### Standalone
 
 Run
 
@@ -67,7 +73,7 @@ to restart the server or
 
 to stop the server.
 
-**Alternatively**
+#### With an application server
 
 Run 
 
@@ -96,14 +102,18 @@ Integration tests require [TFStubserver](https://github.com/PlayWithIt/TFStubser
 and (the \*nix commands) `lsof` and `kill`.  
 Run them with `gradlew integTest`.
 
+If any of the tests fail with a `NullPointerException`, try running the tests again, it should eventually work.  
+This is a known bug.
+
 Integration tests are probably \*nix specific right now.  
 TODO: Make integration tests cross-platform.
 
-## Structure (out of date)
+## Structure
     src/
     +-docs/                             Documentation sources.
     | +-api/                            Source for the API documentation.
-    |
+    | +-configfiles/                    Simplified schemas for the config files.
+    | +-staticwebsite/                  Sources of the sybil website.
     +-integTest/                        Integration tests.
     +-test/                             Unit tests.
     +-main/                             Main.
@@ -112,28 +122,45 @@ TODO: Make integration tests cross-platform.
       |   +-api/                        Controllers for the REST API.
       |   | +-resources/                API Resources, wrappers around other objects.
       |   +-common/                     Common modules.
+      |   | +-jenkins/                  JenkinsService-specific modules
+      |   |   +-JenkinsConfig           Saves the configured Jenkins servers & jobs.
+      |   |   +-JenkinsJob              Object for a single returned Jenkins job.
+      |   |   +-JenkinsProperties       Object for Jenkins jobs returned from Jenkins API.
       |   | +-Bricklet                  Interface all Bricklets inherit from. 
       |   | +-BrickletRegistry          Interface all registries for bricklets inherit from.
       |   | +-BrickRegistry             Registers Tinkerforge bricks & their connections.
+      |   | +-Listener                  Listeners for Tinkerforge callbacks.
       |   +-config/                     Configuration files.
+      |   | +-ConfigLoader              Loads configuration from JSON files.
       |   | +-Neo4jConfig               Database configuration.
       |   | +-SpringConfig              Spring configuration.
+      |   | +-StartupLoader             Pulls up ConfigLoader at startup.
       |   +-database/                   Database interfaces.
-      |   | +-BrickRepository           Interface for Tinkerforge Bricks.
-      |   | +-OutputLEDStripRepository  Interface for LED Strips.
+      |   | +-BrickRepository           DB-Interface for Tinkerforge Bricks.
+      |   | +-OutputLEDStripRepository  DB-Interface for LED Strips 
+      |   | +-OutputRelayRepository     DB-Interface for Relays.
       |   +-domain/                     Domain classes.
       |   | +-BrickDomain               Domain for Tinkerforge Bricks.
       |   | +-OutputLEDStripDomain      Domain for LED Strips, inherits from BrickletDomain.
+      |   | +-OutputRelayDomain         Domain for Relays, inherits from BrickletDomain.
       |   +-in/                         Inputs.
+      |   | +-JenkinsService            Pulls Jenkins servers and feeds statuses to LEDs.
       |   | +-Status                    Enum for statuses (OKAY, WARNING & CRITICAL)
       |   | +-StatusInformation         Status with additional information.       
       |   +-out/                        Outputs.
-      |     +-Color                     Color object, for LEDs.
-      |     +-OutputLEDStrip            LED Strip object, communicates with LEDs.
-      |     +-OutputLEDStripRegistry    Provides OutputLEDStrip objects.
-      |     +-SingleStatusOnLEDStrip    Display a single statusInformation on a LED Strip.
-      |     +-SingleStatusOutput        Interface for displaying a single status.
-      |     +-Sprite1D                  Sprite object, for LED Strips.
+      |   | +-Color                     Color object, for LEDs.
+      |   | +-EnumRelay                 Relay helper Enum.
+      |   | +-OutputLEDStrip            LED Strip object, communicates with LEDs.
+      |   | +-OutputLEDStripRegistry    Provides OutputLEDStrip objects.
+      |   | +-OutputRelay               Relay object, communicates with Relay bricklets.
+      |   | +-OutputRelayRegistry       Provides OutputRelay objects.
+      |   | +-SingleStatusOnLEDStrip    Display a single statusInformation on a LED Strip.
+      |   | +-SingleStatusOn…Registry   Provides SingleStatusOnLEDStrip objects.
+      |   | +-SingleStatusOutput        Interface for displaying a single status.
+      |   | +-Sprite1D                  Sprite object, for LED Strips.
+      |   +-webconfig/                  Web app configuration.
+      |     +-ApiWebAppInitializer      Initializes the API web app.
+      |     +-WebConfig                 Configures the web app.
       +-resources/                      Resources.
         +-logback.xml                   Configures the logback logging engine.
         +-config.properties             Contains the path to the config files.
