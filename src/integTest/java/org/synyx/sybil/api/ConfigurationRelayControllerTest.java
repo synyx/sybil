@@ -76,9 +76,9 @@ public class ConfigurationRelayControllerTest {
 
         configLoader.loadConfig();
 
-        stubOne = outputRelayRegistry.get(outputRelayRepository.findByName("stubone"));
-        stubTwo = outputRelayRegistry.get(outputRelayRepository.findByName("stubtwo"));
-        stubThree = outputRelayRegistry.get(outputRelayRepository.findByName("stubthree"));
+        stubOne = outputRelayRegistry.get(outputRelayRepository.findByName("relayone"));
+        stubTwo = outputRelayRegistry.get(outputRelayRepository.findByName("relaytwo"));
+        stubThree = outputRelayRegistry.get(outputRelayRepository.findByName("relaythree"));
 
         stubOne.setStates(false, false);
         stubTwo.setStates(false, false);
@@ -97,23 +97,23 @@ public class ConfigurationRelayControllerTest {
             .andExpect(jsonPath("$.links[0].rel", is("self")))
             .andExpect(jsonPath("$.links[0].href", endsWith("/configuration/relays")))
             .andExpect(jsonPath("$.content", hasSize(3)))
-            .andExpect(jsonPath("$.content[*].name", containsInAnyOrder("stubone", "stubtwo", "stubthree")))
+            .andExpect(jsonPath("$.content[*].name", containsInAnyOrder("relayone", "relaytwo", "relaythree")))
             .andExpect(jsonPath("$.content[*].uid", containsInAnyOrder("xxx", "yyy", "zzz")))
             .andExpect(jsonPath("$.content[*].brick.name", containsInAnyOrder("stubone", "stubtwo", "stubthree")))
             .andExpect(jsonPath("$.content[*].brick.hostname", contains("localhost", "localhost", "localhost")))
             .andExpect(jsonPath("$.content[*].brick.port", containsInAnyOrder(14223, 14224, 14225)))
-            .andExpect(jsonPath("$.content[0].links[0].href", containsString("/configuration/relays/stub")))
-            .andExpect(jsonPath("$.content[1].links[0].href", containsString("/configuration/relays/stub")))
-            .andExpect(jsonPath("$.content[2].links[0].href", containsString("/configuration/relays/stub")))
+            .andExpect(jsonPath("$.content[0].links[0].href", containsString("/configuration/relays/relay")))
+            .andExpect(jsonPath("$.content[1].links[0].href", containsString("/configuration/relays/relay")))
+            .andExpect(jsonPath("$.content[2].links[0].href", containsString("/configuration/relays/relay")))
             .andExpect(jsonPath("$.content[*].relay1", containsInAnyOrder(false, false, false)))
             .andExpect(jsonPath("$.content[*].relay2", containsInAnyOrder(false, false, false)));
 
-        mockMvc.perform(get("/configuration/relays/stubone/"))
+        mockMvc.perform(get("/configuration/relays/relayone/"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.links", hasSize(1)))
             .andExpect(jsonPath("$.links[0].rel", is("self")))
-            .andExpect(jsonPath("$.links[0].href", endsWith("/configuration/relays/stubone")))
-            .andExpect(jsonPath("$.name", is("stubone")))
+            .andExpect(jsonPath("$.links[0].href", endsWith("/configuration/relays/relayone")))
+            .andExpect(jsonPath("$.name", is("relayone")))
             .andExpect(jsonPath("$.uid", is("zzz")))
             .andExpect(jsonPath("$.brick.name", is("stubone")))
             .andExpect(jsonPath("$.brick.hostname", is("localhost")))
@@ -123,21 +123,21 @@ public class ConfigurationRelayControllerTest {
 
         stubOne.setState(EnumRelay.ONE, true);
 
-        mockMvc.perform(get("/configuration/relays/stubone/"))
+        mockMvc.perform(get("/configuration/relays/relayone/"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.relay1", is(true)))
             .andExpect(jsonPath("$.relay2", is(false)));
 
         stubOne.setState(EnumRelay.TWO, true);
 
-        mockMvc.perform(get("/configuration/relays/stubone/"))
+        mockMvc.perform(get("/configuration/relays/relayone/"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.relay1", is(true)))
             .andExpect(jsonPath("$.relay2", is(true)));
 
         stubOne.setStates(false, false);
 
-        mockMvc.perform(get("/configuration/relays/stubone/"))
+        mockMvc.perform(get("/configuration/relays/relayone/"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.relay1", is(false)))
             .andExpect(jsonPath("$.relay2", is(false)));
@@ -164,7 +164,7 @@ public class ConfigurationRelayControllerTest {
         PatchResource patchResource = new PatchResource();
         patchResource.setPatches(patches);
 
-        mockMvc.perform(patch("/configuration/relays/stubone").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/relays/relayone").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.relay1", is(true)))
@@ -182,7 +182,7 @@ public class ConfigurationRelayControllerTest {
 
         patchResource.setPatches(patches);
 
-        mockMvc.perform(patch("/configuration/relays/stubone").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/relays/relayone").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.relay1", is(true)))
@@ -201,7 +201,7 @@ public class ConfigurationRelayControllerTest {
 
         patchResource.setPatches(patches);
 
-        mockMvc.perform(patch("/configuration/relays/stubone").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/relays/relayone").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.relay1", is(false)))
@@ -215,7 +215,7 @@ public class ConfigurationRelayControllerTest {
 
         patchResource.setPatches(patches);
 
-        mockMvc.perform(patch("/configuration/relays/stubone").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/relays/relayone").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.relay1", is(true)))
@@ -229,7 +229,7 @@ public class ConfigurationRelayControllerTest {
 
         patchResource.setPatches(patches);
 
-        mockMvc.perform(patch("/configuration/relays/stubone").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/relays/relayone").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.relay1", is(true)))
@@ -243,7 +243,7 @@ public class ConfigurationRelayControllerTest {
 
         patchResource.setPatches(patches);
 
-        mockMvc.perform(patch("/configuration/relays/stubone").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/relays/relayone").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.relay1", is(false)))
@@ -269,14 +269,14 @@ public class ConfigurationRelayControllerTest {
             .andExpect(jsonPath("$.links[0].rel", is("self")))
             .andExpect(jsonPath("$.links[0].href", endsWith("/configuration/relays")))
             .andExpect(jsonPath("$.content", hasSize(3)))
-            .andExpect(jsonPath("$.content[*].name", containsInAnyOrder("stubone", "stubtwo", "stubthree")))
+            .andExpect(jsonPath("$.content[*].name", containsInAnyOrder("relayone", "relaytwo", "relaythree")))
             .andExpect(jsonPath("$.content[*].uid", containsInAnyOrder("xxx", "yyy", "zzz")))
             .andExpect(jsonPath("$.content[*].brick.name", containsInAnyOrder("stubone", "stubtwo", "stubthree")))
             .andExpect(jsonPath("$.content[*].brick.hostname", contains("localhost", "localhost", "localhost")))
             .andExpect(jsonPath("$.content[*].brick.port", containsInAnyOrder(14223, 14224, 14225)))
-            .andExpect(jsonPath("$.content[0].links[0].href", containsString("/configuration/relays/stub")))
-            .andExpect(jsonPath("$.content[1].links[0].href", containsString("/configuration/relays/stub")))
-            .andExpect(jsonPath("$.content[2].links[0].href", containsString("/configuration/relays/stub")))
+            .andExpect(jsonPath("$.content[0].links[0].href", containsString("/configuration/relays/relay")))
+            .andExpect(jsonPath("$.content[1].links[0].href", containsString("/configuration/relays/relay")))
+            .andExpect(jsonPath("$.content[2].links[0].href", containsString("/configuration/relays/relay")))
             .andExpect(jsonPath("$.content[*].relay1", containsInAnyOrder(true, true, true)))
             .andExpect(jsonPath("$.content[*].relay2", containsInAnyOrder(true, true, true)));
     }

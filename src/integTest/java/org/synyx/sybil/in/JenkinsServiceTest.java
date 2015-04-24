@@ -66,9 +66,9 @@ public class JenkinsServiceTest {
 
         configLoader.loadConfig();
 
-        stubOne = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubone"));
-        stubTwo = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubtwo"));
-        stubThree = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubthree"));
+        stubOne = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledone"));
+        stubTwo = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledtwo"));
+        stubThree = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledthree"));
 
         stubOne.setFill(Color.BLACK);
         stubTwo.setFill(Color.BLACK);

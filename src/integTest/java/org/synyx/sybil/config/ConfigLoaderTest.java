@@ -10,9 +10,6 @@ import org.neo4j.graphdb.Transaction;
 
 import org.neo4j.helpers.collection.IteratorUtil;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.test.context.ContextConfiguration;
@@ -58,8 +55,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { DevSpringConfig.class })
 public class ConfigLoaderTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigLoaderTest.class);
 
     @Autowired
     ConfigLoader configLoader;
@@ -150,19 +145,19 @@ public class ConfigLoaderTest {
 
         for (OutputLEDStripDomain ledstrip : ledstrips) {
             switch (ledstrip.getName()) {
-                case "stubone":
+                case "ledone":
                     assertThat(ledstrip.getUid(), is("abc"));
                     assertThat(ledstrip.getBrickDomain(), is(brickRepository.findByName("stubone")));
                     assertThat(ledstrip.getLength(), is(5));
                     break;
 
-                case "stubtwo":
+                case "ledtwo":
                     assertThat(ledstrip.getUid(), is("def"));
                     assertThat(ledstrip.getBrickDomain(), is(brickRepository.findByName("stubtwo")));
                     assertThat(ledstrip.getLength(), is(10));
                     break;
 
-                case "stubthree":
+                case "ledthree":
                     assertThat(ledstrip.getUid(), is("ghi"));
                     assertThat(ledstrip.getBrickDomain(), is(brickRepository.findByName("stubthree")));
                     assertThat(ledstrip.getLength(), is(20));
@@ -197,21 +192,21 @@ public class ConfigLoaderTest {
                 case "http://localhost:8082":
                     assertThat(jobs.get("job").get(0),
                         is(singleStatusOnLEDStripRegistry.get(
-                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubone")))));
+                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledone")))));
                     break;
 
                 case "http://localhost:8083":
                 case "http://localhost:8084":
                     assertThat(jobs.get("job").get(0),
                         is(singleStatusOnLEDStripRegistry.get(
-                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubtwo")))));
+                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledtwo")))));
                     break;
 
                 case "http://localhost:8085":
                 case "http://localhost:8086":
                     assertThat(jobs.get("job").get(0),
                         is(singleStatusOnLEDStripRegistry.get(
-                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubthree")))));
+                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledthree")))));
                     break;
             }
         }
@@ -251,21 +246,21 @@ public class ConfigLoaderTest {
                 case "http://localhost:8082":
                     assertThat(jobs.get("job").get(0),
                         is(singleStatusOnLEDStripRegistry.get(
-                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubone")))));
+                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledone")))));
                     break;
 
                 case "http://localhost:8083":
                 case "http://localhost:8084":
                     assertThat(jobs.get("job").get(0),
                         is(singleStatusOnLEDStripRegistry.get(
-                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubtwo")))));
+                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledtwo")))));
                     break;
 
                 case "http://localhost:8085":
                 case "http://localhost:8086":
                     assertThat(jobs.get("job").get(0),
                         is(singleStatusOnLEDStripRegistry.get(
-                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubthree")))));
+                                outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledthree")))));
                     break;
             }
         }

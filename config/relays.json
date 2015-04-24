@@ -1,16 +1,16 @@
 [
   {
-    "name": "stubone",
+    "name": "relayone",
     "uid": "zzz",
     "brick": "stubone"
   },
   {
-    "name": "stubtwo",
+    "name": "relaytwo",
     "uid": "yyy",
     "brick": "stubtwo"
   },
   {
-    "name": "stubthree",
+    "name": "relaythree",
     "uid": "xxx",
     "brick": "stubthree"
   }

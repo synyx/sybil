@@ -1,6 +1,6 @@
 [
   {
-    "name": "stubone",
+    "name": "ledone",
     "uid": "abc", 
     "length": 5,
     "brick": "stubone",
@@ -9,13 +9,13 @@
     "criticalRed": 0, "criticalGreen": 0, "criticalBlue": 127
   },
   {
-    "name": "stubtwo",
+    "name": "ledtwo",
     "uid": "def",
     "length": 10,
     "brick": "stubtwo"
   },
   {
-    "name": "stubthree",
+    "name": "ledthree",
     "uid": "ghi",
     "length": 20,
     "brick": "stubthree"

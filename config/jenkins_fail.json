@@ -3,18 +3,18 @@
     {"name": "job", "brokenstring": "something"}
   ],
     "http://localhost:8082": [
-    {"name": "job", "ledstrip": "stubone"}
+    {"name": "job", "ledstrip": "ledone"}
   ],
     "http://localhost:8083": [
-    {"name": "job", "ledstrip": "stubtwo"}
+    {"name": "job", "ledstrip": "ledtwo"}
   ],
     "http://localhost:8084": [
-    {"name": "job", "ledstrip": "stubtwo"}
+    {"name": "job", "ledstrip": "ledtwo"}
   ],
     "http://localhost:8085": [
-    {"name": "job", "ledstrip": "stubthree"}
+    {"name": "job", "ledstrip": "ledthree"}
   ],
     "http://localhost:8086": [
-    {"name": "job", "ledstrip": "stubthree"}
+    {"name": "job", "ledstrip": "ledthree"}
   ]
 }

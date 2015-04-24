@@ -30,8 +30,10 @@ import java.io.File;
 import java.io.IOException;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -76,6 +78,9 @@ public class ConfigLoader {
     // Map saving the custom status colors for SingleStatusOnLEDStrips
     private Map<String, Map<String, Color>> customStatusColors = new HashMap<>();
 
+    // Set saving all the names, making sure, they are all unique
+    private Set<String> brickletNames = new HashSet<>();
+
     /**
      * Instantiates a new JSON config loader.
      *
@@ -105,6 +110,8 @@ public class ConfigLoader {
      * Load the complete configuration from JSON files.
      */
     public void loadConfig() {
+
+        brickletNames.clear();
 
         try {
             loadBricksConfig();
@@ -188,6 +195,16 @@ public class ConfigLoader {
         for (Map ledstrip : ledstrips) { // ... deserialize the data manually
 
             String name = ledstrip.get("name").toString();
+
+            if (brickletNames.contains(name)) {
+                LOG.error("Failed to load config for LED Strip {}: Name is not unique.", name);
+                HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
+
+                break;
+            }
+
+            brickletNames.add(name);
+
             String uid = ledstrip.get("uid").toString();
 
             try {
@@ -256,6 +273,16 @@ public class ConfigLoader {
         for (Map relay : relays) { // ... deserialize the data manually
 
             String name = relay.get("name").toString();
+
+            if (brickletNames.contains(name)) {
+                LOG.error("Failed to load config for Relay {}: Name is not unique.", name);
+                HealthController.setHealth(Status.WARNING, "loadRelayConfig");
+
+                break;
+            }
+
+            brickletNames.add(name);
+
             String uid = relay.get("uid").toString();
 
             BrickDomain brick = brickRepository.findByName(relay.get("brick").toString()); // fetch the corresponding bricks from the repo

@@ -74,9 +74,9 @@ public class ConfigurationLEDStripControllerTest {
 
         configLoader.loadConfig();
 
-        stubOne = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubone"));
-        stubTwo = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubtwo"));
-        stubThree = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("stubthree"));
+        stubOne = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledone"));
+        stubTwo = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledtwo"));
+        stubThree = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledthree"));
 
         stubOne.setFill(Color.BLACK);
         stubTwo.setFill(Color.BLACK);
@@ -99,24 +99,24 @@ public class ConfigurationLEDStripControllerTest {
             .andExpect(jsonPath("$.links[0].rel", is("self")))
             .andExpect(jsonPath("$.links[0].href", endsWith("/configuration/ledstrips")))
             .andExpect(jsonPath("$.content", hasSize(3)))
-            .andExpect(jsonPath("$.content[*].name", containsInAnyOrder("stubone", "stubtwo", "stubthree")))
+            .andExpect(jsonPath("$.content[*].name", containsInAnyOrder("ledone", "ledtwo", "ledthree")))
             .andExpect(jsonPath("$.content[*].uid", containsInAnyOrder("def", "abc", "ghi")))
             .andExpect(jsonPath("$.content[*].length", containsInAnyOrder(5, 10, 20)))
             .andExpect(jsonPath("$.content[*].brick.name", containsInAnyOrder("stubone", "stubtwo", "stubthree")))
             .andExpect(jsonPath("$.content[*].brick.hostname", contains("localhost", "localhost", "localhost")))
             .andExpect(jsonPath("$.content[*].brick.port", containsInAnyOrder(14223, 14224, 14225)))
-            .andExpect(jsonPath("$.content[0].links[0].href", containsString("/configuration/ledstrips/stub")))
-            .andExpect(jsonPath("$.content[1].links[0].href", containsString("/configuration/ledstrips/stub")))
-            .andExpect(jsonPath("$.content[2].links[0].href", containsString("/configuration/ledstrips/stub")));
+            .andExpect(jsonPath("$.content[0].links[0].href", containsString("/configuration/ledstrips/led")))
+            .andExpect(jsonPath("$.content[1].links[0].href", containsString("/configuration/ledstrips/led")))
+            .andExpect(jsonPath("$.content[2].links[0].href", containsString("/configuration/ledstrips/led")));
 
-        mockMvc.perform(get("/configuration/ledstrips/stubone/"))
+        mockMvc.perform(get("/configuration/ledstrips/ledone/"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.links", hasSize(2)))
             .andExpect(jsonPath("$.links[0].rel", is("self")))
-            .andExpect(jsonPath("$.links[0].href", endsWith("/configuration/ledstrips/stubone")))
+            .andExpect(jsonPath("$.links[0].href", endsWith("/configuration/ledstrips/ledone")))
             .andExpect(jsonPath("$.links[1].rel", is("display")))
-            .andExpect(jsonPath("$.links[1].href", endsWith("/configuration/ledstrips/stubone/display")))
-            .andExpect(jsonPath("$.name", is("stubone")))
+            .andExpect(jsonPath("$.links[1].href", endsWith("/configuration/ledstrips/ledone/display")))
+            .andExpect(jsonPath("$.name", is("ledone")))
             .andExpect(jsonPath("$.uid", is("abc")))
             .andExpect(jsonPath("$.length", is(5)))
             .andExpect(jsonPath("$.brick.name", is("stubone")))
@@ -130,7 +130,7 @@ public class ConfigurationLEDStripControllerTest {
 
         MockMvc mockMvc = standaloneSetup(configurationLEDStripController).build();
 
-        mockMvc.perform(get("/configuration/ledstrips/stubone/display/"))
+        mockMvc.perform(get("/configuration/ledstrips/ledone/display/"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.brightness", is(1.0)))
             .andExpect(jsonPath("$.pixels", hasSize(5)))
@@ -142,7 +142,7 @@ public class ConfigurationLEDStripControllerTest {
         stubOne.setBrightness(.3);
         stubOne.updateDisplay();
 
-        mockMvc.perform(get("/configuration/ledstrips/stubone/display/"))
+        mockMvc.perform(get("/configuration/ledstrips/ledone/display/"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.brightness", is(0.3)))
             .andExpect(jsonPath("$.pixels", hasSize(5)))
@@ -167,7 +167,7 @@ public class ConfigurationLEDStripControllerTest {
 
         stubOne.updateDisplay();
 
-        mockMvc.perform(get("/configuration/ledstrips/stubone/display/"))
+        mockMvc.perform(get("/configuration/ledstrips/ledone/display/"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.brightness", is(0.2)))
             .andExpect(jsonPath("$.pixels", hasSize(5)))
@@ -210,7 +210,7 @@ public class ConfigurationLEDStripControllerTest {
         patchResource.setPatches(patches);
 
         // perform patch
-        mockMvc.perform(patch("/configuration/ledstrips/stubone/display/").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/ledstrips/ledone/display/").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.brightness", is(0.4)))
@@ -237,7 +237,7 @@ public class ConfigurationLEDStripControllerTest {
         patches.add(finalPatch);
 
         // perform patch
-        mockMvc.perform(patch("/configuration/ledstrips/stubone/display/").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/ledstrips/ledone/display/").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.pixels", hasSize(5)))
@@ -264,7 +264,7 @@ public class ConfigurationLEDStripControllerTest {
         patches.add(finalPatch);
 
         // perform patch
-        mockMvc.perform(patch("/configuration/ledstrips/stubone/display/").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/ledstrips/ledone/display/").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.pixels", hasSize(5)))
@@ -288,7 +288,7 @@ public class ConfigurationLEDStripControllerTest {
         patches.add(finalPatch);
 
         // perform patch
-        mockMvc.perform(patch("/configuration/ledstrips/stubone/display/").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/ledstrips/ledone/display/").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.pixels", hasSize(5)))
@@ -312,7 +312,7 @@ public class ConfigurationLEDStripControllerTest {
         patches.add(finalPatch);
 
         // perform patch
-        mockMvc.perform(patch("/configuration/ledstrips/stubone/display/").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(patch("/configuration/ledstrips/ledone/display/").contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsBytes(patchResource)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.pixels", hasSize(5)))
