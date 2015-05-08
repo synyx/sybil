@@ -32,7 +32,7 @@ import org.synyx.sybil.out.SingleStatusOnLEDStripRegistry;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -351,10 +351,23 @@ public class ConfigLoader {
 
             BrickDomain brick = brickRepository.findByName(sensor.get("brick").toString()); // fetch the corresponding bricks from the repo
 
-            String[] outputs = (String[]) sensor.get("outputs"); // TODO: FIX THIS
+            LOG.info(sensor.get("outputs").getClass().toString());
+
+            List<String> outputs = new ArrayList<>();
+
+            if (sensor.get("outputs") instanceof ArrayList) {
+                ArrayList outputsList = (ArrayList) sensor.get("outputs");
+
+                for (Object output : outputsList) {
+                    outputs.add(output.toString());
+                }
+            } else {
+                outputs = null;
+            }
 
             if (brick != null) { // if there was corresponding brick found in the repo...
-                inputSensorRepository.save(new InputSensorDomain(name, uid, type, Arrays.asList(outputs), brick)); // ... save the LED Strip.
+
+                inputSensorRepository.save(new InputSensorDomain(name, uid, type, outputs, brick)); // ... save the LED Strip.
             } else { // if not...
                 LOG.error("Brick {} does not exist.", sensor.get("brick").toString()); // ... error!
                 HealthController.setHealth(Status.WARNING, "loadRelayConfig");
