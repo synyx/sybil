@@ -29,9 +29,9 @@ public class InputSensorDomain {
 
     private String uid;
 
-    private String type;
+    private SensorType type;
 
-    private List<String> Outputs;
+    private List<String> outputs;
 
     @Fetch
     @RelatedTo(type = "IS_PART_OF")
@@ -42,12 +42,12 @@ public class InputSensorDomain {
     }
 
 
-    public InputSensorDomain(String name, String uid, String type, List<String> outputs, BrickDomain brickDomain) {
+    public InputSensorDomain(String name, String uid, SensorType type, List<String> outputs, BrickDomain brickDomain) {
 
         this.name = name;
         this.uid = uid;
         this.type = type;
-        Outputs = outputs;
+        this.outputs = outputs;
         this.brickDomain = brickDomain;
     }
 
@@ -63,7 +63,7 @@ public class InputSensorDomain {
     }
 
 
-    public String getType() {
+    public SensorType getType() {
 
         return type;
     }
@@ -71,7 +71,7 @@ public class InputSensorDomain {
 
     public List<String> getOutputs() {
 
-        return Outputs;
+        return outputs;
     }
 
 
@@ -94,7 +94,7 @@ public class InputSensorDomain {
 
         InputSensorDomain that = (InputSensorDomain) o;
 
-        return Outputs.equals(that.Outputs) && brickDomain.equals(that.brickDomain) && id.equals(that.id)
+        return outputs.equals(that.outputs) && brickDomain.equals(that.brickDomain) && id.equals(that.id)
             && name.equals(that.name) && type.equals(that.type) && uid.equals(that.uid);
     }
 
@@ -106,7 +106,7 @@ public class InputSensorDomain {
         result = 31 * result + name.hashCode();
         result = 31 * result + uid.hashCode();
         result = 31 * result + type.hashCode();
-        result = 31 * result + Outputs.hashCode();
+        result = 31 * result + outputs.hashCode();
         result = 31 * result + brickDomain.hashCode();
 
         return result;

@@ -1,0 +1,13 @@
+[
+  {
+    "name": "lsdevkit",
+    "uid": "m3b",
+    "type": "luminance",
+    "brick": "stubthree",
+    "outputs": [
+      "ledone",
+      "ledtwo",
+      "ledthree"
+    ]
+  }
+]

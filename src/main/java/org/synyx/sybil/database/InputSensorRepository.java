@@ -5,6 +5,7 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.stereotype.Repository;
 
 import org.synyx.sybil.domain.InputSensorDomain;
+import org.synyx.sybil.domain.SensorType;
 
 
 /**
@@ -17,4 +18,7 @@ import org.synyx.sybil.domain.InputSensorDomain;
 public interface InputSensorRepository extends GraphRepository<InputSensorDomain> {
 
     InputSensorDomain findByName(String name); // Spring builds a self-explanatory method out of this. MAGIC!
+
+
+    InputSensorDomain findByType(SensorType Type);
 }

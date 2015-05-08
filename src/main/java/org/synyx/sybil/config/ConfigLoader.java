@@ -15,11 +15,14 @@ import org.springframework.stereotype.Component;
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.common.jenkins.JenkinsConfig;
 import org.synyx.sybil.database.BrickRepository;
+import org.synyx.sybil.database.InputSensorRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
 import org.synyx.sybil.database.OutputRelayRepository;
 import org.synyx.sybil.domain.BrickDomain;
+import org.synyx.sybil.domain.InputSensorDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.domain.OutputRelayDomain;
+import org.synyx.sybil.domain.SensorType;
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.out.Color;
 import org.synyx.sybil.out.OutputLEDStrip;
@@ -29,6 +32,7 @@ import org.synyx.sybil.out.SingleStatusOnLEDStripRegistry;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,6 +76,9 @@ public class ConfigLoader {
     // The Repository to save OutputRelay configuration data
     private OutputRelayRepository outputRelayRepository;
 
+    // The Repository to save InputSensor configuration data
+    private InputSensorRepository inputSensorRepository;
+
     // The object that saves the Jenkins servers and job configurations
     private JenkinsConfig jenkinsConfig;
 
@@ -90,11 +97,14 @@ public class ConfigLoader {
      * @param  outputLEDStripRegistry  the OutputLEDStrip registry
      * @param  jenkinsConfig  the jenkins configuration
      * @param  singleStatusOnLEDStripRegistry  the SingleStatusOnLEDStrip registry
+     * @param  outputRelayRepository  the output relay repository
+     * @param  inputSensorRepository  the input sensor repository
      */
     @Autowired
     public ConfigLoader(BrickRepository brickRepository, OutputLEDStripRepository outputLEDStripRepository,
         Environment env, OutputLEDStripRegistry outputLEDStripRegistry, JenkinsConfig jenkinsConfig,
-        SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, OutputRelayRepository outputRelayRepository) {
+        SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, OutputRelayRepository outputRelayRepository,
+        InputSensorRepository inputSensorRepository) {
 
         this.brickRepository = brickRepository;
         this.outputLEDStripRepository = outputLEDStripRepository;
@@ -104,6 +114,7 @@ public class ConfigLoader {
         this.jenkinsConfig = jenkinsConfig;
         this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
         this.outputRelayRepository = outputRelayRepository;
+        this.inputSensorRepository = inputSensorRepository;
     }
 
     /**
@@ -135,6 +146,15 @@ public class ConfigLoader {
             } catch (IOException e) {
                 LOG.error("Error loading relays.json: {}", e.toString());
                 HealthController.setHealth(Status.CRITICAL, "loadRelayConfig");
+            }
+        }
+
+        if (HealthController.getHealth() == Status.OKAY) {
+            try {
+                loadSensorConfig();
+            } catch (IOException e) {
+                LOG.error("Error loading sensors.json: {}", e.toString());
+                HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");
             }
         }
 
@@ -297,6 +317,57 @@ public class ConfigLoader {
     }
 
 
+    /**
+     * Load Sensor configuration.
+     *
+     * @throws  IOException  the iO exception
+     */
+    public void loadSensorConfig() throws IOException {
+
+        LOG.info("Loading Sensor configuration");
+
+        List<Map<String, Object>> sensors = mapper.readValue(new File(configDir + "sensors.json"),
+                new TypeReference<List<Map<String, Object>>>() {
+                });
+
+        inputSensorRepository.deleteAll();
+
+        for (Map sensor : sensors) { // ... deserialize the data manually
+
+            String name = sensor.get("name").toString();
+
+            if (brickletNames.contains(name)) {
+                LOG.error("Failed to load config for Sensor {}: Name is not unique.", name);
+                HealthController.setHealth(Status.WARNING, "loadSensorConfig");
+
+                break;
+            }
+
+            brickletNames.add(name);
+
+            String uid = sensor.get("uid").toString();
+
+            SensorType type = SensorType.valueOf(sensor.get("type").toString().toUpperCase());
+
+            BrickDomain brick = brickRepository.findByName(sensor.get("brick").toString()); // fetch the corresponding bricks from the repo
+
+            String[] outputs = (String[]) sensor.get("outputs"); // TODO: FIX THIS
+
+            if (brick != null) { // if there was corresponding brick found in the repo...
+                inputSensorRepository.save(new InputSensorDomain(name, uid, type, Arrays.asList(outputs), brick)); // ... save the LED Strip.
+            } else { // if not...
+                LOG.error("Brick {} does not exist.", sensor.get("brick").toString()); // ... error!
+                HealthController.setHealth(Status.WARNING, "loadRelayConfig");
+            }
+        }
+    }
+
+
+    /**
+     * Load jenkins servers.
+     *
+     * @throws  IOException  the iO exception
+     */
     public void loadJenkinsServers() throws IOException {
 
         LOG.info("Loading Jenkins servers");
@@ -312,6 +383,11 @@ public class ConfigLoader {
     }
 
 
+    /**
+     * Load jenkins config.
+     *
+     * @throws  IOException  the iO exception
+     */
     public void loadJenkinsConfig() throws IOException {
 
         loadJenkinsConfig("jenkins.json");
@@ -320,6 +396,8 @@ public class ConfigLoader {
 
     /**
      * Load jenkins config.
+     *
+     * @param  file  the file
      *
      * @throws  IOException  the iO exception
      */
