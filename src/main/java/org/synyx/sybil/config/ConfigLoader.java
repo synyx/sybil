@@ -22,7 +22,7 @@ import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.InputSensorDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.domain.OutputRelayDomain;
-import org.synyx.sybil.domain.SensorType;
+import org.synyx.sybil.in.SensorType;
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.out.Color;
 import org.synyx.sybil.out.OutputLEDStrip;

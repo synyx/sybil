@@ -5,7 +5,7 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.stereotype.Repository;
 
 import org.synyx.sybil.domain.InputSensorDomain;
-import org.synyx.sybil.domain.SensorType;
+import org.synyx.sybil.in.SensorType;
 
 
 /**

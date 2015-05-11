@@ -27,6 +27,7 @@ import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.InputSensorDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.domain.OutputRelayDomain;
+import org.synyx.sybil.in.SensorType;
 import org.synyx.sybil.out.OutputLEDStripRegistry;
 import org.synyx.sybil.out.SingleStatusOnLEDStrip;
 import org.synyx.sybil.out.SingleStatusOnLEDStripRegistry;
@@ -231,6 +232,7 @@ public class ConfigLoaderTest {
         for (InputSensorDomain sensor : sensors) {
             assertThat(sensor.getName(), is("lsdevkit"));
             assertThat(sensor.getUid(), is("m3b"));
+            assertThat(sensor.getType(), is(SensorType.LUMINANCE));
             assertThat(sensor.getBrickDomain(), is(brickRepository.findByName("stubthree")));
             assertThat(sensor.getOutputs(), containsInAnyOrder("ledone", "ledtwo", "ledthree"));
         }

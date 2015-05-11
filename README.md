@@ -151,14 +151,17 @@ TODO: Make integration tests cross-platform.
       | | +-StartupLoader               Pulls up ConfigLoader at startup.
       | +-database/                     Database interfaces.
       | | +-BrickRepository             DB-Interface for Tinkerforge Bricks.
+      | | +-InputSensorRepository       DB-Interface for sensors.
       | | +-OutputLEDStripRepository    DB-Interface for LED Strips 
       | | +-OutputRelayRepository       DB-Interface for Relays.
       | +-domain/                       Domain classes.
       | | +-BrickDomain                 Domain for Tinkerforge Bricks.
-      | | +-OutputLEDStripDomain        Domain for LED Strips, inherits from BrickletDomain.
-      | | +-OutputRelayDomain           Domain for Relays, inherits from BrickletDomain.
+      | | +-InputSensorDomain           Domain for sensors
+      | | +-OutputLEDStripDomain        Domain for LED Strips
+      | | +-OutputRelayDomain           Domain for Relays
       | +-in/                           Inputs.
       | | +-JenkinsService              Pulls Jenkins servers and feeds statuses to LEDs.
+      | | +-SensorType                  Enum for sensor types (LUMINANCE, MOTION)
       | | +-Status                      Enum for statuses (OKAY, WARNING & CRITICAL)
       | | +-StatusInformation           Status with additional information.       
       | +-out/                          Outputs.

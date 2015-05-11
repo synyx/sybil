@@ -1,4 +1,4 @@
-package org.synyx.sybil.domain;
+package org.synyx.sybil.in;
 
 /**
  * SensorType.
