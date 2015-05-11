@@ -25,6 +25,8 @@ public class BrickDomain {
 
     private int port = 4223; // default port
 
+    private String uid;
+
     /**
      * DO NOT CALL THIS! Exists only to placate Neo4j.
      */
@@ -36,14 +38,16 @@ public class BrickDomain {
      * Instantiates a new Brick domain.
      *
      * @param  hostname  The hostname
+     * @param  uid  The uid
      * @param  port  The port
      * @param  name  The name
      */
-    public BrickDomain(String hostname, int port, String name) {
+    public BrickDomain(String hostname, String uid, int port, String name) {
 
         this.name = name;
         this.hostname = hostname;
         this.port = port;
+        this.uid = uid;
     }
 
 
@@ -51,13 +55,15 @@ public class BrickDomain {
      * Instantiates a new Brick domain.
      *
      * @param  hostname  The hostname
+     * @param  uid  The uid
      * @param  port  The port (optional, defaults to 4223)
      */
-    public BrickDomain(String hostname, int port) {
+    public BrickDomain(String hostname, String uid, int port) {
 
         this.hostname = hostname;
         this.name = hostname;
         this.port = port;
+        this.uid = uid;
     }
 
 
@@ -65,41 +71,14 @@ public class BrickDomain {
      * Instantiates a new Brick domain.
      *
      * @param  hostname  The hostname
+     * @param  uid  The uid
      */
-    public BrickDomain(String hostname) {
+    public BrickDomain(String hostname, String uid) {
 
         this.hostname = hostname;
         this.name = hostname;
+        this.uid = uid;
     }
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        BrickDomain that = (BrickDomain) o;
-
-        return port == that.port && !(hostname != null ? !hostname.equals(that.hostname) : that.hostname != null)
-            && !(id != null ? !id.equals(that.id) : that.id != null);
-    }
-
-
-    @Override
-    public int hashCode() {
-
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (hostname != null ? hostname.hashCode() : 0);
-        result = 31 * result + port;
-
-        return result;
-    }
-
 
     /**
      * Gets the hostname of the brick.
@@ -131,5 +110,47 @@ public class BrickDomain {
     public String getName() {
 
         return name;
+    }
+
+
+    /**
+     * Gets uid.
+     *
+     * @return  the uid
+     */
+    public String getUid() {
+
+        return uid;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        BrickDomain that = (BrickDomain) o;
+
+        return port == that.port && hostname.equals(that.hostname) && id.equals(that.id) && name.equals(that.name)
+            && uid.equals(that.uid);
+    }
+
+
+    @Override
+    public int hashCode() {
+
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + hostname.hashCode();
+        result = 31 * result + port;
+        result = 31 * result + uid.hashCode();
+
+        return result;
     }
 }

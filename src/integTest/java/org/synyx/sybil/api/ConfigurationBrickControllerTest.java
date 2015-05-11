@@ -63,6 +63,7 @@ public class ConfigurationBrickControllerTest {
             .andExpect(jsonPath("$.content", hasSize(3)))
             .andExpect(jsonPath("$.content[*].name", containsInAnyOrder("stubone", "stubtwo", "stubthree")))
             .andExpect(jsonPath("$.content[*].hostname", containsInAnyOrder("localhost", "localhost", "localhost")))
+            .andExpect(jsonPath("$.content[*].uid", containsInAnyOrder("6dLj52", "im666", "123abc")))
             .andExpect(jsonPath("$.content[*].port", containsInAnyOrder(14223, 14224, 14225)))
             .andExpect(jsonPath("$.content[0].links[0].href", containsString("/configuration/bricks/stub")))
             .andExpect(jsonPath("$.content[1].links[0].href", containsString("/configuration/bricks/stub")))

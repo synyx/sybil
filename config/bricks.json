@@ -1,6 +1,6 @@
 [
-	{"name": "stubone", "hostname": "localhost", "port": 14223},
-	{"name": "stubtwo", "hostname": "localhost", "port": 14224},
-	{"name": "stubthree", "hostname": "localhost", "port": 14225}
+	{"name": "stubone", "hostname": "localhost", "uid": "6dLj52", "port": 14223},
+	{"name": "stubtwo", "hostname": "localhost", "uid": "im666", "port": 14224},
+	{"name": "stubthree", "hostname": "localhost", "uid": "123abc", "port": 14225}
 ]
 

@@ -84,6 +84,21 @@ public class BrickRegistry {
 
 
     /**
+     * Register a connection to a Tinkerforge Brick.
+     *
+     * @param  brickDomain  the Brick's domain object.
+     *
+     * @return  the iP connection
+     */
+    public IPConnection get(BrickDomain brickDomain) {
+
+        connect(brickDomain);
+
+        return ipConnections.get(brickDomain);
+    }
+
+
+    /**
      * Connect a brick and put it's connection into the HashMap.
      *
      * @param  brickDomain  The Domain of the Brick to be connected

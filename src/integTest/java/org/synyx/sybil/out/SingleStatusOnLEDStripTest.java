@@ -52,8 +52,8 @@ public class SingleStatusOnLEDStripTest {
     public void setup() {
 
         // define Bricks
-        BrickDomain test1 = new BrickDomain("localhost", 14223);
-        BrickDomain test2 = new BrickDomain("localhost", 14224);
+        BrickDomain test1 = new BrickDomain("localhost", "6dLj52", 14223);
+        BrickDomain test2 = new BrickDomain("localhost", "im666", 14224);
 
         // add them to the database
         brickRepository.save(test1);
