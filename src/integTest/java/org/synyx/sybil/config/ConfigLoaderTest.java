@@ -20,9 +20,13 @@ import org.synyx.sybil.api.ConfigurationController;
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.common.jenkins.JenkinsConfig;
 import org.synyx.sybil.database.BrickRepository;
+import org.synyx.sybil.database.InputSensorRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
+import org.synyx.sybil.database.OutputRelayRepository;
 import org.synyx.sybil.domain.BrickDomain;
+import org.synyx.sybil.domain.InputSensorDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
+import org.synyx.sybil.domain.OutputRelayDomain;
 import org.synyx.sybil.out.OutputLEDStripRegistry;
 import org.synyx.sybil.out.SingleStatusOnLEDStrip;
 import org.synyx.sybil.out.SingleStatusOnLEDStripRegistry;
@@ -33,6 +37,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import static org.hamcrest.core.Is.is;
 
@@ -70,6 +76,12 @@ public class ConfigLoaderTest {
 
     @Autowired
     OutputLEDStripRegistry outputLEDStripRegistry;
+
+    @Autowired
+    OutputRelayRepository outputRelayRepository;
+
+    @Autowired
+    InputSensorRepository inputSensorRepository;
 
     @Autowired
     SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
@@ -163,6 +175,64 @@ public class ConfigLoaderTest {
                     assertThat(ledstrip.getLength(), is(20));
                     break;
             }
+        }
+
+        /**
+         * Test loadRelayConfig
+         */
+        List<OutputRelayDomain> relays;
+
+        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
+
+            // get all Bricks from database and cast them into a list so that they're actually fetched
+            relays = new ArrayList<>(IteratorUtil.asCollection(outputRelayRepository.findAll()));
+
+            // end transaction
+            tx.success();
+        }
+
+        assertThat(relays.size(), is(3));
+
+        for (OutputRelayDomain relay : relays) {
+            switch (relay.getName()) {
+                case "relayone":
+                    assertThat(relay.getUid(), is("zzz"));
+                    assertThat(relay.getBrickDomain(), is(brickRepository.findByName("stubone")));
+                    break;
+
+                case "relaytwo":
+                    assertThat(relay.getUid(), is("yyy"));
+                    assertThat(relay.getBrickDomain(), is(brickRepository.findByName("stubtwo")));
+                    break;
+
+                case "relaythree":
+                    assertThat(relay.getUid(), is("xxx"));
+                    assertThat(relay.getBrickDomain(), is(brickRepository.findByName("stubthree")));
+                    break;
+            }
+        }
+
+        /**
+         * Test loadSensorConfig
+         */
+        List<InputSensorDomain> sensors;
+
+        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
+
+            // get all Bricks from database and cast them into a list so that they're actually fetched
+            sensors = new ArrayList<>(IteratorUtil.asCollection(inputSensorRepository.findAll()));
+
+            // end transaction
+            tx.success();
+        }
+
+        assertThat(sensors.size(), is(1));
+
+        for (InputSensorDomain sensor : sensors) {
+            assertThat(sensor.getName(), is("lsdevkit"));
+            assertThat(sensor.getUid(), is("m3b"));
+            assertThat(sensor.getBrickDomain(), is(brickRepository.findByName("stubthree")));
+            assertThat(sensor.getOutputs(), containsInAnyOrder("ledone", "ledtwo", "ledthree"));
         }
 
         /**

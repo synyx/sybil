@@ -361,8 +361,6 @@ public class ConfigLoader {
                 for (Object output : outputsList) {
                     outputs.add(output.toString());
                 }
-            } else {
-                outputs = null;
             }
 
             if (brick != null) { // if there was corresponding brick found in the repo...
