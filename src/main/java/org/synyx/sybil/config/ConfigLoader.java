@@ -115,6 +115,8 @@ public class ConfigLoader {
      * @param  singleStatusOnLEDStripRegistry  the SingleStatusOnLEDStrip registry
      * @param  outputRelayRepository  the output relay repository
      * @param  inputSensorRepository  the input sensor repository
+     * @param  graphDatabaseService  the graph database service
+     * @param  brickRegistry  the brick registry
      */
     @Autowired
     public ConfigLoader(BrickRepository brickRepository, OutputLEDStripRepository outputLEDStripRepository,
@@ -223,6 +225,12 @@ public class ConfigLoader {
     }
 
 
+    /**
+     * Reset all bricks.
+     *
+     * @throws  TimeoutException  the timeout exception
+     * @throws  NotConnectedException  the not connected exception
+     */
     public void resetBricks() throws TimeoutException, NotConnectedException {
 
         LOG.info("Resetting bricks");
