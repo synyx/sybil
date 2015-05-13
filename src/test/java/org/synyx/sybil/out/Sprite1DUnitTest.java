@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
-public class Sprite1DTest {
+public class Sprite1DUnitTest {
 
     @Test
     public void testSetFill() throws Exception {

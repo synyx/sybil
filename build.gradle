@@ -56,6 +56,10 @@ test {
     }
     //noinspection GroovyAssignabilityCheck
     finalizedBy(showResults)
+    filter {
+        // only run tests ending in *UnitTest
+        includeTestsMatching "*UnitTest"
+    }
 }
 
 dependencies {
@@ -83,7 +87,7 @@ apply plugin: 'org.akhikhl.gretty' // gretty = embedded jetty 9
 gretty { // configure gretty
     recompileOnSourceChange = false; // not terribly useful with an autosaving IDE.
     contextPath = "/" // make the project available at / URL instead of /$projectname/
-    logbackConfigFile = 'conf/logback.xml'
+//    logbackConfigFile = 'conf/logback.xml'
     //systemProperty 'logLevel', 'DEBUG' //enable debug logging
     //jvmArgs = []
 }
@@ -92,12 +96,6 @@ gretty { // configure gretty
 
 
 /*** START Configure Integration tests ***/
-sourceSets {
-    integTest { //add sources for Integration Tests, unlike main/ and test/ these are not provided by the java plugin
-        java.srcDir file('src/integTest/java')
-        resources.srcDir file('src/integTest/resources')
-    }
-}
 
 task deleteDatabase(type: Delete) {
     delete '/tmp/sybildevdb/'
@@ -176,9 +174,6 @@ task integTest(type: Test) { //define the integTest task as a Test task
             startRestServer1, startRestServer2, startRestServer3, startRestServer4, startRestServer5, startRestServer6)
     finalizedBy(freeAllPorts, showResults)
 
-    testClassesDir = sourceSets.integTest.output.classesDir
-    classpath = sourceSets.integTest.runtimeClasspath
-    
     systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
     systemProperty 'spring.profiles.active', 'dev' //set active Spring profile to development
@@ -190,14 +185,6 @@ task integTest(type: Test) { //define the integTest task as a Test task
 
 //uncomment to run integration tests with the build task. Check is a subtask of the build task, provided by java plugin
 //check.dependsOn integTest
-
-dependencies {
-    //make sure the integTest task has the same dependencies
-    integTestCompile sourceSets.main.output
-    integTestCompile configurations.testCompile
-    integTestCompile sourceSets.test.output
-    integTestRuntime configurations.testRuntime
-}
 
 /**
  * ExecWait: Executes a task and waits for a certain output to continue.

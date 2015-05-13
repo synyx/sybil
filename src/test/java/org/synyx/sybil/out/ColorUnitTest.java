@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 
-public class ColorTest {
+public class ColorUnitTest {
 
     private Color color;
 
