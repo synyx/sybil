@@ -29,31 +29,6 @@
 
     </appender>
 
-
-    <!-- appender name="FILEJSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        
-        <file>${logDirectory:-logs/}sybil.json</file>
-        
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logDirectory:-logs/}%d{yyyy-MM-dd}.log</fileNamePattern>
-
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
-
-        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
-                <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
-                    <prettyPrint>false</prettyPrint>
-                </jsonFormatter>
-                <context>api</context>
-                <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</timestampFormat>
-                <timestampFormatTimezoneId>UTC</timestampFormatTimezoneId>
-                <appendLineSeparator>true</appendLineSeparator>
-            </layout>
-        </encoder>
-
-    </appender --><!-- enable for json logging -->
-
     <!-- set logging level to INFO unless system property says otherwise -->
     <logger name="org.synyx.sybil" level="${logLevel:-INFO}">
         <appender-ref ref="FILECLEAR" />

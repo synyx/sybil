@@ -1,9 +1,0 @@
-#!/bin/sh
-if [ $# -lt 2 ] || [ "$1" = "--help" ]
-    then
-    echo "Usage: $0 URL DATA"
-    echo "  URL: URL to put to"
-    echo " DATA: form-encoded data (param1=value1&param2=value2&...)"
-    exit
-fi
-curl -is -X PUT --data $2 $1

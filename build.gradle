@@ -120,53 +120,53 @@ task freeAllPorts << {
 task startRestServer1(type: ExecWait) {
     command 'node server/http.js port=8081 index=red.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/RestServer'
+    directory 'src/test/resources/RestServer'
 }
 
 task startRestServer2(type: ExecWait) {
     command 'node server/http.js port=8082 index=red_anime.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/RestServer'
+    directory 'src/test/resources/RestServer'
 }
 
 task startRestServer3(type: ExecWait) {
     command 'node server/http.js port=8083 index=yellow.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/RestServer'
+    directory 'src/test/resources/RestServer'
 }
 
 task startRestServer4(type: ExecWait) {
     command 'node server/http.js port=8084 index=yellow_anime.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/RestServer'
+    directory 'src/test/resources/RestServer'
 }
 
 task startRestServer5(type: ExecWait) {
     command 'node server/http.js port=8085 index=blue.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/RestServer'
+    directory 'src/test/resources/RestServer'
 }
 
 task startRestServer6(type: ExecWait) {
     command 'node server/http.js port=8086 index=blue_anime.json verbose=true launch=now'
     ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/RestServer'
+    directory 'src/test/resources/RestServer'
 }
 
 task startTFStubserver1(type: ExecWait) {
-    command 'stubserver -p 14223 -d ' + projectDir + '/src/test/TFStubserver/brick1.properties'
+    command 'stubserver -p 14223 -d ' + projectDir + '/src/test/resources/TFStubserver/brick1.properties'
     ready 'BrickThread is running'
     directory '.'
 }
 
 task startTFStubserver2(type: ExecWait) {
-    command 'stubserver -p 14224 -d ' + projectDir + '/src/test/TFStubserver/brick2.properties'
+    command 'stubserver -p 14224 -d ' + projectDir + '/src/test/resources/TFStubserver/brick2.properties'
     ready 'BrickThread is running'
     directory '.'
 }
 
 task startTFStubserver3(type: ExecWait) {
-    command 'stubserver -p 14225 -d ' + projectDir + '/src/test/TFStubserver/brick3.properties'
+    command 'stubserver -p 14225 -d ' + projectDir + '/src/test/resources/TFStubserver/brick3.properties'
     ready 'BrickThread is running'
     directory '.'
 }
