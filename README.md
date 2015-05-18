@@ -2,7 +2,7 @@ Sybil
 =====
 
 A project to illuminate and inform the people in the office(s).
-Uses WS2812 LED Strips connected to Tinkerforge bricks.
+Uses WS2812 LED Strips and AZ943-1CH-5DE relays connected to Tinkerforge bricks.
 
 This project is under heavy development and further documentation is forthcoming.
 
@@ -24,7 +24,8 @@ This project is under heavy development and further documentation is forthcoming
 
 ## Working so far
 
-* Saves and loads Tinkerforge bricks, LED Strips bricklets and Dual Relay bricklets to/from Neo4j database.
+* Saves and loads Tinkerforge bricks, LED Strips bricklets, Dual Relay bricklets, Ambient Light bricklets, and Motion
+  Detector to/from Neo4j database.
 * Reads configuration from JSON files.
 * Outputs Statuses on LED Strips *(see integration test org.synyx.sybil.out.SingleStatusOnLEDStripTest)*
     * Outputs Statuses of Jenkins build jobs, updated every 60 seconds.
@@ -38,9 +39,9 @@ This project is under heavy development and further documentation is forthcoming
 
 ### Configuration
 
-To run or deploy the server you need `bricks.json`, `ledstrips.json`, `relays.json` and `jenkins.json` in
-`/home/sybil-config/`, and `jenkinsservers.json` in `/home/sybil/`.  
-See in `config/` for example files, or `src/docs/configfiles` for simplified schemata.  
+To run or deploy the server you need `bricks.json`, `ledstrips.json`, `relays.json`, `sensors.json`, and `jenkins.json`
+in `/home/sybil-config/`, and `jenkinsservers.json` in `/home/sybil/`.  
+See in `src/test/resources/config/` for example files, or `docs/configfiles` for simplified schemata.  
 The locations of these configuration files can be configured in `src/main/resources/config.properties`.  
 
 Note that all the names used in the configuration files *must* be lowercase.
