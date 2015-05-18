@@ -51,7 +51,7 @@ test {
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
     systemProperty 'spring.profiles.active', 'dev'  //set active Spring profile to development
     testLogging {
-        events "passed", "skipped", "failed"
+        events "failed"
         //showStandardStreams = true //show STDOUT and STDERR while gradle is running
     }
     //noinspection GroovyAssignabilityCheck
@@ -87,7 +87,6 @@ apply plugin: 'org.akhikhl.gretty' // gretty = embedded jetty 9
 gretty { // configure gretty
     recompileOnSourceChange = false; // not terribly useful with an autosaving IDE.
     contextPath = "/" // make the project available at / URL instead of /$projectname/
-//    logbackConfigFile = 'conf/logback.xml'
     //systemProperty 'logLevel', 'DEBUG' //enable debug logging
     //jvmArgs = []
 }
@@ -170,15 +169,15 @@ task startTFStubserver3(type: ExecWait) {
 }
 
 task integTest(type: Test) { //define the integTest task as a Test task
-    dependsOn(deleteDatabase, startTFStubserver1, startTFStubserver2, startTFStubserver3,
-            startRestServer1, startRestServer2, startRestServer3, startRestServer4, startRestServer5, startRestServer6)
+    dependsOn(deleteDatabase, startTFStubserver1, startTFStubserver2, startTFStubserver3, startRestServer1, startRestServer2, startRestServer3, startRestServer4, startRestServer5, startRestServer6)
     finalizedBy(freeAllPorts, showResults)
 
     systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
     systemProperty 'spring.profiles.active', 'dev' //set active Spring profile to development
     testLogging {
-        events "passed", "skipped", "failed"
+        events "failed"
+        showExceptions false
         //showStandardStreams = true //show STDOUT and STDERR while gradle is running
     }
 }

@@ -107,11 +107,23 @@ public class OutputLEDStrip implements Bricklet {
             greenArray = Arrays.copyOfRange(pixelBufferGreen, i, i + 16);
             blueArray = Arrays.copyOfRange(pixelBufferBlue, i, i + 16);
 
-            if (brightness < 1.0) {
-                for (int j = 0; j < 16; j++) {
-                    redArray[j] *= brightness;
-                    greenArray[j] *= brightness;
-                    blueArray[j] *= brightness;
+            for (int j = 0; j < 16; j++) {
+                redArray[j] *= brightness;
+
+                if (redArray[j] > 255) {
+                    redArray[j] = 255;
+                }
+
+                greenArray[j] *= brightness;
+
+                if (greenArray[j] > 255) {
+                    greenArray[j] = 255;
+                }
+
+                blueArray[j] *= brightness;
+
+                if (blueArray[j] > 255) {
+                    blueArray[j] = 255;
                 }
             }
 
@@ -200,8 +212,8 @@ public class OutputLEDStrip implements Bricklet {
             brightness = 0.0;
         }
 
-        if (brightness > 1.0) {
-            brightness = 1.0;
+        if (brightness > 255.0) {
+            brightness = 255.0;
         }
 
         this.brightness = brightness;
