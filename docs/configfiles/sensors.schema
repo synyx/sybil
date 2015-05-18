@@ -1,0 +1,32 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The sensor's unique name. Must be lowercase."
+      },
+      "uid": {
+        "type": "string",
+        "description": "The bricklet's UID. Can be found using the Brick Viewer."
+      },
+      "type": {
+        "type": "string",
+        "description": "The sensor's type. Either luminance or motion."
+      },
+      "brick": {
+        "type": "string",
+        "description": "The brick the sensor bricklet is connected to."
+      },
+      "outputs": {
+        "type": "array",
+        "description": "The names of the outputs (LED Strips or relays) the sensor controls.",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": ["name", "uid", "type", "brick", "outputs"]
+  }
+}
