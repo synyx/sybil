@@ -152,11 +152,13 @@ public class ConfigLoader {
             HealthController.setHealth(Status.CRITICAL, "loadBricksConfig");
         }
 
-        try {
-            resetBricks();
-        } catch (TimeoutException | NotConnectedException e) {
-            LOG.error("Error resetting bricks: {}", e.toString());
-            HealthController.setHealth(Status.CRITICAL, "resetBricks");
+        if (HealthController.getHealth() == Status.OKAY) {
+            try {
+                resetBricks();
+            } catch (TimeoutException | NotConnectedException | InterruptedException e) {
+                LOG.error("Error resetting bricks: {}", e.toString());
+                HealthController.setHealth(Status.CRITICAL, "resetBricks");
+            }
         }
 
         if (HealthController.getHealth() == Status.OKAY) {
@@ -231,7 +233,7 @@ public class ConfigLoader {
      * @throws  TimeoutException  the timeout exception
      * @throws  NotConnectedException  the not connected exception
      */
-    public void resetBricks() throws TimeoutException, NotConnectedException {
+    public void resetBricks() throws TimeoutException, NotConnectedException, InterruptedException {
 
         LOG.info("Resetting bricks");
 
@@ -251,6 +253,8 @@ public class ConfigLoader {
             BrickMaster brickMaster = new BrickMaster(brick.getUid(), ipConnection);
             brickMaster.reset();
         }
+
+        Thread.sleep(4000);
 
         brickRegistry.disconnectAll();
     }
