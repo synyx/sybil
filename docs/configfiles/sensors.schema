@@ -27,6 +27,6 @@
         }
       }
     },
-    "required": ["name", "uid", "type", "brick", "outputs"]
+    "required": ["name", "uid", "type", "brick"]
   }
 }
