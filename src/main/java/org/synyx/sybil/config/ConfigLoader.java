@@ -33,6 +33,7 @@ import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.InputSensorDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.domain.OutputRelayDomain;
+import org.synyx.sybil.in.IlluminanceSensorRegistry;
 import org.synyx.sybil.in.SensorType;
 import org.synyx.sybil.in.Status;
 import org.synyx.sybil.out.Color;
@@ -90,6 +91,9 @@ public class ConfigLoader {
     // The Repository to save InputSensor configuration data
     private InputSensorRepository inputSensorRepository;
 
+    // Fetches & Configures illuminance sensors
+    private IlluminanceSensorRegistry illuminanceSensorRegistry;
+
     // The object that saves the Jenkins servers and job configurations
     private JenkinsConfig jenkinsConfig;
 
@@ -123,7 +127,7 @@ public class ConfigLoader {
         Environment env, OutputLEDStripRegistry outputLEDStripRegistry, JenkinsConfig jenkinsConfig,
         SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, OutputRelayRepository outputRelayRepository,
         InputSensorRepository inputSensorRepository, GraphDatabaseService graphDatabaseService,
-        BrickRegistry brickRegistry) {
+        BrickRegistry brickRegistry, IlluminanceSensorRegistry illuminanceSensorRegistry) {
 
         this.brickRepository = brickRepository;
         this.outputLEDStripRepository = outputLEDStripRepository;
@@ -136,6 +140,7 @@ public class ConfigLoader {
         this.inputSensorRepository = inputSensorRepository;
         this.graphDatabaseService = graphDatabaseService;
         this.brickRegistry = brickRegistry;
+        this.illuminanceSensorRegistry = illuminanceSensorRegistry;
     }
 
     /**
@@ -254,7 +259,7 @@ public class ConfigLoader {
             brickMaster.reset();
         }
 
-        Thread.sleep(4000);
+        Thread.sleep(5000);
 
         brickRegistry.disconnectAll();
     }
@@ -372,7 +377,7 @@ public class ConfigLoader {
             BrickDomain brick = brickRepository.findByName(relay.get("brick").toString()); // fetch the corresponding bricks from the repo
 
             if (brick != null) { // if there was corresponding brick found in the repo...
-                outputRelayRepository.save(new OutputRelayDomain(name, uid, brick)); // ... save the LED Strip.
+                outputRelayRepository.save(new OutputRelayDomain(name, uid, brick)); // ... save the relay.
             } else { // if not...
                 LOG.error("Brick {} does not exist.", relay.get("brick").toString()); // ... error!
                 HealthController.setHealth(Status.WARNING, "loadRelayConfig");
@@ -413,6 +418,27 @@ public class ConfigLoader {
 
             SensorType type = SensorType.valueOf(sensor.get("type").toString().toUpperCase());
 
+            int threshold = 0;
+            double multiplier = 0.1;
+            int timeout = 0;
+
+            try {
+                if (sensor.get("threshold") != null) {
+                    threshold = Integer.parseInt(sensor.get("threshold").toString());
+                }
+
+                if (sensor.get("multiplier") != null) {
+                    multiplier = Double.parseDouble(sensor.get("multiplier").toString());
+                }
+
+                if (sensor.get("timeout") != null) {
+                    timeout = Integer.parseInt(sensor.get("timeout").toString());
+                }
+            } catch (NumberFormatException e) {
+                LOG.error("Failed to load config for sensor {}: options are not properly formatted.", name);
+                HealthController.setHealth(Status.WARNING, "loadSensorConfig");
+            }
+
             List<String> outputs = new ArrayList<>();
 
             if (sensor.get("outputs") instanceof ArrayList) {
@@ -425,12 +451,20 @@ public class ConfigLoader {
 
             BrickDomain brick = brickRepository.findByName(sensor.get("brick").toString()); // fetch the corresponding bricks from the repo
 
+            InputSensorDomain domain = null;
+
             if (brick != null) { // if there was corresponding brick found in the repo...
-                inputSensorRepository.save(new InputSensorDomain(name, uid, type, outputs, brick)); // ... save the LED Strip.
+                domain = inputSensorRepository.save(new InputSensorDomain(name, uid, type, threshold, multiplier,
+                            timeout, outputs, brick)); // ... save the sensor
             } else { // if not...
                 LOG.error("Brick {} does not exist.", sensor.get("brick").toString()); // ... error!
-                HealthController.setHealth(Status.WARNING, "loadRelayConfig");
+                HealthController.setHealth(Status.WARNING, "loadSensorConfig");
             }
+
+            if (type == SensorType.LUMINANCE && domain != null) {
+                illuminanceSensorRegistry.get(domain);
+            } // else if (type == SensorType.MOTION) {
+            // }
         }
     }
 

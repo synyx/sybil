@@ -43,7 +43,7 @@ dependencies {
 
 /*** START Configure unit tests ***/
 task showResults(type: Exec) {
-    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16'
+    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16|sed \'s/[\\+| ]//g\''
 }
 
 test {
@@ -51,7 +51,7 @@ test {
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
     systemProperty 'spring.profiles.active', 'dev'  //set active Spring profile to development
     testLogging {
-        events "failed"
+        events "passed", "skipped", "failed"
         //showStandardStreams = true //show STDOUT and STDERR while gradle is running
     }
     //noinspection GroovyAssignabilityCheck
@@ -176,8 +176,8 @@ task integTest(type: Test) { //define the integTest task as a Test task
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
     systemProperty 'spring.profiles.active', 'dev' //set active Spring profile to development
     testLogging {
-        events "failed"
-        showExceptions false
+        events "passed", "skipped", "failed"
+        //showExceptions false
         //showStandardStreams = true //show STDOUT and STDERR while gradle is running
     }
 }

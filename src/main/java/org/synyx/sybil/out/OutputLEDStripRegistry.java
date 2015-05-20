@@ -75,13 +75,13 @@ public class OutputLEDStripRegistry implements BrickletRegistry {
                     brickletLEDStrip.setFrameDuration(FRAME_DURATION); // Always go for the minimum (i.e. fastest) frame duration
                     brickletLEDStrip.setChipType(CHIP_TYPE); // We only use 2812 chips
                 } else {
-                    LOG.warn("Error setting up LED Strip {}: Brick {} not available.", outputLEDStripDomain.getName(),
+                    LOG.error("Error setting up LED Strip {}: Brick {} not available.", outputLEDStripDomain.getName(),
                         outputLEDStripDomain.getBrickDomain().getHostname());
 
                     brickletLEDStrip = null;
                 }
             } catch (TimeoutException | NotConnectedException e) {
-                LOG.warn("Error setting up LED Strip {}: {}", outputLEDStripDomain.getName(), e.toString());
+                LOG.error("Error setting up LED Strip {}: {}", outputLEDStripDomain.getName(), e.toString());
                 brickletLEDStrip = null; // if there is an error, we don't want to use this
             }
 

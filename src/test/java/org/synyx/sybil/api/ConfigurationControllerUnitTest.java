@@ -23,26 +23,30 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 
 /**
- * RootControllerTest.
+ * ConfigurationLEDStripControllerTest.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { DevSpringConfig.class })
-public class RootControllerTest {
+public class ConfigurationControllerUnitTest {
 
     @Test
-    public void testGetRoot() throws Exception {
+    public void testGetConfiguration() throws Exception {
 
-        MockMvc mockMvc = standaloneSetup(new RootController()).build();
+        MockMvc mockMvc = standaloneSetup(new ConfigurationController()).build();
 
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/configuration/"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.links", hasSize(2)))
+            .andExpect(jsonPath("$.links", hasSize(4)))
             .andExpect(jsonPath("$.links[0].rel", is("self")))
-            .andExpect(jsonPath("$.links[0].href", endsWith("localhost")))
-            .andExpect(jsonPath("$.links[1].rel", is("configuration")))
-            .andExpect(jsonPath("$.links[1].href", endsWith("/configuration")));
+            .andExpect(jsonPath("$.links[0].href", endsWith("/configuration")))
+            .andExpect(jsonPath("$.links[1].rel", is("bricks")))
+            .andExpect(jsonPath("$.links[1].href", endsWith("/configuration/bricks")))
+            .andExpect(jsonPath("$.links[2].rel", is("ledstrips")))
+            .andExpect(jsonPath("$.links[2].href", endsWith("/configuration/ledstrips")))
+            .andExpect(jsonPath("$.links[3].rel", is("relays")))
+            .andExpect(jsonPath("$.links[3].href", endsWith("/configuration/relays")));
     }
 }

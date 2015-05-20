@@ -3,11 +3,12 @@
     "name": "lsdevkit",
     "uid": "m3b",
     "type": "luminance",
-    "brick": "stubthree",
+    "threshold": 16,
+    "multiplier": 2.5,
+    "timeout": 120000,
     "outputs": [
-      "ledone",
-      "ledtwo",
       "ledthree"
-    ]
+    ],
+    "brick": "stubthree"
   }
 ]

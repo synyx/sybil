@@ -233,8 +233,11 @@ public class ConfigLoaderTest {
             assertThat(sensor.getName(), is("lsdevkit"));
             assertThat(sensor.getUid(), is("m3b"));
             assertThat(sensor.getType(), is(SensorType.LUMINANCE));
+            assertThat(sensor.getThreshold(), is(16));
+            assertThat(sensor.getMultiplier(), is(2.5));
+            assertThat(sensor.getTimeout(), is(120000));
             assertThat(sensor.getBrickDomain(), is(brickRepository.findByName("stubthree")));
-            assertThat(sensor.getOutputs(), containsInAnyOrder("ledone", "ledtwo", "ledthree"));
+            assertThat(sensor.getOutputs(), containsInAnyOrder("ledthree"));
         }
 
         /**

@@ -2,7 +2,12 @@ package org.synyx.sybil.in;
 
 import com.tinkerforge.BrickletAmbientLight;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.database.OutputLEDStripRepository;
+import org.synyx.sybil.domain.InputSensorDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.out.OutputLEDStrip;
 import org.synyx.sybil.out.OutputLEDStripRegistry;
@@ -18,32 +23,54 @@ import java.util.List;
  */
 public class IlluminanceListener implements BrickletAmbientLight.IlluminanceListener {
 
+    private static final Logger LOG = LoggerFactory.getLogger(IlluminanceListener.class);
+
     private List<OutputLEDStrip> ledStrips = new ArrayList<>();
 
-    public IlluminanceListener(List<String> outputs, OutputLEDStripRegistry outputLEDStripRegistry,
+    private int threshold;
+
+    private double multiplier;
+
+    public IlluminanceListener(InputSensorDomain sensor, OutputLEDStripRegistry outputLEDStripRegistry,
         OutputLEDStripRepository outputLEDStripRepository) {
 
-        for (String output : outputs) {
+        LOG.debug("Listener added to {}", sensor.getName());
+
+        threshold = sensor.getThreshold();
+
+        multiplier = sensor.getMultiplier();
+
+        for (String output : sensor.getOutputs()) {
             OutputLEDStripDomain domain = outputLEDStripRepository.findByName(output);
 
-            OutputLEDStrip ledStrip = outputLEDStripRegistry.get(domain);
-
-            ledStrips.add(ledStrip);
+            if (domain != null) {
+                OutputLEDStrip ledStrip = outputLEDStripRegistry.get(domain);
+                ledStrips.add(ledStrip);
+            } else {
+                LOG.error("Configured output {} of illuminance sensor {} does not match a LED Strip.", output,
+                    sensor.getName());
+                HealthController.setHealth(Status.WARNING, "IlluminanceListener");
+            }
         }
     }
 
     @Override
     public void illuminance(int illuminance) {
 
-        int lux = illuminance / 10;
+        // 1 lux is 10 units from the sensor.
+        LOG.debug("Lux: {}", illuminance / 10);
 
-        int threshold = 16;
+        double brightness = 1.0;
 
-        if (lux < threshold) {
-            int brightness = threshold - lux;
+        // Threshold is configured in lux!
+        if (illuminance < threshold * 10) {
+            brightness = ((threshold * 10) - illuminance) * multiplier;
+        }
 
-            for (OutputLEDStrip ledStrip : ledStrips) {
+        for (OutputLEDStrip ledStrip : ledStrips) {
+            if (brightness != ledStrip.getBrightness()) {
                 ledStrip.setBrightness(brightness);
+                ledStrip.updateDisplay();
             }
         }
     }

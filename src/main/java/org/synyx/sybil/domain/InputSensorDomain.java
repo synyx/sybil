@@ -33,6 +33,12 @@ public class InputSensorDomain {
 
     private SensorType type;
 
+    private int threshold;
+
+    private double multiplier;
+
+    private int timeout;
+
     private List<String> outputs;
 
     @Fetch
@@ -44,11 +50,15 @@ public class InputSensorDomain {
     }
 
 
-    public InputSensorDomain(String name, String uid, SensorType type, List<String> outputs, BrickDomain brickDomain) {
+    public InputSensorDomain(String name, String uid, SensorType type, int threshold, double multiplier, int timeout,
+        List<String> outputs, BrickDomain brickDomain) {
 
         this.name = name;
         this.uid = uid;
         this.type = type;
+        this.threshold = threshold;
+        this.multiplier = multiplier;
+        this.timeout = timeout;
         this.outputs = outputs;
         this.brickDomain = brickDomain;
     }
@@ -68,6 +78,24 @@ public class InputSensorDomain {
     public SensorType getType() {
 
         return type;
+    }
+
+
+    public int getThreshold() {
+
+        return threshold;
+    }
+
+
+    public double getMultiplier() {
+
+        return multiplier;
+    }
+
+
+    public int getTimeout() {
+
+        return timeout;
     }
 
 

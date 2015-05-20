@@ -15,9 +15,17 @@
         "type": "string",
         "description": "The sensor's type. Either luminance or motion."
       },
-      "brick": {
-        "type": "string",
-        "description": "The brick the sensor bricklet is connected to."
+      "threshold": {
+        "type": "integer",
+        "description": "Threshold (in Lux) at which illumination sensors start brightening their LED Strips."
+      },
+      "multiplier": {
+        "type": "integer",
+        "description": "The multiplier by which sensors multiply the difference between threshold and measured illuminance."
+      },
+      "timeout": {
+        "type": "integer",
+        "description": "TODO: The time (in miliseconds) a motion sensor will leave their lights on."
       },
       "outputs": {
         "type": "array",
@@ -25,6 +33,10 @@
         "items": {
           "type": "string"
         }
+      },
+      "brick": {
+        "type": "string",
+        "description": "The brick the sensor bricklet is connected to."
       }
     },
     "required": ["name", "uid", "type", "brick"]
