@@ -77,8 +77,8 @@ public class IlluminanceSensorTest {
 
         outputs.add("testone");
 
-        InputSensorDomain sensorDomain = new InputSensorDomain("lux", "egal", SensorType.LUMINANCE, 16, 0.1, 0, outputs,
-                test1);
+        InputSensorDomain sensorDomain = new InputSensorDomain("lux", "egal", SensorType.LUMINANCE, 16, 0.1, 0,
+                (short) 0, outputs, test1);
 
         listener = new IlluminanceListener(sensorDomain, outputLEDStripRegistry, outputLEDStripRepository);
     }

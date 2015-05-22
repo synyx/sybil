@@ -33,6 +33,7 @@ import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.InputSensorDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.domain.OutputRelayDomain;
+import org.synyx.sybil.in.ButtonSensorRegistry;
 import org.synyx.sybil.in.IlluminanceSensorRegistry;
 import org.synyx.sybil.in.SensorType;
 import org.synyx.sybil.in.Status;
@@ -94,6 +95,9 @@ public class ConfigLoader {
     // Fetches & Configures illuminance sensors
     private IlluminanceSensorRegistry illuminanceSensorRegistry;
 
+    // Fetches & Configures buttons
+    private ButtonSensorRegistry buttonSensorRegistry;
+
     // The object that saves the Jenkins servers and job configurations
     private JenkinsConfig jenkinsConfig;
 
@@ -121,13 +125,16 @@ public class ConfigLoader {
      * @param  inputSensorRepository  the input sensor repository
      * @param  graphDatabaseService  the graph database service
      * @param  brickRegistry  the brick registry
+     * @param  illuminanceSensorRegistry  the illuminance sensor registry
+     * @param  buttonSensorRegistry  the button sensor registry
      */
     @Autowired
     public ConfigLoader(BrickRepository brickRepository, OutputLEDStripRepository outputLEDStripRepository,
         Environment env, OutputLEDStripRegistry outputLEDStripRegistry, JenkinsConfig jenkinsConfig,
         SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, OutputRelayRepository outputRelayRepository,
         InputSensorRepository inputSensorRepository, GraphDatabaseService graphDatabaseService,
-        BrickRegistry brickRegistry, IlluminanceSensorRegistry illuminanceSensorRegistry) {
+        BrickRegistry brickRegistry, IlluminanceSensorRegistry illuminanceSensorRegistry,
+        ButtonSensorRegistry buttonSensorRegistry) {
 
         this.brickRepository = brickRepository;
         this.outputLEDStripRepository = outputLEDStripRepository;
@@ -141,6 +148,7 @@ public class ConfigLoader {
         this.graphDatabaseService = graphDatabaseService;
         this.brickRegistry = brickRegistry;
         this.illuminanceSensorRegistry = illuminanceSensorRegistry;
+        this.buttonSensorRegistry = buttonSensorRegistry;
     }
 
     /**
@@ -236,7 +244,8 @@ public class ConfigLoader {
      * Reset all bricks.
      *
      * @throws  TimeoutException  the timeout exception
-     * @throws  NotConnectedException  the not connected exception
+     * @throws  TimeoutException  the timeout exception
+     * @throws  TimeoutException  the timeout exception
      */
     public void resetBricks() throws TimeoutException, NotConnectedException, InterruptedException {
 
@@ -421,6 +430,7 @@ public class ConfigLoader {
             int threshold = 0;
             double multiplier = 0.1;
             int timeout = 0;
+            short pins = 0b0000;
 
             try {
                 if (sensor.get("threshold") != null) {
@@ -433,6 +443,10 @@ public class ConfigLoader {
 
                 if (sensor.get("timeout") != null) {
                     timeout = Integer.parseInt(sensor.get("timeout").toString());
+                }
+
+                if (sensor.get("pins") != null) {
+                    pins = (short) Integer.parseInt(sensor.get("pins").toString(), 2);
                 }
             } catch (NumberFormatException e) {
                 LOG.error("Failed to load config for sensor {}: options are not properly formatted.", name);
@@ -455,7 +469,7 @@ public class ConfigLoader {
 
             if (brick != null) { // if there was corresponding brick found in the repo...
                 domain = inputSensorRepository.save(new InputSensorDomain(name, uid, type, threshold, multiplier,
-                            timeout, outputs, brick)); // ... save the sensor
+                            timeout, pins, outputs, brick)); // ... save the sensor
             } else { // if not...
                 LOG.error("Brick {} does not exist.", sensor.get("brick").toString()); // ... error!
                 HealthController.setHealth(Status.WARNING, "loadSensorConfig");
@@ -463,8 +477,9 @@ public class ConfigLoader {
 
             if (type == SensorType.LUMINANCE && domain != null) {
                 illuminanceSensorRegistry.get(domain);
-            } // else if (type == SensorType.MOTION) {
-            // }
+            } else if (type == SensorType.BUTTON) {
+                buttonSensorRegistry.get(domain);
+            }
         }
     }
 

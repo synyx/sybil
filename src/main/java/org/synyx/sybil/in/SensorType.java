@@ -8,5 +8,6 @@ package org.synyx.sybil.in;
 public enum SensorType {
 
     LUMINANCE,
-    MOTION
+    MOTION,
+    BUTTON
 }

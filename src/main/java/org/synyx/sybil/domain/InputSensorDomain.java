@@ -39,6 +39,8 @@ public class InputSensorDomain {
 
     private int timeout;
 
+    private short pins;
+
     private List<String> outputs;
 
     @Fetch
@@ -51,7 +53,7 @@ public class InputSensorDomain {
 
 
     public InputSensorDomain(String name, String uid, SensorType type, int threshold, double multiplier, int timeout,
-        List<String> outputs, BrickDomain brickDomain) {
+        short pins, List<String> outputs, BrickDomain brickDomain) {
 
         this.name = name;
         this.uid = uid;
@@ -59,6 +61,7 @@ public class InputSensorDomain {
         this.threshold = threshold;
         this.multiplier = multiplier;
         this.timeout = timeout;
+        this.pins = pins;
         this.outputs = outputs;
         this.brickDomain = brickDomain;
     }
@@ -99,6 +102,12 @@ public class InputSensorDomain {
     }
 
 
+    public short getPins() {
+
+        return pins;
+    }
+
+
     public List<String> getOutputs() {
 
         return outputs;
@@ -124,18 +133,26 @@ public class InputSensorDomain {
 
         InputSensorDomain that = (InputSensorDomain) o;
 
-        return outputs.equals(that.outputs) && brickDomain.equals(that.brickDomain) && id.equals(that.id)
-            && name.equals(that.name) && type.equals(that.type) && uid.equals(that.uid);
+        return Double.compare(that.multiplier, multiplier) == 0 && pins == that.pins && threshold == that.threshold
+            && timeout == that.timeout && brickDomain.equals(that.brickDomain) && id.equals(that.id)
+            && name.equals(that.name) && outputs.equals(that.outputs) && type == that.type && uid.equals(that.uid);
     }
 
 
     @Override
     public int hashCode() {
 
-        int result = id.hashCode();
+        int result;
+        long temp;
+        result = id.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + uid.hashCode();
         result = 31 * result + type.hashCode();
+        result = 31 * result + threshold;
+        temp = Double.doubleToLongBits(multiplier);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + timeout;
+        result = 31 * result + (int) pins;
         result = 31 * result + outputs.hashCode();
         result = 31 * result + brickDomain.hashCode();
 
