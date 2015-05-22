@@ -110,8 +110,8 @@ public class IlluminanceSensorTest {
 
         assertThat(ledstrip.getPixel(0), is(new Color(32, 0, 0)));
 
-        // Illuminance 2 under the threshold should double the brigtness
-        listener.illuminance(14 * 10);
+        // Illuminance 1 under the threshold should double the brightness
+        listener.illuminance(15 * 10);
 
         assertThat(ledstrip.getPixel(0), is(new Color(64, 0, 0)));
 

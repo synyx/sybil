@@ -64,7 +64,7 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
 
         // Threshold is configured in lux!
         if (illuminance < threshold * 10) {
-            brightness = ((threshold * 10) - illuminance) * multiplier;
+            brightness += ((threshold * 10) - illuminance) * multiplier;
         }
 
         for (OutputLEDStrip ledStrip : ledStrips) {
