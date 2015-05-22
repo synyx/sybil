@@ -34,6 +34,7 @@ public class ButtonSensorRegistry implements BrickletRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(ButtonSensorRegistry.class);
 
     private Map<InputSensorDomain, BrickletIO4> buttons = new HashMap<>();
+    private Map<String, InputSensorDomain> domains = new HashMap<>();
     private BrickRegistry brickRegistry;
     private OutputRelayRegistry outputRelayRegistry;
     private OutputRelayRepository outputRelayRepository;
@@ -41,11 +42,11 @@ public class ButtonSensorRegistry implements BrickletRegistry {
     // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
 
     /**
-     * Instantiates a new Illuminance sensor registry.
+     * Instantiates a new Button sensor registry.
      *
      * @param  brickRegistry  the brick registry
-     * @param  outputRelayRegistry  the relay registry
-     * @param  outputRelayRepository  the relay repository
+     * @param  outputRelayRegistry  the output relay registry
+     * @param  outputRelayRepository  the output relay repository
      */
     @Autowired
     public ButtonSensorRegistry(BrickRegistry brickRegistry, OutputRelayRegistry outputRelayRegistry,
@@ -79,12 +80,22 @@ public class ButtonSensorRegistry implements BrickletRegistry {
                 IPConnection ipConnection = brickRegistry.get(inputSensorDomain.getBrickDomain(), this);
 
                 if (ipConnection != null) {
-                    // Create a new Tinkerforge BrickletIO4 object with data from the database
-                    brickletIO4 = new BrickletIO4(inputSensorDomain.getUid(), ipConnection);
+                    InputSensorDomain sameSensor = domains.get(inputSensorDomain.getUid());
+
+                    if (sameSensor != null) {
+                        // If we already have a sensor with the same UID, fetch it.
+                        brickletIO4 = buttons.get(sameSensor);
+                    } else {
+                        // Create a new Tinkerforge BrickletIO4 object with data from the database
+                        brickletIO4 = new BrickletIO4(inputSensorDomain.getUid(), ipConnection);
+                        domains.put(inputSensorDomain.getUid(), inputSensorDomain);
+                    }
 
                     brickletIO4.setConfiguration(inputSensorDomain.getPins(), BrickletIO4.DIRECTION_IN, true); // set the configured pins as input with pull-up
 
-                    brickletIO4.setInterrupt(inputSensorDomain.getPins()); // set interrupts for these pins
+                    short interrupts = brickletIO4.getInterrupt();
+
+                    brickletIO4.setInterrupt((short) (inputSensorDomain.getPins() | interrupts)); // set interrupts for these pins, while respecting interrupts set earlier
 
                     brickletIO4.addInterruptListener(new ButtonListener(inputSensorDomain, outputRelayRegistry,
                             outputRelayRepository));
