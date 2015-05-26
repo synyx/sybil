@@ -53,6 +53,7 @@ public class ConfigurationController {
         links.add(linkTo(ConfigurationBricksController.class).withRel("bricks"));
         links.add(linkTo(ConfigurationLEDStripController.class).withRel("ledstrips"));
         links.add(linkTo(ConfigurationRelayController.class).withRel("relays"));
+        links.add(linkTo(ConfigurationSensorController.class).withRel("sensors"));
 
         return new Resources<>(Collections.emptySet(), links);
     }
