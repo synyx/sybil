@@ -33,6 +33,9 @@ This project is under heavy development and further documentation is forthcoming
     * Does this via a HTTP API.
 * Controls relays
     * Does this via a HTTP API.
+* Listens to Illuminance sensors and has them control the LED Strip brightness if illuminance falls under a threshold
+  value.
+* Listens to IO-Modules to which buttons can be connected and turns off relays when buttons are pressed. 
 * Serves a *very barebones* REST API showing the configured the bricks and bricklets. 
 
 ## Execution
@@ -128,11 +131,13 @@ TODO: Make integration tests cross-platform.
         | | | +-LEDStripResource        Spring HATEOAS wrapper around LED Strip config.
         | | | +-PatchResource           Object for deserialising HTTP PATCH actions. 
         | | | +-RelayResource           Spring HATEOAS wrapper around Relay configuration.
+        | | | +-SensorResource          Spring HATEOAS wrapper around Sensor configuration.
         | | | +-SinglePatchResource     Object for deserialising a single PATCH action.
         | | +-Config…BricksController   MVC Rest Controller for Brick configuration.
         | | +-ConfigurationController   MVC Rest Controller for /configuration/ root.
         | | +-Config…LEDStripController MVC Rest Controller for LED Strip configuration.
         | | +-Config…RelayController    MVC Rest Controller for Relay configuration.
+        | | +-Config…SensorController   MVC Rest Controller for Sensor configuration.
         | | +-HealthController          MVC Controller for setting & showing app health.
         | | +-RootController            MVC Root controller.
         | +-common/                     Common modules.
@@ -143,7 +148,7 @@ TODO: Make integration tests cross-platform.
         | | +-Bricklet                  Interface all Bricklets inherit from. 
         | | +-BrickletRegistry          Interface all registries for bricklets inherit from.
         | | +-BrickRegistry             Registers Tinkerforge bricks & their connections.
-        | | +-Listener                  Listeners for Tinkerforge callbacks.
+        | | +-ConnectionListener        Listener for Tinkerforge IP Connection callbacks.
         | +-config/                     Configuration files.
         | | +-ConfigLoader              Loads configuration from JSON files.
         | | +-Neo4jConfig               Database configuration.
@@ -160,6 +165,10 @@ TODO: Make integration tests cross-platform.
         | | +-OutputLEDStripDomain      Domain for LED Strips
         | | +-OutputRelayDomain         Domain for Relays
         | +-in/                         Inputs.
+        | | +-ButtonListener            Listener for Button interrupts.
+        | | +-ButtonSensorRegistry      Registers Buttons, so they can listen f. interrupts.
+        | | +-IlluminanceListener       Listener for Illuminance sensors.
+        | | +-IlluminanceSensorRegistry Registers Illuminance sensors.
         | | +-JenkinsService            Pulls Jenkins servers and feeds statuses to LEDs.
         | | +-SensorType                Enum for sensor types (LUMINANCE, MOTION)
         | | +-Status                    Enum for statuses (OKAY, WARNING & CRITICAL)
@@ -197,9 +206,10 @@ This then loads:
         * Which in turn runs the **ConfigLoader**'s *loadConfig* method.
     * The **JenkinsService** since it's annotated with @Service.
 
-The *loadConfig* method loads the brick, LED Strip, & relay configurations from JSON files (the location of which is
-defined in the **config.properties** file) and saves them to the database. It then loads the configured Jenkins jobs
-from the Jenkins JSON configuration file.
+The *loadConfig* method loads the brick, LED Strip, relay, and sensor configurations from JSON files (the location of
+which is defined in the **config.properties** file) and saves them to the database. It then loads the configured Jenkins
+jobs from the Jenkins JSON configuration file. It also activates the __*Listener__ classes for the sensors, enabling
+them to react to changes.
 
 The **JenkinsService** has a *handleJobs* method, which is annotated with @Scheduled which means it is run every 60
 seconds. This method gets a list of all jobs from the Jenkins server(s), compares it to the list loaded from
