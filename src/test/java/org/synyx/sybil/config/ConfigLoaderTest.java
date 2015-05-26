@@ -227,17 +227,51 @@ public class ConfigLoaderTest {
             tx.success();
         }
 
-        assertThat(sensors.size(), is(1));
+        assertThat(sensors.size(), is(5));
 
         for (InputSensorDomain sensor : sensors) {
-            assertThat(sensor.getName(), is("lsdevkit"));
-            assertThat(sensor.getUid(), is("m3b"));
-            assertThat(sensor.getType(), is(SensorType.LUMINANCE));
-            assertThat(sensor.getThreshold(), is(16));
-            assertThat(sensor.getMultiplier(), is(2.5));
-            assertThat(sensor.getTimeout(), is(120000));
-            assertThat(sensor.getBrickDomain(), is(brickRepository.findByName("stubthree")));
-            assertThat(sensor.getOutputs(), containsInAnyOrder("ledthree"));
+            switch (sensor.getName()) {
+                case "lsdevkit":
+                    assertThat(sensor.getUid(), is("m3b"));
+                    assertThat(sensor.getType(), is(SensorType.LUMINANCE));
+                    assertThat(sensor.getThreshold(), is(16));
+                    assertThat(sensor.getMultiplier(), is(2.5));
+                    assertThat(sensor.getBrickDomain(), is(brickRepository.findByName("stubthree")));
+                    assertThat(sensor.getOutputs(), containsInAnyOrder("ledthree"));
+                    break;
+
+                case "mddevkit":
+                    assertThat(sensor.getUid(), is("cCm"));
+                    assertThat(sensor.getType(), is(SensorType.MOTION));
+                    assertThat(sensor.getTimeout(), is(120));
+                    assertThat(sensor.getBrickDomain(), is(brickRepository.findByName("stubtwo")));
+                    assertThat(sensor.getOutputs(), containsInAnyOrder("relayone"));
+                    break;
+
+                case "button1a":
+                    assertThat(sensor.getUid(), is("aaa"));
+                    assertThat(sensor.getType(), is(SensorType.BUTTON));
+                    assertThat(sensor.getPins(), is((short) 0b0001));
+                    assertThat(sensor.getBrickDomain(), is(brickRepository.findByName("stubtwo")));
+                    assertThat(sensor.getOutputs(), containsInAnyOrder("relayone"));
+                    break;
+
+                case "button1b":
+                    assertThat(sensor.getUid(), is("aaa"));
+                    assertThat(sensor.getType(), is(SensorType.BUTTON));
+                    assertThat(sensor.getPins(), is((short) 0b1000));
+                    assertThat(sensor.getBrickDomain(), is(brickRepository.findByName("stubtwo")));
+                    assertThat(sensor.getOutputs(), containsInAnyOrder("relaytwo"));
+                    break;
+
+                case "button2":
+                    assertThat(sensor.getUid(), is("bbb"));
+                    assertThat(sensor.getType(), is(SensorType.BUTTON));
+                    assertThat(sensor.getPins(), is((short) 0b1111));
+                    assertThat(sensor.getBrickDomain(), is(brickRepository.findByName("stubone")));
+                    assertThat(sensor.getOutputs(), containsInAnyOrder("relaythree"));
+                    break;
+            }
         }
 
         /**

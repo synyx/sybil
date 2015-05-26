@@ -129,5 +129,6 @@ public class ButtonSensorRegistry implements BrickletRegistry {
     public void clear() {
 
         buttons.clear();
+        domains.clear();
     }
 }
