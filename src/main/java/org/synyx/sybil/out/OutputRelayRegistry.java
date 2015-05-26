@@ -88,7 +88,7 @@ public class OutputRelayRegistry implements BrickletRegistry {
 
 
     /**
-     * Remove all OutputRelays from the registry.
+     * Clear the registry.
      */
     @Override
     public void clear() {

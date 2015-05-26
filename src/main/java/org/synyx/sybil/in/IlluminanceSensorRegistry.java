@@ -110,7 +110,7 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
 
 
     /**
-     * Remove all OutputLEDStrips from the registry.
+     * Clear the registry.
      */
     @Override
     public void clear() {
