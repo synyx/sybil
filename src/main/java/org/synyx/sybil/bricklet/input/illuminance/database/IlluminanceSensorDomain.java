@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.input.database;
+package org.synyx.sybil.bricklet.input.illuminance.database;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,7 +10,6 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 import org.springframework.hateoas.core.Relation;
 
 import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.bricklet.input.SensorType;
 
 import java.util.List;
 
@@ -22,8 +21,8 @@ import java.util.List;
  */
 
 @NodeEntity
-@Relation(collectionRelation = "sensors")
-public class InputSensorDomain {
+@Relation(collectionRelation = "illuminancesensors")
+public class IlluminanceSensorDomain {
 
     @GraphId
     private Long id;
@@ -32,15 +31,9 @@ public class InputSensorDomain {
 
     private String uid;
 
-    private SensorType type;
-
     private int threshold;
 
     private double multiplier;
-
-    private int timeout;
-
-    private short pins;
 
     private List<String> outputs;
 
@@ -49,20 +42,17 @@ public class InputSensorDomain {
     @JsonProperty("brick")
     private BrickDomain brickDomain;
 
-    public InputSensorDomain() {
+    public IlluminanceSensorDomain() {
     }
 
 
-    public InputSensorDomain(String name, String uid, SensorType type, int threshold, double multiplier, int timeout,
-        short pins, List<String> outputs, BrickDomain brickDomain) {
+    public IlluminanceSensorDomain(String name, String uid, int threshold, double multiplier, List<String> outputs,
+        BrickDomain brickDomain) {
 
         this.name = name;
         this.uid = uid;
-        this.type = type;
         this.threshold = threshold;
         this.multiplier = multiplier;
-        this.timeout = timeout;
-        this.pins = pins;
         this.outputs = outputs;
         this.brickDomain = brickDomain;
     }
@@ -79,12 +69,6 @@ public class InputSensorDomain {
     }
 
 
-    public SensorType getType() {
-
-        return type;
-    }
-
-
     public int getThreshold() {
 
         return threshold;
@@ -94,18 +78,6 @@ public class InputSensorDomain {
     public double getMultiplier() {
 
         return multiplier;
-    }
-
-
-    public int getTimeout() {
-
-        return timeout;
-    }
-
-
-    public short getPins() {
-
-        return pins;
     }
 
 
@@ -132,11 +104,11 @@ public class InputSensorDomain {
             return false;
         }
 
-        InputSensorDomain that = (InputSensorDomain) o;
+        IlluminanceSensorDomain that = (IlluminanceSensorDomain) o;
 
-        return Double.compare(that.multiplier, multiplier) == 0 && pins == that.pins && threshold == that.threshold
-            && timeout == that.timeout && brickDomain.equals(that.brickDomain) && id.equals(that.id)
-            && name.equals(that.name) && outputs.equals(that.outputs) && type == that.type && uid.equals(that.uid);
+        return Double.compare(that.multiplier, multiplier) == 0 && threshold == that.threshold
+            && brickDomain.equals(that.brickDomain) && id.equals(that.id) && name.equals(that.name)
+            && outputs.equals(that.outputs) && uid.equals(that.uid);
     }
 
 
@@ -148,12 +120,9 @@ public class InputSensorDomain {
         result = id.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + uid.hashCode();
-        result = 31 * result + type.hashCode();
         result = 31 * result + threshold;
         temp = Double.doubleToLongBits(multiplier);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + timeout;
-        result = 31 * result + (int) pins;
         result = 31 * result + outputs.hashCode();
         result = 31 * result + brickDomain.hashCode();
 

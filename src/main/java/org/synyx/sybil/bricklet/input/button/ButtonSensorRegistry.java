@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.brick.BrickRegistry;
 import org.synyx.sybil.bricklet.BrickletRegistry;
-import org.synyx.sybil.bricklet.input.database.InputSensorDomain;
+import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
 import org.synyx.sybil.bricklet.output.relay.OutputRelayRegistry;
 import org.synyx.sybil.bricklet.output.relay.database.OutputRelayRepository;
 
@@ -33,8 +33,8 @@ public class ButtonSensorRegistry implements BrickletRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(ButtonSensorRegistry.class);
 
-    private Map<InputSensorDomain, BrickletIO4> buttons = new HashMap<>();
-    private Map<String, InputSensorDomain> domains = new HashMap<>();
+    private Map<ButtonDomain, BrickletIO4> buttons = new HashMap<>();
+    private Map<String, ButtonDomain> domains = new HashMap<>();
     private BrickRegistry brickRegistry;
     private OutputRelayRegistry outputRelayRegistry;
     private OutputRelayRepository outputRelayRepository;
@@ -60,65 +60,65 @@ public class ButtonSensorRegistry implements BrickletRegistry {
     /**
      * Get a BrickletIO4 object, instantiate a new one if necessary.
      *
-     * @param  inputSensorDomain  The bricklet's domain from the database.
+     * @param  buttonDomain  The bricklet's domain from the database.
      *
      * @return  The actual BrickletIO4 object.
      */
-    public BrickletIO4 get(InputSensorDomain inputSensorDomain) {
+    public BrickletIO4 get(ButtonDomain buttonDomain) {
 
-        if (inputSensorDomain == null) {
+        if (buttonDomain == null) {
             return null;
         }
 
-        LOG.debug("Setting up sensor {}.", inputSensorDomain.getName());
+        LOG.debug("Setting up sensor {}.", buttonDomain.getName());
 
-        if (!buttons.containsKey(inputSensorDomain)) {
+        if (!buttons.containsKey(buttonDomain)) {
             BrickletIO4 brickletIO4;
 
             try {
                 // get the connection to the Brick, passing the BrickDomain and the calling object
-                IPConnection ipConnection = brickRegistry.get(inputSensorDomain.getBrickDomain(), this);
+                IPConnection ipConnection = brickRegistry.get(buttonDomain.getBrickDomain(), this);
 
                 if (ipConnection != null) {
-                    InputSensorDomain sameSensor = domains.get(inputSensorDomain.getUid());
+                    ButtonDomain sameSensor = domains.get(buttonDomain.getUid());
 
                     if (sameSensor != null) {
                         // If we already have a sensor with the same UID, fetch it.
                         brickletIO4 = buttons.get(sameSensor);
                     } else {
                         // Create a new Tinkerforge BrickletIO4 object with data from the database
-                        brickletIO4 = new BrickletIO4(inputSensorDomain.getUid(), ipConnection);
-                        domains.put(inputSensorDomain.getUid(), inputSensorDomain);
+                        brickletIO4 = new BrickletIO4(buttonDomain.getUid(), ipConnection);
+                        domains.put(buttonDomain.getUid(), buttonDomain);
                     }
 
-                    brickletIO4.setConfiguration(inputSensorDomain.getPins(), BrickletIO4.DIRECTION_IN, true); // set the configured pins as input with pull-up
+                    brickletIO4.setConfiguration(buttonDomain.getPins(), BrickletIO4.DIRECTION_IN, true); // set the configured pins as input with pull-up
 
                     short interrupts = brickletIO4.getInterrupt();
 
-                    brickletIO4.setInterrupt((short) (inputSensorDomain.getPins() | interrupts)); // set interrupts for these pins, while respecting interrupts set earlier
+                    brickletIO4.setInterrupt((short) (buttonDomain.getPins() | interrupts)); // set interrupts for these pins, while respecting interrupts set earlier
 
-                    brickletIO4.addInterruptListener(new ButtonListener(inputSensorDomain, outputRelayRegistry,
+                    brickletIO4.addInterruptListener(new ButtonListener(buttonDomain, outputRelayRegistry,
                             outputRelayRepository));
                 } else {
-                    LOG.error("Error setting up button {}: Brick {} not available.", inputSensorDomain.getName(),
-                        inputSensorDomain.getBrickDomain().getHostname());
+                    LOG.error("Error setting up button {}: Brick {} not available.", buttonDomain.getName(),
+                        buttonDomain.getBrickDomain().getHostname());
 
                     brickletIO4 = null;
                 }
             } catch (TimeoutException | NotConnectedException e) {
-                LOG.error("Error setting up button {}: {}", inputSensorDomain.getName(), e.toString());
+                LOG.error("Error setting up button {}: {}", buttonDomain.getName(), e.toString());
                 brickletIO4 = null; // if there is an error, we don't want to use this
             }
 
             if (brickletIO4 != null) {
                 // add it to the HashMap
-                buttons.put(inputSensorDomain, brickletIO4);
+                buttons.put(buttonDomain, brickletIO4);
             }
         }
 
-        LOG.debug("Finished setting up sensor {}.", inputSensorDomain.getName());
+        LOG.debug("Finished setting up sensor {}.", buttonDomain.getName());
 
-        return buttons.get(inputSensorDomain); // retrieve and return
+        return buttons.get(buttonDomain); // retrieve and return
     }
 
 

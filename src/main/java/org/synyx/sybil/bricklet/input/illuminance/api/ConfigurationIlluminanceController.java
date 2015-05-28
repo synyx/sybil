@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.input.api;
+package org.synyx.sybil.bricklet.input.illuminance.api;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.synyx.sybil.bricklet.input.database.InputSensorDomain;
-import org.synyx.sybil.bricklet.input.database.InputSensorRepository;
+import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
+import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,44 +33,44 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  */
 
 @RestController
-@RequestMapping("/configuration/sensors")
-public class ConfigurationSensorController {
+@RequestMapping("/configuration/illuminancesensors")
+public class ConfigurationIlluminanceController {
 
-    private InputSensorRepository inputSensorRepository;
+    private IlluminanceSensorRepository illuminanceSensorRepository;
     private GraphDatabaseService graphDatabaseService;
 
     @Autowired
-    public ConfigurationSensorController(InputSensorRepository inputSensorRepository,
+    public ConfigurationIlluminanceController(IlluminanceSensorRepository illuminanceSensorRepository,
         GraphDatabaseService graphDatabaseService) {
 
-        this.inputSensorRepository = inputSensorRepository;
+        this.illuminanceSensorRepository = illuminanceSensorRepository;
         this.graphDatabaseService = graphDatabaseService;
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
-    public Resources<SensorResource> sensors() {
+    public Resources<IlluminanceResource> sensors() {
 
-        List<InputSensorDomain> sensors;
-        List<SensorResource> resources = new ArrayList<>();
+        List<IlluminanceSensorDomain> sensors;
+        List<IlluminanceResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
-        Link self = linkTo(ConfigurationSensorController.class).withSelfRel();
+        Link self = linkTo(ConfigurationIlluminanceController.class).withSelfRel();
         links.add(self);
 
         try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
 
             // get all sensors from database and cast them into a list so that they're actually fetched
-            sensors = new ArrayList<>(IteratorUtil.asCollection(inputSensorRepository.findAll()));
+            sensors = new ArrayList<>(IteratorUtil.asCollection(illuminanceSensorRepository.findAll()));
 
             // end transaction
             tx.success();
         }
 
-        for (InputSensorDomain sensor : sensors) {
-            self = linkTo(methodOn(ConfigurationSensorController.class).sensor(sensor.getName())).withSelfRel();
+        for (IlluminanceSensorDomain sensor : sensors) {
+            self = linkTo(methodOn(ConfigurationIlluminanceController.class).sensor(sensor.getName())).withSelfRel();
 
-            SensorResource resource = new SensorResource(sensor, self);
+            IlluminanceResource resource = new IlluminanceResource(sensor, self);
 
             resources.add(resource);
         }
@@ -81,12 +81,12 @@ public class ConfigurationSensorController {
 
     @ResponseBody
     @RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = { "application/hal+json" })
-    public SensorResource sensor(@PathVariable String name) {
+    public IlluminanceResource sensor(@PathVariable String name) {
 
-        InputSensorDomain sensor = inputSensorRepository.findByName(name);
+        IlluminanceSensorDomain sensor = illuminanceSensorRepository.findByName(name);
 
-        Link self = linkTo(methodOn(ConfigurationSensorController.class).sensor(sensor.getName())).withSelfRel();
+        Link self = linkTo(methodOn(ConfigurationIlluminanceController.class).sensor(sensor.getName())).withSelfRel();
 
-        return new SensorResource(sensor, self);
+        return new IlluminanceResource(sensor, self);
     }
 }

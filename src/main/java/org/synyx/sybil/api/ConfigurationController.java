@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.synyx.sybil.brick.api.ConfigurationBricksController;
-import org.synyx.sybil.bricklet.input.api.ConfigurationSensorController;
+import org.synyx.sybil.bricklet.input.button.api.ConfigurationButtonController;
+import org.synyx.sybil.bricklet.input.illuminance.api.ConfigurationIlluminanceController;
 import org.synyx.sybil.bricklet.output.ledstrip.api.ConfigurationLEDStripController;
 import org.synyx.sybil.bricklet.output.relay.api.ConfigurationRelayController;
 import org.synyx.sybil.config.ConfigLoader;
@@ -57,7 +58,8 @@ public class ConfigurationController {
         links.add(linkTo(ConfigurationBricksController.class).withRel("bricks"));
         links.add(linkTo(ConfigurationLEDStripController.class).withRel("ledstrips"));
         links.add(linkTo(ConfigurationRelayController.class).withRel("relays"));
-        links.add(linkTo(ConfigurationSensorController.class).withRel("sensors"));
+        links.add(linkTo(ConfigurationButtonController.class).withRel("buttons"));
+        links.add(linkTo(ConfigurationIlluminanceController.class).withRel("illuminancesensors"));
 
         return new Resources<>(Collections.emptySet(), links);
     }

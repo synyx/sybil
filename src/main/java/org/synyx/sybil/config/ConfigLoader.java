@@ -26,11 +26,12 @@ import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.BrickRegistry;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
-import org.synyx.sybil.bricklet.input.SensorType;
 import org.synyx.sybil.bricklet.input.button.ButtonSensorRegistry;
-import org.synyx.sybil.bricklet.input.database.InputSensorDomain;
-import org.synyx.sybil.bricklet.input.database.InputSensorRepository;
+import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
+import org.synyx.sybil.bricklet.input.button.database.ButtonRepository;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceSensorRegistry;
+import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
+import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorRepository;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
@@ -89,8 +90,11 @@ public class ConfigLoader {
     // The Repository to save OutputRelay configuration data
     private OutputRelayRepository outputRelayRepository;
 
-    // The Repository to save InputSensor configuration data
-    private InputSensorRepository inputSensorRepository;
+    // The Repository to save IlluminanceSensor configuration data
+    private IlluminanceSensorRepository illuminanceSensorRepository;
+
+    // The Repository to save Button configuration data
+    private ButtonRepository buttonRepository;
 
     // Fetches & Configures illuminance sensors
     private IlluminanceSensorRegistry illuminanceSensorRegistry;
@@ -122,7 +126,7 @@ public class ConfigLoader {
      * @param  jenkinsConfig  the jenkins configuration
      * @param  singleStatusOnLEDStripRegistry  the SingleStatusOnLEDStrip registry
      * @param  outputRelayRepository  the output relay repository
-     * @param  inputSensorRepository  the input sensor repository
+     * @param  illuminanceSensorRepository  the input sensor repository
      * @param  graphDatabaseService  the graph database service
      * @param  brickRegistry  the brick registry
      * @param  illuminanceSensorRegistry  the illuminance sensor registry
@@ -132,9 +136,9 @@ public class ConfigLoader {
     public ConfigLoader(BrickRepository brickRepository, OutputLEDStripRepository outputLEDStripRepository,
         Environment env, OutputLEDStripRegistry outputLEDStripRegistry, JenkinsConfig jenkinsConfig,
         SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, OutputRelayRepository outputRelayRepository,
-        InputSensorRepository inputSensorRepository, GraphDatabaseService graphDatabaseService,
-        BrickRegistry brickRegistry, IlluminanceSensorRegistry illuminanceSensorRegistry,
-        ButtonSensorRegistry buttonSensorRegistry) {
+        IlluminanceSensorRepository illuminanceSensorRepository, ButtonRepository buttonRepository,
+        GraphDatabaseService graphDatabaseService, BrickRegistry brickRegistry,
+        IlluminanceSensorRegistry illuminanceSensorRegistry, ButtonSensorRegistry buttonSensorRegistry) {
 
         this.brickRepository = brickRepository;
         this.outputLEDStripRepository = outputLEDStripRepository;
@@ -144,11 +148,12 @@ public class ConfigLoader {
         this.jenkinsConfig = jenkinsConfig;
         this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
         this.outputRelayRepository = outputRelayRepository;
-        this.inputSensorRepository = inputSensorRepository;
+        this.illuminanceSensorRepository = illuminanceSensorRepository;
         this.graphDatabaseService = graphDatabaseService;
         this.brickRegistry = brickRegistry;
         this.illuminanceSensorRegistry = illuminanceSensorRegistry;
         this.buttonSensorRegistry = buttonSensorRegistry;
+        this.buttonRepository = buttonRepository;
     }
 
     /**
@@ -408,7 +413,8 @@ public class ConfigLoader {
                 new TypeReference<List<Map<String, Object>>>() {
                 });
 
-        inputSensorRepository.deleteAll();
+        illuminanceSensorRepository.deleteAll();
+        buttonRepository.deleteAll();
 
         for (Map sensor : sensors) { // ... deserialize the data manually
 
@@ -425,11 +431,11 @@ public class ConfigLoader {
 
             String uid = sensor.get("uid").toString();
 
-            SensorType type = SensorType.valueOf(sensor.get("type").toString().toUpperCase());
+            String type = sensor.get("type").toString();
 
             int threshold = 0;
             double multiplier = 0.1;
-            int timeout = 0;
+//            int timeout = 0;
             short pins = 0b0000;
 
             try {
@@ -441,9 +447,9 @@ public class ConfigLoader {
                     multiplier = Double.parseDouble(sensor.get("multiplier").toString());
                 }
 
-                if (sensor.get("timeout") != null) {
-                    timeout = Integer.parseInt(sensor.get("timeout").toString());
-                }
+//                if (sensor.get("timeout") != null) {
+//                    timeout = Integer.parseInt(sensor.get("timeout").toString());
+//                }
 
                 if (sensor.get("pins") != null) {
                     pins = (short) Integer.parseInt(sensor.get("pins").toString(), 2);
@@ -465,20 +471,28 @@ public class ConfigLoader {
 
             BrickDomain brick = brickRepository.findByName(sensor.get("brick").toString()); // fetch the corresponding bricks from the repo
 
-            InputSensorDomain domain = null;
+            IlluminanceSensorDomain illuminanceSensorDomain = null;
+            ButtonDomain buttonDomain = null;
 
             if (brick != null) { // if there was corresponding brick found in the repo...
-                domain = inputSensorRepository.save(new InputSensorDomain(name, uid, type, threshold, multiplier,
-                            timeout, pins, outputs, brick)); // ... save the sensor
+
+                if (type.equals("luminance")) {
+                    illuminanceSensorDomain = illuminanceSensorRepository.save(new IlluminanceSensorDomain(name, uid,
+                                threshold, multiplier, outputs, brick)); // ... save the sensor
+                }
+
+                if (type.equals("button")) {
+                    buttonDomain = buttonRepository.save(new ButtonDomain(name, uid, pins, outputs, brick)); // ... save the sensor
+                }
             } else { // if not...
                 LOG.error("Brick {} does not exist.", sensor.get("brick").toString()); // ... error!
                 HealthController.setHealth(Status.WARNING, "loadSensorConfig");
             }
 
-            if (type == SensorType.LUMINANCE && domain != null) {
-                illuminanceSensorRegistry.get(domain);
-            } else if (type == SensorType.BUTTON) {
-                buttonSensorRegistry.get(domain);
+            if (illuminanceSensorDomain != null) {
+                illuminanceSensorRegistry.get(illuminanceSensorDomain);
+            } else if (buttonDomain != null) {
+                buttonSensorRegistry.get(buttonDomain);
             }
         }
     }

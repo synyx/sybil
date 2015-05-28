@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.brick.BrickRegistry;
 import org.synyx.sybil.bricklet.BrickletRegistry;
-import org.synyx.sybil.bricklet.input.database.InputSensorDomain;
+import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
 
@@ -33,7 +33,7 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(IlluminanceSensorRegistry.class);
 
-    private Map<InputSensorDomain, BrickletAmbientLight> illuminanceSensors = new HashMap<>();
+    private Map<IlluminanceSensorDomain, BrickletAmbientLight> illuminanceSensors = new HashMap<>();
     private BrickRegistry brickRegistry;
     private OutputLEDStripRegistry outputLEDStripRegistry;
     private OutputLEDStripRepository outputLEDStripRepository;
@@ -59,53 +59,54 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
     /**
      * Get a BrickletAmbientLight object, instantiate a new one if necessary.
      *
-     * @param  inputSensorDomain  The bricklet's domain from the database.
+     * @param  illuminanceSensorDomain  The bricklet's domain from the database.
      *
      * @return  The actual BrickletAmbientLight object.
      */
-    public BrickletAmbientLight get(InputSensorDomain inputSensorDomain) {
+    public BrickletAmbientLight get(IlluminanceSensorDomain illuminanceSensorDomain) {
 
-        if (inputSensorDomain == null) {
+        if (illuminanceSensorDomain == null) {
             return null;
         }
 
-        LOG.debug("Setting up sensor {}.", inputSensorDomain.getName());
+        LOG.debug("Setting up sensor {}.", illuminanceSensorDomain.getName());
 
-        if (!illuminanceSensors.containsKey(inputSensorDomain)) {
+        if (!illuminanceSensors.containsKey(illuminanceSensorDomain)) {
             BrickletAmbientLight brickletAmbientLight;
 
             try {
                 // get the connection to the Brick, passing the BrickDomain and the calling object
-                IPConnection ipConnection = brickRegistry.get(inputSensorDomain.getBrickDomain(), this);
+                IPConnection ipConnection = brickRegistry.get(illuminanceSensorDomain.getBrickDomain(), this);
 
                 if (ipConnection != null) {
                     // Create a new Tinkerforge BrickletAmbientLight object with data from the database
-                    brickletAmbientLight = new BrickletAmbientLight(inputSensorDomain.getUid(), ipConnection);
+                    brickletAmbientLight = new BrickletAmbientLight(illuminanceSensorDomain.getUid(), ipConnection);
 
                     brickletAmbientLight.setIlluminanceCallbackPeriod(5000);
 
-                    brickletAmbientLight.addIlluminanceListener(new IlluminanceListener(inputSensorDomain,
+                    brickletAmbientLight.addIlluminanceListener(new IlluminanceListener(illuminanceSensorDomain,
                             outputLEDStripRegistry, outputLEDStripRepository));
                 } else {
                     LOG.error("Error setting up illuminance sensor {}: Brick {} not available.",
-                        inputSensorDomain.getName(), inputSensorDomain.getBrickDomain().getHostname());
+                        illuminanceSensorDomain.getName(), illuminanceSensorDomain.getBrickDomain().getHostname());
 
                     brickletAmbientLight = null;
                 }
             } catch (TimeoutException | NotConnectedException e) {
-                LOG.error("Error setting up illuminance sensor {}: {}", inputSensorDomain.getName(), e.toString());
+                LOG.error("Error setting up illuminance sensor {}: {}", illuminanceSensorDomain.getName(),
+                    e.toString());
                 brickletAmbientLight = null; // if there is an error, we don't want to use this
             }
 
             if (brickletAmbientLight != null) {
                 // add it to the HashMap
-                illuminanceSensors.put(inputSensorDomain, brickletAmbientLight);
+                illuminanceSensors.put(illuminanceSensorDomain, brickletAmbientLight);
             }
         }
 
-        LOG.debug("Finished setting up sensor {}.", inputSensorDomain.getName());
+        LOG.debug("Finished setting up sensor {}.", illuminanceSensorDomain.getName());
 
-        return illuminanceSensors.get(inputSensorDomain); // retrieve and return
+        return illuminanceSensors.get(illuminanceSensorDomain); // retrieve and return
     }
 
 

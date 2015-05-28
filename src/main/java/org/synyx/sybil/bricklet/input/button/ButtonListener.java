@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.synyx.sybil.api.HealthController;
-import org.synyx.sybil.bricklet.input.database.InputSensorDomain;
+import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
 import org.synyx.sybil.bricklet.output.relay.OutputRelay;
 import org.synyx.sybil.bricklet.output.relay.OutputRelayRegistry;
 import org.synyx.sybil.bricklet.output.relay.database.OutputRelayDomain;
@@ -30,7 +30,7 @@ public class ButtonListener implements BrickletIO4.InterruptListener {
 
     private List<OutputRelay> relays = new ArrayList<>();
 
-    public ButtonListener(InputSensorDomain sensor, OutputRelayRegistry outputRelayRegistry,
+    public ButtonListener(ButtonDomain sensor, OutputRelayRegistry outputRelayRegistry,
         OutputRelayRepository outputRelayRepository) {
 
         LOG.debug("Listener added to {}", sensor.getName());
