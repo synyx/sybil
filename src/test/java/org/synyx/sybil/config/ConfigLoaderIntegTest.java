@@ -18,12 +18,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.synyx.sybil.api.ConfigurationController;
 import org.synyx.sybil.api.HealthController;
+import org.synyx.sybil.brick.database.BrickDomain;
+import org.synyx.sybil.brick.database.BrickRepository;
 import org.synyx.sybil.common.jenkins.JenkinsConfig;
-import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.InputSensorRepository;
 import org.synyx.sybil.database.OutputLEDStripRepository;
 import org.synyx.sybil.database.OutputRelayRepository;
-import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.InputSensorDomain;
 import org.synyx.sybil.domain.OutputLEDStripDomain;
 import org.synyx.sybil.domain.OutputRelayDomain;

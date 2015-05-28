@@ -1,4 +1,4 @@
-package org.synyx.sybil.common;
+package org.synyx.sybil.brick;
 
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
@@ -12,13 +12,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
-public class ConnectionListener implements IPConnection.ConnectedListener {
+public class BrickConnectionListener implements IPConnection.ConnectedListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ConnectionListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BrickConnectionListener.class);
 
     private IPConnection ipConnection = null;
 
-    public ConnectionListener(IPConnection ipConnection) {
+    public BrickConnectionListener(IPConnection ipConnection) {
 
         this.ipConnection = ipConnection;
     }

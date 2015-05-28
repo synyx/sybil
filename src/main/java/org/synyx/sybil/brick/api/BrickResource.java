@@ -1,9 +1,9 @@
-package org.synyx.sybil.api.resources;
+package org.synyx.sybil.brick.api;
 
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 
-import org.synyx.sybil.domain.BrickDomain;
+import org.synyx.sybil.brick.database.BrickDomain;
 
 
 /**

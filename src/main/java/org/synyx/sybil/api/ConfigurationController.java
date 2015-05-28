@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.synyx.sybil.brick.api.ConfigurationBricksController;
 import org.synyx.sybil.config.ConfigLoader;
 
 import java.io.IOException;

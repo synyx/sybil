@@ -16,11 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.synyx.sybil.common.BrickRegistry;
+import org.synyx.sybil.brick.BrickRegistry;
+import org.synyx.sybil.brick.database.BrickDomain;
+import org.synyx.sybil.brick.database.BrickRepository;
 import org.synyx.sybil.config.DevSpringConfig;
-import org.synyx.sybil.database.BrickRepository;
 import org.synyx.sybil.database.OutputRelayRepository;
-import org.synyx.sybil.domain.BrickDomain;
 import org.synyx.sybil.domain.OutputRelayDomain;
 
 import java.util.ArrayList;

@@ -1,10 +1,8 @@
-package org.synyx.sybil.database;
+package org.synyx.sybil.brick.database;
 
 import org.springframework.data.neo4j.repository.GraphRepository;
 
 import org.springframework.stereotype.Repository;
-
-import org.synyx.sybil.domain.BrickDomain;
 
 
 /**

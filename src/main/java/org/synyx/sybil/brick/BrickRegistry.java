@@ -1,4 +1,4 @@
-package org.synyx.sybil.common;
+package org.synyx.sybil.brick;
 
 import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.IPConnection;
@@ -17,8 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.api.HealthController;
-import org.synyx.sybil.database.BrickRepository;
-import org.synyx.sybil.domain.BrickDomain;
+import org.synyx.sybil.brick.database.BrickDomain;
+import org.synyx.sybil.brick.database.BrickRepository;
+import org.synyx.sybil.common.BrickletRegistry;
 import org.synyx.sybil.in.Status;
 
 import java.io.IOException;
@@ -112,9 +113,9 @@ public class BrickRegistry {
             try {
                 ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort()); // ... connect it ...
 
-                ConnectionListener connectionListener = new ConnectionListener(ipConnection);
+                BrickConnectionListener brickConnectionListener = new BrickConnectionListener(ipConnection);
 
-                ipConnection.addConnectedListener(connectionListener);
+                ipConnection.addConnectedListener(brickConnectionListener);
                 ipConnections.put(brickDomain, ipConnection); // ... and add it to the map.
             } catch (IOException e) {
                 LOG.error("I/O Exception connecting to brick {}: {}", brickDomain.getName(), e.getMessage());

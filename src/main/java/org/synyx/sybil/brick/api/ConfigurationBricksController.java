@@ -1,4 +1,4 @@
-package org.synyx.sybil.api;
+package org.synyx.sybil.brick.api;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.synyx.sybil.api.resources.BrickResource;
-import org.synyx.sybil.database.BrickRepository;
-import org.synyx.sybil.domain.BrickDomain;
+import org.synyx.sybil.brick.database.BrickDomain;
+import org.synyx.sybil.brick.database.BrickRepository;
 
 import java.util.ArrayList;
 import java.util.List;

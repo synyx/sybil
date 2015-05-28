@@ -1,4 +1,4 @@
-package org.synyx.sybil.domain;
+package org.synyx.sybil.brick.database;
 
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;

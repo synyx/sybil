@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.common.BrickRegistry;
+import org.synyx.sybil.brick.BrickRegistry;
 import org.synyx.sybil.common.BrickletRegistry;
 import org.synyx.sybil.database.OutputLEDStripRepository;
 import org.synyx.sybil.domain.InputSensorDomain;

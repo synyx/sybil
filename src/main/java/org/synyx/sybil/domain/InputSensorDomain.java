@@ -9,6 +9,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import org.springframework.hateoas.core.Relation;
 
+import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.in.SensorType;
 
 import java.util.List;

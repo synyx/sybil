@@ -9,6 +9,8 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import org.springframework.hateoas.core.Relation;
 
+import org.synyx.sybil.brick.database.BrickDomain;
+
 
 /**
  * OutputRelay domain. Persistence for the relay configuration data, but not the actual objects.
