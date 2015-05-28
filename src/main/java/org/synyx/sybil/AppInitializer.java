@@ -7,7 +7,7 @@ import org.synyx.sybil.config.WebConfig;
 
 
 /**
- * ApiWebAppInitializer.
+ * AppInitializer.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
