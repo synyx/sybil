@@ -38,7 +38,7 @@ import static org.hamcrest.core.Is.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { DevSpringConfig.class })
-public class ButtonTest {
+public class ButtonIntegTest {
 
     @Autowired
     private OutputRelayRegistry outputRelayRegistry;

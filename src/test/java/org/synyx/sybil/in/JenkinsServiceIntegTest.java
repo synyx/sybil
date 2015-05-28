@@ -33,7 +33,7 @@ import static org.hamcrest.core.Is.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { DevSpringConfig.class })
-public class JenkinsServiceTest {
+public class JenkinsServiceIntegTest {
 
     @Autowired
     JenkinsService jenkinsService;

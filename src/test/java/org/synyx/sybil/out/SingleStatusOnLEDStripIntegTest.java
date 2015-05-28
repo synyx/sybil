@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @ContextConfiguration(classes = DevSpringConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class SingleStatusOnLEDStripTest {
+public class SingleStatusOnLEDStripIntegTest {
 
     private OutputLEDStrip testOne;
     private OutputLEDStrip testTwo;

@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { DevSpringConfig.class })
-public class HealthControllerTest {
+public class HealthControllerIntegTest {
 
     @Autowired
     HealthController healthController = new HealthController();

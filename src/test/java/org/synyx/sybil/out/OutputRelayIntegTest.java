@@ -31,9 +31,9 @@ import static org.junit.Assert.assertArrayEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { DevSpringConfig.class })
-public class OutputRelayTest {
+public class OutputRelayIntegTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OutputRelayTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OutputRelayIntegTest.class);
 
     private List<OutputRelay> outputRelays = new ArrayList<>();
 

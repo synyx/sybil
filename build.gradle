@@ -180,6 +180,10 @@ task integTest(type: Test) { //define the integTest task as a Test task
         //showExceptions false
         //showStandardStreams = true //show STDOUT and STDERR while gradle is running
     }
+    filter {
+        // only run tests ending in *UnitTest
+        includeTestsMatching "*IntegTest"
+    }
 }
 
 //uncomment to run integration tests with the build task. Check is a subtask of the build task, provided by java plugin

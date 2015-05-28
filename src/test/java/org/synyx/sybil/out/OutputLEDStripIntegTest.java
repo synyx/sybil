@@ -32,9 +32,9 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { DevSpringConfig.class })
-public class OutputLEDStripTest {
+public class OutputLEDStripIntegTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStripTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStripIntegTest.class);
 
     private List<OutputLEDStrip> outputLEDStrips = new ArrayList<>();
 

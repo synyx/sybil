@@ -32,9 +32,9 @@ import java.io.IOException;
 
 @ContextConfiguration(classes = DevSpringConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class BrickRegistryTest {
+public class BrickRegistryIntegTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BrickRegistryTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BrickRegistryIntegTest.class);
 
     @Autowired
     private OutputLEDStripRegistry outputLEDStripRegistry;

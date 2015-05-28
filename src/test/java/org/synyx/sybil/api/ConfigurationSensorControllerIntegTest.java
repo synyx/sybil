@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { DevSpringConfig.class })
-public class ConfigurationSensorControllerTest {
+public class ConfigurationSensorControllerIntegTest {
 
     @Autowired
     ConfigLoader configLoader;
