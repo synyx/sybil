@@ -1,4 +1,4 @@
-package org.synyx.sybil.common.jenkins;
+package org.synyx.sybil.jenkins.config;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
+import org.synyx.sybil.jenkins.domain.JenkinsProperties;
 
 import java.nio.charset.Charset;
 

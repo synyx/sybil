@@ -20,7 +20,7 @@ import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
 import org.synyx.sybil.bricklet.BrickletRegistry;
-import org.synyx.sybil.in.Status;
+import org.synyx.sybil.jenkins.domain.Status;
 
 import java.io.IOException;
 

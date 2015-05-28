@@ -39,8 +39,8 @@ import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
 import org.synyx.sybil.bricklet.output.relay.database.OutputRelayDomain;
 import org.synyx.sybil.bricklet.output.relay.database.OutputRelayRepository;
-import org.synyx.sybil.common.jenkins.JenkinsConfig;
-import org.synyx.sybil.in.Status;
+import org.synyx.sybil.jenkins.config.JenkinsConfig;
+import org.synyx.sybil.jenkins.domain.Status;
 
 import java.io.File;
 import java.io.IOException;

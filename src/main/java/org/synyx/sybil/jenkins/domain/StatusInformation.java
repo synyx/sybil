@@ -1,4 +1,4 @@
-package org.synyx.sybil.in;
+package org.synyx.sybil.jenkins.domain;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;

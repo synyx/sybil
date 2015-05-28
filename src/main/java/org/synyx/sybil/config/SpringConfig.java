@@ -8,8 +8,6 @@ import org.springframework.context.annotation.PropertySource;
 
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import org.synyx.sybil.webconfig.WebConfig;
-
 
 /**
  * Spring Configuration.

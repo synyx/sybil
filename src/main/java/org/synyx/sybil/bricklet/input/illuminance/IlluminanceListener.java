@@ -11,7 +11,7 @@ import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
-import org.synyx.sybil.in.Status;
+import org.synyx.sybil.jenkins.domain.Status;
 
 import java.util.ArrayList;
 import java.util.List;

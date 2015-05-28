@@ -3,8 +3,8 @@ package org.synyx.sybil.bricklet.output.ledstrip;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.synyx.sybil.in.Status;
-import org.synyx.sybil.in.StatusInformation;
+import org.synyx.sybil.jenkins.domain.Status;
+import org.synyx.sybil.jenkins.domain.StatusInformation;
 
 
 /**

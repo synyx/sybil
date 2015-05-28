@@ -1,4 +1,4 @@
-package org.synyx.sybil.in;
+package org.synyx.sybil.jenkins;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
@@ -28,9 +28,11 @@ import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
-import org.synyx.sybil.common.jenkins.JenkinsConfig;
-import org.synyx.sybil.common.jenkins.JenkinsJob;
-import org.synyx.sybil.common.jenkins.JenkinsProperties;
+import org.synyx.sybil.jenkins.config.JenkinsConfig;
+import org.synyx.sybil.jenkins.domain.JenkinsJob;
+import org.synyx.sybil.jenkins.domain.JenkinsProperties;
+import org.synyx.sybil.jenkins.domain.Status;
+import org.synyx.sybil.jenkins.domain.StatusInformation;
 
 import java.util.ArrayList;
 import java.util.List;

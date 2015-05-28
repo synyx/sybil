@@ -1,8 +1,9 @@
-package org.synyx.sybil.webconfig;
+package org.synyx.sybil;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import org.synyx.sybil.config.SpringConfig;
+import org.synyx.sybil.config.WebConfig;
 
 
 /**
@@ -11,7 +12,7 @@ import org.synyx.sybil.config.SpringConfig;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-public class ApiWebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+public class AppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
     protected Class<?>[] getRootConfigClasses() {

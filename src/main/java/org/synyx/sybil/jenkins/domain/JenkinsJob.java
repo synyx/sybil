@@ -1,4 +1,4 @@
-package org.synyx.sybil.common.jenkins;
+package org.synyx.sybil.jenkins.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

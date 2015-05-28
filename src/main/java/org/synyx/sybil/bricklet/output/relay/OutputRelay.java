@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.bricklet.Bricklet;
-import org.synyx.sybil.in.Status;
+import org.synyx.sybil.jenkins.domain.Status;
 
 
 /**

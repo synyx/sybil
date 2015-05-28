@@ -1,6 +1,6 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
-import org.synyx.sybil.in.StatusInformation;
+import org.synyx.sybil.jenkins.domain.StatusInformation;
 
 
 /**

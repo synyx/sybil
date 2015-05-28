@@ -11,7 +11,7 @@ import org.synyx.sybil.bricklet.output.relay.OutputRelay;
 import org.synyx.sybil.bricklet.output.relay.OutputRelayRegistry;
 import org.synyx.sybil.bricklet.output.relay.database.OutputRelayDomain;
 import org.synyx.sybil.bricklet.output.relay.database.OutputRelayRepository;
-import org.synyx.sybil.in.Status;
+import org.synyx.sybil.jenkins.domain.Status;
 
 import java.util.ArrayList;
 import java.util.List;
