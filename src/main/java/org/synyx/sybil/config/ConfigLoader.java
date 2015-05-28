@@ -26,21 +26,21 @@ import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.BrickRegistry;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
+import org.synyx.sybil.bricklet.input.SensorType;
+import org.synyx.sybil.bricklet.input.button.ButtonSensorRegistry;
+import org.synyx.sybil.bricklet.input.database.InputSensorDomain;
+import org.synyx.sybil.bricklet.input.database.InputSensorRepository;
+import org.synyx.sybil.bricklet.input.illuminance.IlluminanceSensorRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
+import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
+import org.synyx.sybil.bricklet.output.relay.database.OutputRelayDomain;
+import org.synyx.sybil.bricklet.output.relay.database.OutputRelayRepository;
 import org.synyx.sybil.common.jenkins.JenkinsConfig;
-import org.synyx.sybil.database.InputSensorRepository;
-import org.synyx.sybil.database.OutputLEDStripRepository;
-import org.synyx.sybil.database.OutputRelayRepository;
-import org.synyx.sybil.domain.InputSensorDomain;
-import org.synyx.sybil.domain.OutputLEDStripDomain;
-import org.synyx.sybil.domain.OutputRelayDomain;
-import org.synyx.sybil.in.ButtonSensorRegistry;
-import org.synyx.sybil.in.IlluminanceSensorRegistry;
-import org.synyx.sybil.in.SensorType;
 import org.synyx.sybil.in.Status;
-import org.synyx.sybil.out.Color;
-import org.synyx.sybil.out.OutputLEDStrip;
-import org.synyx.sybil.out.OutputLEDStripRegistry;
-import org.synyx.sybil.out.SingleStatusOnLEDStripRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -251,7 +251,7 @@ public class ConfigLoader {
 
         LOG.info("Resetting bricks");
 
-        List<BrickDomain> bricks = new ArrayList<>();
+        List<BrickDomain> bricks;
 
         try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
 

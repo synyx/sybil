@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 
 import org.springframework.stereotype.Component;
 
-import org.synyx.sybil.out.SingleStatusOnLEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
 
 import java.nio.charset.Charset;
 
@@ -126,11 +126,13 @@ public class JenkinsConfig {
      */
     public boolean contains(String server, String job) {
 
+        boolean containsKey = false;
+
         if (mapping.containsKey(server)) {
-            return mapping.get(server).containsKey(job);
-        } else {
-            return false;
+            containsKey = mapping.get(server).containsKey(job);
         }
+
+        return containsKey;
     }
 
 

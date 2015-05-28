@@ -22,15 +22,15 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.web.client.RestTemplate;
 
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
+import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
 import org.synyx.sybil.common.jenkins.JenkinsConfig;
 import org.synyx.sybil.common.jenkins.JenkinsJob;
 import org.synyx.sybil.common.jenkins.JenkinsProperties;
-import org.synyx.sybil.database.OutputLEDStripRepository;
-import org.synyx.sybil.domain.OutputLEDStripDomain;
-import org.synyx.sybil.out.Color;
-import org.synyx.sybil.out.OutputLEDStrip;
-import org.synyx.sybil.out.OutputLEDStripRegistry;
-import org.synyx.sybil.out.SingleStatusOnLEDStrip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,7 +159,7 @@ public class JenkinsService {
     @PreDestroy
     public void destroy() {
 
-        List<OutputLEDStripDomain> ledStripDomains = null;
+        List<OutputLEDStripDomain> ledStripDomains;
 
         try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
 
@@ -170,12 +170,10 @@ public class JenkinsService {
             tx.success();
         }
 
-        if (ledStripDomains != null) {
-            for (OutputLEDStripDomain ledStripDomain : ledStripDomains) {
-                OutputLEDStrip ledStrip = outputLEDStripRegistry.get(ledStripDomain);
-                ledStrip.setFill(Color.BLACK);
-                ledStrip.updateDisplay();
-            }
+        for (OutputLEDStripDomain ledStripDomain : ledStripDomains) {
+            OutputLEDStrip ledStrip = outputLEDStripRegistry.get(ledStripDomain);
+            ledStrip.setFill(Color.BLACK);
+            ledStrip.updateDisplay();
         }
     }
 

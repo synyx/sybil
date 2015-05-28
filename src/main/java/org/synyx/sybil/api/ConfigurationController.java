@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.synyx.sybil.brick.api.ConfigurationBricksController;
+import org.synyx.sybil.bricklet.input.api.ConfigurationSensorController;
+import org.synyx.sybil.bricklet.output.ledstrip.api.ConfigurationLEDStripController;
+import org.synyx.sybil.bricklet.output.relay.api.ConfigurationRelayController;
 import org.synyx.sybil.config.ConfigLoader;
 
 import java.io.IOException;

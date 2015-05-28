@@ -20,12 +20,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
+import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
 import org.synyx.sybil.config.DevSpringConfig;
-import org.synyx.sybil.database.OutputLEDStripRepository;
-import org.synyx.sybil.domain.OutputLEDStripDomain;
-import org.synyx.sybil.out.Color;
-import org.synyx.sybil.out.OutputLEDStrip;
-import org.synyx.sybil.out.OutputLEDStripRegistry;
 
 import java.io.IOException;
 

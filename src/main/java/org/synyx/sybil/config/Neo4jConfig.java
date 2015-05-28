@@ -20,13 +20,17 @@ import org.springframework.data.neo4j.config.Neo4jConfiguration;
 @Profile("default")
 @Configuration
 @EnableNeo4jRepositories(
-    basePackages = { "org.synyx.sybil.database", "org.synyx.sybil.brick.database" }
+    basePackages = {
+        "org.synyx.sybil.brick.database", "org.synyx.sybil.bricklet.input.database",
+        "org.synyx.sybil.bricklet.output.*.database"
+    }
 ) // this is where the repositories are
 public class Neo4jConfig extends Neo4jConfiguration {
 
     public Neo4jConfig() {
 
-        setBasePackage("org.synyx.sybil.domain", "org.synyx.sybil.out", "org.synyx.sybil.brick.database"); // this is where the domain classes are
+        setBasePackage("org.synyx.sybil.brick.database", "org.synyx.sybil.bricklet.input.database",
+            "org.synyx.sybil.bricklet.output.*.database"); // this is where the domain classes are
     }
 
     @Bean
