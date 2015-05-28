@@ -1,4 +1,4 @@
-package org.synyx.sybil.api;
+package org.synyx.sybil.brick.api;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.synyx.sybil.brick.api.ConfigurationBricksController;
 import org.synyx.sybil.config.ConfigLoader;
 import org.synyx.sybil.config.DevSpringConfig;
 

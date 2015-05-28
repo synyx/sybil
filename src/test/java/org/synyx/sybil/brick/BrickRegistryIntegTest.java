@@ -1,4 +1,4 @@
-package org.synyx.sybil.common;
+package org.synyx.sybil.brick;
 
 import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.NotConnectedException;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.synyx.sybil.brick.BrickRegistry;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
 import org.synyx.sybil.config.DevSpringConfig;
