@@ -13,14 +13,14 @@ import org.synyx.sybil.brick.database.BrickDomain;
 
 
 /**
- * OutputRelay domain. Persistence for the relay configuration data, but not the actual objects.
+ * Relay domain. Persistence for the relay configuration data, but not the actual objects.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
 @NodeEntity
 @Relation(collectionRelation = "relays")
-public class OutputRelayDomain {
+public class RelayDomain {
 
     @GraphId
     private Long id;
@@ -34,11 +34,11 @@ public class OutputRelayDomain {
     @JsonProperty("brick")
     private BrickDomain brickDomain;
 
-    public OutputRelayDomain() {
+    public RelayDomain() {
     }
 
 
-    public OutputRelayDomain(String name, String uid, BrickDomain brickDomain) {
+    public RelayDomain(String name, String uid, BrickDomain brickDomain) {
 
         this.name = name;
         this.uid = uid;
@@ -74,7 +74,7 @@ public class OutputRelayDomain {
             return false;
         }
 
-        OutputRelayDomain that = (OutputRelayDomain) o;
+        RelayDomain that = (RelayDomain) o;
 
         return id.equals(that.id) && name.equals(that.name) && uid.equals(that.uid)
             && brickDomain.equals(that.brickDomain);

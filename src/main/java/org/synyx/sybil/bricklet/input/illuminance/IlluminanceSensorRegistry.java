@@ -15,15 +15,15 @@ import org.springframework.stereotype.Service;
 import org.synyx.sybil.brick.BrickRegistry;
 import org.synyx.sybil.bricklet.BrickletRegistry;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
 /**
- * OutputLEDStripRegistry.
+ * LEDStripRegistry.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
@@ -35,8 +35,8 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
 
     private Map<IlluminanceSensorDomain, BrickletAmbientLight> illuminanceSensors = new HashMap<>();
     private BrickRegistry brickRegistry;
-    private OutputLEDStripRegistry outputLEDStripRegistry;
-    private OutputLEDStripRepository outputLEDStripRepository;
+    private LEDStripRegistry LEDStripRegistry;
+    private LEDStripRepository LEDStripRepository;
 
     // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
 
@@ -44,16 +44,16 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
      * Instantiates a new Illuminance sensor registry.
      *
      * @param  brickRegistry  the brick registry
-     * @param  outputLEDStripRegistry  the output lED strip registry
-     * @param  outputLEDStripRepository  the output lED strip repository
+     * @param  LEDStripRegistry  the output lED strip registry
+     * @param  LEDStripRepository  the output lED strip repository
      */
     @Autowired
-    public IlluminanceSensorRegistry(BrickRegistry brickRegistry, OutputLEDStripRegistry outputLEDStripRegistry,
-        OutputLEDStripRepository outputLEDStripRepository) {
+    public IlluminanceSensorRegistry(BrickRegistry brickRegistry, LEDStripRegistry LEDStripRegistry,
+        LEDStripRepository LEDStripRepository) {
 
         this.brickRegistry = brickRegistry;
-        this.outputLEDStripRegistry = outputLEDStripRegistry;
-        this.outputLEDStripRepository = outputLEDStripRepository;
+        this.LEDStripRegistry = LEDStripRegistry;
+        this.LEDStripRepository = LEDStripRepository;
     }
 
     /**
@@ -85,7 +85,7 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
                     brickletAmbientLight.setIlluminanceCallbackPeriod(5000);
 
                     brickletAmbientLight.addIlluminanceListener(new IlluminanceListener(illuminanceSensorDomain,
-                            outputLEDStripRegistry, outputLEDStripRepository));
+                            LEDStripRegistry, LEDStripRepository));
                 } else {
                     LOG.error("Error setting up illuminance sensor {}: Brick {} not available.",
                         illuminanceSensorDomain.getName(), illuminanceSensorDomain.getBrickDomain().getHostname());

@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
-import org.synyx.sybil.bricklet.output.relay.OutputRelay;
-import org.synyx.sybil.bricklet.output.relay.OutputRelayRegistry;
-import org.synyx.sybil.bricklet.output.relay.database.OutputRelayDomain;
-import org.synyx.sybil.bricklet.output.relay.database.OutputRelayRepository;
+import org.synyx.sybil.bricklet.output.relay.Relay;
+import org.synyx.sybil.bricklet.output.relay.RelayRegistry;
+import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
+import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.util.ArrayList;
@@ -28,20 +28,19 @@ public class ButtonListener implements BrickletIO4.InterruptListener {
 
     private short pins;
 
-    private List<OutputRelay> relays = new ArrayList<>();
+    private List<Relay> relays = new ArrayList<>();
 
-    public ButtonListener(ButtonDomain sensor, OutputRelayRegistry outputRelayRegistry,
-        OutputRelayRepository outputRelayRepository) {
+    public ButtonListener(ButtonDomain sensor, RelayRegistry relayRegistry, RelayRepository relayRepository) {
 
         LOG.debug("Listener added to {}", sensor.getName());
 
         pins = sensor.getPins();
 
         for (String output : sensor.getOutputs()) {
-            OutputRelayDomain domain = outputRelayRepository.findByName(output);
+            RelayDomain domain = relayRepository.findByName(output);
 
             if (domain != null) {
-                OutputRelay relay = outputRelayRegistry.get(domain);
+                Relay relay = relayRegistry.get(domain);
                 relays.add(relay);
             } else {
                 LOG.error("Configured output {} of button {} does not match a relay.", output, sensor.getName());
@@ -57,7 +56,7 @@ public class ButtonListener implements BrickletIO4.InterruptListener {
 
             if ((~valueMask & pins) > 0) { // if at least one of the configured pins has been pulled to ground (i.e. is 0)
 
-                for (OutputRelay relay : relays) {
+                for (Relay relay : relays) {
                     relay.setStates(false, false); // turn all the outputs off
                 }
             }

@@ -14,88 +14,88 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.brick.BrickRegistry;
 import org.synyx.sybil.bricklet.BrickletRegistry;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
 /**
- * OutputLEDStripRegistry.
+ * LEDStripRegistry.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
 @Service // Annotated so Spring finds and injects it.
-public class OutputLEDStripRegistry implements BrickletRegistry {
+public class LEDStripRegistry implements BrickletRegistry {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStripRegistry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LEDStripRegistry.class);
     private static final int FRAME_DURATION = 10;
     private static final int CHIP_TYPE = 2812;
 
-    private Map<OutputLEDStripDomain, OutputLEDStrip> outputLEDStrips = new HashMap<>();
+    private Map<LEDStripDomain, LEDStrip> outputLEDStrips = new HashMap<>();
     private BrickRegistry brickRegistry;
 
     // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
     /**
-     * Instantiates a new OutputLEDStrip registry.
+     * Instantiates a new LEDStrip registry.
      *
      * @param  brickRegistry  The brick registry
      */
     @Autowired
-    public OutputLEDStripRegistry(BrickRegistry brickRegistry) {
+    public LEDStripRegistry(BrickRegistry brickRegistry) {
 
         this.brickRegistry = brickRegistry;
     }
 
     /**
-     * Get a OutputLEDStrip object, instantiate a new one if necessary.
+     * Get a LEDStrip object, instantiate a new one if necessary.
      *
-     * @param  outputLEDStripDomain  The bricklet's domain from the database.
+     * @param  LEDStripDomain  The bricklet's domain from the database.
      *
-     * @return  The actual OutputLEDStrip object.
+     * @return  The actual LEDStrip object.
      */
-    public OutputLEDStrip get(OutputLEDStripDomain outputLEDStripDomain) {
+    public LEDStrip get(LEDStripDomain LEDStripDomain) {
 
-        if (outputLEDStripDomain == null) {
+        if (LEDStripDomain == null) {
             return null;
         }
 
         // if there is no LED Strip with that id in the HashMap yet...
-        if (!outputLEDStrips.containsKey(outputLEDStripDomain)) {
+        if (!outputLEDStrips.containsKey(LEDStripDomain)) {
             BrickletLEDStrip brickletLEDStrip; // since there is a try, it might end up undefined
 
             try {
                 // get the connecting to the Brick, passing the BrickDomain and the calling object
-                IPConnection ipConnection = brickRegistry.get(outputLEDStripDomain.getBrickDomain(), this);
+                IPConnection ipConnection = brickRegistry.get(LEDStripDomain.getBrickDomain(), this);
 
                 if (ipConnection != null) {
                     // Create a new Tinkerforge brickletLEDStrip object with data from the database
-                    brickletLEDStrip = new BrickletLEDStrip(outputLEDStripDomain.getUid(), ipConnection);
+                    brickletLEDStrip = new BrickletLEDStrip(LEDStripDomain.getUid(), ipConnection);
                     brickletLEDStrip.setFrameDuration(FRAME_DURATION); // Always go for the minimum (i.e. fastest) frame duration
                     brickletLEDStrip.setChipType(CHIP_TYPE); // We only use 2812 chips
                 } else {
-                    LOG.error("Error setting up LED Strip {}: Brick {} not available.", outputLEDStripDomain.getName(),
-                        outputLEDStripDomain.getBrickDomain().getHostname());
+                    LOG.error("Error setting up LED Strip {}: Brick {} not available.", LEDStripDomain.getName(),
+                        LEDStripDomain.getBrickDomain().getHostname());
 
                     brickletLEDStrip = null;
                 }
             } catch (TimeoutException | NotConnectedException e) {
-                LOG.error("Error setting up LED Strip {}: {}", outputLEDStripDomain.getName(), e.toString());
+                LOG.error("Error setting up LED Strip {}: {}", LEDStripDomain.getName(), e.toString());
                 brickletLEDStrip = null; // if there is an error, we don't want to use this
             }
 
             if (brickletLEDStrip != null) {
-                // get a new OutputLEDStrip object
-                OutputLEDStrip outputLedStrip = new OutputLEDStrip(brickletLEDStrip, outputLEDStripDomain.getLength(),
-                        outputLEDStripDomain.getName());
+                // get a new LEDStrip object
+                LEDStrip ledStrip = new LEDStrip(brickletLEDStrip, LEDStripDomain.getLength(),
+                        LEDStripDomain.getName());
 
                 // add it to the HashMap
-                outputLEDStrips.put(outputLEDStripDomain, outputLedStrip);
+                outputLEDStrips.put(LEDStripDomain, ledStrip);
             }
         }
 
-        return outputLEDStrips.get(outputLEDStripDomain); // retrieve and return
+        return outputLEDStrips.get(LEDStripDomain); // retrieve and return
     }
 
 

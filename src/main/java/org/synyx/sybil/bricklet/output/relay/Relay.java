@@ -17,25 +17,25 @@ import org.synyx.sybil.jenkins.domain.Status;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
-public class OutputRelay implements Bricklet {
+public class Relay implements Bricklet {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OutputRelay.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Relay.class);
     private final BrickletDualRelay bricklet;
     private String name;
 
     /**
-     * Makes new OutputRelay object.
+     * Makes new Relay object.
      *
      * @param  bricklet  The bricklet brick we want to control.
      * @param  name  The name to address the bricklet with, always lowercase!
      */
-    public OutputRelay(BrickletDualRelay bricklet, String name) {
+    public Relay(BrickletDualRelay bricklet, String name) {
 
         this.name = name.toLowerCase();
 
         this.bricklet = bricklet;
 
-        LOG.debug("Creating new OutputRelay {}", name);
+        LOG.debug("Creating new Relay {}", name);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class OutputRelay implements Bricklet {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        OutputRelay that = (OutputRelay) o;
+        Relay that = (Relay) o;
 
         return name.equals(that.name);
     }

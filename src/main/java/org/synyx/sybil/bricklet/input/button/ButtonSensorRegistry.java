@@ -15,15 +15,15 @@ import org.springframework.stereotype.Service;
 import org.synyx.sybil.brick.BrickRegistry;
 import org.synyx.sybil.bricklet.BrickletRegistry;
 import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
-import org.synyx.sybil.bricklet.output.relay.OutputRelayRegistry;
-import org.synyx.sybil.bricklet.output.relay.database.OutputRelayRepository;
+import org.synyx.sybil.bricklet.output.relay.RelayRegistry;
+import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
 /**
- * OutputLEDStripRegistry.
+ * LEDStripRegistry.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
@@ -36,8 +36,8 @@ public class ButtonSensorRegistry implements BrickletRegistry {
     private Map<ButtonDomain, BrickletIO4> buttons = new HashMap<>();
     private Map<String, ButtonDomain> domains = new HashMap<>();
     private BrickRegistry brickRegistry;
-    private OutputRelayRegistry outputRelayRegistry;
-    private OutputRelayRepository outputRelayRepository;
+    private RelayRegistry relayRegistry;
+    private RelayRepository relayRepository;
 
     // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
 
@@ -45,16 +45,16 @@ public class ButtonSensorRegistry implements BrickletRegistry {
      * Instantiates a new Button sensor registry.
      *
      * @param  brickRegistry  the brick registry
-     * @param  outputRelayRegistry  the output relay registry
-     * @param  outputRelayRepository  the output relay repository
+     * @param  relayRegistry  the output relay registry
+     * @param  relayRepository  the output relay repository
      */
     @Autowired
-    public ButtonSensorRegistry(BrickRegistry brickRegistry, OutputRelayRegistry outputRelayRegistry,
-        OutputRelayRepository outputRelayRepository) {
+    public ButtonSensorRegistry(BrickRegistry brickRegistry, RelayRegistry relayRegistry,
+        RelayRepository relayRepository) {
 
         this.brickRegistry = brickRegistry;
-        this.outputRelayRegistry = outputRelayRegistry;
-        this.outputRelayRepository = outputRelayRepository;
+        this.relayRegistry = relayRegistry;
+        this.relayRepository = relayRepository;
     }
 
     /**
@@ -97,8 +97,7 @@ public class ButtonSensorRegistry implements BrickletRegistry {
 
                     brickletIO4.setInterrupt((short) (buttonDomain.getPins() | interrupts)); // set interrupts for these pins, while respecting interrupts set earlier
 
-                    brickletIO4.addInterruptListener(new ButtonListener(buttonDomain, outputRelayRegistry,
-                            outputRelayRepository));
+                    brickletIO4.addInterruptListener(new ButtonListener(buttonDomain, relayRegistry, relayRepository));
                 } else {
                     LOG.error("Error setting up button {}: Brick {} not available.", buttonDomain.getName(),
                         buttonDomain.getBrickDomain().getHostname());

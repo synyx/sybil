@@ -21,9 +21,9 @@ import java.util.List;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
-public class OutputLEDStrip implements Bricklet {
+public class LEDStrip implements Bricklet {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OutputLEDStrip.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LEDStrip.class);
     private final BrickletLEDStrip ledStrip;
     private final short[] pixelBufferRed;
     private final short[] pixelBufferGreen;
@@ -33,13 +33,13 @@ public class OutputLEDStrip implements Bricklet {
     private String name;
 
     /**
-     * Makes new OutputLEDStrip object.
+     * Makes new LEDStrip object.
      *
      * @param  ledStrip  The LED Strip we want to control.
      * @param  length  How many LEDs are on the LED Strip.
      * @param  name  The name to address the LED Strip with, always lowercase!
      */
-    public OutputLEDStrip(BrickletLEDStrip ledStrip, int length, String name) {
+    public LEDStrip(BrickletLEDStrip ledStrip, int length, String name) {
 
         this.name = name.toLowerCase();
 
@@ -49,7 +49,7 @@ public class OutputLEDStrip implements Bricklet {
 
         this.length = length;
 
-        LOG.debug("Creating new OutputLEDStrip {}", name);
+        LOG.debug("Creating new LEDStrip {}", name);
 
         int differenceToMultipleOfSixteen = length % 16;
 
@@ -73,7 +73,7 @@ public class OutputLEDStrip implements Bricklet {
             return false;
         }
 
-        OutputLEDStrip that = (OutputLEDStrip) o;
+        LEDStrip that = (LEDStrip) o;
 
         return length == that.length && ledStrip.equals(that.ledStrip) && name.equals(that.name);
     }

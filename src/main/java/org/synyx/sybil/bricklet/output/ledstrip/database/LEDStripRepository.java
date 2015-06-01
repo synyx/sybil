@@ -6,13 +6,13 @@ import org.springframework.stereotype.Repository;
 
 
 /**
- * OutputLEDStripRepository.
+ * LEDStripRepository.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
 @Repository // annotated so Spring finds it and can inject it.
-public interface OutputLEDStripRepository extends GraphRepository<OutputLEDStripDomain> {
+public interface LEDStripRepository extends GraphRepository<LEDStripDomain> {
 
-    OutputLEDStripDomain findByName(String name); // Spring builds a self-explanatory method out of this. MAGIC!
+    LEDStripDomain findByName(String name); // Spring builds a self-explanatory method out of this. MAGIC!
 }

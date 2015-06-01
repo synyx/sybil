@@ -21,10 +21,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
-import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.config.DevSpringConfig;
 
 import java.io.IOException;
@@ -37,10 +37,10 @@ public class BrickRegistryIntegTest {
     private static final Logger LOG = LoggerFactory.getLogger(BrickRegistryIntegTest.class);
 
     @Autowired
-    private OutputLEDStripRegistry outputLEDStripRegistry;
+    private LEDStripRegistry LEDStripRegistry;
 
     @Autowired
-    private OutputLEDStripRepository outputLEDStripRepository;
+    private LEDStripRepository LEDStripRepository;
 
     @Autowired
     private BrickRepository brickRepository;
@@ -62,36 +62,36 @@ public class BrickRegistryIntegTest {
         brickRepository.save(test3);
 
         // define LED Strips (bricklets)
-        OutputLEDStripDomain testOne = new OutputLEDStripDomain("testone", "abc", 30, test1);
-        OutputLEDStripDomain testTwo = new OutputLEDStripDomain("testtwo", "def", 30, test2);
-        OutputLEDStripDomain testThree = new OutputLEDStripDomain("testthree", "ghi", 30, test3);
+        LEDStripDomain testOne = new LEDStripDomain("testone", "abc", 30, test1);
+        LEDStripDomain testTwo = new LEDStripDomain("testtwo", "def", 30, test2);
+        LEDStripDomain testThree = new LEDStripDomain("testthree", "ghi", 30, test3);
 
         // add them to the database
-        testOne = outputLEDStripRepository.save(testOne);
-        testTwo = outputLEDStripRepository.save(testTwo);
-        testThree = outputLEDStripRepository.save(testThree);
+        testOne = LEDStripRepository.save(testOne);
+        testTwo = LEDStripRepository.save(testTwo);
+        testThree = LEDStripRepository.save(testThree);
 
         // initialise LED Strips (fetching them from the database on the way)
-        outputLEDStripRegistry.get(testOne);
-        outputLEDStripRegistry.get(testTwo);
-        outputLEDStripRegistry.get(testThree);
+        LEDStripRegistry.get(testOne);
+        LEDStripRegistry.get(testTwo);
+        LEDStripRegistry.get(testThree);
     }
 
 
     @After
     public void close() throws NotConnectedException {
 
-        OutputLEDStripDomain testOneDomain = outputLEDStripRepository.findByName("testone");
-        OutputLEDStripDomain testTwoDomain = outputLEDStripRepository.findByName("testtwo");
-        OutputLEDStripDomain testThreeDomain = outputLEDStripRepository.findByName("testthree");
+        LEDStripDomain testOneDomain = LEDStripRepository.findByName("testone");
+        LEDStripDomain testTwoDomain = LEDStripRepository.findByName("testtwo");
+        LEDStripDomain testThreeDomain = LEDStripRepository.findByName("testthree");
 
         brickRepository.delete(testOneDomain.getBrickDomain());
         brickRepository.delete(testTwoDomain.getBrickDomain());
         brickRepository.delete(testThreeDomain.getBrickDomain());
 
-        outputLEDStripRepository.delete(testOneDomain);
-        outputLEDStripRepository.delete(testTwoDomain);
-        outputLEDStripRepository.delete(testThreeDomain);
+        LEDStripRepository.delete(testOneDomain);
+        LEDStripRepository.delete(testTwoDomain);
+        LEDStripRepository.delete(testThreeDomain);
 
         // disconnect all bricks & bricklets
         brickRegistry.disconnectAll();
@@ -107,20 +107,20 @@ public class BrickRegistryIntegTest {
 
         Color color = new Color(16, 35, 77);
 
-        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("testone"));
+        LEDStrip LEDStrip = LEDStripRegistry.get(LEDStripRepository.findByName("testone"));
 
-        outputLEDStrip.setPixel(1, color);
-        outputLEDStrip.updateDisplay();
+        LEDStrip.setPixel(1, color);
+        LEDStrip.updateDisplay();
 
-        Color pixel0 = outputLEDStrip.getPixel(0);
-        Color pixel1 = outputLEDStrip.getPixel(1);
+        Color pixel0 = LEDStrip.getPixel(0);
+        Color pixel1 = LEDStrip.getPixel(1);
 
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRedAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreenAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlueAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRedAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreenAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlueAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRedAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreenAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlueAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRedAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreenAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlueAsShort());
 
         LOG.info("FINISH Test testDisconnectALL");
     }
@@ -136,20 +136,20 @@ public class BrickRegistryIntegTest {
 
         Color color = new Color(16, 35, 77);
 
-        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("testone"));
+        LEDStrip LEDStrip = LEDStripRegistry.get(LEDStripRepository.findByName("testone"));
 
-        outputLEDStrip.setPixel(1, color);
-        outputLEDStrip.updateDisplay();
+        LEDStrip.setPixel(1, color);
+        LEDStrip.updateDisplay();
 
-        Color pixel0 = outputLEDStrip.getPixel(0);
-        Color pixel1 = outputLEDStrip.getPixel(1);
+        Color pixel0 = LEDStrip.getPixel(0);
+        Color pixel1 = LEDStrip.getPixel(1);
 
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRedAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreenAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlueAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRedAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreenAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlueAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRedAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreenAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlueAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRedAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreenAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlueAsShort());
 
         LOG.info("FINISH Test testConnectALL");
     }
@@ -164,20 +164,20 @@ public class BrickRegistryIntegTest {
 
         Color color = new Color(16, 35, 77);
 
-        OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("testone"));
+        LEDStrip LEDStrip = LEDStripRegistry.get(LEDStripRepository.findByName("testone"));
 
-        outputLEDStrip.setPixel(1, color);
-        outputLEDStrip.updateDisplay();
+        LEDStrip.setPixel(1, color);
+        LEDStrip.updateDisplay();
 
-        Color pixel0 = outputLEDStrip.getPixel(0);
-        Color pixel1 = outputLEDStrip.getPixel(1);
+        Color pixel0 = LEDStrip.getPixel(0);
+        Color pixel1 = LEDStrip.getPixel(1);
 
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRedAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreenAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlueAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRedAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreenAsShort());
-        Assert.assertEquals(outputLEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlueAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRedAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreenAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlueAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRedAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreenAsShort());
+        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlueAsShort());
 
         LOG.info("FINISH Test testReconnectALL");
     }

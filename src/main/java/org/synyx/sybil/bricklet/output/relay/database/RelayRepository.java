@@ -6,13 +6,13 @@ import org.springframework.stereotype.Repository;
 
 
 /**
- * OutputRelayRepository.
+ * RelayRepository.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
 @Repository // annotated so Spring finds it and can inject it.
-public interface OutputRelayRepository extends GraphRepository<OutputRelayDomain> {
+public interface RelayRepository extends GraphRepository<RelayDomain> {
 
-    OutputRelayDomain findByName(String name); // Spring builds a self-explanatory method out of this. MAGIC!
+    RelayDomain findByName(String name); // Spring builds a self-explanatory method out of this. MAGIC!
 }

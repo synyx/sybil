@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.synyx.sybil.api.resources.PatchResource;
 import org.synyx.sybil.api.resources.SinglePatchResource;
 import org.synyx.sybil.bricklet.output.relay.EnumRelay;
-import org.synyx.sybil.bricklet.output.relay.OutputRelay;
-import org.synyx.sybil.bricklet.output.relay.OutputRelayRegistry;
-import org.synyx.sybil.bricklet.output.relay.database.OutputRelayDomain;
-import org.synyx.sybil.bricklet.output.relay.database.OutputRelayRepository;
+import org.synyx.sybil.bricklet.output.relay.Relay;
+import org.synyx.sybil.bricklet.output.relay.RelayRegistry;
+import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
+import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,24 +48,24 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RequestMapping("/configuration/relays")
 public class ConfigurationRelayController {
 
-    private OutputRelayRepository outputRelayRepository;
+    private RelayRepository relayRepository;
     private GraphDatabaseService graphDatabaseService;
-    private OutputRelayRegistry outputRelayRegistry;
+    private RelayRegistry relayRegistry;
 
     @Autowired
-    public ConfigurationRelayController(OutputRelayRepository outputRelayRepository,
-        GraphDatabaseService graphDatabaseService, OutputRelayRegistry outputRelayRegistry) {
+    public ConfigurationRelayController(RelayRepository relayRepository, GraphDatabaseService graphDatabaseService,
+        RelayRegistry relayRegistry) {
 
-        this.outputRelayRepository = outputRelayRepository;
+        this.relayRepository = relayRepository;
         this.graphDatabaseService = graphDatabaseService;
-        this.outputRelayRegistry = outputRelayRegistry;
+        this.relayRegistry = relayRegistry;
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
     public Resources<RelayResource> relays() {
 
-        List<OutputRelayDomain> relays;
+        List<RelayDomain> relays;
         List<RelayResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
@@ -75,13 +75,13 @@ public class ConfigurationRelayController {
         try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
 
             // get all Bricks from database and cast them into a list so that they're actually fetched
-            relays = new ArrayList<>(IteratorUtil.asCollection(outputRelayRepository.findAll()));
+            relays = new ArrayList<>(IteratorUtil.asCollection(relayRepository.findAll()));
 
             // end transaction
             tx.success();
         }
 
-        for (OutputRelayDomain relayDomain : relays) {
+        for (RelayDomain relayDomain : relays) {
             RelayResource resource = getRelay(relayDomain.getName());
 
             resources.add(resource);
@@ -95,7 +95,7 @@ public class ConfigurationRelayController {
     @RequestMapping(method = RequestMethod.PATCH, produces = { "application/hal+json" })
     public Resources<RelayResource> updateRelays(@RequestBody PatchResource input) throws Exception {
 
-        List<OutputRelayDomain> relays;
+        List<RelayDomain> relays;
         List<RelayResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
@@ -105,16 +105,16 @@ public class ConfigurationRelayController {
         try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
 
             // get all Bricks from database and cast them into a list so that they're actually fetched
-            relays = new ArrayList<>(IteratorUtil.asCollection(outputRelayRepository.findAll()));
+            relays = new ArrayList<>(IteratorUtil.asCollection(relayRepository.findAll()));
 
             // end transaction
             tx.success();
         }
 
-        for (OutputRelayDomain relayDomain : relays) {
+        for (RelayDomain relayDomain : relays) {
             for (SinglePatchResource patch : input.getPatches()) {
                 if (patch.getAction().equals("set") && patch.getTarget().equals("relays")) {
-                    OutputRelay relay = outputRelayRegistry.get(relayDomain);
+                    Relay relay = relayRegistry.get(relayDomain);
                     boolean state = patch.getValues().get(0).equals("true");
                     relay.setStates(state, state);
                 } else {
@@ -134,8 +134,8 @@ public class ConfigurationRelayController {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = { "application/hal+json" })
     public RelayResource getRelay(@PathVariable String name) {
 
-        OutputRelayDomain relayDomain = outputRelayRepository.findByName(name);
-        OutputRelay relay = outputRelayRegistry.get(relayDomain);
+        RelayDomain relayDomain = relayRepository.findByName(name);
+        Relay relay = relayRegistry.get(relayDomain);
 
         List<Link> links = new ArrayList<>();
 
@@ -153,8 +153,8 @@ public class ConfigurationRelayController {
     @RequestMapping(value = "/{name}", method = RequestMethod.PATCH, produces = { "application/hal+json" })
     public RelayResource updateRelay(@PathVariable String name, @RequestBody PatchResource input) throws Exception {
 
-        OutputRelayDomain relayDomain = outputRelayRepository.findByName(name);
-        OutputRelay relay = outputRelayRegistry.get(relayDomain);
+        RelayDomain relayDomain = relayRepository.findByName(name);
+        Relay relay = relayRegistry.get(relayDomain);
 
         for (SinglePatchResource patch : input.getPatches()) {
             switch (patch.getAction()) {

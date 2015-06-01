@@ -13,14 +13,14 @@ import org.synyx.sybil.brick.database.BrickDomain;
 
 
 /**
- * OutputLEDStrip domain. Persistence for the LED Strip data, but not the actual OutputLEDStrip object.
+ * LEDStrip domain. Persistence for the LED Strip data, but not the actual LEDStrip object.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
 @NodeEntity
 @Relation(collectionRelation = "ledstrips")
-public class OutputLEDStripDomain {
+public class LEDStripDomain {
 
     @GraphId
     private Long id;
@@ -39,19 +39,19 @@ public class OutputLEDStripDomain {
     /**
      * DO NOT CALL THIS! Exists only to placate Neo4j.
      */
-    protected OutputLEDStripDomain() {
+    protected LEDStripDomain() {
     }
 
 
     /**
-     * Instantiates a new OutputLEDStrip domain.
+     * Instantiates a new LEDStrip domain.
      *
      * @param  name  The name to address the Bricklet with, always lowercase!
      * @param  uid  The Bricklet's UID
      * @param  length  The length, i.e. the number of LEDs
      * @param  brickDomain  The domain associated with the connected Brick
      */
-    public OutputLEDStripDomain(String name, String uid, int length, BrickDomain brickDomain) {
+    public LEDStripDomain(String name, String uid, int length, BrickDomain brickDomain) {
 
         this.name = name.toLowerCase(); // Names are always lowercase!
         this.uid = uid;
@@ -70,7 +70,7 @@ public class OutputLEDStripDomain {
             return false;
         }
 
-        OutputLEDStripDomain that = (OutputLEDStripDomain) o;
+        LEDStripDomain that = (LEDStripDomain) o;
 
         return length == that.length && brickDomain.equals(that.brickDomain) && id.equals(that.id)
             && name.equals(that.name) && uid.equals(that.uid);

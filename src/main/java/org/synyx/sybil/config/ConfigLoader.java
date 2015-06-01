@@ -33,13 +33,13 @@ import org.synyx.sybil.bricklet.input.illuminance.IlluminanceSensorRegistry;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorRepository;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
-import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStripRegistry;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
-import org.synyx.sybil.bricklet.output.relay.database.OutputRelayDomain;
-import org.synyx.sybil.bricklet.output.relay.database.OutputRelayRepository;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
+import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
+import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 import org.synyx.sybil.jenkins.config.JenkinsConfig;
 import org.synyx.sybil.jenkins.domain.Status;
 
@@ -78,17 +78,17 @@ public class ConfigLoader {
     // The Repository to save Brick configuration data
     private BrickRepository brickRepository;
 
-    // The Repository to save OutputLEDStrip configuration data
-    private OutputLEDStripRepository outputLEDStripRepository;
+    // The Repository to save LEDStrip configuration data
+    private LEDStripRepository LEDStripRepository;
 
     // This fetches the actual LED Strip objects for given config data
-    private OutputLEDStripRegistry outputLEDStripRegistry;
+    private LEDStripRegistry LEDStripRegistry;
 
     // Fetches one SingleStatusOnLEDStrip for each LED Strip
     private SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
 
-    // The Repository to save OutputRelay configuration data
-    private OutputRelayRepository outputRelayRepository;
+    // The Repository to save Relay configuration data
+    private RelayRepository relayRepository;
 
     // The Repository to save IlluminanceSensor configuration data
     private IlluminanceSensorRepository illuminanceSensorRepository;
@@ -120,12 +120,12 @@ public class ConfigLoader {
      * Instantiates a new JSON config loader.
      *
      * @param  brickRepository  The Brick repository
-     * @param  outputLEDStripRepository  The OutputLEDStrip repository
+     * @param  LEDStripRepository  The LEDStrip repository
      * @param  env  The Environment (provided by Spring, contains the configuration read from config.properties)
-     * @param  outputLEDStripRegistry  the OutputLEDStrip registry
+     * @param  LEDStripRegistry  the LEDStrip registry
      * @param  jenkinsConfig  the jenkins configuration
      * @param  singleStatusOnLEDStripRegistry  the SingleStatusOnLEDStrip registry
-     * @param  outputRelayRepository  the output relay repository
+     * @param  relayRepository  the output relay repository
      * @param  illuminanceSensorRepository  the input sensor repository
      * @param  graphDatabaseService  the graph database service
      * @param  brickRegistry  the brick registry
@@ -133,21 +133,21 @@ public class ConfigLoader {
      * @param  buttonSensorRegistry  the button sensor registry
      */
     @Autowired
-    public ConfigLoader(BrickRepository brickRepository, OutputLEDStripRepository outputLEDStripRepository,
-        Environment env, OutputLEDStripRegistry outputLEDStripRegistry, JenkinsConfig jenkinsConfig,
-        SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, OutputRelayRepository outputRelayRepository,
+    public ConfigLoader(BrickRepository brickRepository, LEDStripRepository LEDStripRepository, Environment env,
+        LEDStripRegistry LEDStripRegistry, JenkinsConfig jenkinsConfig,
+        SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, RelayRepository relayRepository,
         IlluminanceSensorRepository illuminanceSensorRepository, ButtonRepository buttonRepository,
         GraphDatabaseService graphDatabaseService, BrickRegistry brickRegistry,
         IlluminanceSensorRegistry illuminanceSensorRegistry, ButtonSensorRegistry buttonSensorRegistry) {
 
         this.brickRepository = brickRepository;
-        this.outputLEDStripRepository = outputLEDStripRepository;
+        this.LEDStripRepository = LEDStripRepository;
         configDir = env.getProperty("path.to.configfiles");
         jenkinsServerConfigFile = env.getProperty("jenkins.configfile");
-        this.outputLEDStripRegistry = outputLEDStripRegistry;
+        this.LEDStripRegistry = LEDStripRegistry;
         this.jenkinsConfig = jenkinsConfig;
         this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
-        this.outputRelayRepository = outputRelayRepository;
+        this.relayRepository = relayRepository;
         this.illuminanceSensorRepository = illuminanceSensorRepository;
         this.graphDatabaseService = graphDatabaseService;
         this.brickRegistry = brickRegistry;
@@ -292,7 +292,7 @@ public class ConfigLoader {
                 new TypeReference<List<Map<String, Object>>>() {
                 });
 
-        outputLEDStripRepository.deleteAll();
+        LEDStripRepository.deleteAll();
 
         for (Map ledstrip : ledstrips) { // ... deserialize the data manually
 
@@ -315,7 +315,7 @@ public class ConfigLoader {
                 BrickDomain brick = brickRepository.findByName(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
 
                 if (brick != null) { // if there was corresponding brick found in the repo...
-                    outputLEDStripRepository.save(new OutputLEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
+                    LEDStripRepository.save(new LEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
                 } else { // if not...
                     LOG.error("Brick {} does not exist.", ledstrip.get("brick").toString()); // ... error!
                     HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
@@ -371,7 +371,7 @@ public class ConfigLoader {
                 new TypeReference<List<Map<String, Object>>>() {
                 });
 
-        outputRelayRepository.deleteAll();
+        relayRepository.deleteAll();
 
         for (Map relay : relays) { // ... deserialize the data manually
 
@@ -391,7 +391,7 @@ public class ConfigLoader {
             BrickDomain brick = brickRepository.findByName(relay.get("brick").toString()); // fetch the corresponding bricks from the repo
 
             if (brick != null) { // if there was corresponding brick found in the repo...
-                outputRelayRepository.save(new OutputRelayDomain(name, uid, brick)); // ... save the relay.
+                relayRepository.save(new RelayDomain(name, uid, brick)); // ... save the relay.
             } else { // if not...
                 LOG.error("Brick {} does not exist.", relay.get("brick").toString()); // ... error!
                 HealthController.setHealth(Status.WARNING, "loadRelayConfig");
@@ -556,19 +556,19 @@ public class ConfigLoader {
                 String jobName = line.get("name").toString();
                 String ledstrip = line.get("ledstrip").toString();
 
-                OutputLEDStripDomain outputLEDStripDomain = outputLEDStripRepository.findByName(ledstrip.toLowerCase()); // names are always lowercase
+                LEDStripDomain LEDStripDomain = LEDStripRepository.findByName(ledstrip.toLowerCase()); // names are always lowercase
 
-                OutputLEDStrip outputLEDStrip = outputLEDStripRegistry.get(outputLEDStripDomain);
+                LEDStrip LEDStrip = LEDStripRegistry.get(LEDStripDomain);
 
-                if (outputLEDStrip != null) {
+                if (LEDStrip != null) {
                     Map<String, Color> colors = customStatusColors.get(ledstrip);
 
                     if (colors != null) {
                         jenkinsConfig.put(server, jobName,
-                            singleStatusOnLEDStripRegistry.get(outputLEDStrip, colors.get("okay"),
-                                colors.get("warning"), colors.get("critical")));
+                            singleStatusOnLEDStripRegistry.get(LEDStrip, colors.get("okay"), colors.get("warning"),
+                                colors.get("critical")));
                     } else {
-                        jenkinsConfig.put(server, jobName, singleStatusOnLEDStripRegistry.get(outputLEDStrip));
+                        jenkinsConfig.put(server, jobName, singleStatusOnLEDStripRegistry.get(LEDStrip));
                     }
                 } else {
                     LOG.warn("Ledstrip {} does not exist.", ledstrip);

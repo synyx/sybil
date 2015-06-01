@@ -9,7 +9,7 @@ import java.util.Map;
 
 
 /**
- * OutputLEDStripRegistry.
+ * LEDStripRegistry.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
@@ -17,55 +17,54 @@ import java.util.Map;
 @Service // Annotated so Spring finds and injects it.
 public class SingleStatusOnLEDStripRegistry implements BrickletRegistry {
 
-    private Map<OutputLEDStrip, SingleStatusOnLEDStrip> singleStatusOnLEDStrips = new HashMap<>();
+    private Map<LEDStrip, SingleStatusOnLEDStrip> singleStatusOnLEDStrips = new HashMap<>();
 
     /**
      * Get a SingleStatusOnLEDStrip object, instantiate a new one if necessary.
      *
-     * @param  outputLEDStrip  The LED Strip object.
+     * @param  LEDStrip  The LED Strip object.
      *
      * @return  The SingleStatusOnLEDStrip object.
      */
-    public SingleStatusOnLEDStrip get(OutputLEDStrip outputLEDStrip) {
+    public SingleStatusOnLEDStrip get(LEDStrip LEDStrip) {
 
-        if (outputLEDStrip == null) {
+        if (LEDStrip == null) {
             return null;
         }
 
         // if there is no LED Strip with that id in the HashMap yet...
-        if (!singleStatusOnLEDStrips.containsKey(outputLEDStrip)) {
+        if (!singleStatusOnLEDStrips.containsKey(LEDStrip)) {
             // add it to the HashMap
-            singleStatusOnLEDStrips.put(outputLEDStrip, new SingleStatusOnLEDStrip(outputLEDStrip));
+            singleStatusOnLEDStrips.put(LEDStrip, new SingleStatusOnLEDStrip(LEDStrip));
         }
 
-        return singleStatusOnLEDStrips.get(outputLEDStrip); // retrieve and return
+        return singleStatusOnLEDStrips.get(LEDStrip); // retrieve and return
     }
 
 
     /**
      * Get single status on lED strip with custom status colors.
      *
-     * @param  outputLEDStrip  The LED Strip object.
+     * @param  LEDStrip  The LED Strip object.
      * @param  okay  The Color for status OKAY
      * @param  warning  The Color for status WARNING
      * @param  critical  The Color for status CRITICAL
      *
      * @return  The SingleStatusOnLEDStrip object.
      */
-    public SingleStatusOnLEDStrip get(OutputLEDStrip outputLEDStrip, Color okay, Color warning, Color critical) {
+    public SingleStatusOnLEDStrip get(LEDStrip LEDStrip, Color okay, Color warning, Color critical) {
 
-        if (outputLEDStrip == null) {
+        if (LEDStrip == null) {
             return null;
         }
 
         // if there is no LED Strip with that id in the HashMap yet...
-        if (!singleStatusOnLEDStrips.containsKey(outputLEDStrip)) {
+        if (!singleStatusOnLEDStrips.containsKey(LEDStrip)) {
             // add it to the HashMap
-            singleStatusOnLEDStrips.put(outputLEDStrip,
-                new SingleStatusOnLEDStrip(outputLEDStrip, okay, warning, critical));
+            singleStatusOnLEDStrips.put(LEDStrip, new SingleStatusOnLEDStrip(LEDStrip, okay, warning, critical));
         }
 
-        return singleStatusOnLEDStrips.get(outputLEDStrip); // retrieve and return
+        return singleStatusOnLEDStrips.get(LEDStrip); // retrieve and return
     }
 
 

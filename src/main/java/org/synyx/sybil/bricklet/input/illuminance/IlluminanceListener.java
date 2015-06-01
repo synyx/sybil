@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.util.ArrayList;
@@ -26,14 +26,14 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
 
     private static final Logger LOG = LoggerFactory.getLogger(IlluminanceListener.class);
 
-    private List<OutputLEDStrip> ledStrips = new ArrayList<>();
+    private List<LEDStrip> ledStrips = new ArrayList<>();
 
     private int threshold;
 
     private double multiplier;
 
-    public IlluminanceListener(IlluminanceSensorDomain sensor, OutputLEDStripRegistry outputLEDStripRegistry,
-        OutputLEDStripRepository outputLEDStripRepository) {
+    public IlluminanceListener(IlluminanceSensorDomain sensor, LEDStripRegistry LEDStripRegistry,
+        LEDStripRepository LEDStripRepository) {
 
         LOG.debug("Listener added to {}", sensor.getName());
 
@@ -42,10 +42,10 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
         multiplier = sensor.getMultiplier();
 
         for (String output : sensor.getOutputs()) {
-            OutputLEDStripDomain domain = outputLEDStripRepository.findByName(output);
+            LEDStripDomain domain = LEDStripRepository.findByName(output);
 
             if (domain != null) {
-                OutputLEDStrip ledStrip = outputLEDStripRegistry.get(domain);
+                LEDStrip ledStrip = LEDStripRegistry.get(domain);
                 ledStrips.add(ledStrip);
             } else {
                 LOG.error("Configured output {} of illuminance sensor {} does not match a LED Strip.", output,
@@ -68,7 +68,7 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
             brightness += ((threshold * 10) - illuminance) * multiplier;
         }
 
-        for (OutputLEDStrip ledStrip : ledStrips) {
+        for (LEDStrip ledStrip : ledStrips) {
             if (brightness != ledStrip.getBrightness()) {
                 ledStrip.setBrightness(brightness);
                 ledStrip.updateDisplay();

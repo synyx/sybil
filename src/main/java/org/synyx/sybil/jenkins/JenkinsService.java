@@ -23,11 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
-import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.OutputLEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OutputLEDStripRepository;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.jenkins.config.JenkinsConfig;
 import org.synyx.sybil.jenkins.domain.JenkinsJob;
 import org.synyx.sybil.jenkins.domain.JenkinsProperties;
@@ -65,9 +65,9 @@ public class JenkinsService {
      */
     private final JenkinsConfig jenkinsConfig;
 
-    private final OutputLEDStripRepository outputLEDStripRepository;
+    private final LEDStripRepository LEDStripRepository;
 
-    private final OutputLEDStripRegistry outputLEDStripRegistry;
+    private final LEDStripRegistry LEDStripRegistry;
 
     private final GraphDatabaseService graphDatabaseService;
 
@@ -75,17 +75,17 @@ public class JenkinsService {
      * Instantiates a new Jenkins service.
      *
      * @param  jenkinsConfig  The Jenkins config bean, autowired in.
-     * @param  outputLEDStripRegistry  the output lED strip registry
-     * @param  outputLEDStripRepository  the output lED strip repository
+     * @param  LEDStripRegistry  the output lED strip registry
+     * @param  LEDStripRepository  the output lED strip repository
      * @param  graphDatabaseService  the graph database service
      */
     @Autowired
-    public JenkinsService(JenkinsConfig jenkinsConfig, OutputLEDStripRegistry outputLEDStripRegistry,
-        OutputLEDStripRepository outputLEDStripRepository, GraphDatabaseService graphDatabaseService) {
+    public JenkinsService(JenkinsConfig jenkinsConfig, LEDStripRegistry LEDStripRegistry,
+        LEDStripRepository LEDStripRepository, GraphDatabaseService graphDatabaseService) {
 
         this.jenkinsConfig = jenkinsConfig;
-        this.outputLEDStripRegistry = outputLEDStripRegistry;
-        this.outputLEDStripRepository = outputLEDStripRepository;
+        this.LEDStripRegistry = LEDStripRegistry;
+        this.LEDStripRepository = LEDStripRepository;
         this.graphDatabaseService = graphDatabaseService;
     }
 
@@ -161,19 +161,19 @@ public class JenkinsService {
     @PreDestroy
     public void destroy() {
 
-        List<OutputLEDStripDomain> ledStripDomains;
+        List<LEDStripDomain> ledStripDomains;
 
         try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
 
             // get all Bricks from database and cast them into a list so that they're actually fetched
-            ledStripDomains = new ArrayList<>(IteratorUtil.asCollection(outputLEDStripRepository.findAll()));
+            ledStripDomains = new ArrayList<>(IteratorUtil.asCollection(LEDStripRepository.findAll()));
 
             // end transaction
             tx.success();
         }
 
-        for (OutputLEDStripDomain ledStripDomain : ledStripDomains) {
-            OutputLEDStrip ledStrip = outputLEDStripRegistry.get(ledStripDomain);
+        for (LEDStripDomain ledStripDomain : ledStripDomains) {
+            LEDStrip ledStrip = LEDStripRegistry.get(ledStripDomain);
             ledStrip.setFill(Color.BLACK);
             ledStrip.updateDisplay();
         }
