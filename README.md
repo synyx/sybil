@@ -162,7 +162,7 @@ src/                                Source code.
     | | | | +-ButtonListener        Listener for Button interrupts.
     | | | | +-ButtonSensorRegistry  Registers Buttons, so they can listen f. interrupts.
     | | | |
-    | | | +-illuminance/            Illuminance sensors (Ambient Brightness bricklets).            
+    | | | +-illuminance/            Illuminance sensors (Ambient Brightness bricklets).
     | | | | +-api/                  API-controller & helper for illumination sensors.
     | | | | | +-Co…IlluminanceCont… MVC Controller for reading ill. sensor configuration.
     | | | | | +-IlluminanceResource Spring HATEOAS wrapper around ill. sensor config.
