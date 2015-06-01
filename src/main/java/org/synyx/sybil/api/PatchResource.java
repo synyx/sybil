@@ -1,4 +1,4 @@
-package org.synyx.sybil.api.resources;
+package org.synyx.sybil.api;
 
 import java.util.List;
 

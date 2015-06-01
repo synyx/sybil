@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.synyx.sybil.api.resources.PatchResource;
-import org.synyx.sybil.api.resources.SinglePatchResource;
+import org.synyx.sybil.api.PatchResource;
+import org.synyx.sybil.api.SinglePatchResource;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
