@@ -1,5 +1,8 @@
 package org.synyx.sybil.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
@@ -25,4 +28,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
     }
 ) // scan for annotated classes, like @Service, @Configuration, etc. - while ignoring the WebConfig, which is loaded by the ApiWebAppInitializer
 public class DevSpringConfig {
+
+    @Bean
+    ObjectMapper mapper() {
+
+        return new ObjectMapper();
+    }
 }

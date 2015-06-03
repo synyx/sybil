@@ -3,16 +3,6 @@ package org.synyx.sybil.config;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.tinkerforge.BrickMaster;
-import com.tinkerforge.IPConnection;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
-
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-
-import org.neo4j.helpers.collection.IteratorUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +13,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.api.HealthController;
-import org.synyx.sybil.brick.BrickRegistry;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
+import org.synyx.sybil.bricklet.BrickletNameRegistry;
 import org.synyx.sybil.bricklet.input.button.ButtonSensorRegistry;
 import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
 import org.synyx.sybil.bricklet.input.button.database.ButtonRepository;
@@ -48,10 +38,8 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -108,13 +96,8 @@ public class ConfigLoader {
     // Map saving the custom status colors for SingleStatusOnLEDStrips
     private Map<String, Map<String, Color>> customStatusColors = new HashMap<>();
 
-    // Set saving all the names, making sure, they are all unique
-    private Set<String> brickletNames = new HashSet<>();
-
-    // Database service
-    private GraphDatabaseService graphDatabaseService;
-
-    private BrickRegistry brickRegistry;
+    // Registers bricklets' names to make sure they are unique
+    private BrickletNameRegistry brickletNameRegistry;
 
     /**
      * Instantiates a new JSON config loader.
@@ -127,8 +110,6 @@ public class ConfigLoader {
      * @param  singleStatusOnLEDStripRegistry  the SingleStatusOnLEDStrip registry
      * @param  relayRepository  the output relay repository
      * @param  illuminanceSensorRepository  the input sensor repository
-     * @param  graphDatabaseService  the graph database service
-     * @param  brickRegistry  the brick registry
      * @param  illuminanceSensorRegistry  the illuminance sensor registry
      * @param  buttonSensorRegistry  the button sensor registry
      */
@@ -137,8 +118,8 @@ public class ConfigLoader {
         LEDStripRegistry LEDStripRegistry, JenkinsConfig jenkinsConfig,
         SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, RelayRepository relayRepository,
         IlluminanceSensorRepository illuminanceSensorRepository, ButtonRepository buttonRepository,
-        GraphDatabaseService graphDatabaseService, BrickRegistry brickRegistry,
-        IlluminanceSensorRegistry illuminanceSensorRegistry, ButtonSensorRegistry buttonSensorRegistry) {
+        IlluminanceSensorRegistry illuminanceSensorRegistry, ButtonSensorRegistry buttonSensorRegistry,
+        BrickletNameRegistry brickletNameRegistry) {
 
         this.brickRepository = brickRepository;
         this.LEDStripRepository = LEDStripRepository;
@@ -149,11 +130,10 @@ public class ConfigLoader {
         this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
         this.relayRepository = relayRepository;
         this.illuminanceSensorRepository = illuminanceSensorRepository;
-        this.graphDatabaseService = graphDatabaseService;
-        this.brickRegistry = brickRegistry;
         this.illuminanceSensorRegistry = illuminanceSensorRegistry;
         this.buttonSensorRegistry = buttonSensorRegistry;
         this.buttonRepository = buttonRepository;
+        this.brickletNameRegistry = brickletNameRegistry;
     }
 
     /**
@@ -161,23 +141,7 @@ public class ConfigLoader {
      */
     public void loadConfig() {
 
-        brickletNames.clear();
-
-        try {
-            loadBricksConfig();
-        } catch (IOException e) {
-            LOG.error("Error loading bricks.json: {}", e.toString());
-            HealthController.setHealth(Status.CRITICAL, "loadBricksConfig");
-        }
-
-        if (HealthController.getHealth() == Status.OKAY) {
-            try {
-                resetBricks();
-            } catch (TimeoutException | NotConnectedException | InterruptedException e) {
-                LOG.error("Error resetting bricks: {}", e.toString());
-                HealthController.setHealth(Status.CRITICAL, "resetBricks");
-            }
-        }
+        brickletNameRegistry.clear();
 
         if (HealthController.getHealth() == Status.OKAY) {
             try {
@@ -227,59 +191,6 @@ public class ConfigLoader {
 
 
     /**
-     * Load bricks config.
-     *
-     * @throws  IOException  the iO exception
-     */
-    public void loadBricksConfig() throws IOException {
-
-        LOG.info("Loading Brick configuration");
-
-        List<BrickDomain> bricks = mapper.readValue(new File(configDir + "bricks.json"),
-                new TypeReference<List<BrickDomain>>() {
-                });
-
-        brickRepository.deleteAll();
-
-        brickRepository.save(bricks); // ... simply dump them into the database
-    }
-
-
-    /**
-     * Reset all bricks.
-     *
-     * @throws  TimeoutException  the timeout exception
-     * @throws  TimeoutException  the timeout exception
-     * @throws  TimeoutException  the timeout exception
-     */
-    public void resetBricks() throws TimeoutException, NotConnectedException, InterruptedException {
-
-        LOG.info("Resetting bricks");
-
-        List<BrickDomain> bricks;
-
-        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
-            // get all Bricks from database and cast them into a list so that they're actually fetched
-            bricks = new ArrayList<>(IteratorUtil.asCollection(brickRepository.findAll()));
-
-            // end transaction
-            tx.success();
-        }
-
-        for (BrickDomain brick : bricks) {
-            IPConnection ipConnection = brickRegistry.get(brick);
-            BrickMaster brickMaster = new BrickMaster(brick.getUid(), ipConnection);
-            brickMaster.reset();
-        }
-
-        Thread.sleep(5000);
-
-        brickRegistry.disconnectAll();
-    }
-
-
-    /**
      * Load LED Strip configuration.
      *
      * @throws  IOException  the iO exception
@@ -298,14 +209,14 @@ public class ConfigLoader {
 
             String name = ledstrip.get("name").toString();
 
-            if (brickletNames.contains(name)) {
+            if (brickletNameRegistry.contains(name)) {
                 LOG.error("Failed to load config for LED Strip {}: Name is not unique.", name);
                 HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
 
                 break;
             }
 
-            brickletNames.add(name);
+            brickletNameRegistry.add(name);
 
             String uid = ledstrip.get("uid").toString();
 
@@ -377,14 +288,14 @@ public class ConfigLoader {
 
             String name = relay.get("name").toString();
 
-            if (brickletNames.contains(name)) {
+            if (brickletNameRegistry.contains(name)) {
                 LOG.error("Failed to load config for Relay {}: Name is not unique.", name);
                 HealthController.setHealth(Status.WARNING, "loadRelayConfig");
 
                 break;
             }
 
-            brickletNames.add(name);
+            brickletNameRegistry.add(name);
 
             String uid = relay.get("uid").toString();
 
@@ -420,14 +331,14 @@ public class ConfigLoader {
 
             String name = sensor.get("name").toString();
 
-            if (brickletNames.contains(name)) {
+            if (brickletNameRegistry.contains(name)) {
                 LOG.error("Failed to load config for Sensor {}: Name is not unique.", name);
                 HealthController.setHealth(Status.WARNING, "loadSensorConfig");
 
                 break;
             }
 
-            brickletNames.add(name);
+            brickletNameRegistry.add(name);
 
             String uid = sensor.get("uid").toString();
 

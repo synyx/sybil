@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.context.annotation.Profile;
-
 import org.springframework.stereotype.Component;
+
+import org.synyx.sybil.brick.BrickConfigLoader;
 
 import javax.annotation.PostConstruct;
 
@@ -18,7 +18,6 @@ import javax.annotation.PostConstruct;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Profile("default")
 @Component
 public class StartupLoader {
 
@@ -26,16 +25,23 @@ public class StartupLoader {
 
     private ConfigLoader configLoader;
 
+    private BrickConfigLoader brickConfigLoader;
+
     @Autowired
-    public StartupLoader(ConfigLoader configLoader) {
+    public StartupLoader(ConfigLoader configLoader, BrickConfigLoader brickConfigLoader) {
 
         this.configLoader = configLoader;
+        this.brickConfigLoader = brickConfigLoader;
     }
 
     @PostConstruct
     public void init() {
 
         LOG.info("Loading Startup Configuration");
+
+        brickConfigLoader.loadBricksConfig();
+
+        brickConfigLoader.resetBricks();
 
         configLoader.loadConfig();
     }

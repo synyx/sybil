@@ -2,13 +2,7 @@ package org.synyx.sybil.api;
 
 import org.junit.Test;
 
-import org.junit.runner.RunWith;
-
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
-import org.synyx.sybil.config.DevSpringConfig;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 
@@ -28,8 +22,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { DevSpringConfig.class })
 public class ConfigurationControllerUnitTest {
 
     @Test
