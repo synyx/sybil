@@ -5,6 +5,9 @@ import org.junit.Test;
 
 import org.junit.runner.RunWith;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.test.context.ContextConfiguration;
@@ -16,8 +19,8 @@ import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
-import org.synyx.sybil.config.ConfigLoader;
 import org.synyx.sybil.config.DevSpringConfig;
+import org.synyx.sybil.config.StartupLoader;
 import org.synyx.sybil.jenkins.config.JenkinsConfig;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,26 +38,31 @@ import static org.hamcrest.core.Is.is;
 @ContextConfiguration(classes = { DevSpringConfig.class })
 public class JenkinsServiceIntegTest {
 
+    // Logger
+    private static final Logger LOG = LoggerFactory.getLogger(JenkinsServiceIntegTest.class);
+
     @Autowired
     JenkinsService jenkinsService;
 
     @Autowired
-    ConfigLoader configLoader;
+    StartupLoader startupLoader;
 
     @Autowired
     JenkinsConfig jenkinsConfig;
 
     @Autowired
-    LEDStripRegistry outputLEDStripRegistry;
+    LEDStripRegistry ledStripRegistry;
 
     @Autowired
-    LEDStripRepository outputLEDStripRepository;
+    LEDStripRepository ledStripRepository;
 
     @Autowired
     SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
 
     LEDStrip stubOne;
+
     LEDStrip stubTwo;
+
     LEDStrip stubThree;
 
     SingleStatusOnLEDStrip stubOneStatus;
@@ -64,11 +72,13 @@ public class JenkinsServiceIntegTest {
     @Before
     public void setup() {
 
-        configLoader.loadConfig();
+        LOG.info("START JenkinsServiceIntegTest setup");
 
-        stubOne = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledone"));
-        stubTwo = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledtwo"));
-        stubThree = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledthree"));
+        startupLoader.init(); // reloads all the config files
+
+        stubOne = ledStripRegistry.get(ledStripRepository.findByName("ledone"));
+        stubTwo = ledStripRegistry.get(ledStripRepository.findByName("ledtwo"));
+        stubThree = ledStripRegistry.get(ledStripRepository.findByName("ledthree"));
 
         stubOne.setFill(Color.BLACK);
         stubTwo.setFill(Color.BLACK);
@@ -77,11 +87,15 @@ public class JenkinsServiceIntegTest {
         stubOneStatus = singleStatusOnLEDStripRegistry.get(stubOne);
         stubTwoStatus = singleStatusOnLEDStripRegistry.get(stubTwo);
         stubThreeStatus = singleStatusOnLEDStripRegistry.get(stubThree);
+
+        LOG.info("FINISH JenkinsServiceIntegTest setup");
     }
 
 
     @Test
     public void testCustomColor() {
+
+        LOG.info("START testCustomColor");
 
         // CRITICAL
         jenkinsConfig.reset();
@@ -110,11 +124,15 @@ public class JenkinsServiceIntegTest {
         Color grey = new Color(16, 16, 16);
 
         assertThat(stubOne.getPixel(0), is(grey));
+
+        LOG.info("FINISH testCustomColor");
     }
 
 
     @Test
     public void testJenkinsService() {
+
+        LOG.info("START testJenkinsService");
 
         Color blue = new Color(0, 0, 127);
         Color grey = new Color(16, 16, 16);
@@ -149,5 +167,7 @@ public class JenkinsServiceIntegTest {
         assertThat(stubOne.getPixel(0), is(grey));
         assertThat(stubTwo.getPixel(0), is(Color.OKAY));
         assertThat(stubThree.getPixel(0), is(Color.OKAY));
+
+        LOG.info("FINISH testJenkinsService");
     }
 }
