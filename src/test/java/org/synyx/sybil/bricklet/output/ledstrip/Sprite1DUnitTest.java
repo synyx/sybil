@@ -2,6 +2,10 @@ package org.synyx.sybil.bricklet.output.ledstrip;
 
 import org.junit.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import static org.hamcrest.core.Is.is;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -36,11 +40,25 @@ public class Sprite1DUnitTest {
         short[] green = sprite.getGreen();
         short[] blue = sprite.getBlue();
 
-        assertTrue("Pixel 0 should be black", red[0] == 0 && green[0] == 0 && blue[0] == 0);
-        assertTrue("Pixel 1 should be white", red[1] == 255 && green[1] == 255 && blue[1] == 255);
-        assertTrue("Pixel 2 should be red", red[2] == 64 && green[2] == 0 && blue[2] == 0);
-        assertTrue("Pixel 3 should be green", red[3] == 0 && green[3] == 64 && blue[3] == 0);
-        assertTrue("Pixel 4 should be blue", red[4] == 0 && green[4] == 0 && blue[4] == 64);
+        assertThat(red[0], is((short) 0));
+        assertThat(green[0], is((short) 0));
+        assertThat(blue[0], is((short) 0));
+
+        assertThat(red[1], is((short) 255));
+        assertThat(green[1], is((short) 255));
+        assertThat(blue[1], is((short) 255));
+
+        assertThat(red[2], is((short) 64));
+        assertThat(green[2], is((short) 0));
+        assertThat(blue[2], is((short) 0));
+
+        assertThat(red[3], is((short) 0));
+        assertThat(green[3], is((short) 64));
+        assertThat(blue[3], is((short) 0));
+
+        assertThat(red[4], is((short) 0));
+        assertThat(green[4], is((short) 0));
+        assertThat(blue[4], is((short) 64));
     }
 
 

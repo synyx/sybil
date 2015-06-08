@@ -4,7 +4,6 @@ import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.NotConnectedException;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,6 +27,10 @@ import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.config.DevSpringConfig;
 
 import java.io.IOException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import static org.hamcrest.core.Is.is;
 
 
 @ContextConfiguration(classes = DevSpringConfig.class)
@@ -115,12 +118,13 @@ public class BrickRegistryIntegTest {
         Color pixel0 = LEDStrip.getPixel(0);
         Color pixel1 = LEDStrip.getPixel(1);
 
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRedAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreenAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlueAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRedAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreenAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlueAsShort());
+        assertThat(pixel0.getRedAsShort(), is((short) 0));
+        assertThat(pixel0.getGreenAsShort(), is((short) 0));
+        assertThat(pixel0.getBlueAsShort(), is((short) 0));
+
+        assertThat(pixel1.getRedAsShort(), is((short) 16));
+        assertThat(pixel1.getGreenAsShort(), is((short) 35));
+        assertThat(pixel1.getBlueAsShort(), is((short) 77));
 
         LOG.info("FINISH Test testDisconnectALL");
     }
@@ -144,12 +148,13 @@ public class BrickRegistryIntegTest {
         Color pixel0 = LEDStrip.getPixel(0);
         Color pixel1 = LEDStrip.getPixel(1);
 
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRedAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreenAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlueAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRedAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreenAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlueAsShort());
+        assertThat(pixel0.getRedAsShort(), is((short) 0));
+        assertThat(pixel0.getGreenAsShort(), is((short) 0));
+        assertThat(pixel0.getBlueAsShort(), is((short) 0));
+
+        assertThat(pixel1.getRedAsShort(), is((short) 16));
+        assertThat(pixel1.getGreenAsShort(), is((short) 35));
+        assertThat(pixel1.getBlueAsShort(), is((short) 77));
 
         LOG.info("FINISH Test testConnectALL");
     }
@@ -172,12 +177,13 @@ public class BrickRegistryIntegTest {
         Color pixel0 = LEDStrip.getPixel(0);
         Color pixel1 = LEDStrip.getPixel(1);
 
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.red should be 0", 0, pixel0.getRedAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.green should be 0", 0, pixel0.getGreenAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 0.blue should be 0", 0, pixel0.getBlueAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.red should be 16", 16, pixel1.getRedAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.green should be 35", 35, pixel1.getGreenAsShort());
-        Assert.assertEquals(LEDStrip.getName() + " Pixel 1.blue should be 77", 77, pixel1.getBlueAsShort());
+        assertThat(pixel0.getRedAsShort(), is((short) 0));
+        assertThat(pixel0.getGreenAsShort(), is((short) 0));
+        assertThat(pixel0.getBlueAsShort(), is((short) 0));
+
+        assertThat(pixel1.getRedAsShort(), is((short) 16));
+        assertThat(pixel1.getGreenAsShort(), is((short) 35));
+        assertThat(pixel1.getBlueAsShort(), is((short) 77));
 
         LOG.info("FINISH Test testReconnectALL");
     }

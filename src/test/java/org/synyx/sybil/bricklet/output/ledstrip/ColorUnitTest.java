@@ -3,7 +3,9 @@ package org.synyx.sybil.bricklet.output.ledstrip;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import static org.hamcrest.core.Is.is;
 
 
 public class ColorUnitTest {
@@ -20,20 +22,20 @@ public class ColorUnitTest {
     @Test
     public void testGetRed() throws Exception {
 
-        assertEquals("Red should be 255", 255, color.getRedAsShort());
+        assertThat(color.getRedAsShort(), is((short) 255));
     }
 
 
     @Test
     public void testGetGreen() throws Exception {
 
-        assertEquals("Green should be 32", 32, color.getGreenAsShort());
+        assertThat(color.getGreenAsShort(), is((short) 32));
     }
 
 
     @Test
     public void testGetBlue() throws Exception {
 
-        assertEquals("Blue should be 0", 0, color.getBlueAsShort());
+        assertThat(color.getBlueAsShort(), is((short) 0));
     }
 }
