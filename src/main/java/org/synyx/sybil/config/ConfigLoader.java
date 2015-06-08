@@ -24,6 +24,7 @@ import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDoma
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorRepository;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripCustomColors;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
@@ -37,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,11 +93,11 @@ public class ConfigLoader {
     // The object that saves the Jenkins servers and job configurations
     private JenkinsConfig jenkinsConfig;
 
-    // Map saving the custom status colors for SingleStatusOnLEDStrips
-    private Map<String, Map<String, Color>> customStatusColors = new HashMap<>();
-
     // Registers bricklets' names to make sure they are unique
     private BrickletNameRegistry brickletNameRegistry;
+
+    // Map saving the custom status colors for SingleStatusOnLEDStrips
+    private LEDStripCustomColors ledStripCustomColors;
 
     /**
      * Instantiates a new JSON config loader.
@@ -119,7 +119,7 @@ public class ConfigLoader {
         SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, RelayRepository relayRepository,
         IlluminanceSensorRepository illuminanceSensorRepository, ButtonRepository buttonRepository,
         IlluminanceSensorRegistry illuminanceSensorRegistry, ButtonSensorRegistry buttonSensorRegistry,
-        BrickletNameRegistry brickletNameRegistry) {
+        BrickletNameRegistry brickletNameRegistry, LEDStripCustomColors ledStripCustomColors) {
 
         this.brickRepository = brickRepository;
         this.LEDStripRepository = LEDStripRepository;
@@ -134,23 +134,13 @@ public class ConfigLoader {
         this.buttonSensorRegistry = buttonSensorRegistry;
         this.buttonRepository = buttonRepository;
         this.brickletNameRegistry = brickletNameRegistry;
+        this.ledStripCustomColors = ledStripCustomColors;
     }
 
     /**
      * Load the complete configuration from JSON files.
      */
     public void loadConfig() {
-
-        brickletNameRegistry.clear();
-
-        if (HealthController.getHealth() == Status.OKAY) {
-            try {
-                loadLEDStripConfig();
-            } catch (IOException e) {
-                LOG.error("Error loading ledstrips.json: {}", e.toString());
-                HealthController.setHealth(Status.CRITICAL, "loadLEDStripConfig");
-            }
-        }
 
         if (HealthController.getHealth() == Status.OKAY) {
             try {
@@ -185,85 +175,6 @@ public class ConfigLoader {
             } catch (IOException e) {
                 LOG.error("Error loading jenkins.json: {}", e.toString());
                 HealthController.setHealth(Status.WARNING, "loadJenkinsConfig");
-            }
-        }
-    }
-
-
-    /**
-     * Load LED Strip configuration.
-     *
-     * @throws  IOException  the iO exception
-     */
-    public void loadLEDStripConfig() throws IOException {
-
-        LOG.info("Loading LED Strip configuration");
-
-        List<Map<String, Object>> ledstrips = mapper.readValue(new File(configDir + "ledstrips.json"),
-                new TypeReference<List<Map<String, Object>>>() {
-                });
-
-        LEDStripRepository.deleteAll();
-
-        for (Map ledstrip : ledstrips) { // ... deserialize the data manually
-
-            String name = ledstrip.get("name").toString();
-
-            if (brickletNameRegistry.contains(name)) {
-                LOG.error("Failed to load config for LED Strip {}: Name is not unique.", name);
-                HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
-
-                break;
-            }
-
-            brickletNameRegistry.add(name);
-
-            String uid = ledstrip.get("uid").toString();
-
-            try {
-                int length = Integer.parseInt(ledstrip.get("length").toString());
-
-                BrickDomain brick = brickRepository.findByName(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
-
-                if (brick != null) { // if there was corresponding brick found in the repo...
-                    LEDStripRepository.save(new LEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
-                } else { // if not...
-                    LOG.error("Brick {} does not exist.", ledstrip.get("brick").toString()); // ... error!
-                    HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
-                }
-            } catch (NumberFormatException e) {
-                LOG.error("Failed to load config for LED Strip {}: \"length\" is not an integer.", name);
-                HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
-            }
-
-            if (ledstrip.get("okayRed") != null) {
-                try {
-                    int okayRed = Integer.parseInt(ledstrip.get("okayRed").toString());
-                    int okayGreen = Integer.parseInt(ledstrip.get("okayGreen").toString());
-                    int okayBlue = Integer.parseInt(ledstrip.get("okayBlue").toString());
-                    Color okay = new Color(okayRed, okayGreen, okayBlue);
-
-                    int warningRed = Integer.parseInt(ledstrip.get("warningRed").toString());
-                    int warningGreen = Integer.parseInt(ledstrip.get("warningGreen").toString());
-                    int warningBlue = Integer.parseInt(ledstrip.get("warningBlue").toString());
-                    Color warning = new Color(warningRed, warningGreen, warningBlue);
-
-                    int criticalRed = Integer.parseInt(ledstrip.get("criticalRed").toString());
-                    int criticalGreen = Integer.parseInt(ledstrip.get("criticalGreen").toString());
-                    int criticalBlue = Integer.parseInt(ledstrip.get("criticalBlue").toString());
-                    Color critical = new Color(criticalRed, criticalGreen, criticalBlue);
-
-                    Map<String, Color> colors = new HashMap<>();
-
-                    colors.put("okay", okay);
-                    colors.put("warning", warning);
-                    colors.put("critical", critical);
-
-                    customStatusColors.put(name, colors);
-                } catch (NumberFormatException e) {
-                    LOG.error("Failed to load config for LED Strip {}: colors are not properly formatted.", name);
-                    HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
-                }
             }
         }
     }
@@ -472,7 +383,7 @@ public class ConfigLoader {
                 LEDStrip LEDStrip = LEDStripRegistry.get(LEDStripDomain);
 
                 if (LEDStrip != null) {
-                    Map<String, Color> colors = customStatusColors.get(ledstrip);
+                    Map<String, Color> colors = ledStripCustomColors.get(ledstrip);
 
                     if (colors != null) {
                         jenkinsConfig.put(server, jobName,

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.brick.BrickConfigLoader;
+import org.synyx.sybil.bricklet.BrickletNameRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConfigLoader;
 
 import javax.annotation.PostConstruct;
 
@@ -27,11 +29,18 @@ public class StartupLoader {
 
     private BrickConfigLoader brickConfigLoader;
 
+    private BrickletNameRegistry brickletNameRegistry;
+
+    private LEDStripConfigLoader ledStripConfigLoader;
+
     @Autowired
-    public StartupLoader(ConfigLoader configLoader, BrickConfigLoader brickConfigLoader) {
+    public StartupLoader(ConfigLoader configLoader, BrickConfigLoader brickConfigLoader,
+        BrickletNameRegistry brickletNameRegistry, LEDStripConfigLoader ledStripConfigLoader) {
 
         this.configLoader = configLoader;
         this.brickConfigLoader = brickConfigLoader;
+        this.brickletNameRegistry = brickletNameRegistry;
+        this.ledStripConfigLoader = ledStripConfigLoader;
     }
 
     @PostConstruct
@@ -39,9 +48,13 @@ public class StartupLoader {
 
         LOG.info("Loading Startup Configuration");
 
+        brickletNameRegistry.clear();
+
         brickConfigLoader.loadBricksConfig();
 
         brickConfigLoader.resetBricks();
+
+        ledStripConfigLoader.loadLEDStripConfig();
 
         configLoader.loadConfig();
     }
