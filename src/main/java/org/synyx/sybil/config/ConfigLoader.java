@@ -29,8 +29,6 @@ import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
-import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
-import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 import org.synyx.sybil.jenkins.config.JenkinsConfig;
 import org.synyx.sybil.jenkins.domain.Status;
 
@@ -75,9 +73,6 @@ public class ConfigLoader {
     // Fetches one SingleStatusOnLEDStrip for each LED Strip
     private SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
 
-    // The Repository to save Relay configuration data
-    private RelayRepository relayRepository;
-
     // The Repository to save IlluminanceSensor configuration data
     private IlluminanceSensorRepository illuminanceSensorRepository;
 
@@ -108,7 +103,6 @@ public class ConfigLoader {
      * @param  LEDStripRegistry  the LEDStrip registry
      * @param  jenkinsConfig  the jenkins configuration
      * @param  singleStatusOnLEDStripRegistry  the SingleStatusOnLEDStrip registry
-     * @param  relayRepository  the output relay repository
      * @param  illuminanceSensorRepository  the input sensor repository
      * @param  illuminanceSensorRegistry  the illuminance sensor registry
      * @param  buttonSensorRegistry  the button sensor registry
@@ -116,7 +110,7 @@ public class ConfigLoader {
     @Autowired
     public ConfigLoader(BrickRepository brickRepository, LEDStripRepository LEDStripRepository, Environment env,
         LEDStripRegistry LEDStripRegistry, JenkinsConfig jenkinsConfig,
-        SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, RelayRepository relayRepository,
+        SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry,
         IlluminanceSensorRepository illuminanceSensorRepository, ButtonRepository buttonRepository,
         IlluminanceSensorRegistry illuminanceSensorRegistry, ButtonSensorRegistry buttonSensorRegistry,
         BrickletNameRegistry brickletNameRegistry, LEDStripCustomColors ledStripCustomColors) {
@@ -128,7 +122,6 @@ public class ConfigLoader {
         this.LEDStripRegistry = LEDStripRegistry;
         this.jenkinsConfig = jenkinsConfig;
         this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
-        this.relayRepository = relayRepository;
         this.illuminanceSensorRepository = illuminanceSensorRepository;
         this.illuminanceSensorRegistry = illuminanceSensorRegistry;
         this.buttonSensorRegistry = buttonSensorRegistry;
@@ -141,15 +134,6 @@ public class ConfigLoader {
      * Load the complete configuration from JSON files.
      */
     public void loadConfig() {
-
-        if (HealthController.getHealth() == Status.OKAY) {
-            try {
-                loadRelayConfig();
-            } catch (IOException e) {
-                LOG.error("Error loading relays.json: {}", e.toString());
-                HealthController.setHealth(Status.CRITICAL, "loadRelayConfig");
-            }
-        }
 
         if (HealthController.getHealth() == Status.OKAY) {
             try {
@@ -175,48 +159,6 @@ public class ConfigLoader {
             } catch (IOException e) {
                 LOG.error("Error loading jenkins.json: {}", e.toString());
                 HealthController.setHealth(Status.WARNING, "loadJenkinsConfig");
-            }
-        }
-    }
-
-
-    /**
-     * Load Relay configuration.
-     *
-     * @throws  IOException  the iO exception
-     */
-    public void loadRelayConfig() throws IOException {
-
-        LOG.info("Loading Relay configuration");
-
-        List<Map<String, Object>> relays = mapper.readValue(new File(configDir + "relays.json"),
-                new TypeReference<List<Map<String, Object>>>() {
-                });
-
-        relayRepository.deleteAll();
-
-        for (Map relay : relays) { // ... deserialize the data manually
-
-            String name = relay.get("name").toString();
-
-            if (brickletNameRegistry.contains(name)) {
-                LOG.error("Failed to load config for Relay {}: Name is not unique.", name);
-                HealthController.setHealth(Status.WARNING, "loadRelayConfig");
-
-                break;
-            }
-
-            brickletNameRegistry.add(name);
-
-            String uid = relay.get("uid").toString();
-
-            BrickDomain brick = brickRepository.findByName(relay.get("brick").toString()); // fetch the corresponding bricks from the repo
-
-            if (brick != null) { // if there was corresponding brick found in the repo...
-                relayRepository.save(new RelayDomain(name, uid, brick)); // ... save the relay.
-            } else { // if not...
-                LOG.error("Brick {} does not exist.", relay.get("brick").toString()); // ... error!
-                HealthController.setHealth(Status.WARNING, "loadRelayConfig");
             }
         }
     }

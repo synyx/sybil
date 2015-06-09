@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.synyx.sybil.brick.BrickConfigLoader;
 import org.synyx.sybil.bricklet.BrickletNameRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConfigLoader;
+import org.synyx.sybil.bricklet.output.relay.RelayConfigLoader;
 
 import javax.annotation.PostConstruct;
 
@@ -33,14 +34,18 @@ public class StartupLoader {
 
     private LEDStripConfigLoader ledStripConfigLoader;
 
+    private RelayConfigLoader relayConfigLoader;
+
     @Autowired
     public StartupLoader(ConfigLoader configLoader, BrickConfigLoader brickConfigLoader,
-        BrickletNameRegistry brickletNameRegistry, LEDStripConfigLoader ledStripConfigLoader) {
+        BrickletNameRegistry brickletNameRegistry, LEDStripConfigLoader ledStripConfigLoader,
+        RelayConfigLoader relayConfigLoader) {
 
         this.configLoader = configLoader;
         this.brickConfigLoader = brickConfigLoader;
         this.brickletNameRegistry = brickletNameRegistry;
         this.ledStripConfigLoader = ledStripConfigLoader;
+        this.relayConfigLoader = relayConfigLoader;
     }
 
     @PostConstruct
@@ -55,6 +60,8 @@ public class StartupLoader {
         brickConfigLoader.resetBricks();
 
         ledStripConfigLoader.loadLEDStripConfig();
+
+        relayConfigLoader.loadRelayConfig();
 
         configLoader.loadConfig();
     }
