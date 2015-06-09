@@ -22,7 +22,7 @@ import org.synyx.sybil.bricklet.input.button.api.ConfigurationButtonController;
 import org.synyx.sybil.bricklet.input.illuminance.api.ConfigurationIlluminanceController;
 import org.synyx.sybil.bricklet.output.ledstrip.api.ConfigurationLEDStripController;
 import org.synyx.sybil.bricklet.output.relay.api.ConfigurationRelayController;
-import org.synyx.sybil.config.ConfigLoader;
+import org.synyx.sybil.jenkins.JenkinsConfigLoader;
 
 import java.io.IOException;
 
@@ -46,7 +46,7 @@ public class ConfigurationController {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationController.class);
 
     @Autowired
-    ConfigLoader configLoader;
+    JenkinsConfigLoader jenkinsConfigLoader;
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
@@ -69,7 +69,7 @@ public class ConfigurationController {
     @RequestMapping(method = RequestMethod.POST, produces = { "application/hal+json" })
     public void updateJenkinsConfig() throws IOException {
 
-        configLoader.loadJenkinsConfig();
+        jenkinsConfigLoader.loadJenkinsConfig();
     }
 
 

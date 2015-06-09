@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.brick.BrickConfigLoader;
 import org.synyx.sybil.bricklet.BrickletNameRegistry;
+import org.synyx.sybil.bricklet.input.SensorConfigLoader;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConfigLoader;
 import org.synyx.sybil.bricklet.output.relay.RelayConfigLoader;
+import org.synyx.sybil.jenkins.JenkinsConfigLoader;
 
 import javax.annotation.PostConstruct;
 
@@ -26,7 +28,7 @@ public class StartupLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(StartupLoader.class);
 
-    private ConfigLoader configLoader;
+    private JenkinsConfigLoader jenkinsConfigLoader;
 
     private BrickConfigLoader brickConfigLoader;
 
@@ -36,16 +38,19 @@ public class StartupLoader {
 
     private RelayConfigLoader relayConfigLoader;
 
-    @Autowired
-    public StartupLoader(ConfigLoader configLoader, BrickConfigLoader brickConfigLoader,
-        BrickletNameRegistry brickletNameRegistry, LEDStripConfigLoader ledStripConfigLoader,
-        RelayConfigLoader relayConfigLoader) {
+    private SensorConfigLoader sensorConfigLoader;
 
-        this.configLoader = configLoader;
+    @Autowired
+    public StartupLoader(JenkinsConfigLoader jenkinsConfigLoader, BrickConfigLoader brickConfigLoader,
+        BrickletNameRegistry brickletNameRegistry, LEDStripConfigLoader ledStripConfigLoader,
+        RelayConfigLoader relayConfigLoader, SensorConfigLoader sensorConfigLoader) {
+
+        this.jenkinsConfigLoader = jenkinsConfigLoader;
         this.brickConfigLoader = brickConfigLoader;
         this.brickletNameRegistry = brickletNameRegistry;
         this.ledStripConfigLoader = ledStripConfigLoader;
         this.relayConfigLoader = relayConfigLoader;
+        this.sensorConfigLoader = sensorConfigLoader;
     }
 
     @PostConstruct
@@ -63,6 +68,10 @@ public class StartupLoader {
 
         relayConfigLoader.loadRelayConfig();
 
-        configLoader.loadConfig();
+        sensorConfigLoader.loadSensorConfig();
+
+        jenkinsConfigLoader.loadJenkinsServers();
+
+        jenkinsConfigLoader.loadJenkinsConfig();
     }
 }

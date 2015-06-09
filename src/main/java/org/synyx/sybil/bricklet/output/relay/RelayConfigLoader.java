@@ -40,7 +40,7 @@ public class RelayConfigLoader {
     private static final Logger LOG = LoggerFactory.getLogger(RelayConfigLoader.class);
 
     // Jackson ObjectMapper, maps JSON to Java Objects
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     // The place where the config files lie, taken from the injected environment (and thus ultimately a properties file)
     private String configDir;
