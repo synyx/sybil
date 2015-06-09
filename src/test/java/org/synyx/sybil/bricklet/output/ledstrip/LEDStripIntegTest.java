@@ -100,9 +100,9 @@ public class LEDStripIntegTest {
 
 
     @Test
-    public void testSetColor() throws Exception {
+    public void testSetFill() throws Exception {
 
-        LOG.info("START Test testSetColor");
+        LOG.info("START Test testSetFill");
 
         for (LEDStrip LEDStrip : LEDStrips) {
             LEDStrip.setFill(new Color(16, 32, 8));
@@ -114,7 +114,7 @@ public class LEDStripIntegTest {
             assertThat(pixel.getBlueAsShort(), is((short) 8));
         }
 
-        LOG.info("FINISHED Test testSetColor");
+        LOG.info("FINISHED Test testSetFill");
     }
 
 
@@ -189,7 +189,7 @@ public class LEDStripIntegTest {
     @Test
     public void testSetWhiteBrightnessDouble() throws Exception {
 
-        LOG.info("START Test testBrightnessDouble");
+        LOG.info("START Test testWhiteBrightnessDouble");
 
         for (LEDStrip LEDStrip : LEDStrips) {
             LEDStrip.setFill(Color.WHITE);
