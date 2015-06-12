@@ -104,16 +104,6 @@ public class RelayIntegTest {
         LOG.debug("START testRelay");
 
         for (Relay outputRelay : outputRelays) {
-            assertArrayEquals(new boolean[] { false, false }, outputRelay.getStates());
-
-            outputRelay.setState(EnumRelay.ONE, true);
-
-            assertArrayEquals(new boolean[] { true, false }, outputRelay.getStates());
-
-            outputRelay.setState(EnumRelay.TWO, true);
-
-            assertArrayEquals(new boolean[] { true, true }, outputRelay.getStates());
-
             outputRelay.setStates(false, true);
 
             assertArrayEquals(new boolean[] { false, true }, outputRelay.getStates());
