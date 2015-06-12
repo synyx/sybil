@@ -102,36 +102,7 @@ public class BrickRegistryIntegTest {
 
 
     @Test
-    public void testDisconnectAll() throws NotConnectedException, IOException, AlreadyConnectedException {
-
-        LOG.info("START Test testDisconnectALL");
-
-        brickRegistry.disconnectAll();
-
-        Color color = new Color(16, 35, 77);
-
-        LEDStrip LEDStrip = LEDStripRegistry.get(LEDStripRepository.findByName("testone"));
-
-        LEDStrip.setPixel(1, color);
-        LEDStrip.updateDisplay();
-
-        Color pixel0 = LEDStrip.getPixel(0);
-        Color pixel1 = LEDStrip.getPixel(1);
-
-        assertThat(pixel0.getRedAsShort(), is((short) 0));
-        assertThat(pixel0.getGreenAsShort(), is((short) 0));
-        assertThat(pixel0.getBlueAsShort(), is((short) 0));
-
-        assertThat(pixel1.getRedAsShort(), is((short) 16));
-        assertThat(pixel1.getGreenAsShort(), is((short) 35));
-        assertThat(pixel1.getBlueAsShort(), is((short) 77));
-
-        LOG.info("FINISH Test testDisconnectALL");
-    }
-
-
-    @Test
-    public void testConnectAll() throws NotConnectedException, IOException, AlreadyConnectedException {
+    public void testReConnectAll() throws NotConnectedException, IOException, AlreadyConnectedException {
 
         LOG.info("START Test testConnectALL");
 
@@ -157,34 +128,5 @@ public class BrickRegistryIntegTest {
         assertThat(pixel1.getBlueAsShort(), is((short) 77));
 
         LOG.info("FINISH Test testConnectALL");
-    }
-
-
-    @Test
-    public void testReconnectAll() throws NotConnectedException, IOException, AlreadyConnectedException {
-
-        LOG.info("START Test testReconnectALL");
-
-        brickRegistry.reconnectAll();
-
-        Color color = new Color(16, 35, 77);
-
-        LEDStrip LEDStrip = LEDStripRegistry.get(LEDStripRepository.findByName("testone"));
-
-        LEDStrip.setPixel(1, color);
-        LEDStrip.updateDisplay();
-
-        Color pixel0 = LEDStrip.getPixel(0);
-        Color pixel1 = LEDStrip.getPixel(1);
-
-        assertThat(pixel0.getRedAsShort(), is((short) 0));
-        assertThat(pixel0.getGreenAsShort(), is((short) 0));
-        assertThat(pixel0.getBlueAsShort(), is((short) 0));
-
-        assertThat(pixel1.getRedAsShort(), is((short) 16));
-        assertThat(pixel1.getGreenAsShort(), is((short) 35));
-        assertThat(pixel1.getBlueAsShort(), is((short) 77));
-
-        LOG.info("FINISH Test testReconnectALL");
     }
 }
