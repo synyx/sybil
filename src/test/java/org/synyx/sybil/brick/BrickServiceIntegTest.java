@@ -74,7 +74,7 @@ public class BrickServiceIntegTest {
         try {
             BrickMaster brickMaster = brickService.getBrickMaster("123abc", ipConnection);
             brickMaster.getChipTemperature();
-            fail();
+            fail("NotConnectedException should have been thrown.");
         } catch (NotConnectedException e) {
             // This is what we want!
         }
