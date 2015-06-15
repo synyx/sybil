@@ -5,6 +5,11 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
+
+import org.neo4j.helpers.collection.IteratorUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.bricklet.BrickletRegistry;
+import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
+import org.synyx.sybil.bricklet.input.button.database.ButtonRepository;
 import org.synyx.sybil.bricklet.output.relay.RelayRegistry;
 import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -29,15 +37,17 @@ import java.util.Map;
  */
 
 @Service // Annotated so Spring finds and injects it.
-public class ButtonSensorRegistry implements BrickletRegistry {
+public class ButtonService implements BrickletService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ButtonSensorRegistry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ButtonService.class);
 
     private Map<ButtonDomain, BrickletIO4> buttons = new HashMap<>();
     private Map<String, ButtonDomain> domains = new HashMap<>();
     private BrickService brickService;
     private RelayRegistry relayRegistry;
     private RelayRepository relayRepository;
+    private ButtonRepository buttonRepository;
+    private GraphDatabaseService graphDatabaseService;
 
     // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
 
@@ -47,15 +57,76 @@ public class ButtonSensorRegistry implements BrickletRegistry {
      * @param  brickService  the brick registry
      * @param  relayRegistry  the output relay registry
      * @param  relayRepository  the output relay repository
+     * @param  buttonRepository  the button repository
+     * @param  graphDatabaseService  the graph database service
      */
     @Autowired
-    public ButtonSensorRegistry(BrickService brickService, RelayRegistry relayRegistry,
-        RelayRepository relayRepository) {
+    public ButtonService(BrickService brickService, RelayRegistry relayRegistry, RelayRepository relayRepository,
+        ButtonRepository buttonRepository, GraphDatabaseService graphDatabaseService) {
 
         this.brickService = brickService;
         this.relayRegistry = relayRegistry;
         this.relayRepository = relayRepository;
+        this.buttonRepository = buttonRepository;
+        this.graphDatabaseService = graphDatabaseService;
     }
+
+    /**
+     * Save domain.
+     *
+     * @param  buttonDomain  the button domain
+     *
+     * @return  the button domain
+     */
+    public ButtonDomain saveDomain(ButtonDomain buttonDomain) {
+
+        return buttonRepository.save(buttonDomain);
+    }
+
+
+    /**
+     * Gets domain.
+     *
+     * @param  name  the name
+     *
+     * @return  the domain
+     */
+    public ButtonDomain getDomain(String name) {
+
+        return buttonRepository.findByName(name);
+    }
+
+
+    /**
+     * Gets all domains.
+     *
+     * @return  the all domains
+     */
+    public List<ButtonDomain> getAllDomains() {
+
+        List<ButtonDomain> buttonDomains;
+
+        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
+
+            // get all sensors from database and cast them into a list so that they're actually fetched
+            buttonDomains = new ArrayList<>(IteratorUtil.asCollection(buttonRepository.findAll()));
+
+            // end transaction
+            tx.success();
+        }
+
+        return buttonDomains;
+    }
+
+
+    /**
+     * Delete all domains.
+     */
+    public void deleteAllDomains() {
+
+        buttonRepository.deleteAll();
+    }
+
 
     /**
      * Get a BrickletIO4 object, instantiate a new one if necessary.
@@ -64,7 +135,7 @@ public class ButtonSensorRegistry implements BrickletRegistry {
      *
      * @return  The actual BrickletIO4 object.
      */
-    public BrickletIO4 get(ButtonDomain buttonDomain) {
+    public BrickletIO4 getButton(ButtonDomain buttonDomain) {
 
         if (buttonDomain == null) {
             return null;

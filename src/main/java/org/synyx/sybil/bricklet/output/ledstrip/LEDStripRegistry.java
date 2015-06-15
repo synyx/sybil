@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.bricklet.BrickletRegistry;
+import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.Map;
  */
 
 @Service // Annotated so Spring finds and injects it.
-public class LEDStripRegistry implements BrickletRegistry {
+public class LEDStripRegistry implements BrickletService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LEDStripRegistry.class);
     private static final int FRAME_DURATION = 10;

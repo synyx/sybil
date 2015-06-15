@@ -54,45 +54,45 @@ public class BrickServiceUnitTest {
 
 
     @Test
-    public void testGetBrickDomain() throws Exception {
+    public void testGetDomain() throws Exception {
 
-        brickService.getBrickDomain("abc");
+        brickService.getDomain("abc");
 
         Mockito.verify(brickRepository).findByName("abc");
     }
 
 
     @Test
-    public void testGetAllBrickDomains() throws Exception {
+    public void testGetAllDomains() throws Exception {
 
-        brickService.getAllBrickDomains();
+        brickService.getAllDomains();
 
         Mockito.verify(brickRepository).findAll();
     }
 
 
     @Test
-    public void testDeleteAllBrickDomains() throws Exception {
+    public void testDeleteAllDomains() throws Exception {
 
-        brickService.deleteAllBrickDomains();
+        brickService.deleteAllDomains();
 
         Mockito.verify(brickRepository).deleteAll();
     }
 
 
     @Test
-    public void testSaveBrickDomain() throws Exception {
+    public void testSaveDomain() throws Exception {
 
-        brickService.saveBrickDomain(brickDomain);
+        brickService.saveDomain(brickDomain);
 
         Mockito.verify(brickRepository).save(brickDomain);
     }
 
 
     @Test
-    public void testSaveBrickDomains() throws Exception {
+    public void testSaveDomains() throws Exception {
 
-        brickService.saveBrickDomains(brickDomainList);
+        brickService.saveDomains(brickDomainList);
 
         Mockito.verify(brickRepository).save(brickDomainList);
     }

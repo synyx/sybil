@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.bricklet.BrickletRegistry;
+import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 
 @Service // Annotated so Spring finds and injects it.
-public class RelayRegistry implements BrickletRegistry {
+public class RelayRegistry implements BrickletService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RelayRegistry.class);
 

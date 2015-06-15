@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
-import org.synyx.sybil.bricklet.BrickletRegistry;
+import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.io.IOException;
@@ -51,9 +51,9 @@ public class BrickService {
     private Map<BrickDomain, IPConnection> ipConnections = new HashMap<>();
 
     // set that contains each registry that accesses this registry
-    private Set<BrickletRegistry> registries = new HashSet<>();
+    private Set<BrickletService> registries = new HashSet<>();
 
-    private Set<String> names = new HashSet<>();
+//    private Set<String> names = new HashSet<>();
 
     private BrickRepository brickRepository;
     private GraphDatabaseService graphDatabaseService;
@@ -75,13 +75,13 @@ public class BrickService {
      * Register a connection to a Tinkerforge Brick.
      *
      * @param  brickDomain  the Brick's domain object.
-     * @param  brickletRegistry  the bricklet registry
+     * @param  brickletService  the bricklet registry
      *
      * @return  the iP connection
      */
-    public IPConnection getIPConnection(BrickDomain brickDomain, BrickletRegistry brickletRegistry) {
+    public IPConnection getIPConnection(BrickDomain brickDomain, BrickletService brickletService) {
 
-        registries.add(brickletRegistry);
+        registries.add(brickletService);
 
         connect(brickDomain);
 
@@ -104,13 +104,13 @@ public class BrickService {
     }
 
 
-    public BrickDomain getBrickDomain(String name) {
+    public BrickDomain getDomain(String name) {
 
         return brickRepository.findByName(name);
     }
 
 
-    public List<BrickDomain> getAllBrickDomains() {
+    public List<BrickDomain> getAllDomains() {
 
         List<BrickDomain> bricks;
 
@@ -132,31 +132,31 @@ public class BrickService {
     }
 
 
-    public void deleteBrickDomain(BrickDomain brickDomain) {
+    public void deleteDomain(BrickDomain brickDomain) {
 
         brickRepository.delete(brickDomain);
     }
 
 
-    public void deleteAllBrickDomains() {
+    public void deleteAllDomains() {
 
         brickRepository.deleteAll();
     }
 
 
-    public BrickDomain saveBrickDomain(BrickDomain brickDomain) throws Exception {
+    public BrickDomain saveDomain(BrickDomain brickDomain) {
 
-        if (!names.contains(brickDomain.getName())) {
-            names.add(brickDomain.getName());
+//        if (!names.contains(brickDomain.getName())) {
+//            names.add(brickDomain.getName());
 
-            return brickRepository.save(brickDomain);
-        } else {
-            throw new Exception("Brick's name not unique!"); // TODO: Make pretty
-        }
+        return brickRepository.save(brickDomain);
+//        } else {
+//            throw new Exception("Brick's name not unique!"); // TODO: Make pretty
+//        }
     }
 
 
-    public List<BrickDomain> saveBrickDomains(List<BrickDomain> brickDomains) {
+    public List<BrickDomain> saveDomains(List<BrickDomain> brickDomains) {
 
         return new ArrayList<>(IteratorUtil.asCollection(brickRepository.save(brickDomains)));
     }
@@ -203,7 +203,7 @@ public class BrickService {
 
         LOG.debug("Connecting all bricks.");
 
-        List<BrickDomain> brickDomains = getAllBrickDomains();
+        List<BrickDomain> brickDomains = getAllDomains();
 
         for (BrickDomain brickDomain : brickDomains) {
             connect(brickDomain);
@@ -231,8 +231,8 @@ public class BrickService {
         ipConnections.clear();
 
         // clear all the registries, so bricklets will have to be re-registered
-        for (BrickletRegistry brickletRegistry : registries) {
-            brickletRegistry.clear();
+        for (BrickletService brickletService : registries) {
+            brickletService.clear();
         }
     }
 

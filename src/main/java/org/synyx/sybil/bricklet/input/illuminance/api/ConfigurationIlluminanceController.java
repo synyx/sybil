@@ -1,10 +1,5 @@
 package org.synyx.sybil.bricklet.input.illuminance.api;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-
-import org.neo4j.helpers.collection.IteratorUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.hateoas.Link;
@@ -16,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
-import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,36 +31,24 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RequestMapping("/configuration/illuminancesensors")
 public class ConfigurationIlluminanceController {
 
-    private IlluminanceSensorRepository illuminanceSensorRepository;
-    private GraphDatabaseService graphDatabaseService;
+    private IlluminanceService illuminanceService;
 
     @Autowired
-    public ConfigurationIlluminanceController(IlluminanceSensorRepository illuminanceSensorRepository,
-        GraphDatabaseService graphDatabaseService) {
+    public ConfigurationIlluminanceController(IlluminanceService illuminanceService) {
 
-        this.illuminanceSensorRepository = illuminanceSensorRepository;
-        this.graphDatabaseService = graphDatabaseService;
+        this.illuminanceService = illuminanceService;
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
     public Resources<IlluminanceResource> sensors() {
 
-        List<IlluminanceSensorDomain> sensors;
+        List<IlluminanceSensorDomain> sensors = illuminanceService.getAllDomains();
         List<IlluminanceResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
         Link self = linkTo(ConfigurationIlluminanceController.class).withSelfRel();
         links.add(self);
-
-        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
-            // get all sensors from database and cast them into a list so that they're actually fetched
-            sensors = new ArrayList<>(IteratorUtil.asCollection(illuminanceSensorRepository.findAll()));
-
-            // end transaction
-            tx.success();
-        }
 
         for (IlluminanceSensorDomain sensor : sensors) {
             self = linkTo(methodOn(ConfigurationIlluminanceController.class).sensor(sensor.getName())).withSelfRel();
@@ -83,7 +66,7 @@ public class ConfigurationIlluminanceController {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = { "application/hal+json" })
     public IlluminanceResource sensor(@PathVariable String name) {
 
-        IlluminanceSensorDomain sensor = illuminanceSensorRepository.findByName(name);
+        IlluminanceSensorDomain sensor = illuminanceService.getDomain(name);
 
         Link self = linkTo(methodOn(ConfigurationIlluminanceController.class).sensor(sensor.getName())).withSelfRel();
 

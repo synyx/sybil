@@ -5,7 +5,7 @@ package org.synyx.sybil.bricklet;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
-public interface BrickletRegistry {
+public interface BrickletService {
 
     void clear();
 }

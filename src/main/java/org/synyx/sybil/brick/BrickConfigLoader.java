@@ -71,9 +71,9 @@ public class BrickConfigLoader {
                         new TypeReference<List<BrickDomain>>() {
                         });
 
-                brickService.deleteAllBrickDomains();
+                brickService.deleteAllDomains();
 
-                brickService.saveBrickDomains(bricks); // ... simply dump them into the database
+                brickService.saveDomains(bricks); // ... simply dump them into the database
             } catch (IOException e) {
                 LOG.error("Error loading bricks.json: {}", e.toString());
                 HealthController.setHealth(Status.CRITICAL, "loadBricksConfig");
@@ -91,7 +91,7 @@ public class BrickConfigLoader {
             LOG.info("Resetting bricks");
 
             try {
-                List<BrickDomain> bricks = brickService.getAllBrickDomains();
+                List<BrickDomain> bricks = brickService.getAllDomains();
 
                 for (BrickDomain brick : bricks) {
                     IPConnection ipConnection = brickService.getIPConnection(brick);

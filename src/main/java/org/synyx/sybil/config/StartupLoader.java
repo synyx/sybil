@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.brick.BrickConfigLoader;
-import org.synyx.sybil.bricklet.BrickletNameRegistry;
+import org.synyx.sybil.bricklet.BrickletNameService;
 import org.synyx.sybil.bricklet.input.SensorConfigLoader;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConfigLoader;
 import org.synyx.sybil.bricklet.output.relay.RelayConfigLoader;
@@ -32,7 +32,7 @@ public class StartupLoader {
 
     private BrickConfigLoader brickConfigLoader;
 
-    private BrickletNameRegistry brickletNameRegistry;
+    private BrickletNameService brickletNameRegistry;
 
     private LEDStripConfigLoader ledStripConfigLoader;
 
@@ -42,7 +42,7 @@ public class StartupLoader {
 
     @Autowired
     public StartupLoader(JenkinsConfigLoader jenkinsConfigLoader, BrickConfigLoader brickConfigLoader,
-        BrickletNameRegistry brickletNameRegistry, LEDStripConfigLoader ledStripConfigLoader,
+        BrickletNameService brickletNameRegistry, LEDStripConfigLoader ledStripConfigLoader,
         RelayConfigLoader relayConfigLoader, SensorConfigLoader sensorConfigLoader) {
 
         this.jenkinsConfigLoader = jenkinsConfigLoader;

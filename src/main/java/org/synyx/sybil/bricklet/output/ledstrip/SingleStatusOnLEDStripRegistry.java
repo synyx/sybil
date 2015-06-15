@@ -2,7 +2,7 @@ package org.synyx.sybil.bricklet.output.ledstrip;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.bricklet.BrickletRegistry;
+import org.synyx.sybil.bricklet.BrickletService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
  */
 
 @Service // Annotated so Spring finds and injects it.
-public class SingleStatusOnLEDStripRegistry implements BrickletRegistry {
+public class SingleStatusOnLEDStripRegistry implements BrickletService {
 
     private Map<LEDStrip, SingleStatusOnLEDStrip> singleStatusOnLEDStrips = new HashMap<>();
 

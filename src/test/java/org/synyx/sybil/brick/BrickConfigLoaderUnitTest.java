@@ -81,8 +81,8 @@ public class BrickConfigLoaderUnitTest {
 
         InOrder inOrder = Mockito.inOrder(brickService);
 
-        inOrder.verify(brickService).deleteAllBrickDomains();
-        inOrder.verify(brickService).saveBrickDomains(bricks);
+        inOrder.verify(brickService).deleteAllDomains();
+        inOrder.verify(brickService).saveDomains(bricks);
     }
 
 
@@ -95,7 +95,7 @@ public class BrickConfigLoaderUnitTest {
 
         Mockito.when(environment.getProperty("brick.reset.timeout.seconds")).thenReturn("15");
 
-        Mockito.when(brickService.getAllBrickDomains()).thenReturn(bricks);
+        Mockito.when(brickService.getAllDomains()).thenReturn(bricks);
 
         Mockito.when(brickService.getIPConnection(brickDomain)).thenReturn(ipConnection);
 

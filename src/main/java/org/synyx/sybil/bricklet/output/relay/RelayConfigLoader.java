@@ -13,9 +13,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.api.HealthController;
+import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.brick.database.BrickRepository;
-import org.synyx.sybil.bricklet.BrickletNameRegistry;
+import org.synyx.sybil.bricklet.BrickletNameService;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
 import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 import org.synyx.sybil.jenkins.domain.Status;
@@ -46,20 +46,20 @@ public class RelayConfigLoader {
     private String configDir;
 
     // The Repository to save Brick configuration data
-    private BrickRepository brickRepository;
+    private BrickService brickService;
 
     // The Repository to save Relay configuration data
     private RelayRepository relayRepository;
 
     // Registers bricklets' names to make sure they are unique
-    private BrickletNameRegistry brickletNameRegistry;
+    private BrickletNameService brickletNameRegistry;
 
     @Autowired
-    public RelayConfigLoader(ObjectMapper mapper, BrickRepository brickRepository, RelayRepository relayRepository,
-        BrickletNameRegistry brickletNameRegistry, Environment environment) {
+    public RelayConfigLoader(ObjectMapper mapper, BrickService brickService, RelayRepository relayRepository,
+        BrickletNameService brickletNameRegistry, Environment environment) {
 
         this.mapper = mapper;
-        this.brickRepository = brickRepository;
+        this.brickService = brickService;
         this.relayRepository = relayRepository;
         this.brickletNameRegistry = brickletNameRegistry;
         configDir = environment.getProperty("path.to.configfiles");
@@ -92,7 +92,7 @@ public class RelayConfigLoader {
 
                     String uid = relay.get("uid").toString();
 
-                    BrickDomain brick = brickRepository.findByName(relay.get("brick").toString()); // fetch the corresponding bricks from the repo
+                    BrickDomain brick = brickService.getDomain(relay.get("brick").toString()); // fetch the corresponding bricks from the repo
 
                     if (brick != null) { // if there was corresponding brick found in the repo...
                         relayRepository.save(new RelayDomain(name, uid, brick)); // ... save the relay.

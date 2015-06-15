@@ -5,6 +5,11 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
+
+import org.neo4j.helpers.collection.IteratorUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.bricklet.BrickletRegistry;
+import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
+import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorRepository;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -29,16 +37,16 @@ import java.util.Map;
  */
 
 @Service // Annotated so Spring finds and injects it.
-public class IlluminanceSensorRegistry implements BrickletRegistry {
+public class IlluminanceService implements BrickletService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IlluminanceSensorRegistry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IlluminanceService.class);
 
     private Map<IlluminanceSensorDomain, BrickletAmbientLight> illuminanceSensors = new HashMap<>();
     private BrickService brickService;
     private LEDStripRegistry LEDStripRegistry;
     private LEDStripRepository LEDStripRepository;
-
-    // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
+    private IlluminanceSensorRepository illuminanceSensorRepository;
+    private GraphDatabaseService graphDatabaseService;
 
     /**
      * Instantiates a new Illuminance sensor registry.
@@ -46,15 +54,78 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
      * @param  brickService  the brick registry
      * @param  LEDStripRegistry  the output lED strip registry
      * @param  LEDStripRepository  the output lED strip repository
+     * @param  illuminanceSensorRepository  the illuminance sensor repository
+     * @param  graphDatabaseService  the graph database service
      */
     @Autowired
-    public IlluminanceSensorRegistry(BrickService brickService, LEDStripRegistry LEDStripRegistry,
-        LEDStripRepository LEDStripRepository) {
+    public IlluminanceService(BrickService brickService, LEDStripRegistry LEDStripRegistry,
+        LEDStripRepository LEDStripRepository, IlluminanceSensorRepository illuminanceSensorRepository,
+        GraphDatabaseService graphDatabaseService) {
 
         this.brickService = brickService;
         this.LEDStripRegistry = LEDStripRegistry;
         this.LEDStripRepository = LEDStripRepository;
+        this.illuminanceSensorRepository = illuminanceSensorRepository;
+        this.graphDatabaseService = graphDatabaseService;
     }
+
+    /**
+     * Save domain.
+     *
+     * @param  buttonDomain  the button domain
+     *
+     * @return  the illuminance sensor domain
+     */
+    public IlluminanceSensorDomain saveDomain(IlluminanceSensorDomain buttonDomain) {
+
+        return illuminanceSensorRepository.save(buttonDomain);
+    }
+
+
+    /**
+     * Gets domain.
+     *
+     * @param  name  the name
+     *
+     * @return  the domain
+     */
+    public IlluminanceSensorDomain getDomain(String name) {
+
+        return illuminanceSensorRepository.findByName(name);
+    }
+
+
+    /**
+     * Gets all domains.
+     *
+     * @return  the all domains
+     */
+    public List<IlluminanceSensorDomain> getAllDomains() {
+
+        List<IlluminanceSensorDomain> illuminanceSensorDomains;
+
+        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
+
+            // get all sensors from database and cast them into a list so that they're actually fetched
+            illuminanceSensorDomains = new ArrayList<>(IteratorUtil.asCollection(
+                        illuminanceSensorRepository.findAll()));
+
+            // end transaction
+            tx.success();
+        }
+
+        return illuminanceSensorDomains;
+    }
+
+
+    /**
+     * Delete all domains.
+     */
+    public void deleteAllDomains() {
+
+        illuminanceSensorRepository.deleteAll();
+    }
+
 
     /**
      * Get a BrickletAmbientLight object, instantiate a new one if necessary.
@@ -63,7 +134,7 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
      *
      * @return  The actual BrickletAmbientLight object.
      */
-    public BrickletAmbientLight get(IlluminanceSensorDomain illuminanceSensorDomain) {
+    public BrickletAmbientLight getIlluminanceSensor(IlluminanceSensorDomain illuminanceSensorDomain) {
 
         if (illuminanceSensorDomain == null) {
             return null;

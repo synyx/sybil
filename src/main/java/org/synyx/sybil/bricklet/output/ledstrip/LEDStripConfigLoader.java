@@ -13,9 +13,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.api.HealthController;
+import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.brick.database.BrickRepository;
-import org.synyx.sybil.bricklet.BrickletNameRegistry;
+import org.synyx.sybil.bricklet.BrickletNameService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.jenkins.domain.Status;
@@ -47,26 +47,26 @@ public class LEDStripConfigLoader {
     private ObjectMapper mapper;
 
     // Registers bricklets' names to make sure they are unique
-    private BrickletNameRegistry brickletNameRegistry;
+    private BrickletNameService brickletNameRegistry;
 
     // The Repository to save LEDStrip configuration data
     private LEDStripRepository LEDStripRepository;
 
     // The Repository to save Brick configuration data
-    private BrickRepository brickRepository;
+    private BrickService brickService;
 
     // Map saving the custom status colors for SingleStatusOnLEDStrips
     private LEDStripCustomColors ledStripCustomColors;
 
     @Autowired
-    public LEDStripConfigLoader(ObjectMapper mapper, BrickletNameRegistry brickletNameRegistry,
+    public LEDStripConfigLoader(ObjectMapper mapper, BrickletNameService brickletNameRegistry,
         org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository LEDStripRepository,
-        BrickRepository brickRepository, LEDStripCustomColors ledStripCustomColors, Environment environment) {
+        BrickService brickService, LEDStripCustomColors ledStripCustomColors, Environment environment) {
 
         this.mapper = mapper;
         this.brickletNameRegistry = brickletNameRegistry;
         this.LEDStripRepository = LEDStripRepository;
-        this.brickRepository = brickRepository;
+        this.brickService = brickService;
         this.ledStripCustomColors = ledStripCustomColors;
         this.configDir = environment.getProperty("path.to.configfiles");
     }
@@ -104,7 +104,7 @@ public class LEDStripConfigLoader {
                     try {
                         int length = Integer.parseInt(ledstrip.get("length").toString());
 
-                        BrickDomain brick = brickRepository.findByName(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
+                        BrickDomain brick = brickService.getDomain(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
 
                         if (brick != null) { // if there was corresponding brick found in the repo...
                             LEDStripRepository.save(new LEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.

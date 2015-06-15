@@ -56,9 +56,9 @@ public class ConfigurationBrickControllerUnitTest {
         bricks.add(new BrickDomain("localhost", "im666", 14224, "stubtwo"));
         bricks.add(new BrickDomain("localhost", "123abc", 14225, "stubthree"));
 
-        Mockito.when(brickService.getAllBrickDomains()).thenReturn(bricks);
+        Mockito.when(brickService.getAllDomains()).thenReturn(bricks);
 
-        Mockito.when(brickService.getBrickDomain("stubone")).thenReturn(stubOne);
+        Mockito.when(brickService.getDomain("stubone")).thenReturn(stubOne);
 
         configurationBricksController = new ConfigurationBricksController(brickService);
     }

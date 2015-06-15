@@ -60,12 +60,12 @@ public class BrickServiceIntegTest {
 
         BrickDomain test3 = new BrickDomain("localhost", "123abc", 14225, "three");
 
-        int oldSize = brickService.getAllBrickDomains().size();
+        int oldSize = brickService.getAllDomains().size();
 
-        brickService.saveBrickDomains(bricks);
-        brickService.saveBrickDomain(test3);
+        brickService.saveDomains(bricks);
+        brickService.saveDomain(test3);
 
-        assertThat(brickService.getAllBrickDomains().size(), is(oldSize + 3)); // assert that 3 bricks were added
+        assertThat(brickService.getAllDomains().size(), is(oldSize + 3)); // assert that 3 bricks were added
 
         IPConnection ipConnection = brickService.getIPConnection(test3);
 
@@ -86,9 +86,9 @@ public class BrickServiceIntegTest {
         BrickMaster brickMaster = brickService.getBrickMaster("123abc", ipConnection);
         brickMaster.getChipTemperature();
 
-        brickService.deleteBrickDomain(brickService.getBrickDomain("one"));
-        brickService.deleteBrickDomain(brickService.getBrickDomain("two"));
-        brickService.deleteBrickDomain(brickService.getBrickDomain("three"));
+        brickService.deleteDomain(brickService.getDomain("one"));
+        brickService.deleteDomain(brickService.getDomain("two"));
+        brickService.deleteDomain(brickService.getDomain("three"));
 
         brickService.disconnectAll();
 

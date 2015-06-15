@@ -43,7 +43,7 @@ public class ConfigurationBricksController {
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
     public Resources<BrickResource> bricks() {
 
-        List<BrickDomain> bricks = brickService.getAllBrickDomains();
+        List<BrickDomain> bricks = brickService.getAllDomains();
         List<BrickResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
@@ -66,7 +66,7 @@ public class ConfigurationBricksController {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = { "application/hal+json" })
     public BrickResource brick(@PathVariable String name) {
 
-        BrickDomain brick = brickService.getBrickDomain(name);
+        BrickDomain brick = brickService.getDomain(name);
 
         Link self = linkTo(methodOn(ConfigurationBricksController.class).brick(brick.getName())).withSelfRel();
 

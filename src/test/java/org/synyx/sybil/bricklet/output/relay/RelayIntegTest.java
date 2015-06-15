@@ -18,7 +18,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.brick.database.BrickRepository;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
 import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 import org.synyx.sybil.config.DevSpringConfig;
@@ -44,9 +43,6 @@ public class RelayIntegTest {
     private RelayRepository outputRelayRepository;
 
     @Autowired
-    private BrickRepository brickRepository;
-
-    @Autowired
     private BrickService brickService;
 
     @Before
@@ -58,9 +54,9 @@ public class RelayIntegTest {
         BrickDomain test3 = new BrickDomain("localhost", "123abc", 14225);
 
         // add them to the database
-        brickRepository.save(test1);
-        brickRepository.save(test2);
-        brickRepository.save(test3);
+        brickService.saveDomain(test1);
+        brickService.saveDomain(test2);
+        brickService.saveDomain(test3);
 
         // define relay bricklets
         RelayDomain testOne = new RelayDomain("testone", "zzz", test1);
@@ -90,7 +86,7 @@ public class RelayIntegTest {
         for (Relay outputRelay : outputRelays) { // iterate over list of strips
 
             RelayDomain outputRelayDomain = outputRelayRepository.findByName(outputRelay.getName());
-            brickRepository.delete(outputRelayDomain.getBrickDomain());
+            brickService.deleteDomain(outputRelayDomain.getBrickDomain());
             outputRelayRepository.delete(outputRelayDomain);
         }
 

@@ -13,7 +13,7 @@ import java.util.Set;
  */
 
 @Service
-public class BrickletNameRegistry implements BrickletRegistry {
+public class BrickletNameService implements BrickletService {
 
     private Set<String> brickletNames = new HashSet<>();
 

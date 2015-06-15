@@ -13,15 +13,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.api.HealthController;
+import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.brick.database.BrickRepository;
-import org.synyx.sybil.bricklet.BrickletNameRegistry;
-import org.synyx.sybil.bricklet.input.button.ButtonSensorRegistry;
+import org.synyx.sybil.bricklet.BrickletNameService;
+import org.synyx.sybil.bricklet.input.button.ButtonService;
 import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
-import org.synyx.sybil.bricklet.input.button.database.ButtonRepository;
-import org.synyx.sybil.bricklet.input.illuminance.IlluminanceSensorRegistry;
+import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
-import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorRepository;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.io.File;
@@ -50,37 +48,27 @@ public class SensorConfigLoader {
     // The place where the config files lie, taken from the injected environment (and thus ultimately a properties file)
     private String configDir;
 
-    // The Repository to save IlluminanceSensor configuration data
-    private IlluminanceSensorRepository illuminanceSensorRepository;
-
-    // The Repository to save Button configuration data
-    private ButtonRepository buttonRepository;
-
     // Fetches & Configures illuminance sensors
-    private IlluminanceSensorRegistry illuminanceSensorRegistry;
+    private IlluminanceService illuminanceService;
 
     // Fetches & Configures buttons
-    private ButtonSensorRegistry buttonSensorRegistry;
+    private ButtonService buttonService;
 
     // Registers bricklets' names to make sure they are unique
-    private BrickletNameRegistry brickletNameRegistry;
+    private BrickletNameService brickletNameRegistry;
 
     // The Repository to save Brick configuration data
-    private BrickRepository brickRepository;
+    private BrickService brickService;
 
     @Autowired
-    public SensorConfigLoader(ObjectMapper mapper, IlluminanceSensorRepository illuminanceSensorRepository,
-        ButtonRepository buttonRepository, IlluminanceSensorRegistry illuminanceSensorRegistry,
-        ButtonSensorRegistry buttonSensorRegistry, BrickletNameRegistry brickletNameRegistry,
-        BrickRepository brickRepository, Environment environment) {
+    public SensorConfigLoader(ObjectMapper mapper, IlluminanceService illuminanceService, ButtonService buttonService,
+        BrickletNameService brickletNameRegistry, BrickService brickService, Environment environment) {
 
         this.mapper = mapper;
-        this.illuminanceSensorRepository = illuminanceSensorRepository;
-        this.buttonRepository = buttonRepository;
-        this.illuminanceSensorRegistry = illuminanceSensorRegistry;
-        this.buttonSensorRegistry = buttonSensorRegistry;
+        this.illuminanceService = illuminanceService;
+        this.buttonService = buttonService;
         this.brickletNameRegistry = brickletNameRegistry;
-        this.brickRepository = brickRepository;
+        this.brickService = brickService;
         configDir = environment.getProperty("path.to.configfiles");
     }
 
@@ -94,8 +82,8 @@ public class SensorConfigLoader {
                         new TypeReference<List<Map<String, Object>>>() {
                         });
 
-                illuminanceSensorRepository.deleteAll();
-                buttonRepository.deleteAll();
+                illuminanceService.deleteAllDomains();
+                buttonService.deleteAllDomains();
 
                 for (Map sensor : sensors) { // ... deserialize the data manually
 
@@ -150,7 +138,7 @@ public class SensorConfigLoader {
                         }
                     }
 
-                    BrickDomain brick = brickRepository.findByName(sensor.get("brick").toString()); // fetch the corresponding bricks from the repo
+                    BrickDomain brick = brickService.getDomain(sensor.get("brick").toString()); // fetch the corresponding bricks from the repo
 
                     IlluminanceSensorDomain illuminanceSensorDomain = null;
                     ButtonDomain buttonDomain = null;
@@ -158,12 +146,12 @@ public class SensorConfigLoader {
                     if (brick != null) { // if there was corresponding brick found in the repo...
 
                         if (type.equals("luminance")) {
-                            illuminanceSensorDomain = illuminanceSensorRepository.save(new IlluminanceSensorDomain(name,
+                            illuminanceSensorDomain = illuminanceService.saveDomain(new IlluminanceSensorDomain(name,
                                         uid, threshold, multiplier, outputs, brick)); // ... save the sensor
                         }
 
                         if (type.equals("button")) {
-                            buttonDomain = buttonRepository.save(new ButtonDomain(name, uid, pins, outputs, brick)); // ... save the sensor
+                            buttonDomain = buttonService.saveDomain(new ButtonDomain(name, uid, pins, outputs, brick)); // ... save the sensor
                         }
                     } else { // if not...
                         LOG.error("Brick {} does not exist.", sensor.get("brick").toString()); // ... error!
@@ -171,9 +159,9 @@ public class SensorConfigLoader {
                     }
 
                     if (illuminanceSensorDomain != null) {
-                        illuminanceSensorRegistry.get(illuminanceSensorDomain);
+                        illuminanceService.getIlluminanceSensor(illuminanceSensorDomain);
                     } else if (buttonDomain != null) {
-                        buttonSensorRegistry.get(buttonDomain);
+                        buttonService.getButton(buttonDomain);
                     }
                 }
             } catch (IOException e) {

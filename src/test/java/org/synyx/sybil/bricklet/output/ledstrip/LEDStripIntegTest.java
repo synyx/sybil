@@ -15,7 +15,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.brick.database.BrickRepository;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.config.DevSpringConfig;
@@ -41,9 +40,6 @@ public class LEDStripIntegTest {
     private LEDStripRepository LEDStripRepository;
 
     @Autowired
-    private BrickRepository brickRepository;
-
-    @Autowired
     private BrickService brickService;
 
     @Before
@@ -55,9 +51,9 @@ public class LEDStripIntegTest {
         BrickDomain test3 = new BrickDomain("localhost", "123abc", 14225);
 
         // add them to the database
-        brickRepository.save(test1);
-        brickRepository.save(test2);
-        brickRepository.save(test3);
+        brickService.saveDomain(test1);
+        brickService.saveDomain(test2);
+        brickService.saveDomain(test3);
 
         // define LED Strips (bricklets)
         LEDStripDomain testOne = new LEDStripDomain("testone", "abc", 30, test1);
@@ -86,7 +82,7 @@ public class LEDStripIntegTest {
             LEDStrip.updateDisplay(); // make it so!
 
             LEDStripDomain ledStripDomain = LEDStripRepository.findByName(LEDStrip.getName());
-            brickRepository.delete(ledStripDomain.getBrickDomain());
+            brickService.deleteDomain(ledStripDomain.getBrickDomain());
             LEDStripRepository.delete(ledStripDomain);
         }
 
