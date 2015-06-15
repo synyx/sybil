@@ -28,6 +28,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import static org.hamcrest.core.Is.is;
 
+import static org.junit.Assert.fail;
+
 
 @ContextConfiguration(classes = DevSpringConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -72,7 +74,7 @@ public class BrickServiceIntegTest {
         try {
             BrickMaster brickMaster = brickService.getBrickMaster("123abc", ipConnection);
             brickMaster.getChipTemperature();
-            throw new Exception("No Exception thrown!");
+            fail();
         } catch (NotConnectedException e) {
             // This is what we want!
         }
