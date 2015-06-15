@@ -1,6 +1,7 @@
 package org.synyx.sybil.brick;
 
 import com.tinkerforge.AlreadyConnectedException;
+import com.tinkerforge.BrickMaster;
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 
@@ -13,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.data.neo4j.conversion.Result;
 
 import org.springframework.stereotype.Service;
 
@@ -39,16 +42,18 @@ import java.util.Set;
  */
 
 @Service // Annotated so Spring finds and injects it.
-public class BrickRegistry {
+public class BrickService {
 
     // Logger
-    private static final Logger LOG = LoggerFactory.getLogger(BrickRegistry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BrickService.class);
 
     // map that contains all the Connections with the Domains as their key
     private Map<BrickDomain, IPConnection> ipConnections = new HashMap<>();
 
     // set that contains each registry that accesses this registry
     private Set<BrickletRegistry> registries = new HashSet<>();
+
+    private Set<String> names = new HashSet<>();
 
     private BrickRepository brickRepository;
     private GraphDatabaseService graphDatabaseService;
@@ -60,7 +65,7 @@ public class BrickRegistry {
      * @param  graphDatabaseService  The graph database service
      */
     @Autowired
-    public BrickRegistry(BrickRepository brickRepository, GraphDatabaseService graphDatabaseService) {
+    public BrickService(BrickRepository brickRepository, GraphDatabaseService graphDatabaseService) {
 
         this.brickRepository = brickRepository;
         this.graphDatabaseService = graphDatabaseService;
@@ -74,7 +79,7 @@ public class BrickRegistry {
      *
      * @return  the iP connection
      */
-    public IPConnection get(BrickDomain brickDomain, BrickletRegistry brickletRegistry) {
+    public IPConnection getIPConnection(BrickDomain brickDomain, BrickletRegistry brickletRegistry) {
 
         registries.add(brickletRegistry);
 
@@ -91,11 +96,75 @@ public class BrickRegistry {
      *
      * @return  the iP connection
      */
-    public IPConnection get(BrickDomain brickDomain) {
+    public IPConnection getIPConnection(BrickDomain brickDomain) {
 
         connect(brickDomain);
 
         return ipConnections.get(brickDomain);
+    }
+
+
+    public BrickDomain getBrickDomain(String name) {
+
+        return brickRepository.findByName(name);
+    }
+
+
+    public List<BrickDomain> getAllBrickDomains() {
+
+        List<BrickDomain> bricks;
+
+        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
+
+            Result<BrickDomain> result = brickRepository.findAll();
+
+            if (result != null) {
+                bricks = new ArrayList<>(IteratorUtil.asCollection(result));
+            } else {
+                bricks = null;
+            }
+
+            // end transaction
+            tx.success();
+        }
+
+        return bricks;
+    }
+
+
+    public void deleteBrickDomain(BrickDomain brickDomain) {
+
+        brickRepository.delete(brickDomain);
+    }
+
+
+    public void deleteAllBrickDomains() {
+
+        brickRepository.deleteAll();
+    }
+
+
+    public BrickDomain saveBrickDomain(BrickDomain brickDomain) throws Exception {
+
+        if (!names.contains(brickDomain.getName())) {
+            names.add(brickDomain.getName());
+
+            return brickRepository.save(brickDomain);
+        } else {
+            throw new Exception("Brick's name not unique!"); // TODO: Make pretty
+        }
+    }
+
+
+    public List<BrickDomain> saveBrickDomains(List<BrickDomain> brickDomains) {
+
+        return new ArrayList<>(IteratorUtil.asCollection(brickRepository.save(brickDomains)));
+    }
+
+
+    public BrickMaster getBrickMaster(String uid, IPConnection ipConnection) {
+
+        return new BrickMaster(uid, ipConnection);
     }
 
 
@@ -134,16 +203,7 @@ public class BrickRegistry {
 
         LOG.debug("Connecting all bricks.");
 
-        List<BrickDomain> brickDomains;
-
-        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
-            // get all Bricks from database and cast them into a list so that they're actually fetched
-            brickDomains = new ArrayList<>(IteratorUtil.asCollection(brickRepository.findAll()));
-
-            // end transaction
-            tx.success();
-        }
+        List<BrickDomain> brickDomains = getAllBrickDomains();
 
         for (BrickDomain brickDomain : brickDomains) {
             connect(brickDomain);

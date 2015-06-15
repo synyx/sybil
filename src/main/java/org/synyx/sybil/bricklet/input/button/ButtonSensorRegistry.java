@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.brick.BrickRegistry;
+import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.bricklet.BrickletRegistry;
 import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
 import org.synyx.sybil.bricklet.output.relay.RelayRegistry;
@@ -35,7 +35,7 @@ public class ButtonSensorRegistry implements BrickletRegistry {
 
     private Map<ButtonDomain, BrickletIO4> buttons = new HashMap<>();
     private Map<String, ButtonDomain> domains = new HashMap<>();
-    private BrickRegistry brickRegistry;
+    private BrickService brickService;
     private RelayRegistry relayRegistry;
     private RelayRepository relayRepository;
 
@@ -44,15 +44,15 @@ public class ButtonSensorRegistry implements BrickletRegistry {
     /**
      * Instantiates a new Button sensor registry.
      *
-     * @param  brickRegistry  the brick registry
+     * @param  brickService  the brick registry
      * @param  relayRegistry  the output relay registry
      * @param  relayRepository  the output relay repository
      */
     @Autowired
-    public ButtonSensorRegistry(BrickRegistry brickRegistry, RelayRegistry relayRegistry,
+    public ButtonSensorRegistry(BrickService brickService, RelayRegistry relayRegistry,
         RelayRepository relayRepository) {
 
-        this.brickRegistry = brickRegistry;
+        this.brickService = brickService;
         this.relayRegistry = relayRegistry;
         this.relayRepository = relayRepository;
     }
@@ -77,7 +77,7 @@ public class ButtonSensorRegistry implements BrickletRegistry {
 
             try {
                 // get the connection to the Brick, passing the BrickDomain and the calling object
-                IPConnection ipConnection = brickRegistry.get(buttonDomain.getBrickDomain(), this);
+                IPConnection ipConnection = brickService.getIPConnection(buttonDomain.getBrickDomain(), this);
 
                 if (ipConnection != null) {
                     ButtonDomain sameSensor = domains.get(buttonDomain.getUid());

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.brick.BrickRegistry;
+import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.bricklet.BrickletRegistry;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
@@ -34,7 +34,7 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(IlluminanceSensorRegistry.class);
 
     private Map<IlluminanceSensorDomain, BrickletAmbientLight> illuminanceSensors = new HashMap<>();
-    private BrickRegistry brickRegistry;
+    private BrickService brickService;
     private LEDStripRegistry LEDStripRegistry;
     private LEDStripRepository LEDStripRepository;
 
@@ -43,15 +43,15 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
     /**
      * Instantiates a new Illuminance sensor registry.
      *
-     * @param  brickRegistry  the brick registry
+     * @param  brickService  the brick registry
      * @param  LEDStripRegistry  the output lED strip registry
      * @param  LEDStripRepository  the output lED strip repository
      */
     @Autowired
-    public IlluminanceSensorRegistry(BrickRegistry brickRegistry, LEDStripRegistry LEDStripRegistry,
+    public IlluminanceSensorRegistry(BrickService brickService, LEDStripRegistry LEDStripRegistry,
         LEDStripRepository LEDStripRepository) {
 
-        this.brickRegistry = brickRegistry;
+        this.brickService = brickService;
         this.LEDStripRegistry = LEDStripRegistry;
         this.LEDStripRepository = LEDStripRepository;
     }
@@ -76,7 +76,8 @@ public class IlluminanceSensorRegistry implements BrickletRegistry {
 
             try {
                 // get the connection to the Brick, passing the BrickDomain and the calling object
-                IPConnection ipConnection = brickRegistry.get(illuminanceSensorDomain.getBrickDomain(), this);
+                IPConnection ipConnection = brickService.getIPConnection(illuminanceSensorDomain.getBrickDomain(),
+                        this);
 
                 if (ipConnection != null) {
                     // Create a new Tinkerforge BrickletAmbientLight object with data from the database

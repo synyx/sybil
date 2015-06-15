@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.synyx.sybil.brick.BrickRegistry;
+import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
@@ -47,7 +47,7 @@ public class RelayIntegTest {
     private BrickRepository brickRepository;
 
     @Autowired
-    private BrickRegistry brickRegistry;
+    private BrickService brickService;
 
     @Before
     public void setup() {
@@ -94,7 +94,7 @@ public class RelayIntegTest {
             outputRelayRepository.delete(outputRelayDomain);
         }
 
-        brickRegistry.disconnectAll();
+        brickService.disconnectAll();
     }
 
 

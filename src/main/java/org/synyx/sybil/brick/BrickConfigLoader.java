@@ -8,11 +8,6 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-
-import org.neo4j.helpers.collection.IteratorUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.brick.database.BrickRepository;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.io.File;
@@ -32,7 +26,6 @@ import java.io.IOException;
 
 import java.time.Instant;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -47,27 +40,20 @@ public class BrickConfigLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(BrickConfigLoader.class);
 
-    private BrickRepository brickRepository;
-
-    private BrickRegistry brickRegistry;
+    private BrickService brickService;
 
     private String configDir;
 
     private ObjectMapper mapper;
 
-    private GraphDatabaseService graphDatabaseService;
-
     // length of reset timeout in seconds
-    int timeoutLength;
+    private int timeoutLength;
 
     @Autowired
-    public BrickConfigLoader(BrickRepository brickRepository, BrickRegistry brickRegistry, ObjectMapper mapper,
-        GraphDatabaseService graphDatabaseService, Environment environment) {
+    public BrickConfigLoader(BrickService brickService, ObjectMapper mapper, Environment environment) {
 
-        this.brickRepository = brickRepository;
-        this.brickRegistry = brickRegistry;
+        this.brickService = brickService;
         this.mapper = mapper;
-        this.graphDatabaseService = graphDatabaseService;
         this.configDir = environment.getProperty("path.to.configfiles");
         this.timeoutLength = Integer.parseInt(environment.getProperty("brick.reset.timeout.seconds"));
     }
@@ -85,9 +71,9 @@ public class BrickConfigLoader {
                         new TypeReference<List<BrickDomain>>() {
                         });
 
-                brickRepository.deleteAll();
+                brickService.deleteAllBrickDomains();
 
-                brickRepository.save(bricks); // ... simply dump them into the database
+                brickService.saveBrickDomains(bricks); // ... simply dump them into the database
             } catch (IOException e) {
                 LOG.error("Error loading bricks.json: {}", e.toString());
                 HealthController.setHealth(Status.CRITICAL, "loadBricksConfig");
@@ -105,21 +91,12 @@ public class BrickConfigLoader {
             LOG.info("Resetting bricks");
 
             try {
-                List<BrickDomain> bricks;
-
-                try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
-                    // get all Bricks from database and cast them into a list so that they're actually fetched
-                    bricks = new ArrayList<>(IteratorUtil.asCollection(brickRepository.findAll()));
-
-                    // end transaction
-                    tx.success();
-                }
+                List<BrickDomain> bricks = brickService.getAllBrickDomains();
 
                 for (BrickDomain brick : bricks) {
-                    IPConnection ipConnection = brickRegistry.get(brick);
+                    IPConnection ipConnection = brickService.getIPConnection(brick);
 
-                    BrickMaster brickMaster = new BrickMaster(brick.getUid(), ipConnection);
+                    BrickMaster brickMaster = brickService.getBrickMaster(brick.getUid(), ipConnection);
                     brickMaster.reset();
 
                     Short connectionEstablished = null;
@@ -140,7 +117,7 @@ public class BrickConfigLoader {
                     }
                 }
 
-                brickRegistry.disconnectAll();
+                brickService.disconnectAll();
             } catch (TimeoutException | NotConnectedException e) {
                 LOG.error("Error resetting bricks: {}", e.toString());
                 HealthController.setHealth(Status.CRITICAL, "resetBricks");

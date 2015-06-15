@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.brick.BrickRegistry;
+import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.bricklet.BrickletRegistry;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
 
@@ -30,18 +30,18 @@ public class RelayRegistry implements BrickletRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(RelayRegistry.class);
 
     private Map<RelayDomain, Relay> outputRelayMap = new HashMap<>();
-    private BrickRegistry brickRegistry;
+    private BrickService brickService;
 
     // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
     /**
      * Instantiates a new Relay registry.
      *
-     * @param  brickRegistry  The brick registry
+     * @param  brickService  The brick registry
      */
     @Autowired
-    public RelayRegistry(BrickRegistry brickRegistry) {
+    public RelayRegistry(BrickService brickService) {
 
-        this.brickRegistry = brickRegistry;
+        this.brickService = brickService;
     }
 
     /**
@@ -62,7 +62,7 @@ public class RelayRegistry implements BrickletRegistry {
             BrickletDualRelay brickletDualRelay; // since there is a try, it might end up undefined
 
             // get the connecting to the Brick, passing the BrickDomain and the calling object
-            IPConnection ipConnection = brickRegistry.get(relayDomain.getBrickDomain(), this);
+            IPConnection ipConnection = brickService.getIPConnection(relayDomain.getBrickDomain(), this);
 
             if (ipConnection != null) {
                 // Create a new Tinkerforge brickletDualRelay object with data from the database

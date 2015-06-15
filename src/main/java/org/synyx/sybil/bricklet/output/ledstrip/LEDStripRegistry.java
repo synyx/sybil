@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.brick.BrickRegistry;
+import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.bricklet.BrickletRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 
@@ -34,18 +34,18 @@ public class LEDStripRegistry implements BrickletRegistry {
     private static final int CHIP_TYPE = 2812;
 
     private Map<LEDStripDomain, LEDStrip> outputLEDStrips = new HashMap<>();
-    private BrickRegistry brickRegistry;
+    private BrickService brickService;
 
     // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
     /**
      * Instantiates a new LEDStrip registry.
      *
-     * @param  brickRegistry  The brick registry
+     * @param  brickService  The brick registry
      */
     @Autowired
-    public LEDStripRegistry(BrickRegistry brickRegistry) {
+    public LEDStripRegistry(BrickService brickService) {
 
-        this.brickRegistry = brickRegistry;
+        this.brickService = brickService;
     }
 
     /**
@@ -67,7 +67,7 @@ public class LEDStripRegistry implements BrickletRegistry {
 
             try {
                 // get the connecting to the Brick, passing the BrickDomain and the calling object
-                IPConnection ipConnection = brickRegistry.get(LEDStripDomain.getBrickDomain(), this);
+                IPConnection ipConnection = brickService.getIPConnection(LEDStripDomain.getBrickDomain(), this);
 
                 if (ipConnection != null) {
                     // Create a new Tinkerforge brickletLEDStrip object with data from the database

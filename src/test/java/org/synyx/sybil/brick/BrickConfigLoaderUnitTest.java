@@ -3,6 +3,9 @@ package org.synyx.sybil.brick;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.tinkerforge.BrickMaster;
+import com.tinkerforge.IPConnection;
+
 import org.junit.Test;
 
 import org.junit.runner.RunWith;
@@ -16,7 +19,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
 
 import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.brick.database.BrickRepository;
 
 import java.io.File;
 
@@ -43,9 +45,18 @@ public class BrickConfigLoaderUnitTest {
     private Environment environment;
 
     @Mock
-    private BrickRepository brickRepository;
+    private BrickService brickService;
 
     private BrickConfigLoader brickConfigLoader;
+
+    @Mock
+    private BrickMaster brickMaster;
+
+    @Mock
+    private IPConnection ipConnection;
+
+    @Mock
+    BrickDomain brickDomain;
 
     @Test
     public void testLoadBricksConfig() throws Exception {
@@ -62,16 +73,47 @@ public class BrickConfigLoaderUnitTest {
         Mockito.when(objectMapper.readValue(eq(new File("/some/path/bricks.json")), any(TypeReference.class)))
             .thenReturn(bricks);
 
-        // dependencies not needed for testing this method are null
-        brickConfigLoader = new BrickConfigLoader(brickRepository, null, objectMapper, null, environment);
+        brickConfigLoader = new BrickConfigLoader(brickService, objectMapper, environment);
 
         brickConfigLoader.loadBricksConfig();
 
         Mockito.verify(objectMapper).readValue(eq(new File("/some/path/bricks.json")), any(TypeReference.class));
 
-        InOrder inOrder = Mockito.inOrder(brickRepository);
+        InOrder inOrder = Mockito.inOrder(brickService);
 
-        inOrder.verify(brickRepository).deleteAll();
-        inOrder.verify(brickRepository).save(bricks);
+        inOrder.verify(brickService).deleteAllBrickDomains();
+        inOrder.verify(brickService).saveBrickDomains(bricks);
+    }
+
+
+    @Test
+    public void testResetBricks() throws Exception {
+
+        List<BrickDomain> bricks = new ArrayList<>();
+
+        bricks.add(brickDomain);
+
+        Mockito.when(environment.getProperty("brick.reset.timeout.seconds")).thenReturn("15");
+
+        Mockito.when(brickService.getAllBrickDomains()).thenReturn(bricks);
+
+        Mockito.when(brickService.getIPConnection(brickDomain)).thenReturn(ipConnection);
+
+        Mockito.when(brickService.getBrickMaster(brickDomain.getUid(), ipConnection)).thenReturn(brickMaster);
+
+        Mockito.when(brickMaster.getChipTemperature()).thenReturn((short) 30);
+
+        brickConfigLoader = new BrickConfigLoader(brickService, objectMapper, environment);
+
+        brickConfigLoader.resetBricks();
+
+        Mockito.verify(brickService).getBrickMaster(brickDomain.getUid(), ipConnection);
+
+        InOrder inOrder = Mockito.inOrder(brickMaster);
+
+        inOrder.verify(brickMaster).reset();
+        inOrder.verify(brickMaster).getChipTemperature();
+
+        Mockito.verify(brickService).disconnectAll();
     }
 }
