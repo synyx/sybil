@@ -1,6 +1,5 @@
 apply plugin: 'java' //Java plugin
 apply plugin: 'war' //war plugin
-apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8 //Java 8
 version = '0.1'
@@ -42,6 +41,9 @@ dependencies {
  * START of TESTING CONFIGURATION *
  **********************************/
 
+/*** START Configure Jacoco Code Coverage ***/
+apply plugin: 'jacoco'
+
 jacocoTestReport {
     group = "Reporting"
     description = "Generate Jacoco coverage reports after running tests."
@@ -51,6 +53,9 @@ jacocoTestReport {
 jacocoTestReport << {
     println 'See report at: file://' + projectDir + '/build/reports/jacoco/test/html/index.html'
 }
+/*** END Configure Jacoco Code Coverage ***/
+
+
 
 /*** START Configure unit tests ***/
 task showResults(type: Exec) {
@@ -62,7 +67,6 @@ task showResults(type: Exec) {
 test {
     systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
-    systemProperty 'spring.profiles.active', 'dev'  //set active Spring profile to development
     testLogging {
         events "passed", "skipped", "failed"
         //showStandardStreams = true //show STDOUT and STDERR while gradle is running
@@ -109,7 +113,6 @@ gretty { // configure gretty
 
 
 /*** START Configure Integration tests ***/
-
 task deleteDatabase(type: Delete) {
     delete '/tmp/sybildevdb/'
 }
@@ -195,7 +198,7 @@ task integTest(type: Test) { //define the integTest task as a Test task
         //showStandardStreams = true //show STDOUT and STDERR while gradle is running
     }
     filter {
-        // only run tests ending in *UnitTest
+        // only run tests ending in *IntegTest
         includeTestsMatching "*IntegTest"
     }
 }
