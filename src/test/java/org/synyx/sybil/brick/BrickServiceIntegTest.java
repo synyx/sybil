@@ -1,5 +1,9 @@
 package org.synyx.sybil.brick;
 
+import com.tinkerforge.BrickMaster;
+import com.tinkerforge.IPConnection;
+import com.tinkerforge.NotConnectedException;
+
 import org.junit.Test;
 
 import org.junit.runner.RunWith;
@@ -13,10 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.Color;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.config.DevSpringConfig;
 
@@ -62,41 +63,31 @@ public class BrickServiceIntegTest {
         brickService.saveBrickDomains(bricks);
         brickService.saveBrickDomain(test3);
 
-        test1 = brickService.getBrickDomain("one");
-
-        LEDStripDomain testOne = new LEDStripDomain("testone", "abc", 30, test1);
-        testOne = LEDStripRepository.save(testOne);
-
         assertThat(brickService.getAllBrickDomains().size(), is(oldSize + 3)); // assert that 3 bricks were added
 
+        IPConnection ipConnection = brickService.getIPConnection(test3);
+
         brickService.disconnectAll();
+
+        try {
+            BrickMaster brickMaster = brickService.getBrickMaster("123abc", ipConnection);
+            brickMaster.getChipTemperature();
+            throw new Exception("No Exception thrown!");
+        } catch (NotConnectedException e) {
+            // This is what we want!
+        }
+
         brickService.connectAll();
 
-        LEDStrip LEDStrip = LEDStripRegistry.get(testOne);
+        ipConnection = brickService.getIPConnection(test3);
 
-        Color color = new Color(16, 35, 77);
-
-        LEDStrip.setPixel(1, color);
-        LEDStrip.updateDisplay();
-
-        Color pixel0 = LEDStrip.getPixel(0);
-        Color pixel1 = LEDStrip.getPixel(1);
-
-        assertThat(pixel0.getRedAsShort(), is((short) 0));
-        assertThat(pixel0.getGreenAsShort(), is((short) 0));
-        assertThat(pixel0.getBlueAsShort(), is((short) 0));
-
-        assertThat(pixel1.getRedAsShort(), is((short) 16));
-        assertThat(pixel1.getGreenAsShort(), is((short) 35));
-        assertThat(pixel1.getBlueAsShort(), is((short) 77));
+        BrickMaster brickMaster = brickService.getBrickMaster("123abc", ipConnection);
+        brickMaster.getChipTemperature();
 
         brickService.deleteBrickDomain(brickService.getBrickDomain("one"));
         brickService.deleteBrickDomain(brickService.getBrickDomain("two"));
         brickService.deleteBrickDomain(brickService.getBrickDomain("three"));
 
-        LEDStripRepository.delete(testOne);
-
-        // disconnect all bricks & bricklets
         brickService.disconnectAll();
 
         LOG.info("FINISH Test testConnectALL");
