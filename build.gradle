@@ -1,5 +1,6 @@
 apply plugin: 'java' //Java plugin
 apply plugin: 'war' //war plugin
+apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8 //Java 8
 version = '0.1'
@@ -41,9 +42,21 @@ dependencies {
  * START of TESTING CONFIGURATION *
  **********************************/
 
+jacocoTestReport {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
+}
+
+jacocoTestReport << {
+    println 'See report at: file://' + projectDir + '/build/reports/jacoco/test/html/index.html'
+}
+
 /*** START Configure unit tests ***/
 task showResults(type: Exec) {
-    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16|sed \'s/[\\+| ]//g\''
+    inputs.file file('build/reports/tests/index.html')
+    outputs.file file('/tmp/testresults.txt')
+    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16|sed \'s/[\\+| ]//g\' > /tmp/testresults.txt; cat /tmp/testresults.txt'
 }
 
 test {
