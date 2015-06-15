@@ -5,14 +5,18 @@ import org.junit.Test;
 
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.synyx.sybil.config.DevSpringConfig;
-import org.synyx.sybil.config.StartupLoader;
+import org.synyx.sybil.brick.BrickService;
+import org.synyx.sybil.brick.database.BrickDomain;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
@@ -33,20 +37,30 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { DevSpringConfig.class })
-public class ConfigurationBrickControllerIntegTest {
+@RunWith(MockitoJUnitRunner.class)
+public class ConfigurationBrickControllerUnitTest {
 
-    @Autowired
-    StartupLoader startupLoader;
+    @Mock
+    BrickService brickService;
 
-    @Autowired
     ConfigurationBricksController configurationBricksController;
 
     @Before
     public void setup() {
 
-        startupLoader.init();
+        List<BrickDomain> bricks = new ArrayList<>();
+
+        BrickDomain stubOne = new BrickDomain("localhost", "6dLj52", 14223, "stubone");
+
+        bricks.add(stubOne);
+        bricks.add(new BrickDomain("localhost", "im666", 14224, "stubtwo"));
+        bricks.add(new BrickDomain("localhost", "123abc", 14225, "stubthree"));
+
+        Mockito.when(brickService.getAllBrickDomains()).thenReturn(bricks);
+
+        Mockito.when(brickService.getBrickDomain("stubone")).thenReturn(stubOne);
+
+        configurationBricksController = new ConfigurationBricksController(brickService);
     }
 
 
