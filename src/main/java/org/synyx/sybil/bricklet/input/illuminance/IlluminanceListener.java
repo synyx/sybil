@@ -10,7 +10,6 @@ import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDoma
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.util.ArrayList;
@@ -32,8 +31,7 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
 
     private double multiplier;
 
-    public IlluminanceListener(IlluminanceSensorDomain sensor, LEDStripService LEDStripService,
-        LEDStripRepository LEDStripRepository) {
+    public IlluminanceListener(IlluminanceSensorDomain sensor, LEDStripService LEDStripService) {
 
         LOG.debug("Listener added to {}", sensor.getName());
 
@@ -42,7 +40,7 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
         multiplier = sensor.getMultiplier();
 
         for (String output : sensor.getOutputs()) {
-            LEDStripDomain domain = LEDStripRepository.findByName(output);
+            LEDStripDomain domain = LEDStripService.getDomain(output);
 
             if (domain != null) {
                 LEDStrip ledStrip = LEDStripService.getLEDStrip(domain);

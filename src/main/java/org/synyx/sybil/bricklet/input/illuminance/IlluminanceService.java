@@ -22,7 +22,6 @@ import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorRepository;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +43,6 @@ public class IlluminanceService implements BrickletService {
     private Map<IlluminanceSensorDomain, BrickletAmbientLight> illuminanceSensors = new HashMap<>();
     private BrickService brickService;
     private LEDStripService LEDStripService;
-    private LEDStripRepository LEDStripRepository;
     private IlluminanceSensorRepository illuminanceSensorRepository;
     private GraphDatabaseService graphDatabaseService;
 
@@ -53,18 +51,15 @@ public class IlluminanceService implements BrickletService {
      *
      * @param  brickService  the brick registry
      * @param  LEDStripService  the output lED strip registry
-     * @param  LEDStripRepository  the output lED strip repository
      * @param  illuminanceSensorRepository  the illuminance sensor repository
      * @param  graphDatabaseService  the graph database service
      */
     @Autowired
     public IlluminanceService(BrickService brickService, LEDStripService LEDStripService,
-        LEDStripRepository LEDStripRepository, IlluminanceSensorRepository illuminanceSensorRepository,
-        GraphDatabaseService graphDatabaseService) {
+        IlluminanceSensorRepository illuminanceSensorRepository, GraphDatabaseService graphDatabaseService) {
 
         this.brickService = brickService;
         this.LEDStripService = LEDStripService;
-        this.LEDStripRepository = LEDStripRepository;
         this.illuminanceSensorRepository = illuminanceSensorRepository;
         this.graphDatabaseService = graphDatabaseService;
     }
@@ -157,7 +152,7 @@ public class IlluminanceService implements BrickletService {
                     brickletAmbientLight.setIlluminanceCallbackPeriod(5000);
 
                     brickletAmbientLight.addIlluminanceListener(new IlluminanceListener(illuminanceSensorDomain,
-                            LEDStripService, LEDStripRepository));
+                            LEDStripService));
                 } else {
                     LOG.error("Error setting up illuminance sensor {}: Brick {} not available.",
                         illuminanceSensorDomain.getName(), illuminanceSensorDomain.getBrickDomain().getHostname());

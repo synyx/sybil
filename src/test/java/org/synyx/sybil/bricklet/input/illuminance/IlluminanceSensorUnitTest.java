@@ -16,7 +16,6 @@ import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDoma
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +34,6 @@ public class IlluminanceSensorUnitTest {
     private LEDStripService ledStripService;
 
     @Mock
-    private LEDStripRepository ledStripRepository;
-
-    @Mock
     private LEDStrip ledstrip;
 
     private IlluminanceListener listener;
@@ -49,7 +45,7 @@ public class IlluminanceSensorUnitTest {
 
         LEDStripDomain testOne = new LEDStripDomain("testone", "abc", 30, test1);
 
-        Mockito.when(ledStripRepository.findByName("testone")).thenReturn(testOne);
+        Mockito.when(ledStripService.getDomain("testone")).thenReturn(testOne);
 
         Mockito.when(ledStripService.getLEDStrip(testOne)).thenReturn(ledstrip);
 
@@ -59,7 +55,7 @@ public class IlluminanceSensorUnitTest {
 
         IlluminanceSensorDomain sensorDomain = new IlluminanceSensorDomain("lux", "egal", 16, 0.1, outputs, test1);
 
-        listener = new IlluminanceListener(sensorDomain, ledStripService, ledStripRepository);
+        listener = new IlluminanceListener(sensorDomain, ledStripService);
     }
 
 
