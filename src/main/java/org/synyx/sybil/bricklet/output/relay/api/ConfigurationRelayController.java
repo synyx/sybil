@@ -1,10 +1,5 @@
 package org.synyx.sybil.bricklet.output.relay.api;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-
-import org.neo4j.helpers.collection.IteratorUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.hateoas.Link;
@@ -27,7 +22,6 @@ import org.synyx.sybil.bricklet.output.relay.EnumRelay;
 import org.synyx.sybil.bricklet.output.relay.Relay;
 import org.synyx.sybil.bricklet.output.relay.RelayService;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
-import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,16 +42,11 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RequestMapping("/configuration/relays")
 public class ConfigurationRelayController {
 
-    private RelayRepository relayRepository;
-    private GraphDatabaseService graphDatabaseService;
     private RelayService relayService;
 
     @Autowired
-    public ConfigurationRelayController(RelayRepository relayRepository, GraphDatabaseService graphDatabaseService,
-        RelayService relayService) {
+    public ConfigurationRelayController(RelayService relayService) {
 
-        this.relayRepository = relayRepository;
-        this.graphDatabaseService = graphDatabaseService;
         this.relayService = relayService;
     }
 
@@ -65,21 +54,12 @@ public class ConfigurationRelayController {
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
     public Resources<RelayResource> relays() {
 
-        List<RelayDomain> relays;
+        List<RelayDomain> relays = relayService.getAllDomains();
         List<RelayResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
         Link self = linkTo(ConfigurationRelayController.class).withSelfRel();
         links.add(self);
-
-        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
-            // get all Bricks from database and cast them into a list so that they're actually fetched
-            relays = new ArrayList<>(IteratorUtil.asCollection(relayRepository.findAll()));
-
-            // end transaction
-            tx.success();
-        }
 
         for (RelayDomain relayDomain : relays) {
             RelayResource resource = getRelay(relayDomain.getName());
@@ -95,21 +75,12 @@ public class ConfigurationRelayController {
     @RequestMapping(method = RequestMethod.PATCH, produces = { "application/hal+json" })
     public Resources<RelayResource> updateRelays(@RequestBody PatchResource input) throws Exception {
 
-        List<RelayDomain> relays;
+        List<RelayDomain> relays = relayService.getAllDomains();
         List<RelayResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
         Link self = linkTo(ConfigurationRelayController.class).withSelfRel();
         links.add(self);
-
-        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
-            // get all Bricks from database and cast them into a list so that they're actually fetched
-            relays = new ArrayList<>(IteratorUtil.asCollection(relayRepository.findAll()));
-
-            // end transaction
-            tx.success();
-        }
 
         for (RelayDomain relayDomain : relays) {
             for (SinglePatchResource patch : input.getPatches()) {
@@ -134,7 +105,7 @@ public class ConfigurationRelayController {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = { "application/hal+json" })
     public RelayResource getRelay(@PathVariable String name) {
 
-        RelayDomain relayDomain = relayRepository.findByName(name);
+        RelayDomain relayDomain = relayService.getDomain(name);
         Relay relay = relayService.getRelay(relayDomain);
 
         List<Link> links = new ArrayList<>();
@@ -153,7 +124,7 @@ public class ConfigurationRelayController {
     @RequestMapping(value = "/{name}", method = RequestMethod.PATCH, produces = { "application/hal+json" })
     public RelayResource updateRelay(@PathVariable String name, @RequestBody PatchResource input) throws Exception {
 
-        RelayDomain relayDomain = relayRepository.findByName(name);
+        RelayDomain relayDomain = relayService.getDomain(name);
         Relay relay = relayService.getRelay(relayDomain);
 
         for (SinglePatchResource patch : input.getPatches()) {
