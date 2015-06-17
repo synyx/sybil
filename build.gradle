@@ -48,10 +48,10 @@ jacocoTestReport {
     group = "Reporting"
     description = "Generate Jacoco coverage reports after running tests."
     additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
-}
 
-jacocoTestReport << {
-    println 'See report at: file://' + projectDir + '/build/reports/jacoco/test/html/index.html'
+    doLast {
+        println 'See report at: file://' + projectDir + '/build/reports/jacoco/test/html/index.html'
+    }
 }
 /*** END Configure Jacoco Code Coverage ***/
 
@@ -60,8 +60,8 @@ jacocoTestReport << {
 /*** START Configure unit tests ***/
 task showResults(type: Exec) {
     inputs.file file('build/reports/tests/index.html')
-    outputs.file file('/tmp/testresults.txt')
-    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16|sed \'s/[\\+| ]//g\' > /tmp/testresults.txt; cat /tmp/testresults.txt'
+    outputs.file file('build/reports/tests/testresults.txt')
+    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16|sed \'s/[\\+| ]//g\' > build/reports/tests/testresults.txt; cat build/reports/tests/testresults.txt'
 }
 
 test {
@@ -201,7 +201,13 @@ task integTest(type: Test) { //define the integTest task as a Test task
         // only run tests ending in *IntegTest
         includeTestsMatching "*IntegTest"
     }
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/integTest.exec")
+        classDumpFile = file("$buildDir/classes/**")
+    }
 }
+
+
 
 //uncomment to run integration tests with the build task. Check is a subtask of the build task, provided by java plugin
 //check.dependsOn integTest
