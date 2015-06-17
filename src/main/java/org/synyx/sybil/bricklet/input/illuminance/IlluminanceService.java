@@ -72,13 +72,13 @@ public class IlluminanceService implements BrickletService {
     /**
      * Save domain.
      *
-     * @param  buttonDomain  the button domain
+     * @param  illuminanceDomain  the illuminance domain
      *
      * @return  the illuminance sensor domain
      */
-    public IlluminanceSensorDomain saveDomain(IlluminanceSensorDomain buttonDomain) {
+    public IlluminanceSensorDomain saveDomain(IlluminanceSensorDomain illuminanceDomain) {
 
-        return illuminanceSensorRepository.save(buttonDomain);
+        return illuminanceSensorRepository.save(illuminanceDomain);
     }
 
 

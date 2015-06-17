@@ -6,6 +6,9 @@ import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
+
+import org.neo4j.helpers.collection.IteratorUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +22,9 @@ import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -42,6 +47,7 @@ public class LEDStripService implements BrickletService {
     private GraphDatabaseService graphDatabaseService;
 
     // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
+
     /**
      * Instantiates a new LEDStrip registry.
      *
@@ -57,6 +63,63 @@ public class LEDStripService implements BrickletService {
         this.ledStripRepository = ledStripRepository;
         this.graphDatabaseService = graphDatabaseService;
     }
+
+    /**
+     * Gets domain.
+     *
+     * @param  name  the name
+     *
+     * @return  the domain
+     */
+    public LEDStripDomain getDomain(String name) {
+
+        return ledStripRepository.findByName(name);
+    }
+
+
+    /**
+     * Save domain.
+     *
+     * @param  ledStripDomain  the ledStrip domain
+     *
+     * @return  the illuminance sensor domain
+     */
+    public LEDStripDomain saveDomain(LEDStripDomain ledStripDomain) {
+
+        return ledStripRepository.save(ledStripDomain);
+    }
+
+
+    /**
+     * Gets all domains.
+     *
+     * @return  the all domains
+     */
+    public List<LEDStripDomain> getAllDomains() {
+
+        List<LEDStripDomain> ledStripDomains;
+
+        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
+
+            // get all sensors from database and cast them into a list so that they're actually fetched
+            ledStripDomains = new ArrayList<>(IteratorUtil.asCollection(ledStripRepository.findAll()));
+
+            // end transaction
+            tx.success();
+        }
+
+        return ledStripDomains;
+    }
+
+
+    /**
+     * Delete all domains.
+     */
+    public void deleteAllDomains() {
+
+        ledStripRepository.deleteAll();
+    }
+
 
     /**
      * Get a LEDStrip object, instantiate a new one if necessary.
