@@ -17,7 +17,6 @@ import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.bricklet.BrickletNameService;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
-import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.io.File;
@@ -49,19 +48,19 @@ public class RelayConfigLoader {
     private BrickService brickService;
 
     // The Repository to save Relay configuration data
-    private RelayRepository relayRepository;
+    private RelayService relayService;
 
     // Registers bricklets' names to make sure they are unique
     private BrickletNameService brickletNameRegistry;
 
     @Autowired
-    public RelayConfigLoader(ObjectMapper mapper, BrickService brickService, RelayRepository relayRepository,
-        BrickletNameService brickletNameRegistry, Environment environment) {
+    public RelayConfigLoader(ObjectMapper mapper, BrickService brickService, BrickletNameService brickletNameRegistry,
+        Environment environment, RelayService relayService) {
 
         this.mapper = mapper;
         this.brickService = brickService;
-        this.relayRepository = relayRepository;
         this.brickletNameRegistry = brickletNameRegistry;
+        this.relayService = relayService;
         configDir = environment.getProperty("path.to.configfiles");
     }
 
@@ -75,7 +74,7 @@ public class RelayConfigLoader {
                         new TypeReference<List<Map<String, Object>>>() {
                         });
 
-                relayRepository.deleteAll();
+                relayService.deleteAllDomains();
 
                 for (Map relay : relays) { // ... deserialize the data manually
 
@@ -95,7 +94,7 @@ public class RelayConfigLoader {
                     BrickDomain brick = brickService.getDomain(relay.get("brick").toString()); // fetch the corresponding bricks from the repo
 
                     if (brick != null) { // if there was corresponding brick found in the repo...
-                        relayRepository.save(new RelayDomain(name, uid, brick)); // ... save the relay.
+                        relayService.saveDomain(new RelayDomain(name, uid, brick)); // ... save the relay.
                     } else { // if not...
                         LOG.error("Brick {} does not exist.", relay.get("brick").toString()); // ... error!
                         HealthController.setHealth(Status.WARNING, "loadRelayConfig");
