@@ -1,9 +1,6 @@
 package org.synyx.sybil.jenkins;
 
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-
-import org.neo4j.helpers.collection.IteratorUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +24,12 @@ import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.jenkins.config.JenkinsConfig;
 import org.synyx.sybil.jenkins.domain.JenkinsJob;
 import org.synyx.sybil.jenkins.domain.JenkinsProperties;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -65,8 +60,6 @@ public class JenkinsService {
      */
     private final JenkinsConfig jenkinsConfig;
 
-    private final LEDStripRepository LEDStripRepository;
-
     private final LEDStripService LEDStripService;
 
     private final GraphDatabaseService graphDatabaseService;
@@ -76,16 +69,14 @@ public class JenkinsService {
      *
      * @param  jenkinsConfig  The Jenkins config bean, autowired in.
      * @param  LEDStripService  the output lED strip registry
-     * @param  LEDStripRepository  the output lED strip repository
      * @param  graphDatabaseService  the graph database service
      */
     @Autowired
     public JenkinsService(JenkinsConfig jenkinsConfig, LEDStripService LEDStripService,
-        LEDStripRepository LEDStripRepository, GraphDatabaseService graphDatabaseService) {
+        GraphDatabaseService graphDatabaseService) {
 
         this.jenkinsConfig = jenkinsConfig;
         this.LEDStripService = LEDStripService;
-        this.LEDStripRepository = LEDStripRepository;
         this.graphDatabaseService = graphDatabaseService;
     }
 
@@ -161,16 +152,7 @@ public class JenkinsService {
     @PreDestroy
     public void destroy() {
 
-        List<LEDStripDomain> ledStripDomains;
-
-        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
-            // get all Bricks from database and cast them into a list so that they're actually fetched
-            ledStripDomains = new ArrayList<>(IteratorUtil.asCollection(LEDStripRepository.findAll()));
-
-            // end transaction
-            tx.success();
-        }
+        List<LEDStripDomain> ledStripDomains = LEDStripService.getAllDomains();
 
         for (LEDStripDomain ledStripDomain : ledStripDomains) {
             LEDStrip ledStrip = LEDStripService.getLEDStrip(ledStripDomain);
