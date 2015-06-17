@@ -1,10 +1,5 @@
 package org.synyx.sybil.bricklet.output.ledstrip.api;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-
-import org.neo4j.helpers.collection.IteratorUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.hateoas.Link;
@@ -28,7 +23,6 @@ import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,38 +43,24 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RequestMapping("/configuration/ledstrips")
 public class ConfigurationLEDStripController {
 
-    private LEDStripRepository LEDStripRepository;
-    private GraphDatabaseService graphDatabaseService;
-    private LEDStripService LEDStripService;
+    private LEDStripService ledStripService;
 
     @Autowired
-    public ConfigurationLEDStripController(LEDStripRepository LEDStripRepository,
-        GraphDatabaseService graphDatabaseService, LEDStripService LEDStripService) {
+    public ConfigurationLEDStripController(LEDStripService ledStripService) {
 
-        this.LEDStripRepository = LEDStripRepository;
-        this.graphDatabaseService = graphDatabaseService;
-        this.LEDStripService = LEDStripService;
+        this.ledStripService = ledStripService;
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
     public Resources<LEDStripResource> ledstrips() {
 
-        List<LEDStripDomain> ledStrips;
+        List<LEDStripDomain> ledStrips = ledStripService.getAllDomains();
         List<LEDStripResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
         Link self = linkTo(ConfigurationLEDStripController.class).withSelfRel();
         links.add(self);
-
-        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
-            // get all Bricks from database and cast them into a list so that they're actually fetched
-            ledStrips = new ArrayList<>(IteratorUtil.asCollection(LEDStripRepository.findAll()));
-
-            // end transaction
-            tx.success();
-        }
 
         for (LEDStripDomain ledStripDomain : ledStrips) {
             self = linkTo(methodOn(ConfigurationLEDStripController.class).ledStrip(ledStripDomain.getName()))
@@ -99,7 +79,7 @@ public class ConfigurationLEDStripController {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = { "application/hal+json" })
     public LEDStripResource ledStrip(@PathVariable String name) {
 
-        LEDStripDomain ledStripDomain = LEDStripRepository.findByName(name);
+        LEDStripDomain ledStripDomain = ledStripService.getDomain(name);
 
         List<Link> links = new ArrayList<>();
 
@@ -116,8 +96,8 @@ public class ConfigurationLEDStripController {
     @RequestMapping(value = "/{name}/display", method = RequestMethod.GET, produces = { "application/hal+json" })
     public DisplayResource getDisplay(@PathVariable String name) {
 
-        LEDStripDomain ledStripDomain = LEDStripRepository.findByName(name);
-        LEDStrip ledStrip = LEDStripService.getLEDStrip(ledStripDomain);
+        LEDStripDomain ledStripDomain = ledStripService.getDomain(name);
+        LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 
         Link self = linkTo(methodOn(ConfigurationLEDStripController.class).getDisplay(ledStripDomain.getName()))
             .withSelfRel();
@@ -136,8 +116,8 @@ public class ConfigurationLEDStripController {
     @RequestMapping(value = "/{name}/display", method = RequestMethod.PUT, produces = { "application/hal+json" })
     public DisplayResource setDisplay(@PathVariable String name, @RequestBody DisplayResource display) {
 
-        LEDStripDomain ledStripDomain = LEDStripRepository.findByName(name);
-        LEDStrip ledStrip = LEDStripService.getLEDStrip(ledStripDomain);
+        LEDStripDomain ledStripDomain = ledStripService.getDomain(name);
+        LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 
         if (display.getPixels() != null && display.getPixels().size() > 0) {
             Sprite1D pixels = new Sprite1D(display.getPixels().size(), "setDisplay", display.getPixels());
@@ -167,8 +147,8 @@ public class ConfigurationLEDStripController {
     @RequestMapping(value = "/{name}/display", method = RequestMethod.PATCH, produces = { "application/hal+json" })
     public DisplayResource updateDisplay(@PathVariable String name, @RequestBody PatchResource input) throws Exception {
 
-        LEDStripDomain ledStripDomain = LEDStripRepository.findByName(name);
-        LEDStrip ledStrip = LEDStripService.getLEDStrip(ledStripDomain);
+        LEDStripDomain ledStripDomain = ledStripService.getDomain(name);
+        LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 
         for (SinglePatchResource patch : input.getPatches()) {
             switch (patch.getAction()) {
@@ -257,6 +237,7 @@ public class ConfigurationLEDStripController {
     }
 
 
+    // TODO: Non-existing LED strips give a NullPointerException. Should be 404!
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> errorHandler(Exception e) {
