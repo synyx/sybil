@@ -145,7 +145,7 @@ public class JenkinsConfig {
      *
      * @return  the list
      */
-    public List<SingleStatusOnLEDStrip> get(String server, String job) {
+    public List<SingleStatusOnLEDStrip> getSingleStatusOnLEDStrip(String server, String job) {
 
         if (mapping.containsKey(server)) {
             return mapping.get(server).get(job);

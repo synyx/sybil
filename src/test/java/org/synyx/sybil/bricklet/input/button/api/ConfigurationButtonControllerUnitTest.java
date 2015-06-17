@@ -5,14 +5,19 @@ import org.junit.Test;
 
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.synyx.sybil.config.DevSpringConfig;
-import org.synyx.sybil.config.StartupLoader;
+import org.synyx.sybil.brick.database.BrickDomain;
+import org.synyx.sybil.bricklet.input.button.ButtonService;
+import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 
@@ -34,20 +39,41 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { DevSpringConfig.class })
-public class ConfigurationButtonControllerIntegTest {
+@RunWith(MockitoJUnitRunner.class)
+public class ConfigurationButtonControllerUnitTest {
 
-    @Autowired
-    private StartupLoader startupLoader;
+    @Mock
+    private ButtonService buttonService;
 
-    @Autowired
     private ConfigurationButtonController configurationButtonController;
 
     @Before
     public void setup() {
 
-        startupLoader.init();
+        BrickDomain brickDomain = new BrickDomain("localhost", "egal");
+
+        List<ButtonDomain> buttonDomains = new ArrayList<>();
+
+        List<String> outputs1 = new ArrayList<>();
+        outputs1.add("relayone");
+
+        List<String> outputs2 = new ArrayList<>();
+        outputs2.add("relaytwo");
+
+        List<String> outputs3 = new ArrayList<>();
+        outputs3.add("relaythree");
+
+        ButtonDomain button1a = new ButtonDomain("button1a", "aaa", (short) 1, outputs1, brickDomain);
+
+        buttonDomains.add(button1a);
+        buttonDomains.add(new ButtonDomain("button1b", "aaa", (short) 8, outputs2, brickDomain));
+        buttonDomains.add(new ButtonDomain("button2", "bbb", (short) 15, outputs3, brickDomain));
+
+        Mockito.when(buttonService.getAllDomains()).thenReturn(buttonDomains);
+
+        Mockito.when(buttonService.getDomain("button1a")).thenReturn(button1a);
+
+        configurationButtonController = new ConfigurationButtonController(buttonService);
     }
 
 

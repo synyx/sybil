@@ -29,20 +29,20 @@ public class ButtonListener implements BrickletIO4.InterruptListener {
 
     private List<Relay> relays = new ArrayList<>();
 
-    public ButtonListener(ButtonDomain sensor, RelayService relayService) {
+    public ButtonListener(ButtonDomain buttonDomain, RelayService relayService) {
 
-        LOG.debug("Listener added to {}", sensor.getName());
+        LOG.debug("Listener added to {}", buttonDomain.getName());
 
-        pins = sensor.getPins();
+        pins = buttonDomain.getPins();
 
-        for (String output : sensor.getOutputs()) {
-            RelayDomain domain = relayService.getDomain(output);
+        for (String output : buttonDomain.getOutputs()) {
+            RelayDomain relayDomain = relayService.getDomain(output);
 
-            if (domain != null) {
-                Relay relay = relayService.getRelay(domain);
+            if (relayDomain != null) {
+                Relay relay = relayService.getRelay(relayDomain);
                 relays.add(relay);
             } else {
-                LOG.error("Configured output {} of button {} does not match a relay.", output, sensor.getName());
+                LOG.error("Configured output {} of button {} does not match a relay.", output, buttonDomain.getName());
                 HealthController.setHealth(Status.WARNING, "ButtonListener");
             }
         }

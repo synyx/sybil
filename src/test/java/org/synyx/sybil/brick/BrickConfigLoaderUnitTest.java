@@ -38,6 +38,8 @@ import static org.mockito.Matchers.eq;
 @RunWith(MockitoJUnitRunner.class)
 public class BrickConfigLoaderUnitTest {
 
+    private BrickConfigLoader sut;
+
     @Mock
     private ObjectMapper objectMapper;
 
@@ -46,8 +48,6 @@ public class BrickConfigLoaderUnitTest {
 
     @Mock
     private BrickService brickService;
-
-    private BrickConfigLoader brickConfigLoader;
 
     @Mock
     private BrickMaster brickMaster;
@@ -73,9 +73,9 @@ public class BrickConfigLoaderUnitTest {
         Mockito.when(objectMapper.readValue(eq(new File("/some/path/bricks.json")), any(TypeReference.class)))
             .thenReturn(bricks);
 
-        brickConfigLoader = new BrickConfigLoader(brickService, objectMapper, environment);
+        sut = new BrickConfigLoader(brickService, objectMapper, environment);
 
-        brickConfigLoader.loadBricksConfig();
+        sut.loadBricksConfig();
 
         Mockito.verify(objectMapper).readValue(eq(new File("/some/path/bricks.json")), any(TypeReference.class));
 
@@ -103,9 +103,9 @@ public class BrickConfigLoaderUnitTest {
 
         Mockito.when(brickMaster.getChipTemperature()).thenReturn((short) 30);
 
-        brickConfigLoader = new BrickConfigLoader(brickService, objectMapper, environment);
+        sut = new BrickConfigLoader(brickService, objectMapper, environment);
 
-        brickConfigLoader.resetBricks();
+        sut.resetBricks();
 
         Mockito.verify(brickService).getBrickMaster(brickDomain.getUid(), ipConnection);
 

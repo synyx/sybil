@@ -109,13 +109,13 @@ public class JenkinsService {
      *
      * @param  ledStrips  The LED SingleStatusOnLEDStrip objects on which to update the status.
      * @param  jobName  The name of the job the status came from.
-     * @param  status  The job's status.
+     * @param  jobStatus  The job's status.
      */
-    private void updateStatus(List<SingleStatusOnLEDStrip> ledStrips, String jobName, String status) {
+    private void updateStatus(List<SingleStatusOnLEDStrip> ledStrips, String jobName, String jobStatus) {
 
         StatusInformation statusInformation = null;
 
-        switch (status) {
+        switch (jobStatus) {
             case "red":
             case "red_anime":
                 statusInformation = new StatusInformation(jobName, Status.CRITICAL);
@@ -209,7 +209,8 @@ public class JenkinsService {
             if (jobs != null) {
                 for (JenkinsJob job : jobs.getJobs()) {
                     if (jenkinsConfig.contains(server, job.getName())) {
-                        updateStatus(jenkinsConfig.get(server, job.getName()), job.getName(), job.getColor());
+                        updateStatus(jenkinsConfig.getSingleStatusOnLEDStrip(server, job.getName()), job.getName(),
+                            job.getColor());
                     }
                 }
             }

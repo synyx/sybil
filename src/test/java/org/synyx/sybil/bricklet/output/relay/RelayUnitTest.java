@@ -1,6 +1,8 @@
 package org.synyx.sybil.bricklet.output.relay;
 
 import com.tinkerforge.BrickletDualRelay;
+import com.tinkerforge.NotConnectedException;
+import com.tinkerforge.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,9 +10,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static org.mockito.Mockito.verify;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,18 +32,19 @@ public class RelayUnitTest {
 
 
     @Test
-    public void testRelay() throws Exception {
+    public void setState() throws Exception {
 
         relay.setState(EnumRelay.ONE, true);
 
-        Mockito.verify(brickletDualRelay).setSelectedState((short) 1, true);
+        verify(brickletDualRelay).setSelectedState((short) 1, true);
+    }
 
-        relay.setState(EnumRelay.TWO, true);
 
-        Mockito.verify(brickletDualRelay).setSelectedState((short) 2, true);
+    @Test
+    public void setStates() throws TimeoutException, NotConnectedException {
 
         relay.setStates(false, true);
 
-        Mockito.verify(brickletDualRelay).setState(false, true);
+        verify(brickletDualRelay).setState(false, true);
     }
 }
