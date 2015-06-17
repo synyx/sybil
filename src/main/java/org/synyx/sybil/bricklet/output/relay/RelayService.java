@@ -3,6 +3,11 @@ package org.synyx.sybil.bricklet.output.relay;
 import com.tinkerforge.BrickletDualRelay;
 import com.tinkerforge.IPConnection;
 
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
+
+import org.neo4j.helpers.collection.IteratorUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +18,11 @@ import org.springframework.stereotype.Service;
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
+import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -25,24 +33,88 @@ import java.util.Map;
  */
 
 @Service // Annotated so Spring finds and injects it.
-public class RelayRegistry implements BrickletService {
+public class RelayService implements BrickletService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RelayRegistry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RelayService.class);
 
     private Map<RelayDomain, Relay> outputRelayMap = new HashMap<>();
     private BrickService brickService;
+    private RelayRepository relayRepository;
+    private GraphDatabaseService graphDatabaseService;
 
     // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
     /**
      * Instantiates a new Relay registry.
      *
      * @param  brickService  The brick registry
+     * @param  relayRepository  Relay database
+     * @param  graphDatabaseService  Neo4j service
      */
     @Autowired
-    public RelayRegistry(BrickService brickService) {
+    public RelayService(BrickService brickService, RelayRepository relayRepository,
+        GraphDatabaseService graphDatabaseService) {
 
         this.brickService = brickService;
+        this.relayRepository = relayRepository;
+        this.graphDatabaseService = graphDatabaseService;
     }
+
+    /**
+     * Gets domain.
+     *
+     * @param  name  the name
+     *
+     * @return  the domain
+     */
+    public RelayDomain getDomain(String name) {
+
+        return relayRepository.findByName(name);
+    }
+
+
+    /**
+     * Save domain.
+     *
+     * @param  relayDomain  the relay domain
+     *
+     * @return  the illuminance sensor domain
+     */
+    public RelayDomain saveDomain(RelayDomain relayDomain) {
+
+        return relayRepository.save(relayDomain);
+    }
+
+
+    /**
+     * Gets all domains.
+     *
+     * @return  the all domains
+     */
+    public List<RelayDomain> getAllDomains() {
+
+        List<RelayDomain> relayDomains;
+
+        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
+
+            // get all sensors from database and cast them into a list so that they're actually fetched
+            relayDomains = new ArrayList<>(IteratorUtil.asCollection(relayRepository.findAll()));
+
+            // end transaction
+            tx.success();
+        }
+
+        return relayDomains;
+    }
+
+
+    /**
+     * Delete all domains.
+     */
+    public void deleteAllDomains() {
+
+        relayRepository.deleteAll();
+    }
+
 
     /**
      * Get a Relay object, instantiate a new one if necessary.
@@ -51,7 +123,7 @@ public class RelayRegistry implements BrickletService {
      *
      * @return  The actual Relay object.
      */
-    public Relay get(RelayDomain relayDomain) {
+    public Relay getRelay(RelayDomain relayDomain) {
 
         if (relayDomain == null) {
             return null;

@@ -13,9 +13,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
 import org.synyx.sybil.bricklet.output.relay.Relay;
-import org.synyx.sybil.bricklet.output.relay.RelayRegistry;
+import org.synyx.sybil.bricklet.output.relay.RelayService;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
-import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +30,7 @@ import java.util.List;
 public class ButtonUnitTest {
 
     @Mock
-    private RelayRegistry relayRegistry;
-
-    @Mock
-    private RelayRepository relayRepository;
+    private RelayService relayService;
 
     @Mock
     private Relay relay;
@@ -48,9 +44,9 @@ public class ButtonUnitTest {
 
         RelayDomain testOne = new RelayDomain("testone", "zzz", test1);
 
-        Mockito.when(relayRepository.findByName("testone")).thenReturn(testOne);
+        Mockito.when(relayService.getDomain("testone")).thenReturn(testOne);
 
-        Mockito.when(relayRegistry.get(testOne)).thenReturn(relay);
+        Mockito.when(relayService.getRelay(testOne)).thenReturn(relay);
 
         List<String> outputs = new ArrayList<>();
 
@@ -58,7 +54,7 @@ public class ButtonUnitTest {
 
         ButtonDomain sensorDomain = new ButtonDomain("button", "egal", (short) 0b0001, outputs, test1);
 
-        listener = new ButtonListener(sensorDomain, relayRegistry, relayRepository);
+        listener = new ButtonListener(sensorDomain, relayService);
     }
 
 

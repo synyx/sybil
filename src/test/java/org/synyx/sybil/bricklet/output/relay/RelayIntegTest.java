@@ -37,7 +37,7 @@ public class RelayIntegTest {
     private List<Relay> outputRelays = new ArrayList<>();
 
     @Autowired
-    private RelayRegistry outputRelayRegistry;
+    private RelayService outputRelayService;
 
     @Autowired
     private RelayRepository outputRelayRepository;
@@ -69,9 +69,9 @@ public class RelayIntegTest {
         testThree = outputRelayRepository.save(testThree);
 
         // initialise relay bricklets (fetching them from the database on the way), and add them to the list
-        outputRelays.add(outputRelayRegistry.get(testOne));
-        outputRelays.add(outputRelayRegistry.get(testTwo));
-        outputRelays.add(outputRelayRegistry.get(testThree));
+        outputRelays.add(outputRelayService.getRelay(testOne));
+        outputRelays.add(outputRelayService.getRelay(testTwo));
+        outputRelays.add(outputRelayService.getRelay(testThree));
 
         // set all to false (off)
         for (Relay outputRelay : outputRelays) {

@@ -8,9 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
 import org.synyx.sybil.bricklet.output.relay.Relay;
-import org.synyx.sybil.bricklet.output.relay.RelayRegistry;
+import org.synyx.sybil.bricklet.output.relay.RelayService;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
-import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.util.ArrayList;
@@ -30,17 +29,17 @@ public class ButtonListener implements BrickletIO4.InterruptListener {
 
     private List<Relay> relays = new ArrayList<>();
 
-    public ButtonListener(ButtonDomain sensor, RelayRegistry relayRegistry, RelayRepository relayRepository) {
+    public ButtonListener(ButtonDomain sensor, RelayService relayService) {
 
         LOG.debug("Listener added to {}", sensor.getName());
 
         pins = sensor.getPins();
 
         for (String output : sensor.getOutputs()) {
-            RelayDomain domain = relayRepository.findByName(output);
+            RelayDomain domain = relayService.getDomain(output);
 
             if (domain != null) {
-                Relay relay = relayRegistry.get(domain);
+                Relay relay = relayService.getRelay(domain);
                 relays.add(relay);
             } else {
                 LOG.error("Configured output {} of button {} does not match a relay.", output, sensor.getName());

@@ -19,7 +19,7 @@ import org.synyx.sybil.api.PatchResource;
 import org.synyx.sybil.api.SinglePatchResource;
 import org.synyx.sybil.bricklet.output.relay.EnumRelay;
 import org.synyx.sybil.bricklet.output.relay.Relay;
-import org.synyx.sybil.bricklet.output.relay.RelayRegistry;
+import org.synyx.sybil.bricklet.output.relay.RelayService;
 import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 import org.synyx.sybil.config.DevSpringConfig;
 import org.synyx.sybil.config.StartupLoader;
@@ -60,7 +60,7 @@ public class ConfigurationRelayControllerIntegTest {
     ConfigurationRelayController configurationRelayController;
 
     @Autowired
-    RelayRegistry outputRelayRegistry;
+    RelayService outputRelayService;
 
     @Autowired
     RelayRepository outputRelayRepository;
@@ -76,9 +76,9 @@ public class ConfigurationRelayControllerIntegTest {
 
         startupLoader.init();
 
-        stubOne = outputRelayRegistry.get(outputRelayRepository.findByName("relayone"));
-        stubTwo = outputRelayRegistry.get(outputRelayRepository.findByName("relaytwo"));
-        stubThree = outputRelayRegistry.get(outputRelayRepository.findByName("relaythree"));
+        stubOne = outputRelayService.getRelay(outputRelayRepository.findByName("relayone"));
+        stubTwo = outputRelayService.getRelay(outputRelayRepository.findByName("relaytwo"));
+        stubThree = outputRelayService.getRelay(outputRelayRepository.findByName("relaythree"));
 
         stubOne.setStates(false, false);
         stubTwo.setStates(false, false);

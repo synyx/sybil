@@ -25,7 +25,7 @@ import org.synyx.sybil.api.PatchResource;
 import org.synyx.sybil.api.SinglePatchResource;
 import org.synyx.sybil.bricklet.output.relay.EnumRelay;
 import org.synyx.sybil.bricklet.output.relay.Relay;
-import org.synyx.sybil.bricklet.output.relay.RelayRegistry;
+import org.synyx.sybil.bricklet.output.relay.RelayService;
 import org.synyx.sybil.bricklet.output.relay.database.RelayDomain;
 import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
 
@@ -50,15 +50,15 @@ public class ConfigurationRelayController {
 
     private RelayRepository relayRepository;
     private GraphDatabaseService graphDatabaseService;
-    private RelayRegistry relayRegistry;
+    private RelayService relayService;
 
     @Autowired
     public ConfigurationRelayController(RelayRepository relayRepository, GraphDatabaseService graphDatabaseService,
-        RelayRegistry relayRegistry) {
+        RelayService relayService) {
 
         this.relayRepository = relayRepository;
         this.graphDatabaseService = graphDatabaseService;
-        this.relayRegistry = relayRegistry;
+        this.relayService = relayService;
     }
 
     @ResponseBody
@@ -114,7 +114,7 @@ public class ConfigurationRelayController {
         for (RelayDomain relayDomain : relays) {
             for (SinglePatchResource patch : input.getPatches()) {
                 if (patch.getAction().equals("set") && patch.getTarget().equals("relays")) {
-                    Relay relay = relayRegistry.get(relayDomain);
+                    Relay relay = relayService.getRelay(relayDomain);
                     boolean state = patch.getValues().get(0).equals("true");
                     relay.setStates(state, state);
                 } else {
@@ -135,7 +135,7 @@ public class ConfigurationRelayController {
     public RelayResource getRelay(@PathVariable String name) {
 
         RelayDomain relayDomain = relayRepository.findByName(name);
-        Relay relay = relayRegistry.get(relayDomain);
+        Relay relay = relayService.getRelay(relayDomain);
 
         List<Link> links = new ArrayList<>();
 
@@ -154,7 +154,7 @@ public class ConfigurationRelayController {
     public RelayResource updateRelay(@PathVariable String name, @RequestBody PatchResource input) throws Exception {
 
         RelayDomain relayDomain = relayRepository.findByName(name);
-        Relay relay = relayRegistry.get(relayDomain);
+        Relay relay = relayService.getRelay(relayDomain);
 
         for (SinglePatchResource patch : input.getPatches()) {
             switch (patch.getAction()) {

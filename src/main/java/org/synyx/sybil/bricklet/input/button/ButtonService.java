@@ -21,8 +21,7 @@ import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
 import org.synyx.sybil.bricklet.input.button.database.ButtonRepository;
-import org.synyx.sybil.bricklet.output.relay.RelayRegistry;
-import org.synyx.sybil.bricklet.output.relay.database.RelayRepository;
+import org.synyx.sybil.bricklet.output.relay.RelayService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,8 +43,7 @@ public class ButtonService implements BrickletService {
     private Map<ButtonDomain, BrickletIO4> buttons = new HashMap<>();
     private Map<String, ButtonDomain> domains = new HashMap<>();
     private BrickService brickService;
-    private RelayRegistry relayRegistry;
-    private RelayRepository relayRepository;
+    private RelayService relayService;
     private ButtonRepository buttonRepository;
     private GraphDatabaseService graphDatabaseService;
 
@@ -55,18 +53,16 @@ public class ButtonService implements BrickletService {
      * Instantiates a new Button sensor registry.
      *
      * @param  brickService  the brick registry
-     * @param  relayRegistry  the output relay registry
-     * @param  relayRepository  the output relay repository
+     * @param  relayService  the output relay registry
      * @param  buttonRepository  the button repository
      * @param  graphDatabaseService  the graph database service
      */
     @Autowired
-    public ButtonService(BrickService brickService, RelayRegistry relayRegistry, RelayRepository relayRepository,
-        ButtonRepository buttonRepository, GraphDatabaseService graphDatabaseService) {
+    public ButtonService(BrickService brickService, RelayService relayService, ButtonRepository buttonRepository,
+        GraphDatabaseService graphDatabaseService) {
 
         this.brickService = brickService;
-        this.relayRegistry = relayRegistry;
-        this.relayRepository = relayRepository;
+        this.relayService = relayService;
         this.buttonRepository = buttonRepository;
         this.graphDatabaseService = graphDatabaseService;
     }
@@ -168,7 +164,7 @@ public class ButtonService implements BrickletService {
 
                     brickletIO4.setInterrupt((short) (buttonDomain.getPins() | interrupts)); // set interrupts for these pins, while respecting interrupts set earlier
 
-                    brickletIO4.addInterruptListener(new ButtonListener(buttonDomain, relayRegistry, relayRepository));
+                    brickletIO4.addInterruptListener(new ButtonListener(buttonDomain, relayService));
                 } else {
                     LOG.error("Error setting up button {}: Brick {} not available.", buttonDomain.getName(),
                         buttonDomain.getBrickDomain().getHostname());
