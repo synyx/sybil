@@ -17,7 +17,6 @@ import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.bricklet.BrickletNameService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.io.File;
@@ -50,7 +49,7 @@ public class LEDStripConfigLoader {
     private BrickletNameService brickletNameRegistry;
 
     // The Repository to save LEDStrip configuration data
-    private LEDStripRepository LEDStripRepository;
+    private LEDStripService ledStripService;
 
     // The Repository to save Brick configuration data
     private BrickService brickService;
@@ -60,14 +59,14 @@ public class LEDStripConfigLoader {
 
     @Autowired
     public LEDStripConfigLoader(ObjectMapper mapper, BrickletNameService brickletNameRegistry,
-        org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository LEDStripRepository,
-        BrickService brickService, LEDStripCustomColors ledStripCustomColors, Environment environment) {
+        BrickService brickService, LEDStripCustomColors ledStripCustomColors, Environment environment,
+        LEDStripService ledStripRepository) {
 
         this.mapper = mapper;
         this.brickletNameRegistry = brickletNameRegistry;
-        this.LEDStripRepository = LEDStripRepository;
         this.brickService = brickService;
         this.ledStripCustomColors = ledStripCustomColors;
+        ledStripService = ledStripRepository;
         this.configDir = environment.getProperty("path.to.configfiles");
     }
 
@@ -84,7 +83,7 @@ public class LEDStripConfigLoader {
                         new TypeReference<List<Map<String, Object>>>() {
                         });
 
-                LEDStripRepository.deleteAll();
+                ledStripService.deleteAllDomains();
 
                 for (Map ledstrip : ledstrips) { // ... deserialize the data manually
 
@@ -107,7 +106,7 @@ public class LEDStripConfigLoader {
                         BrickDomain brick = brickService.getDomain(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
 
                         if (brick != null) { // if there was corresponding brick found in the repo...
-                            LEDStripRepository.save(new LEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
+                            ledStripService.saveDomain(new LEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
                         } else { // if not...
                             LOG.error("Brick {} does not exist.", ledstrip.get("brick").toString()); // ... error!
                             HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
