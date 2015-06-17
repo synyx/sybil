@@ -25,7 +25,7 @@ import org.synyx.sybil.api.PatchResource;
 import org.synyx.sybil.api.SinglePatchResource;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
@@ -51,15 +51,15 @@ public class ConfigurationLEDStripController {
 
     private LEDStripRepository LEDStripRepository;
     private GraphDatabaseService graphDatabaseService;
-    private LEDStripRegistry LEDStripRegistry;
+    private LEDStripService LEDStripService;
 
     @Autowired
     public ConfigurationLEDStripController(LEDStripRepository LEDStripRepository,
-        GraphDatabaseService graphDatabaseService, LEDStripRegistry LEDStripRegistry) {
+        GraphDatabaseService graphDatabaseService, LEDStripService LEDStripService) {
 
         this.LEDStripRepository = LEDStripRepository;
         this.graphDatabaseService = graphDatabaseService;
-        this.LEDStripRegistry = LEDStripRegistry;
+        this.LEDStripService = LEDStripService;
     }
 
     @ResponseBody
@@ -117,7 +117,7 @@ public class ConfigurationLEDStripController {
     public DisplayResource getDisplay(@PathVariable String name) {
 
         LEDStripDomain ledStripDomain = LEDStripRepository.findByName(name);
-        LEDStrip ledStrip = LEDStripRegistry.get(ledStripDomain);
+        LEDStrip ledStrip = LEDStripService.getLEDStrip(ledStripDomain);
 
         Link self = linkTo(methodOn(ConfigurationLEDStripController.class).getDisplay(ledStripDomain.getName()))
             .withSelfRel();
@@ -137,7 +137,7 @@ public class ConfigurationLEDStripController {
     public DisplayResource setDisplay(@PathVariable String name, @RequestBody DisplayResource display) {
 
         LEDStripDomain ledStripDomain = LEDStripRepository.findByName(name);
-        LEDStrip ledStrip = LEDStripRegistry.get(ledStripDomain);
+        LEDStrip ledStrip = LEDStripService.getLEDStrip(ledStripDomain);
 
         if (display.getPixels() != null && display.getPixels().size() > 0) {
             Sprite1D pixels = new Sprite1D(display.getPixels().size(), "setDisplay", display.getPixels());
@@ -168,7 +168,7 @@ public class ConfigurationLEDStripController {
     public DisplayResource updateDisplay(@PathVariable String name, @RequestBody PatchResource input) throws Exception {
 
         LEDStripDomain ledStripDomain = LEDStripRepository.findByName(name);
-        LEDStrip ledStrip = LEDStripRegistry.get(ledStripDomain);
+        LEDStrip ledStrip = LEDStripService.getLEDStrip(ledStripDomain);
 
         for (SinglePatchResource patch : input.getPatches()) {
             switch (patch.getAction()) {

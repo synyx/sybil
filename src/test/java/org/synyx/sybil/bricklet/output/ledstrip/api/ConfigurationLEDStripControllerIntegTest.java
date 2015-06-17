@@ -19,7 +19,7 @@ import org.synyx.sybil.api.PatchResource;
 import org.synyx.sybil.api.SinglePatchResource;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.config.DevSpringConfig;
 import org.synyx.sybil.config.StartupLoader;
@@ -60,7 +60,7 @@ public class ConfigurationLEDStripControllerIntegTest {
     ConfigurationLEDStripController configurationLEDStripController;
 
     @Autowired
-    LEDStripRegistry outputLEDStripRegistry;
+    LEDStripService outputLEDStripService;
 
     @Autowired
     LEDStripRepository outputLEDStripRepository;
@@ -74,9 +74,9 @@ public class ConfigurationLEDStripControllerIntegTest {
 
         startupLoader.init();
 
-        stubOne = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledone"));
-        stubTwo = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledtwo"));
-        stubThree = outputLEDStripRegistry.get(outputLEDStripRepository.findByName("ledthree"));
+        stubOne = outputLEDStripService.getLEDStrip(outputLEDStripRepository.findByName("ledone"));
+        stubTwo = outputLEDStripService.getLEDStrip(outputLEDStripRepository.findByName("ledtwo"));
+        stubThree = outputLEDStripService.getLEDStrip(outputLEDStripRepository.findByName("ledthree"));
 
         stubOne.setFill(Color.BLACK);
         stubTwo.setFill(Color.BLACK);

@@ -5,6 +5,8 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import org.neo4j.graphdb.GraphDatabaseService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,37 +17,45 @@ import org.springframework.stereotype.Service;
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
 /**
- * LEDStripRegistry.
+ * LEDStripService.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
 @Service // Annotated so Spring finds and injects it.
-public class LEDStripRegistry implements BrickletService {
+public class LEDStripService implements BrickletService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LEDStripRegistry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LEDStripService.class);
     private static final int FRAME_DURATION = 10;
     private static final int CHIP_TYPE = 2812;
 
     private Map<LEDStripDomain, LEDStrip> outputLEDStrips = new HashMap<>();
     private BrickService brickService;
+    private LEDStripRepository ledStripRepository;
+    private GraphDatabaseService graphDatabaseService;
 
     // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
     /**
      * Instantiates a new LEDStrip registry.
      *
      * @param  brickService  The brick registry
+     * @param  ledStripRepository  LED strip database repository
+     * @param  graphDatabaseService  Neo4j service
      */
     @Autowired
-    public LEDStripRegistry(BrickService brickService) {
+    public LEDStripService(BrickService brickService, LEDStripRepository ledStripRepository,
+        GraphDatabaseService graphDatabaseService) {
 
         this.brickService = brickService;
+        this.ledStripRepository = ledStripRepository;
+        this.graphDatabaseService = graphDatabaseService;
     }
 
     /**
@@ -55,7 +65,7 @@ public class LEDStripRegistry implements BrickletService {
      *
      * @return  The actual LEDStrip object.
      */
-    public LEDStrip get(LEDStripDomain LEDStripDomain) {
+    public LEDStrip getLEDStrip(LEDStripDomain LEDStripDomain) {
 
         if (LEDStripDomain == null) {
             return null;

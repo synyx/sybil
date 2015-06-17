@@ -34,7 +34,7 @@ public class LEDStripIntegTest {
     private List<LEDStrip> LEDStrips = new ArrayList<>();
 
     @Autowired
-    private LEDStripRegistry LEDStripRegistry;
+    private LEDStripService LEDStripService;
 
     @Autowired
     private LEDStripRepository LEDStripRepository;
@@ -66,9 +66,9 @@ public class LEDStripIntegTest {
         testThree = LEDStripRepository.save(testThree);
 
         // initialise LED Strips (fetching them from the database on the way), cast and add them to the list
-        LEDStrips.add(LEDStripRegistry.get(testOne));
-        LEDStrips.add(LEDStripRegistry.get(testTwo));
-        LEDStrips.add(LEDStripRegistry.get(testThree));
+        LEDStrips.add(LEDStripService.getLEDStrip(testOne));
+        LEDStrips.add(LEDStripService.getLEDStrip(testTwo));
+        LEDStrips.add(LEDStripService.getLEDStrip(testThree));
     }
 
 

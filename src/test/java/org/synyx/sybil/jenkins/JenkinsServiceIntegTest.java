@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
@@ -51,7 +51,7 @@ public class JenkinsServiceIntegTest {
     JenkinsConfig jenkinsConfig;
 
     @Autowired
-    LEDStripRegistry ledStripRegistry;
+    LEDStripService ledStripService;
 
     @Autowired
     LEDStripRepository ledStripRepository;
@@ -76,9 +76,9 @@ public class JenkinsServiceIntegTest {
 
         startupLoader.init(); // reloads all the config files
 
-        stubOne = ledStripRegistry.get(ledStripRepository.findByName("ledone"));
-        stubTwo = ledStripRegistry.get(ledStripRepository.findByName("ledtwo"));
-        stubThree = ledStripRegistry.get(ledStripRepository.findByName("ledthree"));
+        stubOne = ledStripService.getLEDStrip(ledStripRepository.findByName("ledone"));
+        stubTwo = ledStripService.getLEDStrip(ledStripRepository.findByName("ledtwo"));
+        stubThree = ledStripService.getLEDStrip(ledStripRepository.findByName("ledthree"));
 
         stubOne.setFill(Color.BLACK);
         stubTwo.setFill(Color.BLACK);

@@ -16,7 +16,7 @@ import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripCustomColors;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
@@ -55,7 +55,7 @@ public class JenkinsConfigLoader {
     private LEDStripRepository LEDStripRepository;
 
     // This fetches the actual LED Strip objects for given config data
-    private LEDStripRegistry LEDStripRegistry;
+    private LEDStripService LEDStripService;
 
     // Fetches one SingleStatusOnLEDStrip for each LED Strip
     private SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
@@ -71,7 +71,7 @@ public class JenkinsConfigLoader {
      *
      * @param  LEDStripRepository  The LEDStrip repository
      * @param  environment  The Environment (provided by Spring, contains the configuration read from config.properties)
-     * @param  LEDStripRegistry  the LEDStrip registry
+     * @param  LEDStripService  the LEDStrip registry
      * @param  jenkinsConfig  the jenkins configuration
      * @param  singleStatusOnLEDStripRegistry  the SingleStatusOnLEDStrip registry
      * @param  ledStripCustomColors  the led strip custom colors
@@ -79,14 +79,14 @@ public class JenkinsConfigLoader {
      */
     @Autowired
     public JenkinsConfigLoader(LEDStripRepository LEDStripRepository, Environment environment,
-        LEDStripRegistry LEDStripRegistry, JenkinsConfig jenkinsConfig,
+        LEDStripService LEDStripService, JenkinsConfig jenkinsConfig,
         SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, LEDStripCustomColors ledStripCustomColors,
         ObjectMapper objectMapper) {
 
         this.LEDStripRepository = LEDStripRepository;
         configDir = environment.getProperty("path.to.configfiles");
         jenkinsServerConfigFile = environment.getProperty("jenkins.configfile");
-        this.LEDStripRegistry = LEDStripRegistry;
+        this.LEDStripService = LEDStripService;
         this.jenkinsConfig = jenkinsConfig;
         this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
         this.ledStripCustomColors = ledStripCustomColors;
@@ -156,7 +156,7 @@ public class JenkinsConfigLoader {
 
                         LEDStripDomain LEDStripDomain = LEDStripRepository.findByName(ledstrip.toLowerCase()); // names are always lowercase
 
-                        LEDStrip LEDStrip = LEDStripRegistry.get(LEDStripDomain);
+                        LEDStrip LEDStrip = LEDStripService.getLEDStrip(LEDStripDomain);
 
                         if (LEDStrip != null) {
                             Map<String, Color> colors = ledStripCustomColors.get(ledstrip);

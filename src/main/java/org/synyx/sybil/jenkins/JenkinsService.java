@@ -24,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
@@ -67,7 +67,7 @@ public class JenkinsService {
 
     private final LEDStripRepository LEDStripRepository;
 
-    private final LEDStripRegistry LEDStripRegistry;
+    private final LEDStripService LEDStripService;
 
     private final GraphDatabaseService graphDatabaseService;
 
@@ -75,16 +75,16 @@ public class JenkinsService {
      * Instantiates a new Jenkins service.
      *
      * @param  jenkinsConfig  The Jenkins config bean, autowired in.
-     * @param  LEDStripRegistry  the output lED strip registry
+     * @param  LEDStripService  the output lED strip registry
      * @param  LEDStripRepository  the output lED strip repository
      * @param  graphDatabaseService  the graph database service
      */
     @Autowired
-    public JenkinsService(JenkinsConfig jenkinsConfig, LEDStripRegistry LEDStripRegistry,
+    public JenkinsService(JenkinsConfig jenkinsConfig, LEDStripService LEDStripService,
         LEDStripRepository LEDStripRepository, GraphDatabaseService graphDatabaseService) {
 
         this.jenkinsConfig = jenkinsConfig;
-        this.LEDStripRegistry = LEDStripRegistry;
+        this.LEDStripService = LEDStripService;
         this.LEDStripRepository = LEDStripRepository;
         this.graphDatabaseService = graphDatabaseService;
     }
@@ -173,7 +173,7 @@ public class JenkinsService {
         }
 
         for (LEDStripDomain ledStripDomain : ledStripDomains) {
-            LEDStrip ledStrip = LEDStripRegistry.get(ledStripDomain);
+            LEDStrip ledStrip = LEDStripService.getLEDStrip(ledStripDomain);
             ledStrip.setFill(Color.BLACK);
             ledStrip.updateDisplay();
         }

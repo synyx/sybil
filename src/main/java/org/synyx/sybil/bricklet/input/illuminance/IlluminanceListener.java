@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripRegistry;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.jenkins.domain.Status;
@@ -32,7 +32,7 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
 
     private double multiplier;
 
-    public IlluminanceListener(IlluminanceSensorDomain sensor, LEDStripRegistry LEDStripRegistry,
+    public IlluminanceListener(IlluminanceSensorDomain sensor, LEDStripService LEDStripService,
         LEDStripRepository LEDStripRepository) {
 
         LOG.debug("Listener added to {}", sensor.getName());
@@ -45,7 +45,7 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
             LEDStripDomain domain = LEDStripRepository.findByName(output);
 
             if (domain != null) {
-                LEDStrip ledStrip = LEDStripRegistry.get(domain);
+                LEDStrip ledStrip = LEDStripService.getLEDStrip(domain);
                 ledStrips.add(ledStrip);
             } else {
                 LOG.error("Configured output {} of illuminance sensor {} does not match a LED Strip.", output,
