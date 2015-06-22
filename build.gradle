@@ -45,7 +45,7 @@ dependencies {
 task showResults(type: Exec) {
     inputs.file file('build/reports/tests/index.html')
     outputs.file file('build/reports/tests/testresults.txt')
-    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16|sed \'s/[\\+| ]//g\' > build/reports/tests/testresults.txt; cat build/reports/tests/testresults.txt'
+    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16|sed \'s/[\\+| ]//g\' > build/reports/tests/testresults.txt && cat build/reports/tests/testresults.txt'
 }
 
 test {
