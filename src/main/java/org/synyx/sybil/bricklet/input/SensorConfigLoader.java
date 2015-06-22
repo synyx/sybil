@@ -16,8 +16,6 @@ import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.bricklet.BrickletNameService;
-import org.synyx.sybil.bricklet.input.button.ButtonService;
-import org.synyx.sybil.bricklet.input.button.database.ButtonDomain;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.jenkins.domain.Status;
@@ -51,9 +49,6 @@ public class SensorConfigLoader {
     // Fetches & Configures illuminance sensors
     private IlluminanceService illuminanceService;
 
-    // Fetches & Configures buttons
-    private ButtonService buttonService;
-
     // Registers bricklets' names to make sure they are unique
     private BrickletNameService brickletNameRegistry;
 
@@ -61,12 +56,11 @@ public class SensorConfigLoader {
     private BrickService brickService;
 
     @Autowired
-    public SensorConfigLoader(ObjectMapper mapper, IlluminanceService illuminanceService, ButtonService buttonService,
+    public SensorConfigLoader(ObjectMapper mapper, IlluminanceService illuminanceService,
         BrickletNameService brickletNameRegistry, BrickService brickService, Environment environment) {
 
         this.mapper = mapper;
         this.illuminanceService = illuminanceService;
-        this.buttonService = buttonService;
         this.brickletNameRegistry = brickletNameRegistry;
         this.brickService = brickService;
         configDir = environment.getProperty("path.to.configfiles");
@@ -83,7 +77,6 @@ public class SensorConfigLoader {
                         });
 
                 illuminanceService.deleteAllDomains();
-                buttonService.deleteAllDomains();
 
                 for (Map sensor : sensors) { // ... deserialize the data manually
 
@@ -105,7 +98,7 @@ public class SensorConfigLoader {
                     int threshold = 0;
                     double multiplier = 0.1;
 //                    int timeout = 0;
-                    short pins = 0b0000;
+//                    short pins = 0b0000;
 
                     try {
                         if (sensor.get("threshold") != null) {
@@ -120,9 +113,9 @@ public class SensorConfigLoader {
 //                            timeout = Integer.parseInt(sensor.get("timeout").toString());
 //                        }
 
-                        if (sensor.get("pins") != null) {
-                            pins = (short) Integer.parseInt(sensor.get("pins").toString(), 2); // parse from binary
-                        }
+//                        if (sensor.get("pins") != null) {
+//                            pins = (short) Integer.parseInt(sensor.get("pins").toString(), 2); // parse from binary
+//                        }
                     } catch (NumberFormatException e) {
                         LOG.error("Failed to load config for sensor {}: options are not properly formatted.", name);
                         HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");
@@ -141,17 +134,12 @@ public class SensorConfigLoader {
                     BrickDomain brick = brickService.getDomain(sensor.get("brick").toString()); // fetch the corresponding bricks from the repo
 
                     IlluminanceSensorDomain illuminanceSensorDomain = null;
-                    ButtonDomain buttonDomain = null;
 
                     if (brick != null) { // if there was corresponding brick found in the repo...
 
                         if (type.equals("luminance")) {
                             illuminanceSensorDomain = illuminanceService.saveDomain(new IlluminanceSensorDomain(name,
                                         uid, threshold, multiplier, outputs, brick)); // ... save the sensor
-                        }
-
-                        if (type.equals("button")) {
-                            buttonDomain = buttonService.saveDomain(new ButtonDomain(name, uid, pins, outputs, brick)); // ... save the sensor
                         }
                     } else { // if not...
                         LOG.error("Brick {} does not exist.", sensor.get("brick").toString()); // ... error!
@@ -160,8 +148,6 @@ public class SensorConfigLoader {
 
                     if (illuminanceSensorDomain != null) {
                         illuminanceService.getIlluminanceSensor(illuminanceSensorDomain);
-                    } else if (buttonDomain != null) {
-                        buttonService.getButton(buttonDomain);
                     }
                 }
             } catch (IOException e) {

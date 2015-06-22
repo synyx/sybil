@@ -11,7 +11,6 @@ import org.synyx.sybil.brick.BrickConfigLoader;
 import org.synyx.sybil.bricklet.BrickletNameService;
 import org.synyx.sybil.bricklet.input.SensorConfigLoader;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConfigLoader;
-import org.synyx.sybil.bricklet.output.relay.RelayConfigLoader;
 import org.synyx.sybil.jenkins.JenkinsConfigLoader;
 
 import javax.annotation.PostConstruct;
@@ -36,20 +35,17 @@ public class StartupLoader {
 
     private LEDStripConfigLoader ledStripConfigLoader;
 
-    private RelayConfigLoader relayConfigLoader;
-
     private SensorConfigLoader sensorConfigLoader;
 
     @Autowired
     public StartupLoader(JenkinsConfigLoader jenkinsConfigLoader, BrickConfigLoader brickConfigLoader,
         BrickletNameService brickletNameRegistry, LEDStripConfigLoader ledStripConfigLoader,
-        RelayConfigLoader relayConfigLoader, SensorConfigLoader sensorConfigLoader) {
+        SensorConfigLoader sensorConfigLoader) {
 
         this.jenkinsConfigLoader = jenkinsConfigLoader;
         this.brickConfigLoader = brickConfigLoader;
         this.brickletNameRegistry = brickletNameRegistry;
         this.ledStripConfigLoader = ledStripConfigLoader;
-        this.relayConfigLoader = relayConfigLoader;
         this.sensorConfigLoader = sensorConfigLoader;
     }
 
@@ -65,8 +61,6 @@ public class StartupLoader {
         brickConfigLoader.resetBricks();
 
         ledStripConfigLoader.loadLEDStripConfig();
-
-        relayConfigLoader.loadRelayConfig();
 
         sensorConfigLoader.loadSensorConfig();
 
