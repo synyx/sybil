@@ -175,7 +175,7 @@ public class ConfigurationLEDStripController {
                             int blue = Integer.parseInt(patch.getValues().get(3));
                             Color color = new Color(red, green, blue);
 
-                            ledStrip.setPixel(index, color);
+                            ledStrip.setPixelColor(index, color);
                             break;
                         }
 
@@ -213,7 +213,7 @@ public class ConfigurationLEDStripController {
                                 offset = offset - ledStrip.getLength();
                             }
 
-                            ledStrip.drawSprite(pixelbuffer, offset, true);
+                            ledStrip.drawSpriteWithWrap(pixelbuffer, offset);
                         }
                     }
 

@@ -58,7 +58,7 @@ public class StartupLoader {
 
         brickConfigLoader.loadBricksConfig();
 
-        brickConfigLoader.resetBricks();
+        brickConfigLoader.resetAllBricks();
 
         ledStripConfigLoader.loadLEDStripConfig();
 

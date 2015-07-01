@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 
 import org.springframework.stereotype.Component;
 
+import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
@@ -36,25 +37,13 @@ import java.util.Map;
 @Component
 public class LEDStripConfigLoader {
 
-    // Logger
     private static final Logger LOG = LoggerFactory.getLogger(LEDStripConfigLoader.class);
 
-    // The place where the config files lie, taken from the injected environment (and thus ultimately a properties file)
     private String configDir;
-
-    // Jackson ObjectMapper, maps JSON to Java Objects
     private ObjectMapper mapper;
-
-    // Registers bricklets' names to make sure they are unique
     private BrickletNameService brickletNameRegistry;
-
-    // The Repository to save LEDStrip configuration data
     private LEDStripService ledStripService;
-
-    // The Repository to save Brick configuration data
     private BrickService brickService;
-
-    // Map saving the custom status colors for SingleStatusOnLEDStrips
     private LEDStripCustomColors ledStripCustomColors;
 
     @Autowired
@@ -70,87 +59,127 @@ public class LEDStripConfigLoader {
         this.configDir = environment.getProperty("path.to.configfiles");
     }
 
-    /**
-     * Load LED Strip configuration.
-     */
     public void loadLEDStripConfig() {
 
         if (HealthController.getHealth() == Status.OKAY) {
             try {
                 LOG.info("Loading LED Strip configuration");
 
+                // read a List of String->Object Maps from the config file, one Map per LED strip.
                 List<Map<String, Object>> ledstrips = mapper.readValue(new File(configDir + "ledstrips.json"),
                         new TypeReference<List<Map<String, Object>>>() {
                         });
 
                 ledStripService.deleteAllDomains();
+                ledStripCustomColors.clear();
 
-                for (Map ledstrip : ledstrips) { // ... deserialize the data manually
-
-                    String name = ledstrip.get("name").toString();
-
-                    if (brickletNameRegistry.contains(name)) {
-                        LOG.error("Failed to load config for LED Strip {}: Name is not unique.", name);
-                        HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
-
-                        break;
-                    }
-
-                    brickletNameRegistry.add(name);
-
-                    String uid = ledstrip.get("uid").toString();
-
-                    try {
-                        int length = Integer.parseInt(ledstrip.get("length").toString());
-
-                        BrickDomain brick = brickService.getDomain(ledstrip.get("brick").toString()); // fetch the corresponding bricks from the repo
-
-                        if (brick != null) { // if there was corresponding brick found in the repo...
-                            ledStripService.saveDomain(new LEDStripDomain(name, uid, length, brick)); // ... save the LED Strip.
-                        } else { // if not...
-                            LOG.error("Brick {} does not exist.", ledstrip.get("brick").toString()); // ... error!
-                            HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
-                        }
-                    } catch (NumberFormatException e) {
-                        LOG.error("Failed to load config for LED Strip {}: \"length\" is not an integer.", name);
-                        HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
-                    }
-
-                    if (ledstrip.get("okayRed") != null) {
-                        try {
-                            int okayRed = Integer.parseInt(ledstrip.get("okayRed").toString());
-                            int okayGreen = Integer.parseInt(ledstrip.get("okayGreen").toString());
-                            int okayBlue = Integer.parseInt(ledstrip.get("okayBlue").toString());
-                            Color okay = new Color(okayRed, okayGreen, okayBlue);
-
-                            int warningRed = Integer.parseInt(ledstrip.get("warningRed").toString());
-                            int warningGreen = Integer.parseInt(ledstrip.get("warningGreen").toString());
-                            int warningBlue = Integer.parseInt(ledstrip.get("warningBlue").toString());
-                            Color warning = new Color(warningRed, warningGreen, warningBlue);
-
-                            int criticalRed = Integer.parseInt(ledstrip.get("criticalRed").toString());
-                            int criticalGreen = Integer.parseInt(ledstrip.get("criticalGreen").toString());
-                            int criticalBlue = Integer.parseInt(ledstrip.get("criticalBlue").toString());
-                            Color critical = new Color(criticalRed, criticalGreen, criticalBlue);
-
-                            Map<String, Color> colors = new HashMap<>();
-
-                            colors.put("okay", okay);
-                            colors.put("warning", warning);
-                            colors.put("critical", critical);
-
-                            ledStripCustomColors.put(name, colors);
-                        } catch (NumberFormatException e) {
-                            LOG.error("Failed to load config for LED Strip {}: colors are not properly formatted.",
-                                name);
-                            HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                LOG.error("Error loading ledstrips.json: {}", e.toString());
-                HealthController.setHealth(Status.CRITICAL, "loadLEDStripConfig");
+                deserialize(ledstrips);
+            } catch (IOException exception) {
+                logError("Error loading ledstrips.json: " + exception.getMessage());
             }
         }
+    }
+
+
+    private void logError(String message) {
+
+        LOG.error(message);
+        HealthController.setHealth(Status.CRITICAL, "loadLEDStripConfig");
+    }
+
+
+    private void deserialize(List<Map<String, Object>> ledstrips) {
+
+        for (Map ledstrip : ledstrips) {
+            try {
+                getAndSaveValues(ledstrip);
+            } catch (LoadFailedException exception) {
+                logWarning(exception);
+            }
+        }
+    }
+
+
+    private void logWarning(Exception exception) {
+
+        LOG.error(exception.getMessage());
+        HealthController.setHealth(Status.WARNING, "loadLEDStripConfig");
+    }
+
+
+    private void getAndSaveValues(Map ledstrip) {
+
+        String name = getString(ledstrip, "name");
+        String uid = getString(ledstrip, "uid");
+        int length = getInt(ledstrip, "length");
+        BrickDomain brick = brickService.getDomain(getString(ledstrip, "brick"));
+
+        if (brickletNameRegistry.contains(name))
+            throw new LoadFailedException("Failed to load config for LED strip " + name + ": Name is not unique.");
+
+        brickletNameRegistry.add(name);
+
+        ledStripService.saveDomain(new LEDStripDomain(name, uid, length, brick));
+
+        registerCustomColors(ledstrip);
+    }
+
+
+    private String getString(Map ledstrip, String key) {
+
+        Object value = ledstrip.get(key);
+
+        if (value == null) {
+            throw new LoadFailedException("Failed to load config for LED strip " + ledstrip.get("name")
+                + ": Value missing");
+        }
+
+        return value.toString();
+    }
+
+
+    private int getInt(Map ledstrip, String key) {
+
+        int value;
+
+        try {
+            value = Integer.parseInt(getString(ledstrip, key));
+        } catch (NumberFormatException exception) {
+            throw new LoadFailedException("Failed to load config for LED strip " + getString(ledstrip, "name")
+                + ": " + key + " is not an integer.");
+        }
+
+        return value;
+    }
+
+
+    private void registerCustomColors(Map ledstrip) {
+
+        if (hasCustomColors(ledstrip)) {
+            String name = getString(ledstrip, "name");
+            Map<String, Color> colors = new HashMap<>();
+
+            for (String status : new String[] { "okay", "warning", "critical" }) {
+                colors.put(status, createCustomColor(ledstrip, status));
+            }
+
+            ledStripCustomColors.put(name, colors);
+        }
+    }
+
+
+    private boolean hasCustomColors(Map ledstrip) {
+
+        return ledstrip.get("okayRed") != null;
+    }
+
+
+    private Color createCustomColor(Map ledstrip, String status) {
+
+        int red = getInt(ledstrip, status + "Red");
+        int green = getInt(ledstrip, status + "Green");
+        int blue = getInt(ledstrip, status + "Blue");
+
+        return new Color(red, green, blue);
     }
 }

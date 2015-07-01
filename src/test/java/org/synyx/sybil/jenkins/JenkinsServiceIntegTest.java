@@ -105,7 +105,7 @@ public class JenkinsServiceIntegTest {
 
         Color blue = new Color(0, 0, 127);
 
-        assertThat(stubOne.getPixel(0), is(blue));
+        assertThat(stubOne.getPixelColor(0), is(blue));
 
         // WARNING
         jenkinsConfig.reset();
@@ -113,7 +113,7 @@ public class JenkinsServiceIntegTest {
 
         jenkinsService.handleJobs();
 
-        assertThat(stubOne.getPixel(0), is(Color.WARNING));
+        assertThat(stubOne.getPixelColor(0), is(Color.WARNING));
 
         // OKAY
         jenkinsConfig.reset();
@@ -123,7 +123,7 @@ public class JenkinsServiceIntegTest {
 
         Color grey = new Color(16, 16, 16);
 
-        assertThat(stubOne.getPixel(0), is(grey));
+        assertThat(stubOne.getPixelColor(0), is(grey));
 
         LOG.info("FINISH testCustomColor");
     }
@@ -140,9 +140,9 @@ public class JenkinsServiceIntegTest {
         // As configured
         jenkinsService.handleJobs();
 
-        assertThat(stubOne.getPixel(0), is(blue));
-        assertThat(stubTwo.getPixel(0), is(Color.WARNING));
-        assertThat(stubThree.getPixel(0), is(Color.OKAY));
+        assertThat(stubOne.getPixelColor(0), is(blue));
+        assertThat(stubTwo.getPixelColor(0), is(Color.WARNING));
+        assertThat(stubThree.getPixelColor(0), is(Color.OKAY));
 
         // *_anime statuses
         jenkinsConfig.reset();
@@ -152,9 +152,9 @@ public class JenkinsServiceIntegTest {
 
         jenkinsService.handleJobs();
 
-        assertThat(stubOne.getPixel(0), is(blue));
-        assertThat(stubTwo.getPixel(0), is(Color.WARNING));
-        assertThat(stubThree.getPixel(0), is(Color.OKAY));
+        assertThat(stubOne.getPixelColor(0), is(blue));
+        assertThat(stubTwo.getPixelColor(0), is(Color.WARNING));
+        assertThat(stubThree.getPixelColor(0), is(Color.OKAY));
 
         // undefined statuses
         jenkinsConfig.reset();
@@ -164,9 +164,9 @@ public class JenkinsServiceIntegTest {
 
         jenkinsService.handleJobs();
 
-        assertThat(stubOne.getPixel(0), is(grey));
-        assertThat(stubTwo.getPixel(0), is(Color.OKAY));
-        assertThat(stubThree.getPixel(0), is(Color.OKAY));
+        assertThat(stubOne.getPixelColor(0), is(grey));
+        assertThat(stubTwo.getPixelColor(0), is(Color.OKAY));
+        assertThat(stubThree.getPixelColor(0), is(Color.OKAY));
 
         LOG.info("FINISH testJenkinsService");
     }

@@ -157,11 +157,11 @@ public class ConfigurationLEDStripControllerIntegTest {
 
         MockMvc mockMvc = standaloneSetup(configurationLEDStripController).build();
 
-        stubOne.setPixel(0, new Color(255, 0, 0));
-        stubOne.setPixel(1, new Color(0, 255, 0));
-        stubOne.setPixel(2, new Color(0, 0, 255));
-        stubOne.setPixel(3, new Color(255, 255, 255));
-        stubOne.setPixel(4, new Color(0, 0, 0));
+        stubOne.setPixelColor(0, new Color(255, 0, 0));
+        stubOne.setPixelColor(1, new Color(0, 255, 0));
+        stubOne.setPixelColor(2, new Color(0, 0, 255));
+        stubOne.setPixelColor(3, new Color(255, 255, 255));
+        stubOne.setPixelColor(4, new Color(0, 0, 0));
 
         stubOne.setBrightness(.2);
 

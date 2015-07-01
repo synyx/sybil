@@ -76,7 +76,7 @@ public class LEDStripUnitTest {
 
         Color color = new Color(16, 35, 77);
 
-        ledStrip.setPixel(1, color);
+        ledStrip.setPixelColor(1, color);
         ledStrip.updateDisplay();
 
         short[] red = { 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -226,7 +226,7 @@ public class LEDStripUnitTest {
         Sprite1D sprite = new Sprite1D(10, "10 red");
         sprite.setFill(new Color(127, 0, 0));
 
-        ledStrip.drawSprite(sprite, 25, true);
+        ledStrip.drawSpriteWithWrap(sprite, 25);
         ledStrip.updateDisplay();
 
         short[] red1 = { 127, 127, 127, 127, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -247,7 +247,7 @@ public class LEDStripUnitTest {
         Sprite1D sprite = new Sprite1D(50, "50 red");
         sprite.setFill(new Color(127, 0, 0));
 
-        ledStrip.drawSprite(sprite, 25, true);
+        ledStrip.drawSpriteWithWrap(sprite, 25);
         ledStrip.updateDisplay();
 
         short[] red1 = new short[16];

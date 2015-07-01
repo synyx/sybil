@@ -9,6 +9,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import org.springframework.hateoas.core.Relation;
 
+import org.synyx.sybil.DeviceDomain;
 import org.synyx.sybil.brick.database.BrickDomain;
 
 
@@ -20,7 +21,7 @@ import org.synyx.sybil.brick.database.BrickDomain;
 
 @NodeEntity
 @Relation(collectionRelation = "ledstrips")
-public class LEDStripDomain {
+public class LEDStripDomain implements DeviceDomain {
 
     @GraphId
     private Long id;
@@ -36,9 +37,7 @@ public class LEDStripDomain {
     @JsonProperty("brick")
     private BrickDomain brickDomain;
 
-    /**
-     * DO NOT CALL THIS! Exists only to placate Neo4j.
-     */
+    // DO NOT CALL THIS! Exists only to placate Neo4j.
     protected LEDStripDomain() {
     }
 
@@ -90,44 +89,26 @@ public class LEDStripDomain {
     }
 
 
-    /**
-     * Gets the name under which the Bricklet is addressable.
-     *
-     * @return  The name
-     */
+    @Override
     public String getName() {
 
         return name;
     }
 
 
-    /**
-     * Gets the Bricklet's UID.
-     *
-     * @return  The Bricklet's UID
-     */
+    @Override
     public String getUid() {
 
         return uid;
     }
 
 
-    /**
-     * Gets length of the LED Strip, i.e. the number of LEDs.
-     *
-     * @return  The length
-     */
     public int getLength() {
 
         return length;
     }
 
 
-    /**
-     * Gets the BrickDomain of the connected Brick.
-     *
-     * @return  the brick domain
-     */
     public BrickDomain getBrickDomain() {
 
         return brickDomain;

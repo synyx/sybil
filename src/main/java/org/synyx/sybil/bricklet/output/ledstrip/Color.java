@@ -19,9 +19,12 @@ public class Color {
     public static final Color WARNING = new Color(127, 127, 0);
     public static final Color OKAY = new Color(0, 16, 0);
 
-    private short red;
-    private short green;
-    private short blue;
+    private static final int MAX_PRIMARY_COLOR = 255;
+    private static final int MIN_PRIMARY_COLOR = 0;
+
+    private final short red;
+    private final short green;
+    private final short blue;
 
     /**
      * Converts Red, Green and Blue into the right format.
@@ -32,31 +35,20 @@ public class Color {
      */
     public Color(int red, int green, int blue) {
 
-        if (red < 0)
-            red = 0;
-
-        if (red > 255)
-            red = 255;
-
-        if (green < 0)
-            green = 0;
-
-        if (green > 255)
-            green = 127;
-
-        if (blue < 0)
-            blue = 0;
-
-        if (blue > 255)
-            blue = 255;
-
-        this.red = (short) red;
-        this.green = (short) green;
-        this.blue = (short) blue;
+        this.red = setColorLimitsAndCastToShort(red);
+        this.green = setColorLimitsAndCastToShort(green);
+        this.blue = setColorLimitsAndCastToShort(blue);
     }
 
+    private short setColorLimitsAndCastToShort(int primaryColor) {
 
-    public Color() {
+        if (primaryColor < MIN_PRIMARY_COLOR)
+            return (short) MIN_PRIMARY_COLOR;
+
+        if (primaryColor > MAX_PRIMARY_COLOR)
+            return (short) MAX_PRIMARY_COLOR;
+
+        return (short) primaryColor;
     }
 
 
@@ -65,19 +57,13 @@ public class Color {
      *
      * @param  rgbValues  Tinkerforge-returned color-object.
      */
+    public static Color colorFromLedStrip(BrickletLEDStrip.RGBValues rgbValues) {
 
-    public Color(BrickletLEDStrip.RGBValues rgbValues) {
+        short red = rgbValues.g[0];
+        short green = rgbValues.b[0];
+        short blue = rgbValues.r[0];
 
-        red = rgbValues.g[0];
-
-        green = rgbValues.b[0];
-        blue = rgbValues.r[0];
-    }
-
-    @Override
-    public String toString() {
-
-        return ("(" + red + ", " + green + ", " + blue + ")");
+        return new Color(red, green, blue);
     }
 
 
@@ -99,24 +85,6 @@ public class Color {
     public short getRedAsShort() {
 
         return red;
-    }
-
-
-    public void setRed(short red) {
-
-        this.red = red;
-    }
-
-
-    public void setGreen(short green) {
-
-        this.green = green;
-    }
-
-
-    public void setBlue(short blue) {
-
-        this.blue = blue;
     }
 
 
@@ -145,5 +113,12 @@ public class Color {
         result = 31 * result + (int) blue;
 
         return result;
+    }
+
+
+    @Override
+    public String toString() {
+
+        return ("(" + red + ", " + green + ", " + blue + ")");
     }
 }

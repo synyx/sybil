@@ -5,6 +5,8 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 
 import org.springframework.hateoas.core.Relation;
 
+import org.synyx.sybil.DeviceDomain;
+
 
 /**
  * IPConnection domain. Persistence for the Tinkerforge IPConnection data, but not the actual object.
@@ -14,7 +16,7 @@ import org.springframework.hateoas.core.Relation;
 
 @NodeEntity
 @Relation(collectionRelation = "bricks")
-public class BrickDomain {
+public class BrickDomain implements DeviceDomain {
 
     @GraphId
     private Long id;
@@ -107,6 +109,7 @@ public class BrickDomain {
      *
      * @return  The name
      */
+    @Override
     public String getName() {
 
         return name;
@@ -118,6 +121,7 @@ public class BrickDomain {
      *
      * @return  the uid
      */
+    @Override
     public String getUid() {
 
         return uid;

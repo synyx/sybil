@@ -9,6 +9,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 import org.springframework.hateoas.core.Relation;
 
+import org.synyx.sybil.DeviceDomain;
 import org.synyx.sybil.brick.database.BrickDomain;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
 
 @NodeEntity
 @Relation(collectionRelation = "illuminancesensors")
-public class IlluminanceSensorDomain {
+public class IlluminanceSensorDomain implements DeviceDomain {
 
     @GraphId
     private Long id;
@@ -57,12 +58,14 @@ public class IlluminanceSensorDomain {
         this.brickDomain = brickDomain;
     }
 
+    @Override
     public String getName() {
 
         return name;
     }
 
 
+    @Override
     public String getUid() {
 
         return uid;

@@ -39,15 +39,10 @@ import java.util.List;
 public class BrickConfigLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(BrickConfigLoader.class);
-
     private BrickService brickService;
-
     private String configDir;
-
     private ObjectMapper mapper;
-
-    // length of reset timeout in seconds
-    private int timeoutLength;
+    private int timeoutLengthInSeconds;
 
     @Autowired
     public BrickConfigLoader(BrickService brickService, ObjectMapper mapper, Environment environment) {
@@ -55,12 +50,9 @@ public class BrickConfigLoader {
         this.brickService = brickService;
         this.mapper = mapper;
         this.configDir = environment.getProperty("path.to.configfiles");
-        this.timeoutLength = Integer.parseInt(environment.getProperty("brick.reset.timeout.seconds"));
+        this.timeoutLengthInSeconds = Integer.parseInt(environment.getProperty("brick.reset.timeout.seconds"));
     }
 
-    /**
-     * Load bricks config.
-     */
     public void loadBricksConfig() {
 
         if (HealthController.getHealth() == Status.OKAY) {
@@ -82,10 +74,7 @@ public class BrickConfigLoader {
     }
 
 
-    /**
-     * Reset all bricks.
-     */
-    public void resetBricks() {
+    public void resetAllBricks() {
 
         if (HealthController.getHealth() == Status.OKAY) {
             LOG.info("Resetting bricks");
@@ -94,27 +83,7 @@ public class BrickConfigLoader {
                 List<BrickDomain> bricks = brickService.getAllDomains();
 
                 for (BrickDomain brick : bricks) {
-                    IPConnection ipConnection = brickService.getIPConnection(brick);
-
-                    BrickMaster brickMaster = brickService.getBrickMaster(brick.getUid(), ipConnection);
-                    brickMaster.reset();
-
-                    Short connectionEstablished = null;
-                    long timeoutTime = Instant.now().getEpochSecond() + timeoutLength;
-
-                    while (connectionEstablished == null) {
-                        try {
-                            connectionEstablished = brickMaster.getChipTemperature();
-                        } catch (TimeoutException e) {
-                            if (Instant.now().getEpochSecond() > timeoutTime) {
-                                LOG.error("Error resetting brick {}: Timeout of {} second(s) was reached.",
-                                    brick.getName(), timeoutLength);
-                                HealthController.setHealth(Status.CRITICAL, "resetBricks");
-
-                                break;
-                            }
-                        }
-                    }
+                    resetBrick(brick);
                 }
 
                 brickService.disconnectAll();
@@ -123,5 +92,42 @@ public class BrickConfigLoader {
                 HealthController.setHealth(Status.CRITICAL, "resetBricks");
             }
         }
+    }
+
+
+    public void resetBrick(BrickDomain brick) throws TimeoutException, NotConnectedException {
+
+        IPConnection ipConnection = brickService.getIPConnection(brick);
+        BrickMaster brickMaster = brickService.getBrickMaster(brick.getUid(), ipConnection);
+
+        brickMaster.reset();
+
+        waitForBrickReset(brick.getName(), brickMaster);
+    }
+
+
+    private void waitForBrickReset(String name, BrickMaster brickMaster) throws NotConnectedException {
+
+        Short isConnectionEstablished = null;
+        long timeoutTime = Instant.now().getEpochSecond() + timeoutLengthInSeconds;
+
+        while (isConnectionEstablished == null) {
+            try {
+                isConnectionEstablished = brickMaster.getChipTemperature();
+            } catch (TimeoutException e) {
+                if (isTimeoutReached(timeoutTime)) {
+                    LOG.error("Error resetting brick {}: Timeout of {}s was reached.", name, timeoutLengthInSeconds);
+                    HealthController.setHealth(Status.CRITICAL, "waitForBrickReset");
+
+                    break;
+                }
+            }
+        }
+    }
+
+
+    private boolean isTimeoutReached(long timeoutTime) {
+
+        return Instant.now().getEpochSecond() > timeoutTime;
     }
 }

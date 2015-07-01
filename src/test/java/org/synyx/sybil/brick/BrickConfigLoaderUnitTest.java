@@ -105,7 +105,7 @@ public class BrickConfigLoaderUnitTest {
 
         sut = new BrickConfigLoader(brickService, objectMapper, environment);
 
-        sut.resetBricks();
+        sut.resetAllBricks();
 
         Mockito.verify(brickService).getBrickMaster(brickDomain.getUid(), ipConnection);
 

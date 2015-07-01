@@ -19,6 +19,7 @@ import org.springframework.data.neo4j.conversion.Result;
 
 import org.springframework.stereotype.Service;
 
+import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
@@ -106,7 +107,12 @@ public class BrickService {
 
     public BrickDomain getDomain(String name) {
 
-        return brickRepository.findByName(name);
+        BrickDomain brickDomain = brickRepository.findByName(name);
+
+        if (brickDomain == null)
+            throw new LoadFailedException("Brick " + name + " does not exist.");
+        else
+            return brickDomain;
     }
 
 
