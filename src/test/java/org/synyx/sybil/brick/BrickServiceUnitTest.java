@@ -50,6 +50,8 @@ public class BrickServiceUnitTest {
         brickService = new BrickService(brickRepository, graphDatabaseService);
 
         Mockito.when(graphDatabaseService.beginTx()).thenReturn(transaction);
+
+        Mockito.when(brickRepository.findByName("abc")).thenReturn(new BrickDomain("abc", "1234"));
     }
 
 
