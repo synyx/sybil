@@ -114,8 +114,9 @@ public class LEDStripConfigLoader {
         int length = getInt(ledstrip, "length");
         BrickDomain brick = brickService.getDomain(getString(ledstrip, "brick"));
 
-        if (brickletNameRegistry.contains(name))
+        if (brickletNameRegistry.contains(name)) {
             throw new LoadFailedException("Failed to load config for LED strip " + name + ": Name is not unique.");
+        }
 
         brickletNameRegistry.add(name);
 
