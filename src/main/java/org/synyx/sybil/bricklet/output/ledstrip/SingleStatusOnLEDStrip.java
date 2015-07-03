@@ -18,9 +18,9 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     private final LEDStrip LEDStrip;
     private Color color;
     private Status status = Status.OKAY;
-    private Color critical;
-    private Color warning;
-    private Color okay;
+    private final Color critical;
+    private final Color warning;
+    private final Color okay;
 
     /**
      * Instantiates a new SingleStatusOnLEDStrip with custom status colors.

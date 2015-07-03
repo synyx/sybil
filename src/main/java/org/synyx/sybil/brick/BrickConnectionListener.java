@@ -16,7 +16,7 @@ public class BrickConnectionListener implements IPConnection.ConnectedListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(BrickConnectionListener.class);
 
-    private IPConnection ipConnection = null;
+    private final IPConnection ipConnection;
 
     public BrickConnectionListener(IPConnection ipConnection) {
 

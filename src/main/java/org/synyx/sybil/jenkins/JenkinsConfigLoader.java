@@ -38,29 +38,14 @@ import java.util.Map;
 @Component
 public class JenkinsConfigLoader {
 
-    // Logger
     private static final Logger LOG = LoggerFactory.getLogger(JenkinsConfigLoader.class);
-
-    // Jackson ObjectMapper, maps JSON to Java Objects
-    private ObjectMapper mapper;
-
-    // The place where the config files lie, taken from the injected environment (and thus ultimately a properties file)
-    private String configDir;
-
-    // The file where the Jenkins servers are configured
-    private String jenkinsServerConfigFile;
-
-    // This fetches the actual LED Strip objects for given config data
-    private LEDStripService LEDStripService;
-
-    // Fetches one SingleStatusOnLEDStrip for each LED Strip
-    private SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
-
-    // The object that saves the Jenkins servers and job configurations
-    private JenkinsConfig jenkinsConfig;
-
-    // Map saving the custom status colors for SingleStatusOnLEDStrips
-    private LEDStripCustomColors ledStripCustomColors;
+    private final ObjectMapper mapper;
+    private final String configDirectory;
+    private final String jenkinsServerConfigFile;
+    private final LEDStripService LEDStripService;
+    private final SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
+    private final JenkinsConfig jenkinsConfig;
+    private final LEDStripCustomColors ledStripCustomColors;
 
     /**
      * Instantiates a new Jenkins config loader.
@@ -77,7 +62,7 @@ public class JenkinsConfigLoader {
         SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, LEDStripCustomColors ledStripCustomColors,
         ObjectMapper objectMapper) {
 
-        configDir = environment.getProperty("path.to.configfiles");
+        configDirectory = environment.getProperty("path.to.configfiles");
         jenkinsServerConfigFile = environment.getProperty("jenkins.configfile");
         this.LEDStripService = LEDStripService;
         this.jenkinsConfig = jenkinsConfig;
@@ -131,8 +116,8 @@ public class JenkinsConfigLoader {
 
         if (HealthController.getHealth() == Status.OKAY) {
             try {
-                Map<String, List<Map<String, Object>>> jenkinsConfigData = mapper.readValue(new File(configDir + file),
-                        new TypeReference<Map<String, List<Map<String, Object>>>>() {
+                Map<String, List<Map<String, Object>>> jenkinsConfigData = mapper.readValue(new File(
+                            configDirectory + file), new TypeReference<Map<String, List<Map<String, Object>>>>() {
                         }); // fetch Jenkins configuration data...
 
                 jenkinsConfig.reset();

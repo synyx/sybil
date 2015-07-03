@@ -26,16 +26,11 @@ import javax.annotation.PostConstruct;
 public class StartupLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(StartupLoader.class);
-
-    private JenkinsConfigLoader jenkinsConfigLoader;
-
-    private BrickConfigLoader brickConfigLoader;
-
-    private BrickletNameService brickletNameRegistry;
-
-    private LEDStripConfigLoader ledStripConfigLoader;
-
-    private SensorConfigLoader sensorConfigLoader;
+    private final JenkinsConfigLoader jenkinsConfigLoader;
+    private final BrickConfigLoader brickConfigLoader;
+    private final BrickletNameService brickletNameRegistry;
+    private final LEDStripConfigLoader ledStripConfigLoader;
+    private final SensorConfigLoader sensorConfigLoader;
 
     @Autowired
     public StartupLoader(JenkinsConfigLoader jenkinsConfigLoader, BrickConfigLoader brickConfigLoader,
