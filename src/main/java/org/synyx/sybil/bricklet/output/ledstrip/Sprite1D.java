@@ -15,9 +15,9 @@ import java.util.List;
 @Relation(collectionRelation = "sprites")
 public class Sprite1D {
 
-    private final short[] red;
-    private final short[] green;
-    private final short[] blue;
+    private final short[] red; // NOSONAR Tinkerforge library uses shorts
+    private final short[] green; // NOSONAR Tinkerforge library uses shorts
+    private final short[] blue; // NOSONAR Tinkerforge library uses shorts
     private final int length;
     private final String name;
 
@@ -30,9 +30,9 @@ public class Sprite1D {
     public Sprite1D(int length, String name) {
 
         this.length = length;
-        red = new short[length];
-        green = new short[length];
-        blue = new short[length];
+        red = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        green = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        blue = new short[length]; // NOSONAR Tinkerforge library uses shorts
         this.name = name;
     }
 
@@ -40,9 +40,9 @@ public class Sprite1D {
     public Sprite1D(int length, String name, List<Color> pixels) {
 
         this.length = length;
-        red = new short[length];
-        green = new short[length];
-        blue = new short[length];
+        red = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        green = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        blue = new short[length]; // NOSONAR Tinkerforge library uses shorts
         this.name = name;
 
         for (int i = 0; i < length; i++) {
@@ -61,9 +61,9 @@ public class Sprite1D {
     public Sprite1D(int length) {
 
         this.length = length;
-        red = new short[length];
-        green = new short[length];
-        blue = new short[length];
+        red = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        green = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        blue = new short[length]; // NOSONAR Tinkerforge library uses shorts
         name = "Unnamed";
     }
 
@@ -119,19 +119,19 @@ public class Sprite1D {
     }
 
 
-    public short[] getRed() {
+    public short[] getRed() { // NOSONAR Tinkerforge library uses shorts
 
         return Arrays.copyOf(red, red.length);
     }
 
 
-    public short[] getGreen() {
+    public short[] getGreen() { // NOSONAR Tinkerforge library uses shorts
 
         return Arrays.copyOf(green, green.length);
     }
 
 
-    public short[] getBlue() {
+    public short[] getBlue() { // NOSONAR Tinkerforge library uses shorts
 
         return Arrays.copyOf(blue, blue.length);
     }

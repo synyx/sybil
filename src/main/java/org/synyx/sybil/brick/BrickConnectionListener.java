@@ -24,7 +24,7 @@ public class BrickConnectionListener implements IPConnection.ConnectedListener {
     }
 
     @Override
-    public void connected(short connectReason) {
+    public void connected(short connectReason) { // NOSONAR Tinkerforge library uses shorts
 
         try {
             ipConnection.enumerate();

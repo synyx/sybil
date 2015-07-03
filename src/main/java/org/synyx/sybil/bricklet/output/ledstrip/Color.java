@@ -24,9 +24,9 @@ public class Color {
     private static final int MAX_PRIMARY_COLOR = 255;
     private static final int MIN_PRIMARY_COLOR = 0;
 
-    private final short red;
-    private final short green;
-    private final short blue;
+    private final short red; // NOSONAR Tinkerforge library uses shorts
+    private final short green; // NOSONAR Tinkerforge library uses shorts
+    private final short blue; // NOSONAR Tinkerforge library uses shorts
 
     /**
      * Converts Red, Green and Blue into the right format.
@@ -42,17 +42,17 @@ public class Color {
         this.blue = setColorLimitsAndCastToShort(blue);
     }
 
-    private short setColorLimitsAndCastToShort(int primaryColor) {
+    private short setColorLimitsAndCastToShort(int primaryColor) { // NOSONAR Tinkerforge library uses shorts
 
         if (primaryColor < MIN_PRIMARY_COLOR) {
-            return (short) MIN_PRIMARY_COLOR;
+            return (short) MIN_PRIMARY_COLOR; // NOSONAR Tinkerforge library uses shorts
         }
 
         if (primaryColor > MAX_PRIMARY_COLOR) {
-            return (short) MAX_PRIMARY_COLOR;
+            return (short) MAX_PRIMARY_COLOR; // NOSONAR Tinkerforge library uses shorts
         }
 
-        return (short) primaryColor;
+        return (short) primaryColor; // NOSONAR Tinkerforge library uses shorts
     }
 
 
@@ -63,30 +63,30 @@ public class Color {
      */
     public static Color colorFromLedStrip(BrickletLEDStrip.RGBValues rgbValues) {
 
-        short red = rgbValues.g[0];
-        short green = rgbValues.b[0];
-        short blue = rgbValues.r[0];
+        short red = rgbValues.g[0]; // NOSONAR Tinkerforge library uses shorts
+        short green = rgbValues.b[0]; // NOSONAR Tinkerforge library uses shorts
+        short blue = rgbValues.r[0]; // NOSONAR Tinkerforge library uses shorts
 
         return new Color(red, green, blue);
     }
 
 
     @JsonProperty("blue")
-    public short getBlueAsShort() {
+    public short getBlueAsShort() { // NOSONAR Tinkerforge library uses shorts
 
         return blue;
     }
 
 
     @JsonProperty("green")
-    public short getGreenAsShort() {
+    public short getGreenAsShort() { // NOSONAR Tinkerforge library uses shorts
 
         return green;
     }
 
 
     @JsonProperty("red")
-    public short getRedAsShort() {
+    public short getRedAsShort() { // NOSONAR Tinkerforge library uses shorts
 
         return red;
     }
