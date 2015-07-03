@@ -49,8 +49,7 @@ public class JenkinsConfig {
     public void putServer(String server, String username, String key) {
 
         // HTTP Basic Authorization, as demanded by the Jenkins API.
-
-        HttpHeaders headers = new HttpHeaders(); // HTTP header
+        HttpHeaders headers = new HttpHeaders();
 
         // generate Basic Auth header
         headers.set("Authorization",

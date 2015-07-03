@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Repository // annotated so Spring finds it and can inject it.
+@Repository
 public interface IlluminanceSensorRepository extends GraphRepository<IlluminanceSensorDomain> {
 
-    IlluminanceSensorDomain findByName(String name); // Spring builds a self-explanatory method out of this. MAGIC!
+    IlluminanceSensorDomain findByName(String name);
 }

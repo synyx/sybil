@@ -118,17 +118,14 @@ public class JenkinsConfigLoader {
             try {
                 Map<String, List<Map<String, Object>>> jenkinsConfigData = mapper.readValue(new File(
                             configDirectory + file), new TypeReference<Map<String, List<Map<String, Object>>>>() {
-                        }); // fetch Jenkins configuration data...
+                        });
 
                 jenkinsConfig.reset();
 
                 HealthController.setHealth(Status.OKAY, "loadJenkinsConfig");
 
-                // ... deserialize the data manually
-                for (String server : jenkinsConfigData.keySet()) { // iterate over all the servers
-
-                    for (Map line : jenkinsConfigData.get(server)) { // get each configuration line for each server
-
+                for (String server : jenkinsConfigData.keySet()) {
+                    for (Map line : jenkinsConfigData.get(server)) {
                         String jobName = line.get("name").toString();
                         String ledstrip = line.get("ledstrip").toString();
 

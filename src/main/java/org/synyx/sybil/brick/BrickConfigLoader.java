@@ -7,6 +7,7 @@ import com.tinkerforge.BrickMaster;
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
+import com.tinkerforge.TinkerforgeException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,15 +88,15 @@ public class BrickConfigLoader {
                 }
 
                 brickService.disconnectAll();
-            } catch (TimeoutException | NotConnectedException e) {
-                LOG.error("Error resetting bricks: {}", e.toString());
+            } catch (TinkerforgeException exception) {
+                LOG.error("Error resetting bricks: {}", exception.toString());
                 HealthController.setHealth(Status.CRITICAL, "resetBricks");
             }
         }
     }
 
 
-    public void resetBrick(BrickDomain brick) throws TimeoutException, NotConnectedException {
+    public void resetBrick(BrickDomain brick) throws TinkerforgeException {
 
         IPConnection ipConnection = brickService.getIPConnection(brick);
         BrickMaster brickMaster = brickService.getBrickMaster(brick.getUid(), ipConnection);

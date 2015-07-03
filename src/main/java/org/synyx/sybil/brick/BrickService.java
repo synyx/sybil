@@ -42,19 +42,13 @@ import java.util.Set;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Service // Annotated so Spring finds and injects it.
+@Service
 public class BrickService {
 
-    // Logger
     private static final Logger LOG = LoggerFactory.getLogger(BrickService.class);
 
-    // map that contains all the Connections with the Domains as their key
     private Map<BrickDomain, IPConnection> ipConnections = new HashMap<>();
-
-    // set that contains each registry that accesses this registry
     private Set<BrickletService> registries = new HashSet<>();
-
-//    private Set<String> names = new HashSet<>();
 
     private BrickRepository brickRepository;
     private GraphDatabaseService graphDatabaseService;
@@ -121,8 +115,7 @@ public class BrickService {
 
         List<BrickDomain> bricks;
 
-        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
+        try(Transaction tx = graphDatabaseService.beginTx()) {
             Result<BrickDomain> result = brickRepository.findAll();
 
             if (result != null) {
@@ -131,7 +124,6 @@ public class BrickService {
                 bricks = null;
             }
 
-            // end transaction
             tx.success();
         }
 
@@ -176,17 +168,16 @@ public class BrickService {
      */
     private void connect(BrickDomain brickDomain) {
 
-        if (!ipConnections.containsKey(brickDomain)) { // if it isn't in the Map yet...
-
-            IPConnection ipConnection = new IPConnection(); // ... make a new one...
+        if (!ipConnections.containsKey(brickDomain)) {
+            IPConnection ipConnection = new IPConnection();
 
             try {
-                ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort()); // ... connect it ...
+                ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort());
 
                 BrickConnectionListener brickConnectionListener = new BrickConnectionListener(ipConnection);
 
                 ipConnection.addConnectedListener(brickConnectionListener);
-                ipConnections.put(brickDomain, ipConnection); // ... and add it to the map.
+                ipConnections.put(brickDomain, ipConnection);
             } catch (IOException e) {
                 LOG.error("I/O Exception connecting to brick {}: {}", brickDomain.getName(), e.getMessage());
                 HealthController.setHealth(Status.CRITICAL, "brick" + brickDomain.getName());
@@ -219,7 +210,6 @@ public class BrickService {
 
         LOG.debug("Disconnecting all bricks and bricklets.");
 
-        // disconnect all the IPConnections
         for (IPConnection ipConnection : ipConnections.values()) {
             try {
                 ipConnection.disconnect();
@@ -228,10 +218,8 @@ public class BrickService {
             }
         }
 
-        // clear the list of connections
         ipConnections.clear();
 
-        // clear all the registries, so bricklets will have to be re-registered
         for (BrickletService brickletService : registries) {
             brickletService.clear();
         }
