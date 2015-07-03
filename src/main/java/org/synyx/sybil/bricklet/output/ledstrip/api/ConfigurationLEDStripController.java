@@ -150,6 +150,23 @@ public class ConfigurationLEDStripController {
         LEDStripDomain ledStripDomain = ledStripService.getDomain(name);
         LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 
+        handlePatches(input, ledStrip);
+
+        Link self = linkTo(methodOn(ConfigurationLEDStripController.class).getDisplay(ledStripDomain.getName()))
+            .withSelfRel();
+
+        DisplayResource display = new DisplayResource();
+
+        display.add(self);
+        display.setPixels(ledStrip.getPixelBuffer());
+        display.setBrightness(ledStrip.getBrightness());
+
+        return display;
+    }
+
+
+    private void handlePatches(PatchResource input, LEDStrip ledStrip) throws Exception {
+
         for (SinglePatchResource patch : input.getPatches()) {
             switch (patch.getAction()) {
                 case "set":
@@ -223,17 +240,6 @@ public class ConfigurationLEDStripController {
                     throw new Exception("Unknown action");
             }
         }
-
-        Link self = linkTo(methodOn(ConfigurationLEDStripController.class).getDisplay(ledStripDomain.getName()))
-            .withSelfRel();
-
-        DisplayResource display = new DisplayResource();
-
-        display.add(self);
-        display.setPixels(ledStrip.getPixelBuffer());
-        display.setBrightness(ledStrip.getBrightness());
-
-        return display;
     }
 
 

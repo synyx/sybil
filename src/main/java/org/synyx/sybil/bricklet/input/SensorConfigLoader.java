@@ -37,22 +37,11 @@ import java.util.Map;
 @Component
 public class SensorConfigLoader {
 
-    // Logger
     private static final Logger LOG = LoggerFactory.getLogger(SensorConfigLoader.class);
-
-    // Jackson ObjectMapper, maps JSON to Java Objects
     private ObjectMapper mapper;
-
-    // The place where the config files lie, taken from the injected environment (and thus ultimately a properties file)
     private String configDir;
-
-    // Fetches & Configures illuminance sensors
     private IlluminanceService illuminanceService;
-
-    // Registers bricklets' names to make sure they are unique
     private BrickletNameService brickletNameRegistry;
-
-    // The Repository to save Brick configuration data
     private BrickService brickService;
 
     @Autowired
@@ -78,8 +67,7 @@ public class SensorConfigLoader {
 
                 illuminanceService.deleteAllDomains();
 
-                for (Map sensor : sensors) { // ... deserialize the data manually
-
+                for (Map sensor : sensors) {
                     String name = sensor.get("name").toString();
 
                     if (brickletNameRegistry.contains(name)) {
@@ -95,48 +83,17 @@ public class SensorConfigLoader {
 
                     String type = sensor.get("type").toString();
 
-                    int threshold = 0;
-                    double multiplier = 0.1;
+                    int threshold = getThreshold(sensor);
 
-                    try {
-                        if (sensor.get("threshold") != null) {
-                            threshold = Integer.parseInt(sensor.get("threshold").toString());
-                        }
+                    double multiplier = getMultiplier(sensor);
 
-                        if (sensor.get("multiplier") != null) {
-                            multiplier = Double.parseDouble(sensor.get("multiplier").toString());
-                        }
-                    } catch (NumberFormatException e) {
-                        LOG.error("Failed to load config for sensor {}: options are not properly formatted.", name);
-                        HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");
-                    }
+                    List<String> outputs = getOutputs(sensor);
 
-                    List<String> outputs = new ArrayList<>();
+                    BrickDomain brick = brickService.getDomain(sensor.get("brick").toString());
 
-                    if (sensor.get("outputs") instanceof ArrayList) {
-                        ArrayList rawArrayList = (ArrayList) sensor.get("outputs");
-
-                        for (Object output : rawArrayList) {
-                            outputs.add(output.toString());
-                        }
-                    }
-
-                    BrickDomain brick = brickService.getDomain(sensor.get("brick").toString()); // fetch the corresponding bricks from the repo
-
-                    IlluminanceSensorDomain illuminanceSensorDomain = null;
-
-                    if (brick != null) { // if there was corresponding brick found in the repo...
-
-                        if (type.equals("luminance")) {
-                            illuminanceSensorDomain = illuminanceService.saveDomain(new IlluminanceSensorDomain(name,
-                                        uid, threshold, multiplier, outputs, brick)); // ... save the sensor
-                        }
-                    } else { // if not...
-                        LOG.error("Brick {} does not exist.", sensor.get("brick").toString()); // ... error!
-                        HealthController.setHealth(Status.WARNING, "loadSensorConfig");
-                    }
-
-                    if (illuminanceSensorDomain != null) {
+                    if ("luminance".equals(type)) {
+                        IlluminanceSensorDomain illuminanceSensorDomain = illuminanceService.saveDomain(
+                                new IlluminanceSensorDomain(name, uid, threshold, multiplier, outputs, brick));
                         illuminanceService.getIlluminanceSensor(illuminanceSensorDomain);
                     }
                 }
@@ -145,5 +102,59 @@ public class SensorConfigLoader {
                 HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");
             }
         }
+    }
+
+
+    private int getThreshold(Map sensor) {
+
+        int threshold = 0;
+
+        try {
+            if (sensor.get("threshold") == null) {
+                threshold = 0;
+            } else {
+                threshold = Integer.parseInt(sensor.get("threshold").toString());
+            }
+        } catch (NumberFormatException e) {
+            LOG.error("Failed to load config for sensor {}: options are not properly formatted.", sensor.get("name"));
+            HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");
+        }
+
+        return threshold;
+    }
+
+
+    private double getMultiplier(Map sensor) {
+
+        double multiplier = 0;
+
+        try {
+            if (sensor.get("multiplier") == null) {
+                multiplier = 0;
+            } else {
+                multiplier = Double.parseDouble(sensor.get("multiplier").toString());
+            }
+        } catch (NumberFormatException e) {
+            LOG.error("Failed to load config for sensor {}: options are not properly formatted.", sensor.get("name"));
+            HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");
+        }
+
+        return multiplier;
+    }
+
+
+    private List<String> getOutputs(Map sensor) {
+
+        List<String> outputs = new ArrayList<>();
+
+        if (sensor.get("outputs") instanceof ArrayList) {
+            ArrayList rawArrayList = (ArrayList) sensor.get("outputs");
+
+            for (Object output : rawArrayList) {
+                outputs.add(output.toString());
+            }
+        }
+
+        return outputs;
     }
 }

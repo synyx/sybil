@@ -30,6 +30,7 @@ public class LEDStrip implements Bricklet {
     private static final double MAX_BRIGHTNESS = 255.0;
     private static final double MIN_BRIGHTNESS = 0.0;
     private static final short MAX_PRIMARY_COLOR = (short) 255;
+    private static final int SIXTEEN = 16;
 
     private final BrickletLEDStrip ledStrip;
     private final short[] pixelBufferRed;
@@ -53,15 +54,14 @@ public class LEDStrip implements Bricklet {
         this.ledStrip = ledStrip;
         this.length = length;
 
-        int differenceToMultipleOfSixteen = length % 16;
+        // make sure the length is a multiple of sixteen
+        int differenceToMultipleOfSixteen = length % SIXTEEN;
 
-        if (differenceToMultipleOfSixteen > 0) {
-            length = length + (16 - differenceToMultipleOfSixteen); // make sure the length is a multiple of sixteen
-        }
+        int newlength = length + (SIXTEEN - differenceToMultipleOfSixteen);
 
-        pixelBufferRed = new short[length];
-        pixelBufferGreen = new short[length];
-        pixelBufferBlue = new short[length];
+        pixelBufferRed = new short[newlength];
+        pixelBufferGreen = new short[newlength];
+        pixelBufferBlue = new short[newlength];
     }
 
     @Override
@@ -189,17 +189,17 @@ public class LEDStrip implements Bricklet {
         short[] greenArray;
         short[] blueArray;
 
-        for (int positionOnLedStrip = 0; positionOnLedStrip < pixelBufferRed.length; positionOnLedStrip += 16) {
-            redArray = Arrays.copyOfRange(pixelBufferRed, positionOnLedStrip, positionOnLedStrip + 16);
-            greenArray = Arrays.copyOfRange(pixelBufferGreen, positionOnLedStrip, positionOnLedStrip + 16);
-            blueArray = Arrays.copyOfRange(pixelBufferBlue, positionOnLedStrip, positionOnLedStrip + 16);
+        for (int positionOnLedStrip = 0; positionOnLedStrip < pixelBufferRed.length; positionOnLedStrip += SIXTEEN) {
+            redArray = Arrays.copyOfRange(pixelBufferRed, positionOnLedStrip, positionOnLedStrip + SIXTEEN);
+            greenArray = Arrays.copyOfRange(pixelBufferGreen, positionOnLedStrip, positionOnLedStrip + SIXTEEN);
+            blueArray = Arrays.copyOfRange(pixelBufferBlue, positionOnLedStrip, positionOnLedStrip + SIXTEEN);
 
             redArray = applyBrightness(redArray);
             greenArray = applyBrightness(greenArray);
             blueArray = applyBrightness(blueArray);
 
             try {
-                ledStrip.setRGBValues(positionOnLedStrip, (short) 16, blueArray, redArray, greenArray);
+                ledStrip.setRGBValues(positionOnLedStrip, (short) SIXTEEN, blueArray, redArray, greenArray);
                 setHealthOkay();
             } catch (TimeoutException | NotConnectedException exception) {
                 logConnectionError(exception);
@@ -210,7 +210,7 @@ public class LEDStrip implements Bricklet {
 
     private short[] applyBrightness(short[] sixteenPixels) {
 
-        for (int index = 0; index < 16; index++) {
+        for (int index = 0; index < SIXTEEN; index++) {
             sixteenPixels[index] *= brightness;
 
             if (sixteenPixels[index] > MAX_PRIMARY_COLOR) {
@@ -234,17 +234,19 @@ public class LEDStrip implements Bricklet {
     }
 
 
-    private void drawSprite(Sprite1D sprite, int positionOnPixelBuffer, boolean wrap) {
+    private void drawSprite(Sprite1D sprite, int position, boolean wrap) {
 
         LOG.debug("Drawing Sprite {} to LEDstrip {}", sprite.getName(), name);
 
         int positionOnSprite = 0;
+        int positionOnPixelBuffer = position;
 
         while (positionOnSprite < sprite.getLength()) {
             if (positionOnPixelBuffer < this.length) {
                 copySpriteColorToPixelBuffer(sprite, positionOnSprite, positionOnPixelBuffer);
             } else if (wrap) {
-                positionOnPixelBuffer = 0; // reset the positionOnPixelBuffer to the beginning of the LED strip
+                // reset position to beginning of buffer
+                positionOnPixelBuffer = 0;
                 copySpriteColorToPixelBuffer(sprite, positionOnSprite, positionOnPixelBuffer);
             } else {
                 break;
@@ -285,10 +287,6 @@ public class LEDStrip implements Bricklet {
     @Override
     public int hashCode() {
 
-        int result = ledStrip.hashCode();
-        result = 31 * result + length;
-        result = 31 * result + name.hashCode();
-
-        return result;
+        return Objects.hash(ledStrip, length, name);
     }
 }

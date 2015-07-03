@@ -24,9 +24,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @ComponentScan(
     basePackages = { "org.synyx.sybil" }, excludeFilters = {
+        // ignore the WebConfig, which is loaded by the ApiWebAppInitializer
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = WebConfig.class)
     }
-) // scan for annotated classes, like @Service, @Configuration, etc. - while ignoring the WebConfig, which is loaded by the ApiWebAppInitializer
+)
 public class SpringConfig {
 
     @Bean

@@ -29,10 +29,9 @@ public class BrickDomain implements DeviceDomain {
 
     private String uid;
 
-    /**
-     * DO NOT CALL THIS! Exists only to placate Neo4j.
-     */
     protected BrickDomain() {
+
+        // Default constructor deliberately left empty
     }
 
 

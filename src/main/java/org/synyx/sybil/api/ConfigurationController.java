@@ -71,7 +71,7 @@ public class ConfigurationController {
 
     @ResponseBody
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<String> LoadingConfigurationFailed(IOException e) {
+    public ResponseEntity<String> loadingConfigurationFailed(IOException e) {
 
         LOG.error("Error loading jenkins.json: {}", e.toString());
 
