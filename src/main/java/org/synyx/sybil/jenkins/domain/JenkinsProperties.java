@@ -14,9 +14,11 @@ import java.util.Arrays;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JenkinsProperties {
 
-    JenkinsJob[] jobs;
+    private JenkinsJob[] jobs;
 
     public JenkinsProperties() {
+
+        // Default constructor deliberately left empty
     }
 
 

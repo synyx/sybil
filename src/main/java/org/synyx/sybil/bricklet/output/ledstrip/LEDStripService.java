@@ -34,7 +34,7 @@ import java.util.Map;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Service // Annotated so Spring finds and injects it.
+@Service
 public class LEDStripService implements BrickletService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LEDStripService.class);
@@ -45,8 +45,6 @@ public class LEDStripService implements BrickletService {
     private BrickService brickService;
     private LEDStripRepository ledStripRepository;
     private GraphDatabaseService graphDatabaseService;
-
-    // Constructor, called when Spring autowires it somewhere. Dependencies are injected.
 
     /**
      * Instantiates a new LEDStrip registry.
@@ -99,12 +97,9 @@ public class LEDStripService implements BrickletService {
 
         List<LEDStripDomain> ledStripDomains;
 
-        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
-            // get all sensors from database and cast them into a list so that they're actually fetched
+        try(Transaction tx = graphDatabaseService.beginTx()) {
             ledStripDomains = new ArrayList<>(IteratorUtil.asCollection(ledStripRepository.findAll()));
 
-            // end transaction
             tx.success();
         }
 
@@ -124,51 +119,46 @@ public class LEDStripService implements BrickletService {
     /**
      * Get a LEDStrip object, instantiate a new one if necessary.
      *
-     * @param  LEDStripDomain  The bricklet's domain from the database.
+     * @param  ledStripDomain  The bricklet's domain from the database.
      *
      * @return  The actual LEDStrip object.
      */
-    public LEDStrip getLEDStrip(LEDStripDomain LEDStripDomain) {
+    public LEDStrip getLEDStrip(LEDStripDomain ledStripDomain) {
 
-        if (LEDStripDomain == null) {
+        if (ledStripDomain == null) {
             return null;
         }
 
-        // if there is no LED Strip with that id in the HashMap yet...
-        if (!outputLEDStrips.containsKey(LEDStripDomain)) {
-            BrickletLEDStrip brickletLEDStrip; // since there is a try, it might end up undefined
+        if (!outputLEDStrips.containsKey(ledStripDomain)) {
+            BrickletLEDStrip brickletLEDStrip;
 
             try {
-                // get the connecting to the Brick, passing the BrickDomain and the calling object
-                IPConnection ipConnection = brickService.getIPConnection(LEDStripDomain.getBrickDomain(), this);
+                IPConnection ipConnection = brickService.getIPConnection(ledStripDomain.getBrickDomain(), this);
 
                 if (ipConnection != null) {
-                    // Create a new Tinkerforge brickletLEDStrip object with data from the database
-                    brickletLEDStrip = new BrickletLEDStrip(LEDStripDomain.getUid(), ipConnection);
-                    brickletLEDStrip.setFrameDuration(FRAME_DURATION); // Always go for the minimum (i.e. fastest) frame duration
-                    brickletLEDStrip.setChipType(CHIP_TYPE); // We only use 2812 chips
+                    brickletLEDStrip = new BrickletLEDStrip(ledStripDomain.getUid(), ipConnection);
+                    brickletLEDStrip.setFrameDuration(FRAME_DURATION);
+                    brickletLEDStrip.setChipType(CHIP_TYPE);
                 } else {
-                    LOG.error("Error setting up LED Strip {}: Brick {} not available.", LEDStripDomain.getName(),
-                        LEDStripDomain.getBrickDomain().getHostname());
+                    LOG.error("Error setting up LED Strip {}: Brick {} not available.", ledStripDomain.getName(),
+                        ledStripDomain.getBrickDomain().getHostname());
 
                     brickletLEDStrip = null;
                 }
             } catch (TimeoutException | NotConnectedException e) {
-                LOG.error("Error setting up LED Strip {}: {}", LEDStripDomain.getName(), e.toString());
-                brickletLEDStrip = null; // if there is an error, we don't want to use this
+                LOG.error("Error setting up LED Strip {}: {}", ledStripDomain.getName(), e.toString());
+                brickletLEDStrip = null;
             }
 
             if (brickletLEDStrip != null) {
-                // get a new LEDStrip object
-                LEDStrip ledStrip = new LEDStrip(brickletLEDStrip, LEDStripDomain.getLength(),
-                        LEDStripDomain.getName());
+                LEDStrip ledStrip = new LEDStrip(brickletLEDStrip, ledStripDomain.getLength(),
+                        ledStripDomain.getName());
 
-                // add it to the HashMap
-                outputLEDStrips.put(LEDStripDomain, ledStrip);
+                outputLEDStrips.put(ledStripDomain, ledStrip);
             }
         }
 
-        return outputLEDStrips.get(LEDStripDomain); // retrieve and return
+        return outputLEDStrips.get(ledStripDomain);
     }
 
 

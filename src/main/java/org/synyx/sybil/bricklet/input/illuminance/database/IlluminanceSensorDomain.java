@@ -13,6 +13,7 @@ import org.synyx.sybil.DeviceDomain;
 import org.synyx.sybil.brick.database.BrickDomain;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -44,6 +45,8 @@ public class IlluminanceSensorDomain implements DeviceDomain {
     private BrickDomain brickDomain;
 
     public IlluminanceSensorDomain() {
+
+        // Default constructor deliberately left empty
     }
 
 
@@ -107,32 +110,51 @@ public class IlluminanceSensorDomain implements DeviceDomain {
             return false;
         }
 
-        return equalsDetails((IlluminanceSensorDomain) o);
+        if (areFieldsEqual((IlluminanceSensorDomain) o)) {
+            return false;
+        }
+
+        return true;
     }
 
 
-    private boolean equalsDetails(IlluminanceSensorDomain o) {
+    private boolean areFieldsEqual(IlluminanceSensorDomain o) {
 
-        return Double.compare(o.multiplier, multiplier) == 0 && threshold == o.threshold
-            && brickDomain.equals(o.brickDomain) && id.equals(o.id) && name.equals(o.name) && outputs.equals(o.outputs)
-            && uid.equals(o.uid);
+        if (Objects.equals(multiplier, o.multiplier)) {
+            return true;
+        }
+
+        if (threshold != o.threshold) {
+            return true;
+        }
+
+        if (Objects.equals(brickDomain, o.brickDomain)) {
+            return true;
+        }
+
+        if (Objects.equals(id, o.id)) {
+            return true;
+        }
+
+        if (Objects.equals(name, o.name)) {
+            return true;
+        }
+
+        if (Objects.equals(outputs, o.outputs)) {
+            return true;
+        }
+
+        if (Objects.equals(uid, o.uid)) {
+            return true;
+        }
+
+        return false;
     }
 
 
     @Override
     public int hashCode() {
 
-        int result;
-        long temp;
-        result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + uid.hashCode();
-        result = 31 * result + threshold;
-        temp = Double.doubleToLongBits(multiplier);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + outputs.hashCode();
-        result = 31 * result + brickDomain.hashCode();
-
-        return result;
+        return Objects.hash(id, name, uid, threshold, multiplier, outputs, brickDomain);
     }
 }

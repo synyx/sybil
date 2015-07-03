@@ -42,7 +42,7 @@ public class JenkinsConfigLoader {
     private final ObjectMapper mapper;
     private final String configDirectory;
     private final String jenkinsServerConfigFile;
-    private final LEDStripService LEDStripService;
+    private final LEDStripService ledStripService;
     private final SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
     private final JenkinsConfig jenkinsConfig;
     private final LEDStripCustomColors ledStripCustomColors;
@@ -51,20 +51,20 @@ public class JenkinsConfigLoader {
      * Instantiates a new Jenkins config loader.
      *
      * @param  environment  The Environment (provided by Spring, contains the configuration read from config.properties)
-     * @param  LEDStripService  the LEDStrip registry
+     * @param  ledStripService  the LEDStrip registry
      * @param  jenkinsConfig  the jenkins configuration
      * @param  singleStatusOnLEDStripRegistry  the SingleStatusOnLEDStrip registry
      * @param  ledStripCustomColors  the led strip custom colors
      * @param  objectMapper  the mapper
      */
     @Autowired
-    public JenkinsConfigLoader(Environment environment, LEDStripService LEDStripService, JenkinsConfig jenkinsConfig,
+    public JenkinsConfigLoader(Environment environment, LEDStripService ledStripService, JenkinsConfig jenkinsConfig,
         SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, LEDStripCustomColors ledStripCustomColors,
         ObjectMapper objectMapper) {
 
         configDirectory = environment.getProperty("path.to.configfiles");
         jenkinsServerConfigFile = environment.getProperty("jenkins.configfile");
-        this.LEDStripService = LEDStripService;
+        this.ledStripService = ledStripService;
         this.jenkinsConfig = jenkinsConfig;
         this.singleStatusOnLEDStripRegistry = singleStatusOnLEDStripRegistry;
         this.ledStripCustomColors = ledStripCustomColors;
@@ -132,25 +132,25 @@ public class JenkinsConfigLoader {
                         String jobName = line.get("name").toString();
                         String ledstrip = line.get("ledstrip").toString();
 
-                        LEDStripDomain LEDStripDomain = LEDStripService.getDomain(ledstrip.toLowerCase()); // names are always lowercase
+                        LEDStripDomain ledStripDomain = ledStripService.getDomain(ledstrip.toLowerCase());
 
-                        LEDStrip LEDStrip = LEDStripService.getLEDStrip(LEDStripDomain);
+                        LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 
-                        if (LEDStrip != null) {
-                            Map<String, Color> colors = ledStripCustomColors.get(ledstrip);
-
-                            if (colors != null) {
-                                jenkinsConfig.put(server, jobName,
-                                    singleStatusOnLEDStripRegistry.get(LEDStrip, colors.get("okay"),
-                                        colors.get("warning"), colors.get("critical")));
-                            } else {
-                                jenkinsConfig.put(server, jobName, singleStatusOnLEDStripRegistry.get(LEDStrip));
-                            }
-                        } else {
+                        if (ledStrip == null) {
                             LOG.warn("Ledstrip {} does not exist.", ledstrip);
 
                             if (HealthController.getHealth() != Status.CRITICAL) {
                                 HealthController.setHealth(Status.WARNING, "loadJenkinsConfig");
+                            }
+                        } else {
+                            Map<String, Color> colors = ledStripCustomColors.get(ledstrip);
+
+                            if (colors == null) {
+                                jenkinsConfig.put(server, jobName, singleStatusOnLEDStripRegistry.get(ledStrip));
+                            } else {
+                                jenkinsConfig.put(server, jobName,
+                                    singleStatusOnLEDStripRegistry.get(ledStrip, colors.get("okay"),
+                                        colors.get("warning"), colors.get("critical")));
                             }
                         }
                     }

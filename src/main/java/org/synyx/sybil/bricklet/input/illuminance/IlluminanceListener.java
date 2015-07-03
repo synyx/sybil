@@ -24,14 +24,13 @@ import java.util.List;
 public class IlluminanceListener implements BrickletAmbientLight.IlluminanceListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(IlluminanceListener.class);
+    private static final int BY_TEN = 10;
 
     private List<LEDStrip> ledStrips = new ArrayList<>();
-
     private int threshold;
-
     private double multiplier;
 
-    public IlluminanceListener(IlluminanceSensorDomain sensor, LEDStripService LEDStripService) {
+    public IlluminanceListener(IlluminanceSensorDomain sensor, LEDStripService ledStripService) {
 
         LOG.debug("Listener added to {}", sensor.getName());
 
@@ -40,10 +39,10 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
         multiplier = sensor.getMultiplier();
 
         for (String output : sensor.getOutputs()) {
-            LEDStripDomain domain = LEDStripService.getDomain(output);
+            LEDStripDomain domain = ledStripService.getDomain(output);
 
             if (domain != null) {
-                LEDStrip ledStrip = LEDStripService.getLEDStrip(domain);
+                LEDStrip ledStrip = ledStripService.getLEDStrip(domain);
                 ledStrips.add(ledStrip);
             } else {
                 LOG.error("Configured output {} of illuminance sensor {} does not match a LED Strip.", output,
@@ -57,13 +56,13 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
     public void illuminance(int illuminance) {
 
         // 1 lux is 10 units from the sensor.
-        LOG.debug("Lux: {}", illuminance / 10);
+        LOG.debug("Lux: {}", illuminance / BY_TEN);
 
         double brightness = 1.0;
 
         // Threshold is configured in lux!
-        if (illuminance < threshold * 10) {
-            brightness += ((threshold * 10) - illuminance) * multiplier;
+        if (illuminance < threshold * BY_TEN) {
+            brightness += ((threshold * BY_TEN) - illuminance) * multiplier;
         }
 
         for (LEDStrip ledStrip : ledStrips) {

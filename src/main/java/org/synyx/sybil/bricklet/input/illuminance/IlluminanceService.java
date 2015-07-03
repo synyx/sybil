@@ -35,14 +35,15 @@ import java.util.Map;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Service // Annotated so Spring finds and injects it.
+@Service
 public class IlluminanceService implements BrickletService {
 
     private static final Logger LOG = LoggerFactory.getLogger(IlluminanceService.class);
+    private static final int CALLBACK_PERIOD = 5000;
 
     private Map<IlluminanceSensorDomain, BrickletAmbientLight> illuminanceSensors = new HashMap<>();
     private BrickService brickService;
-    private LEDStripService LEDStripService;
+    private LEDStripService ledStripService;
     private IlluminanceSensorRepository illuminanceSensorRepository;
     private GraphDatabaseService graphDatabaseService;
 
@@ -50,16 +51,16 @@ public class IlluminanceService implements BrickletService {
      * Instantiates a new Illuminance sensor registry.
      *
      * @param  brickService  the brick registry
-     * @param  LEDStripService  the output lED strip registry
+     * @param  ledStripService  the output lED strip registry
      * @param  illuminanceSensorRepository  the illuminance sensor repository
      * @param  graphDatabaseService  the graph database service
      */
     @Autowired
-    public IlluminanceService(BrickService brickService, LEDStripService LEDStripService,
+    public IlluminanceService(BrickService brickService, LEDStripService ledStripService,
         IlluminanceSensorRepository illuminanceSensorRepository, GraphDatabaseService graphDatabaseService) {
 
         this.brickService = brickService;
-        this.LEDStripService = LEDStripService;
+        this.ledStripService = ledStripService;
         this.illuminanceSensorRepository = illuminanceSensorRepository;
         this.graphDatabaseService = graphDatabaseService;
     }
@@ -99,13 +100,10 @@ public class IlluminanceService implements BrickletService {
 
         List<IlluminanceSensorDomain> illuminanceSensorDomains;
 
-        try(Transaction tx = graphDatabaseService.beginTx()) { // begin transaction
-
-            // get all sensors from database and cast them into a list so that they're actually fetched
+        try(Transaction tx = graphDatabaseService.beginTx()) {
             illuminanceSensorDomains = new ArrayList<>(IteratorUtil.asCollection(
                         illuminanceSensorRepository.findAll()));
 
-            // end transaction
             tx.success();
         }
 
@@ -141,18 +139,16 @@ public class IlluminanceService implements BrickletService {
             BrickletAmbientLight brickletAmbientLight;
 
             try {
-                // get the connection to the Brick, passing the BrickDomain and the calling object
                 IPConnection ipConnection = brickService.getIPConnection(illuminanceSensorDomain.getBrickDomain(),
                         this);
 
                 if (ipConnection != null) {
-                    // Create a new Tinkerforge BrickletAmbientLight object with data from the database
                     brickletAmbientLight = new BrickletAmbientLight(illuminanceSensorDomain.getUid(), ipConnection);
 
-                    brickletAmbientLight.setIlluminanceCallbackPeriod(5000);
+                    brickletAmbientLight.setIlluminanceCallbackPeriod(CALLBACK_PERIOD);
 
                     brickletAmbientLight.addIlluminanceListener(new IlluminanceListener(illuminanceSensorDomain,
-                            LEDStripService));
+                            ledStripService));
                 } else {
                     LOG.error("Error setting up illuminance sensor {}: Brick {} not available.",
                         illuminanceSensorDomain.getName(), illuminanceSensorDomain.getBrickDomain().getHostname());
@@ -162,18 +158,17 @@ public class IlluminanceService implements BrickletService {
             } catch (TimeoutException | NotConnectedException e) {
                 LOG.error("Error setting up illuminance sensor {}: {}", illuminanceSensorDomain.getName(),
                     e.toString());
-                brickletAmbientLight = null; // if there is an error, we don't want to use this
+                brickletAmbientLight = null;
             }
 
             if (brickletAmbientLight != null) {
-                // add it to the HashMap
                 illuminanceSensors.put(illuminanceSensorDomain, brickletAmbientLight);
             }
         }
 
         LOG.debug("Finished setting up sensor {}.", illuminanceSensorDomain.getName());
 
-        return illuminanceSensors.get(illuminanceSensorDomain); // retrieve and return
+        return illuminanceSensors.get(illuminanceSensorDomain);
     }
 
 

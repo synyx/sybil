@@ -12,6 +12,8 @@ import org.springframework.hateoas.core.Relation;
 import org.synyx.sybil.DeviceDomain;
 import org.synyx.sybil.brick.database.BrickDomain;
 
+import java.util.Objects;
+
 
 /**
  * LEDStrip domain. Persistence for the LED Strip data, but not the actual LEDStrip object.
@@ -37,8 +39,9 @@ public class LEDStripDomain implements DeviceDomain {
     @JsonProperty("brick")
     private BrickDomain brickDomain;
 
-    // DO NOT CALL THIS! Exists only to placate Neo4j.
     protected LEDStripDomain() {
+
+        // Default constructor deliberately left empty
     }
 
 
@@ -52,7 +55,7 @@ public class LEDStripDomain implements DeviceDomain {
      */
     public LEDStripDomain(String name, String uid, int length, BrickDomain brickDomain) {
 
-        this.name = name.toLowerCase(); // Names are always lowercase!
+        this.name = name.toLowerCase();
         this.uid = uid;
         this.length = length;
         this.brickDomain = brickDomain;
@@ -79,13 +82,7 @@ public class LEDStripDomain implements DeviceDomain {
     @Override
     public int hashCode() {
 
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + uid.hashCode();
-        result = 31 * result + length;
-        result = 31 * result + brickDomain.hashCode();
-
-        return result;
+        return Objects.hash(id, name, uid, length, brickDomain);
     }
 
 

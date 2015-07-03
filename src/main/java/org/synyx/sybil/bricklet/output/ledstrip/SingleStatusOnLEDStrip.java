@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
+import java.util.Objects;
+
 
 /**
  * Shows a status as a single color on an entire LED strip.
@@ -15,7 +17,7 @@ import org.synyx.sybil.jenkins.domain.StatusInformation;
 public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
     private static final Logger LOG = LoggerFactory.getLogger(SingleStatusOnLEDStrip.class);
-    private final LEDStrip LEDStrip;
+    private final LEDStrip ledStrip;
     private Color color;
     private Status status = Status.OKAY;
     private final Color critical;
@@ -25,28 +27,28 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     /**
      * Instantiates a new SingleStatusOnLEDStrip with custom status colors.
      *
-     * @param  LEDStrip  The output (in this case a LED strip) to show statuses on
+     * @param  ledStrip  The output (in this case a LED strip) to show statuses on
      * @param  okay  The Color for status OKAY
      * @param  warning  The Color for status WARNING
      * @param  critical  The Color for status CRITICAL
      */
-    public SingleStatusOnLEDStrip(LEDStrip LEDStrip, Color okay, Color warning, Color critical) {
+    public SingleStatusOnLEDStrip(LEDStrip ledStrip, Color okay, Color warning, Color critical) {
 
         this.okay = okay;
         this.critical = critical;
         this.warning = warning;
-        this.LEDStrip = LEDStrip;
+        this.ledStrip = ledStrip;
     }
 
 
     /**
      * Instantiates a new SingleStatusOnLEDStrip.
      *
-     * @param  LEDStrip  The output (in this case a LED strip) to show statuses on
+     * @param  ledStrip  The output (in this case a LED strip) to show statuses on
      */
-    public SingleStatusOnLEDStrip(LEDStrip LEDStrip) {
+    public SingleStatusOnLEDStrip(LEDStrip ledStrip) {
 
-        this.LEDStrip = LEDStrip;
+        this.ledStrip = ledStrip;
         critical = Color.CRITICAL;
         warning = Color.WARNING;
         okay = Color.OKAY;
@@ -65,20 +67,15 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
         SingleStatusOnLEDStrip ledStrip = (SingleStatusOnLEDStrip) o;
 
-        return !(color != null ? !color.equals(ledStrip.color) : ledStrip.color != null)
-            && !(LEDStrip != null ? !LEDStrip.equals(ledStrip.LEDStrip) : ledStrip.LEDStrip != null)
-            && status == ledStrip.status;
+        return Objects.equals(color, ledStrip.color) && Objects.equals(this.ledStrip, ledStrip.ledStrip)
+            && Objects.equals(status, ledStrip.status);
     }
 
 
     @Override
     public int hashCode() {
 
-        int result = LEDStrip != null ? LEDStrip.hashCode() : 0;
-        result = 31 * result + (color != null ? color.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
-
-        return result;
+        return Objects.hash(ledStrip, color, status);
     }
 
 
@@ -108,10 +105,10 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
             color = okay;
         }
 
-        LOG.debug("Set ledstrip {} to color {}", LEDStrip.getName(), color);
+        LOG.debug("Set ledstrip {} to color {}", ledStrip.getName(), color);
 
-        LEDStrip.setFill(color);
-        LEDStrip.updateDisplay();
+        ledStrip.setFill(color);
+        ledStrip.updateDisplay();
     }
 
 
@@ -133,18 +130,8 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
      */
     public void setStatus(StatusInformation statusInformation) {
 
-        LOG.debug("Set status {} on ledstrip {}", statusInformation.getStatus(), LEDStrip.getName());
+        LOG.debug("Set status {} on ledstrip {}", statusInformation.getStatus(), ledStrip.getName());
 
         status = statusInformation.getStatus();
-    }
-
-
-    /**
-     * Turn off.
-     */
-    public void turnOff() {
-
-        LEDStrip.setFill(Color.BLACK);
-        LEDStrip.updateDisplay();
     }
 }

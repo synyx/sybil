@@ -12,10 +12,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JenkinsJob {
 
-    String name;
-    String color;
+    private String name;
+    private String color;
 
     public JenkinsJob() {
+        // Default constructor deliberately left empty 
     }
 
 

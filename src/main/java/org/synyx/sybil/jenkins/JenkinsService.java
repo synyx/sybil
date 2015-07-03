@@ -1,7 +1,5 @@
 package org.synyx.sybil.jenkins;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import org.springframework.stereotype.Service;
 
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
@@ -45,39 +44,25 @@ import javax.annotation.PreDestroy;
 @Service
 public class JenkinsService {
 
-    /**
-     * Logger.
-     */
+    private static final int ONE_MINUTE_IN_MILLISECONDS = 60000;
+    private static final int TEN_MINUTES_IN_MILLISECONDS = 600000;
+
     private static final Logger LOG = LoggerFactory.getLogger(JenkinsService.class);
-
-    /**
-     * Spring REST Template.
-     */
     private final RestTemplate restTemplate = new RestTemplate();
-
-    /**
-     * The Jenkins config object, contains all the configured servers and jobs.
-     */
     private final JenkinsConfig jenkinsConfig;
-
-    private final LEDStripService LEDStripService;
-
-    private final GraphDatabaseService graphDatabaseService;
+    private final LEDStripService ledStripService;
 
     /**
      * Instantiates a new Jenkins service.
      *
      * @param  jenkinsConfig  The Jenkins config bean, autowired in.
-     * @param  LEDStripService  the output lED strip registry
-     * @param  graphDatabaseService  the graph database service
+     * @param  ledStripService  the output lED strip registry
      */
     @Autowired
-    public JenkinsService(JenkinsConfig jenkinsConfig, LEDStripService LEDStripService,
-        GraphDatabaseService graphDatabaseService) {
+    public JenkinsService(JenkinsConfig jenkinsConfig, LEDStripService ledStripService) {
 
         this.jenkinsConfig = jenkinsConfig;
-        this.LEDStripService = LEDStripService;
-        this.graphDatabaseService = graphDatabaseService;
+        this.ledStripService = ledStripService;
     }
 
     /**
@@ -96,8 +81,8 @@ public class JenkinsService {
                     authorizationHeaderEntity, JenkinsProperties.class);
 
             return response.getBody();
-        } catch (Exception e) {
-            LOG.warn("{}: {}", serverURL, e.toString());
+        } catch (RestClientException exception) {
+            LOG.warn("{}: {}", serverURL, exception.toString());
 
             return null;
         }
@@ -159,10 +144,10 @@ public class JenkinsService {
     @PreDestroy
     public void destroy() {
 
-        List<LEDStripDomain> ledStripDomains = LEDStripService.getAllDomains();
+        List<LEDStripDomain> ledStripDomains = ledStripService.getAllDomains();
 
         for (LEDStripDomain ledStripDomain : ledStripDomains) {
-            LEDStrip ledStrip = LEDStripService.getLEDStrip(ledStripDomain);
+            LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
             ledStrip.setFill(Color.BLACK);
             ledStrip.updateDisplay();
         }
@@ -176,12 +161,12 @@ public class JenkinsService {
 
         Set<SingleStatusOnLEDStrip> allLEDStrips = jenkinsConfig.getAll();
 
-        if (allLEDStrips != null) {
+        if (allLEDStrips == null) {
+            LOG.warn("No LED Strips configured.");
+        } else {
             for (SingleStatusOnLEDStrip ledStrip : allLEDStrips) {
                 ledStrip.setStatus(new StatusInformation("Clear", Status.OKAY));
             }
-        } else {
-            LOG.warn("No LED Strips configured.");
         }
     }
 
@@ -193,12 +178,12 @@ public class JenkinsService {
 
         Set<SingleStatusOnLEDStrip> allLEDStrips = jenkinsConfig.getAll();
 
-        if (allLEDStrips != null) {
+        if (allLEDStrips == null) {
+            LOG.warn("No LED Strips configured.");
+        } else {
             for (SingleStatusOnLEDStrip ledStrip : allLEDStrips) {
                 ledStrip.showStatus();
             }
-        } else {
-            LOG.warn("No LED Strips configured.");
         }
     }
 
@@ -231,7 +216,7 @@ public class JenkinsService {
      * Run every minute.
      */
     @Profile("default")
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = ONE_MINUTE_IN_MILLISECONDS)
     public void runEveryMinute() {
 
         handleJobs();
@@ -242,7 +227,7 @@ public class JenkinsService {
      * Run every ten minutes. Just here to keep the garbage collector from eating this in the dev profile.
      */
     @Profile("dev")
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRate = TEN_MINUTES_IN_MILLISECONDS)
     public void runEveryTenMinutes() {
 
         LOG.debug("Runs every 10 minutes!");
