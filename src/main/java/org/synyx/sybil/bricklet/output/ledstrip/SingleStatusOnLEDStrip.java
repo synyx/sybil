@@ -65,10 +65,11 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
             return false;
         }
 
-        SingleStatusOnLEDStrip ledStrip = (SingleStatusOnLEDStrip) o;
+        SingleStatusOnLEDStrip singleStatusOnLEDStrip = (SingleStatusOnLEDStrip) o;
 
-        return Objects.equals(color, ledStrip.color) && Objects.equals(this.ledStrip, ledStrip.ledStrip)
-            && Objects.equals(status, ledStrip.status);
+        return Objects.equals(color, singleStatusOnLEDStrip.color)
+            && Objects.equals(this.ledStrip, singleStatusOnLEDStrip.ledStrip)
+            && Objects.equals(status, singleStatusOnLEDStrip.status);
     }
 
 

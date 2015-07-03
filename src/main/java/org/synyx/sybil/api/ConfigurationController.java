@@ -43,8 +43,13 @@ public class ConfigurationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationController.class);
 
+    private JenkinsConfigLoader jenkinsConfigLoader;
+
     @Autowired
-    JenkinsConfigLoader jenkinsConfigLoader;
+    public ConfigurationController(JenkinsConfigLoader jenkinsConfigLoader) {
+
+        this.jenkinsConfigLoader = jenkinsConfigLoader;
+    }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })

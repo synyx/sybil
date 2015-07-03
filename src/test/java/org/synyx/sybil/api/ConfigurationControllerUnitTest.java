@@ -2,7 +2,15 @@ package org.synyx.sybil.api;
 
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
+
+import org.mockito.Mock;
+
+import org.mockito.runners.MockitoJUnitRunner;
+
 import org.springframework.test.web.servlet.MockMvc;
+
+import org.synyx.sybil.jenkins.JenkinsConfigLoader;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 
@@ -10,7 +18,10 @@ import static org.hamcrest.Matchers.hasSize;
 
 import static org.hamcrest.core.Is.is;
 
+import static org.mockito.Mockito.verify;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -22,12 +33,16 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
+@RunWith(MockitoJUnitRunner.class)
 public class ConfigurationControllerUnitTest {
 
-    @Test
-    public void testGetConfiguration() throws Exception {
+    @Mock
+    JenkinsConfigLoader jenkinsConfigLoader;
 
-        MockMvc mockMvc = standaloneSetup(new ConfigurationController()).build();
+    @Test
+    public void getConfiguration() throws Exception {
+
+        MockMvc mockMvc = standaloneSetup(new ConfigurationController(jenkinsConfigLoader)).build();
 
         mockMvc.perform(get("/configuration/"))
             .andExpect(status().isOk())
@@ -40,5 +55,16 @@ public class ConfigurationControllerUnitTest {
             .andExpect(jsonPath("$.links[2].href", endsWith("/configuration/ledstrips")))
             .andExpect(jsonPath("$.links[3].rel", is("illuminancesensors")))
             .andExpect(jsonPath("$.links[3].href", endsWith("/configuration/illuminancesensors")));
+    }
+
+
+    @Test
+    public void loadNewConfig() throws Exception {
+
+        MockMvc mockMvc = standaloneSetup(new ConfigurationController(jenkinsConfigLoader)).build();
+
+        mockMvc.perform(post("/configuration/")).andExpect(status().isOk());
+
+        verify(jenkinsConfigLoader).loadJenkinsConfig();
     }
 }

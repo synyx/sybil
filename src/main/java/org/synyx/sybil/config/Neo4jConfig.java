@@ -30,8 +30,9 @@ public class Neo4jConfig extends Neo4jConfiguration {
 
     public Neo4jConfig() {
 
+        // this is where the domain classes are
         setBasePackage("org.synyx.sybil.brick.database", "org.synyx.sybil.bricklet.input.*.database",
-            "org.synyx.sybil.bricklet.output.*.database"); // this is where the domain classes are
+            "org.synyx.sybil.bricklet.output.*.database");
     }
 
     @Bean

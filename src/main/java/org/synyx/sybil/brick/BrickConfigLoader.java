@@ -40,10 +40,10 @@ import java.util.List;
 public class BrickConfigLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(BrickConfigLoader.class);
-    private BrickService brickService;
-    private String configDir;
-    private ObjectMapper mapper;
-    private int timeoutLengthInSeconds;
+    private final BrickService brickService;
+    private final String configDir;
+    private final ObjectMapper mapper;
+    private final int timeoutLengthInSeconds;
 
     @Autowired
     public BrickConfigLoader(BrickService brickService, ObjectMapper mapper, Environment environment) {
