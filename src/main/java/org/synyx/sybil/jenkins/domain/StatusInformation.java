@@ -11,6 +11,8 @@ import java.time.ZoneId;
  */
 public class StatusInformation {
 
+    private static final int DEFAULT_PRIORITY = 100;
+
     private final Status status;
     private final String source;
     private final OffsetDateTime date;
@@ -40,7 +42,7 @@ public class StatusInformation {
      */
     public StatusInformation(String source, Status status) {
 
-        this(source, status, 100);
+        this(source, status, DEFAULT_PRIORITY);
     }
 
     public Status getStatus() {

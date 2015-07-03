@@ -65,7 +65,7 @@ public class BrickConfigLoader {
 
                 brickService.deleteAllDomains();
 
-                brickService.saveDomains(bricks); // ... simply dump them into the database
+                brickService.saveDomains(bricks);
             } catch (IOException e) {
                 LOG.error("Error loading bricks.json: {}", e.toString());
                 HealthController.setHealth(Status.CRITICAL, "loadBricksConfig");

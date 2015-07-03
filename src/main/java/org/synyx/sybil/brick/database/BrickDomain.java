@@ -7,6 +7,8 @@ import org.springframework.hateoas.core.Relation;
 
 import org.synyx.sybil.DeviceDomain;
 
+import java.util.Objects;
+
 
 /**
  * IPConnection domain. Persistence for the Tinkerforge IPConnection data, but not the actual object.
@@ -18,6 +20,8 @@ import org.synyx.sybil.DeviceDomain;
 @Relation(collectionRelation = "bricks")
 public class BrickDomain implements DeviceDomain {
 
+    private static final int DEFAULT_PORT = 4223;
+
     @GraphId
     private Long id;
 
@@ -25,7 +29,7 @@ public class BrickDomain implements DeviceDomain {
 
     private String hostname;
 
-    private int port = 4223; // default port
+    private int port = DEFAULT_PORT;
 
     private String uid;
 
@@ -148,12 +152,6 @@ public class BrickDomain implements DeviceDomain {
     @Override
     public int hashCode() {
 
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + hostname.hashCode();
-        result = 31 * result + port;
-        result = 31 * result + uid.hashCode();
-
-        return result;
+        return Objects.hash(id, name, hostname, port, uid);
     }
 }
