@@ -109,10 +109,11 @@ public class BrickService {
 
         BrickDomain brickDomain = brickRepository.findByName(name);
 
-        if (brickDomain == null)
+        if (brickDomain == null) {
             throw new LoadFailedException("Brick " + name + " does not exist.");
-        else
+        } else {
             return brickDomain;
+        }
     }
 
 
@@ -152,13 +153,7 @@ public class BrickService {
 
     public BrickDomain saveDomain(BrickDomain brickDomain) {
 
-//        if (!names.contains(brickDomain.getName())) {
-//            names.add(brickDomain.getName());
-
         return brickRepository.save(brickDomain);
-//        } else {
-//            throw new Exception("Brick's name not unique!"); // TODO: Make pretty
-//        }
     }
 
 

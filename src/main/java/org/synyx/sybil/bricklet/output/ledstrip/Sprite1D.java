@@ -1,8 +1,5 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-
 import org.springframework.hateoas.core.Relation;
 
 import java.util.Arrays;
@@ -15,12 +12,8 @@ import java.util.List;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@NodeEntity
 @Relation(collectionRelation = "sprites")
 public class Sprite1D {
-
-    @GraphId
-    private Long id;
 
     private final short[] red;
     private final short[] green;
@@ -128,19 +121,19 @@ public class Sprite1D {
 
     public short[] getRed() {
 
-        return red;
+        return Arrays.copyOf(red, red.length);
     }
 
 
     public short[] getGreen() {
 
-        return green;
+        return Arrays.copyOf(green, green.length);
     }
 
 
     public short[] getBlue() {
 
-        return blue;
+        return Arrays.copyOf(blue, blue.length);
     }
 
 

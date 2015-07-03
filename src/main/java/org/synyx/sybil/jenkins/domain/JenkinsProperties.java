@@ -2,6 +2,8 @@ package org.synyx.sybil.jenkins.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.Arrays;
+
 
 /**
  * JenkinsProperties.
@@ -20,17 +22,17 @@ public class JenkinsProperties {
 
     public JenkinsProperties(JenkinsJob[] jobs) {
 
-        this.jobs = jobs;
+        this.jobs = Arrays.copyOf(jobs, jobs.length);
     }
 
     public JenkinsJob[] getJobs() {
 
-        return jobs;
+        return Arrays.copyOf(jobs, jobs.length);
     }
 
 
     public void setJobs(JenkinsJob[] jobs) {
 
-        this.jobs = jobs;
+        this.jobs = Arrays.copyOf(jobs, jobs.length);
     }
 }

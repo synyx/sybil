@@ -97,8 +97,6 @@ public class SensorConfigLoader {
 
                     int threshold = 0;
                     double multiplier = 0.1;
-//                    int timeout = 0;
-//                    short pins = 0b0000;
 
                     try {
                         if (sensor.get("threshold") != null) {
@@ -108,14 +106,6 @@ public class SensorConfigLoader {
                         if (sensor.get("multiplier") != null) {
                             multiplier = Double.parseDouble(sensor.get("multiplier").toString());
                         }
-
-//                        if (sensor.get("timeout") != null) {
-//                            timeout = Integer.parseInt(sensor.get("timeout").toString());
-//                        }
-
-//                        if (sensor.get("pins") != null) {
-//                            pins = (short) Integer.parseInt(sensor.get("pins").toString(), 2); // parse from binary
-//                        }
                     } catch (NumberFormatException e) {
                         LOG.error("Failed to load config for sensor {}: options are not properly formatted.", name);
                         HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");

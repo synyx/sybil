@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.tinkerforge.BrickletLEDStrip;
 
+import java.util.Objects;
+
 
 /**
  * Color object for LED strips. Tinkerforge LED Strips expect the colors to be shorts, so this Class has them in the
@@ -42,11 +44,13 @@ public class Color {
 
     private short setColorLimitsAndCastToShort(int primaryColor) {
 
-        if (primaryColor < MIN_PRIMARY_COLOR)
+        if (primaryColor < MIN_PRIMARY_COLOR) {
             return (short) MIN_PRIMARY_COLOR;
+        }
 
-        if (primaryColor > MAX_PRIMARY_COLOR)
+        if (primaryColor > MAX_PRIMARY_COLOR) {
             return (short) MAX_PRIMARY_COLOR;
+        }
 
         return (short) primaryColor;
     }
@@ -101,24 +105,20 @@ public class Color {
 
         Color color = (Color) o;
 
-        return red == color.red && green == color.green && blue == color.blue;
+        return Objects.equals(red, color.red) && Objects.equals(green, color.green) && Objects.equals(blue, color.blue);
     }
 
 
     @Override
     public int hashCode() {
 
-        int result = (int) red;
-        result = 31 * result + (int) green;
-        result = 31 * result + (int) blue;
-
-        return result;
+        return Objects.hash(red, green, blue);
     }
 
 
     @Override
     public String toString() {
 
-        return ("(" + red + ", " + green + ", " + blue + ")");
+        return "(" + red + ", " + green + ", " + blue + ")";
     }
 }

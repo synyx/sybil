@@ -15,6 +15,7 @@ import org.synyx.sybil.jenkins.domain.Status;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -124,11 +125,13 @@ public class LEDStrip implements Bricklet {
 
     private double setBrightnessLimits(double brightness) {
 
-        if (brightness < MIN_BRIGHTNESS)
+        if (brightness < MIN_BRIGHTNESS) {
             return MIN_BRIGHTNESS;
+        }
 
-        if (brightness > MAX_BRIGHTNESS)
+        if (brightness > MAX_BRIGHTNESS) {
             return MAX_BRIGHTNESS;
+        }
 
         return brightness;
     }
@@ -264,15 +267,18 @@ public class LEDStrip implements Bricklet {
     @Override
     public boolean equals(Object o) {
 
-        if (this == o)
+        if (this == o) {
             return true;
+        }
 
-        if (o == null || getClass() != o.getClass())
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         LEDStrip that = (LEDStrip) o;
 
-        return length == that.length && ledStrip.equals(that.ledStrip) && name.equals(that.name);
+        return Objects.equals(length, that.length) && Objects.equals(ledStrip, that.ledStrip)
+            && Objects.equals(name, that.name);
     }
 
 

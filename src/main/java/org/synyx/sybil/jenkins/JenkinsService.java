@@ -113,7 +113,19 @@ public class JenkinsService {
      */
     private void updateStatus(List<SingleStatusOnLEDStrip> ledStrips, String jobName, String jobStatus) {
 
-        StatusInformation statusInformation = null;
+        StatusInformation statusInformation = getStatusInformationFromJobStatus(jobName, jobStatus);
+
+        for (SingleStatusOnLEDStrip ledStrip : ledStrips) {
+            if (isNewStatusHigherThanCurrent(statusInformation.getStatus(), ledStrip.getStatus())) {
+                ledStrip.setStatus(statusInformation);
+            }
+        }
+    }
+
+
+    private StatusInformation getStatusInformationFromJobStatus(String jobName, String jobStatus) {
+
+        StatusInformation statusInformation;
 
         switch (jobStatus) {
             case "red":
@@ -126,17 +138,12 @@ public class JenkinsService {
                 statusInformation = new StatusInformation(jobName, Status.WARNING);
                 break;
 
-            case "blue":
-            case "blue_anime":
+            default:
                 statusInformation = new StatusInformation(jobName, Status.OKAY);
+                break;
         }
 
-        if (statusInformation != null) {
-            for (SingleStatusOnLEDStrip ledStrip : ledStrips) {
-                if (isNewStatusHigherThanCurrent(statusInformation.getStatus(), ledStrip.getStatus()))
-                    ledStrip.setStatus(statusInformation);
-            }
-        }
+        return statusInformation;
     }
 
 

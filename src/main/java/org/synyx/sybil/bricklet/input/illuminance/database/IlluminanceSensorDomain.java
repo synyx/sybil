@@ -107,11 +107,15 @@ public class IlluminanceSensorDomain implements DeviceDomain {
             return false;
         }
 
-        IlluminanceSensorDomain that = (IlluminanceSensorDomain) o;
+        return equalsDetails((IlluminanceSensorDomain) o);
+    }
 
-        return Double.compare(that.multiplier, multiplier) == 0 && threshold == that.threshold
-            && brickDomain.equals(that.brickDomain) && id.equals(that.id) && name.equals(that.name)
-            && outputs.equals(that.outputs) && uid.equals(that.uid);
+
+    private boolean equalsDetails(IlluminanceSensorDomain o) {
+
+        return Double.compare(o.multiplier, multiplier) == 0 && threshold == o.threshold
+            && brickDomain.equals(o.brickDomain) && id.equals(o.id) && name.equals(o.name) && outputs.equals(o.outputs)
+            && uid.equals(o.uid);
     }
 
 
