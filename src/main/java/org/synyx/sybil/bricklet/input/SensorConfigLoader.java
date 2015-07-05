@@ -38,6 +38,7 @@ import java.util.Map;
 public class SensorConfigLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(SensorConfigLoader.class);
+    private static final String CLASS_NAME = "loadSensorConfig";
     private ObjectMapper mapper;
     private String configDir;
     private IlluminanceService illuminanceService;
@@ -67,39 +68,45 @@ public class SensorConfigLoader {
 
                 illuminanceService.deleteAllDomains();
 
-                for (Map sensor : sensors) {
-                    String name = sensor.get("name").toString();
+                registerSensors(sensors);
+            } catch (IOException exception) {
+                LOG.error("Error loading sensors.json: {}", exception);
+                HealthController.setHealth(Status.CRITICAL, CLASS_NAME);
+            }
+        }
+    }
 
-                    if (brickletNameRegistry.contains(name)) {
-                        LOG.error("Failed to load config for Sensor {}: Name is not unique.", name);
-                        HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");
 
-                        break;
-                    }
+    private void registerSensors(List<Map<String, Object>> sensors) {
 
-                    brickletNameRegistry.add(name);
+        for (Map sensor : sensors) {
+            String name = sensor.get("name").toString();
 
-                    String uid = sensor.get("uid").toString();
+            if (brickletNameRegistry.contains(name)) {
+                LOG.error("Failed to load config for Sensor {}: Name is not unique.", name);
+                HealthController.setHealth(Status.CRITICAL, CLASS_NAME);
 
-                    String type = sensor.get("type").toString();
+                break;
+            }
 
-                    int threshold = getThreshold(sensor);
+            brickletNameRegistry.add(name);
 
-                    double multiplier = getMultiplier(sensor);
+            String uid = sensor.get("uid").toString();
 
-                    List<String> outputs = getOutputs(sensor);
+            String type = sensor.get("type").toString();
 
-                    BrickDomain brick = brickService.getDomain(sensor.get("brick").toString());
+            int threshold = getThreshold(sensor);
 
-                    if ("luminance".equals(type)) {
-                        IlluminanceSensorDomain illuminanceSensorDomain = illuminanceService.saveDomain(
-                                new IlluminanceSensorDomain(name, uid, threshold, multiplier, outputs, brick));
-                        illuminanceService.getIlluminanceSensor(illuminanceSensorDomain);
-                    }
-                }
-            } catch (IOException e) {
-                LOG.error("Error loading sensors.json: {}", e.toString());
-                HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");
+            double multiplier = getMultiplier(sensor);
+
+            List<String> outputs = getOutputs(sensor);
+
+            BrickDomain brick = brickService.getDomain(sensor.get("brick").toString());
+
+            if ("luminance".equals(type)) {
+                IlluminanceSensorDomain illuminanceSensorDomain = illuminanceService.saveDomain(
+                        new IlluminanceSensorDomain(name, uid, threshold, multiplier, outputs, brick));
+                illuminanceService.getIlluminanceSensor(illuminanceSensorDomain);
             }
         }
     }
@@ -117,7 +124,7 @@ public class SensorConfigLoader {
             }
         } catch (NumberFormatException e) {
             LOG.error("Failed to load config for sensor {}: options are not properly formatted.", sensor.get("name"));
-            HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");
+            HealthController.setHealth(Status.CRITICAL, CLASS_NAME);
         }
 
         return threshold;
@@ -136,7 +143,7 @@ public class SensorConfigLoader {
             }
         } catch (NumberFormatException e) {
             LOG.error("Failed to load config for sensor {}: options are not properly formatted.", sensor.get("name"));
-            HealthController.setHealth(Status.CRITICAL, "loadSensorConfig");
+            HealthController.setHealth(Status.CRITICAL, CLASS_NAME);
         }
 
         return multiplier;
@@ -148,7 +155,7 @@ public class SensorConfigLoader {
         List<String> outputs = new ArrayList<>();
 
         if (sensor.get("outputs") instanceof ArrayList) {
-            ArrayList rawArrayList = (ArrayList) sensor.get("outputs");
+            List rawArrayList = (ArrayList) sensor.get("outputs");
 
             for (Object output : rawArrayList) {
                 outputs.add(output.toString());

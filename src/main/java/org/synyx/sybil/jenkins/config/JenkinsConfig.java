@@ -149,7 +149,7 @@ public class JenkinsConfig {
         if (mapping.containsKey(server)) {
             return mapping.get(server).get(job);
         } else {
-            return null;
+            return new ArrayList<>();
         }
     }
 
