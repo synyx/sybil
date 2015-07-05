@@ -132,33 +132,40 @@ public class LEDStripService implements BrickletService {
         if (!outputLEDStrips.containsKey(ledStripDomain)) {
             BrickletLEDStrip brickletLEDStrip;
 
-            try {
-                IPConnection ipConnection = brickService.getIPConnection(ledStripDomain.getBrickDomain(), this);
-
-                if (ipConnection != null) {
-                    brickletLEDStrip = new BrickletLEDStrip(ledStripDomain.getUid(), ipConnection);
-                    brickletLEDStrip.setFrameDuration(FRAME_DURATION);
-                    brickletLEDStrip.setChipType(CHIP_TYPE);
-                } else {
-                    LOG.error("Error setting up LED Strip {}: Brick {} not available.", ledStripDomain.getName(),
-                        ledStripDomain.getBrickDomain().getHostname());
-
-                    brickletLEDStrip = null;
-                }
-            } catch (TimeoutException | NotConnectedException e) {
-                LOG.error("Error setting up LED Strip {}: {}", ledStripDomain.getName(), e.toString());
-                brickletLEDStrip = null;
-            }
-
-            if (brickletLEDStrip != null) {
-                LEDStrip ledStrip = new LEDStrip(brickletLEDStrip, ledStripDomain.getLength(),
-                        ledStripDomain.getName());
-
-                outputLEDStrips.put(ledStripDomain, ledStrip);
-            }
+            setupLEDStrip(ledStripDomain);
         }
 
         return outputLEDStrips.get(ledStripDomain);
+    }
+
+
+    private void setupLEDStrip(LEDStripDomain ledStripDomain) {
+
+        BrickletLEDStrip brickletLEDStrip;
+
+        try {
+            IPConnection ipConnection = brickService.getIPConnection(ledStripDomain.getBrickDomain(), this);
+
+            if (ipConnection != null) {
+                brickletLEDStrip = new BrickletLEDStrip(ledStripDomain.getUid(), ipConnection);
+                brickletLEDStrip.setFrameDuration(FRAME_DURATION);
+                brickletLEDStrip.setChipType(CHIP_TYPE);
+            } else {
+                LOG.error("Error setting up LED Strip {}: Brick {} not available.", ledStripDomain.getName(),
+                    ledStripDomain.getBrickDomain().getHostname());
+
+                brickletLEDStrip = null;
+            }
+        } catch (TimeoutException | NotConnectedException e) {
+            LOG.error("Error setting up LED Strip {}: {}", ledStripDomain.getName(), e.toString());
+            brickletLEDStrip = null;
+        }
+
+        if (brickletLEDStrip != null) {
+            LEDStrip ledStrip = new LEDStrip(brickletLEDStrip, ledStripDomain.getLength(), ledStripDomain.getName());
+
+            outputLEDStrips.put(ledStripDomain, ledStrip);
+        }
     }
 
 

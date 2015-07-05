@@ -199,16 +199,22 @@ public class JenkinsService {
             JenkinsProperties jobs = retrieveJobs(server);
 
             if (jobs != null) {
-                for (JenkinsJob job : jobs.getJobs()) {
-                    if (jenkinsConfig.contains(server, job.getName())) {
-                        updateStatus(jenkinsConfig.getSingleStatusOnLEDStrip(server, job.getName()), job.getName(),
-                            job.getColor());
-                    }
-                }
+                iterateOverJobsAndUpdateStatuses(server, jobs);
             }
         }
 
         showStatuses();
+    }
+
+
+    private void iterateOverJobsAndUpdateStatuses(String server, JenkinsProperties jobs) {
+
+        for (JenkinsJob job : jobs.getJobs()) {
+            if (jenkinsConfig.contains(server, job.getName())) {
+                updateStatus(jenkinsConfig.getSingleStatusOnLEDStrip(server, job.getName()), job.getName(),
+                    job.getColor());
+            }
+        }
     }
 
 

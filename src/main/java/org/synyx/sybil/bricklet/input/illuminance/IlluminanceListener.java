@@ -25,6 +25,7 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
 
     private static final Logger LOG = LoggerFactory.getLogger(IlluminanceListener.class);
     private static final int BY_TEN = 10;
+    private static final double ONE_POINT_ZERO = 1.0;
 
     private List<LEDStrip> ledStrips = new ArrayList<>();
     private int threshold;
@@ -58,7 +59,7 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
         // 1 lux is 10 units from the sensor.
         LOG.debug("Lux: {}", illuminance / BY_TEN);
 
-        double brightness = 1.0;
+        double brightness = ONE_POINT_ZERO;
 
         // Threshold is configured in lux!
         if (illuminance < threshold * BY_TEN) {

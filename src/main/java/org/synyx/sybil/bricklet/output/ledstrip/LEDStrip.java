@@ -26,13 +26,14 @@ import java.util.Objects;
 public class LEDStrip implements Bricklet {
 
     private static final Logger LOG = LoggerFactory.getLogger(LEDStrip.class);
+    private static final double ONE_POINT_ZERO = 1.0;
 
     private static final double MAX_BRIGHTNESS = 255.0;
     private static final double MIN_BRIGHTNESS = 0.0;
     private static final short MAX_PRIMARY_COLOR = (short) 255;
     private static final int SIXTEEN = 16;
 
-    private final BrickletLEDStrip ledStrip;
+    private final BrickletLEDStrip brickletLEDStrip;
     private final short[] pixelBufferRed;
     private final short[] pixelBufferGreen;
     private final short[] pixelBufferBlue;
@@ -43,15 +44,15 @@ public class LEDStrip implements Bricklet {
     /**
      * Makes new LEDStrip object.
      *
-     * @param  ledStrip  The LED Strip we want to control.
+     * @param  brickletLEDStrip  The LED Strip we want to control.
      * @param  length  How many LEDs are on the LED Strip.
      * @param  name  The name to address the LED Strip with, always lowercase!
      */
-    public LEDStrip(BrickletLEDStrip ledStrip, int length, String name) {
+    public LEDStrip(BrickletLEDStrip brickletLEDStrip, int length, String name) {
 
         this.name = name.toLowerCase();
-        brightness = 1.0;
-        this.ledStrip = ledStrip;
+        brightness = ONE_POINT_ZERO;
+        this.brickletLEDStrip = brickletLEDStrip;
         this.length = length;
 
         // make sure the length is a multiple of sixteen
@@ -154,7 +155,7 @@ public class LEDStrip implements Bricklet {
         Color color = null;
 
         try {
-            color = Color.colorFromLedStrip(ledStrip.getRGBValues(positionOnLedStrip, (short) 1));
+            color = Color.colorFromLedStrip(brickletLEDStrip.getRGBValues(positionOnLedStrip, (short) 1));
             setHealthOkay();
         } catch (TimeoutException | NotConnectedException exception) {
             logConnectionError(exception);
@@ -199,7 +200,7 @@ public class LEDStrip implements Bricklet {
             blueArray = applyBrightness(blueArray);
 
             try {
-                ledStrip.setRGBValues(positionOnLedStrip, (short) SIXTEEN, blueArray, redArray, greenArray);
+                brickletLEDStrip.setRGBValues(positionOnLedStrip, (short) SIXTEEN, blueArray, redArray, greenArray);
                 setHealthOkay();
             } catch (TimeoutException | NotConnectedException exception) {
                 logConnectionError(exception);
@@ -279,7 +280,7 @@ public class LEDStrip implements Bricklet {
 
         LEDStrip that = (LEDStrip) o;
 
-        return Objects.equals(length, that.length) && Objects.equals(ledStrip, that.ledStrip)
+        return Objects.equals(length, that.length) && Objects.equals(brickletLEDStrip, that.brickletLEDStrip)
             && Objects.equals(name, that.name);
     }
 
@@ -287,6 +288,6 @@ public class LEDStrip implements Bricklet {
     @Override
     public int hashCode() {
 
-        return Objects.hash(ledStrip, length, name);
+        return Objects.hash(brickletLEDStrip, length, name);
     }
 }

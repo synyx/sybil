@@ -67,8 +67,8 @@ public class BrickConfigLoader {
                 brickService.deleteAllDomains();
 
                 brickService.saveDomains(bricks);
-            } catch (IOException e) {
-                LOG.error("Error loading bricks.json: {}", e.toString());
+            } catch (IOException exception) {
+                LOG.error("Error loading bricks.json: {}", exception);
                 HealthController.setHealth(Status.CRITICAL, "loadBricksConfig");
             }
         }
@@ -83,15 +83,21 @@ public class BrickConfigLoader {
             try {
                 List<BrickDomain> bricks = brickService.getAllDomains();
 
-                for (BrickDomain brick : bricks) {
-                    resetBrick(brick);
-                }
+                loopOverBricksAndResetEachOne(bricks);
 
                 brickService.disconnectAll();
             } catch (TinkerforgeException exception) {
-                LOG.error("Error resetting bricks: {}", exception.toString());
+                LOG.error("Error resetting bricks: {}", exception);
                 HealthController.setHealth(Status.CRITICAL, "resetBricks");
             }
+        }
+    }
+
+
+    private void loopOverBricksAndResetEachOne(List<BrickDomain> bricks) throws TinkerforgeException {
+
+        for (BrickDomain brick : bricks) {
+            resetBrick(brick);
         }
     }
 
@@ -115,7 +121,8 @@ public class BrickConfigLoader {
         while (isConnectionEstablished == null) {
             try {
                 isConnectionEstablished = brickMaster.getChipTemperature();
-            } catch (TimeoutException e) {
+            } catch (TimeoutException e) { // NOSONAR Exception doesn't need to be logged, as it is simply for timing.
+
                 if (isTimeoutReached(timeoutTime)) {
                     LOG.error("Error resetting brick {}: Timeout of {}s was reached.", name, timeoutLengthInSeconds);
                     HealthController.setHealth(Status.CRITICAL, "waitForBrickReset");

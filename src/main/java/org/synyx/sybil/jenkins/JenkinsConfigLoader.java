@@ -84,14 +84,20 @@ public class JenkinsConfigLoader {
                         new TypeReference<List<Map<String, Object>>>() {
                         });
 
-                for (Map server : servers) {
-                    jenkinsConfig.putServer(server.get("url").toString(), server.get("user").toString(),
-                        server.get("key").toString());
-                }
+                iterateOverServersAndAddThemToConfig(servers);
             } catch (IOException e) {
                 LOG.error("Error loading jenkinsservers.json: {}", e.toString());
                 HealthController.setHealth(Status.CRITICAL, "loadJenkinsServers");
             }
+        }
+    }
+
+
+    private void iterateOverServersAndAddThemToConfig(List<Map<String, Object>> servers) {
+
+        for (Map server : servers) {
+            jenkinsConfig.putServer(server.get("url").toString(), server.get("user").toString(),
+                server.get("key").toString());
         }
     }
 
@@ -114,47 +120,61 @@ public class JenkinsConfigLoader {
 
         LOG.info("Loading Jenkins configuration");
 
-        if (HealthController.getHealth() == Status.OKAY) {
-            try {
-                Map<String, List<Map<String, Object>>> jenkinsConfigData = mapper.readValue(new File(
-                            configDirectory + file), new TypeReference<Map<String, List<Map<String, Object>>>>() {
-                        });
+        if (HealthController.getHealth() != Status.OKAY) {
+            return;
+        }
 
-                jenkinsConfig.reset();
+        try {
+            Map<String, List<Map<String, Object>>> jenkinsConfigData = mapper.readValue(new File(
+                        configDirectory + file), new TypeReference<Map<String, List<Map<String, Object>>>>() {
+                    });
 
-                HealthController.setHealth(Status.OKAY, "loadJenkinsConfig");
+            jenkinsConfig.reset();
 
-                for (String server : jenkinsConfigData.keySet()) {
-                    for (Map line : jenkinsConfigData.get(server)) {
-                        String jobName = line.get("name").toString();
-                        String ledstrip = line.get("ledstrip").toString();
+            HealthController.setHealth(Status.OKAY, "loadJenkinsConfig");
 
-                        LEDStripDomain ledStripDomain = ledStripService.getDomain(ledstrip.toLowerCase());
+            iterateOverServersAndConfigureLEDStrips(jenkinsConfigData);
+        } catch (IOException e) {
+            LOG.error("Error loading jenkins.json: {}", e.toString());
+            HealthController.setHealth(Status.WARNING, "loadJenkinsConfig");
+        }
+    }
 
-                        LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 
-                        if (ledStrip == null) {
-                            LOG.warn("Ledstrip {} does not exist.", ledstrip);
+    private void iterateOverServersAndConfigureLEDStrips(Map<String, List<Map<String, Object>>> jenkinsConfigData) {
 
-                            if (HealthController.getHealth() != Status.CRITICAL) {
-                                HealthController.setHealth(Status.WARNING, "loadJenkinsConfig");
-                            }
-                        } else {
-                            Map<String, Color> colors = ledStripCustomColors.get(ledstrip);
+        for (String server : jenkinsConfigData.keySet()) {
+            for (Map line : jenkinsConfigData.get(server)) {
+                String jobName = line.get("name").toString();
+                String ledstrip = line.get("ledstrip").toString();
 
-                            if (colors == null) {
-                                jenkinsConfig.put(server, jobName, singleStatusOnLEDStripRegistry.get(ledStrip));
-                            } else {
-                                jenkinsConfig.put(server, jobName,
-                                    singleStatusOnLEDStripRegistry.get(ledStrip, colors.get("okay"),
-                                        colors.get("warning"), colors.get("critical")));
-                            }
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                LOG.error("Error loading jenkins.json: {}", e.toString());
+                LEDStripDomain ledStripDomain = ledStripService.getDomain(ledstrip.toLowerCase());
+
+                LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
+
+                setupLEDStrip(server, jobName, ledstrip, ledStrip);
+            }
+        }
+    }
+
+
+    private void setupLEDStrip(String server, String jobName, String ledstrip, LEDStrip ledStrip) {
+
+        if (ledStrip == null) {
+            LOG.warn("Ledstrip {} does not exist.", ledstrip);
+
+            if (HealthController.getHealth() != Status.CRITICAL) {
                 HealthController.setHealth(Status.WARNING, "loadJenkinsConfig");
+            }
+        } else {
+            Map<String, Color> colors = ledStripCustomColors.get(ledstrip);
+
+            if (colors == null) {
+                jenkinsConfig.put(server, jobName, singleStatusOnLEDStripRegistry.get(ledStrip));
+            } else {
+                jenkinsConfig.put(server, jobName,
+                    singleStatusOnLEDStripRegistry.get(ledStrip, colors.get("okay"), colors.get("warning"),
+                        colors.get("critical")));
             }
         }
     }

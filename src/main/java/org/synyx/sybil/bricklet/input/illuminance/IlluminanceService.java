@@ -138,37 +138,43 @@ public class IlluminanceService implements BrickletService {
         if (!illuminanceSensors.containsKey(illuminanceSensorDomain)) {
             BrickletAmbientLight brickletAmbientLight;
 
-            try {
-                IPConnection ipConnection = brickService.getIPConnection(illuminanceSensorDomain.getBrickDomain(),
-                        this);
-
-                if (ipConnection != null) {
-                    brickletAmbientLight = new BrickletAmbientLight(illuminanceSensorDomain.getUid(), ipConnection);
-
-                    brickletAmbientLight.setIlluminanceCallbackPeriod(CALLBACK_PERIOD);
-
-                    brickletAmbientLight.addIlluminanceListener(new IlluminanceListener(illuminanceSensorDomain,
-                            ledStripService));
-                } else {
-                    LOG.error("Error setting up illuminance sensor {}: Brick {} not available.",
-                        illuminanceSensorDomain.getName(), illuminanceSensorDomain.getBrickDomain().getHostname());
-
-                    brickletAmbientLight = null;
-                }
-            } catch (TimeoutException | NotConnectedException e) {
-                LOG.error("Error setting up illuminance sensor {}: {}", illuminanceSensorDomain.getName(),
-                    e.toString());
-                brickletAmbientLight = null;
-            }
-
-            if (brickletAmbientLight != null) {
-                illuminanceSensors.put(illuminanceSensorDomain, brickletAmbientLight);
-            }
+            setupIlluminanceSensor(illuminanceSensorDomain);
         }
 
         LOG.debug("Finished setting up sensor {}.", illuminanceSensorDomain.getName());
 
         return illuminanceSensors.get(illuminanceSensorDomain);
+    }
+
+
+    private void setupIlluminanceSensor(IlluminanceSensorDomain illuminanceSensorDomain) {
+
+        BrickletAmbientLight brickletAmbientLight;
+
+        try {
+            IPConnection ipConnection = brickService.getIPConnection(illuminanceSensorDomain.getBrickDomain(), this);
+
+            if (ipConnection == null) {
+                LOG.error("Error setting up illuminance sensor {}: Brick {} not available.",
+                    illuminanceSensorDomain.getName(), illuminanceSensorDomain.getBrickDomain().getHostname());
+
+                brickletAmbientLight = null;
+            } else {
+                brickletAmbientLight = new BrickletAmbientLight(illuminanceSensorDomain.getUid(), ipConnection);
+
+                brickletAmbientLight.setIlluminanceCallbackPeriod(CALLBACK_PERIOD);
+
+                brickletAmbientLight.addIlluminanceListener(new IlluminanceListener(illuminanceSensorDomain,
+                        ledStripService));
+            }
+        } catch (TimeoutException | NotConnectedException e) {
+            LOG.error("Error setting up illuminance sensor {}: {}", illuminanceSensorDomain.getName(), e.toString());
+            brickletAmbientLight = null;
+        }
+
+        if (brickletAmbientLight != null) {
+            illuminanceSensors.put(illuminanceSensorDomain, brickletAmbientLight);
+        }
     }
 
 
