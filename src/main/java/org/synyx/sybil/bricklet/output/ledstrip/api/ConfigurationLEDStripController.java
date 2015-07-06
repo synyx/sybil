@@ -16,9 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.synyx.sybil.api.PatchResource;
-import org.synyx.sybil.api.SinglePatchResource;
-import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
@@ -140,106 +137,6 @@ public class ConfigurationLEDStripController {
         display.add(self);
 
         return display;
-    }
-
-
-    @ResponseBody
-    @RequestMapping(value = "/{name}/display", method = RequestMethod.PATCH, produces = { "application/hal+json" })
-    public DisplayResource updateDisplay(@PathVariable String name, @RequestBody PatchResource input) throws Exception {
-
-        LEDStripDomain ledStripDomain = ledStripService.getDomain(name);
-        LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
-
-        handlePatches(input, ledStrip);
-
-        Link self = linkTo(methodOn(ConfigurationLEDStripController.class).getDisplay(ledStripDomain.getName()))
-            .withSelfRel();
-
-        DisplayResource display = new DisplayResource();
-
-        display.add(self);
-        display.setPixels(ledStrip.getPixelBuffer());
-        display.setBrightness(ledStrip.getBrightness());
-
-        return display;
-    }
-
-
-    private void handlePatches(PatchResource input, LEDStrip ledStrip) throws Exception {
-
-        for (SinglePatchResource patch : input.getPatches()) {
-            switch (patch.getAction()) {
-                case "set":
-                    switch (patch.getTarget()) {
-                        case "brightness":
-                            ledStrip.setBrightness(Double.parseDouble(patch.getValues().get(0)));
-                            break;
-
-                        case "fill": {
-                            List<String> values = patch.getValues();
-                            int red = Integer.parseInt(values.get(0));
-                            int green = Integer.parseInt(values.get(1));
-                            int blue = Integer.parseInt(values.get(2));
-                            Color color = new Color(red, green, blue);
-                            ledStrip.setFill(color);
-                            break;
-                        }
-
-                        case "pixel": {
-                            int index = Integer.parseInt(patch.getValues().get(0));
-                            int red = Integer.parseInt(patch.getValues().get(1));
-                            int green = Integer.parseInt(patch.getValues().get(2));
-                            int blue = Integer.parseInt(patch.getValues().get(3));
-                            Color color = new Color(red, green, blue);
-
-                            ledStrip.setPixelColor(index, color);
-                            break;
-                        }
-
-                        default:
-                            throw new Exception("Unknown target for action set");
-                    }
-
-                    break;
-
-                case "update":
-                    switch (patch.getTarget()) {
-                        case "display":
-                            ledStrip.updateDisplay();
-                            break;
-
-                        default:
-                            throw new Exception("Unknown target for action update");
-                    }
-
-                    break;
-
-                case "move":
-                    switch (patch.getTarget()) {
-                        case "pixels": {
-                            Sprite1D pixelbuffer = new Sprite1D(ledStrip.getLength(), "pixelbuffer",
-                                    ledStrip.getPixelBuffer());
-
-                            int offset = Integer.parseInt(patch.getValues().get(0));
-
-                            if (offset < 0) {
-                                offset = ledStrip.getLength() + offset;
-                            }
-
-                            if (offset > ledStrip.getLength()) {
-                                offset = offset - ledStrip.getLength();
-                            }
-
-                            ledStrip.drawSpriteWithWrap(pixelbuffer, offset);
-                        }
-                    }
-
-                    break;
-
-                default:
-                    throw new Exception("Unknown action");
-            }
-        }
     }
 
 
