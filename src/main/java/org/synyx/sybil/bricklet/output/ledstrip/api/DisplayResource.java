@@ -15,7 +15,6 @@ import java.util.List;
 public class DisplayResource extends ResourceSupport {
 
     private List<Color> pixels;
-    private Double brightness;
 
     public List<Color> getPixels() {
 
@@ -26,17 +25,5 @@ public class DisplayResource extends ResourceSupport {
     public void setPixels(List<Color> pixels) {
 
         this.pixels = pixels;
-    }
-
-
-    public Double getBrightness() {
-
-        return brightness;
-    }
-
-
-    public void setBrightness(Double brightness) {
-
-        this.brightness = brightness;
     }
 }

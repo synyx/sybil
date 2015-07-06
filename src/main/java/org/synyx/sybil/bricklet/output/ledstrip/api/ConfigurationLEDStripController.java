@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
@@ -103,7 +104,6 @@ public class ConfigurationLEDStripController {
 
         display.add(self);
         display.setPixels(ledStrip.getPixelBuffer());
-        display.setBrightness(ledStrip.getBrightness());
 
         return display;
     }
@@ -116,20 +116,13 @@ public class ConfigurationLEDStripController {
         LEDStripDomain ledStripDomain = ledStripService.getDomain(name);
         LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 
-        if (display.getPixels() != null && display.getPixels().size() > 0) {
+        if (wasLoaded(display.getPixels())) {
             Sprite1D pixels = new Sprite1D(display.getPixels().size(), "setDisplay", display.getPixels());
             ledStrip.drawSprite(pixels, 0);
+            ledStrip.updateDisplay();
         }
 
         display.setPixels(ledStrip.getPixelBuffer());
-
-        if (display.getBrightness() != null) {
-            ledStrip.setBrightness(display.getBrightness());
-        } else {
-            display.setBrightness(1.0);
-        }
-
-        ledStrip.updateDisplay();
 
         Link self = linkTo(methodOn(ConfigurationLEDStripController.class).getDisplay(ledStripDomain.getName()))
             .withSelfRel();
@@ -137,6 +130,12 @@ public class ConfigurationLEDStripController {
         display.add(self);
 
         return display;
+    }
+
+
+    private boolean wasLoaded(List<Color> pixels) {
+
+        return pixels != null && !pixels.isEmpty();
     }
 
 
