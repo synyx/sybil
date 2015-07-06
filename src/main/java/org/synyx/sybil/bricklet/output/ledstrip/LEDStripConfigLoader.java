@@ -17,7 +17,7 @@ import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.bricklet.BrickletNameService;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.io.File;
@@ -120,7 +120,7 @@ public class LEDStripConfigLoader {
 
         brickletNameRegistry.add(name);
 
-        ledStripService.saveDomain(new LEDStripDomain(name, uid, length, brick));
+        ledStripService.saveDomain(new OLdLEDStripDomain(name, uid, length, brick));
 
         registerCustomColors(ledstrip);
     }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface LEDStripRepository extends GraphRepository<LEDStripDomain> {
+public interface LEDStripRepository extends GraphRepository<OLdLEDStripDomain> {
 
-    LEDStripDomain findByName(String name);
+    OLdLEDStripDomain findByName(String name);
 }

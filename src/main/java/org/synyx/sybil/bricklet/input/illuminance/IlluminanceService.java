@@ -136,8 +136,6 @@ public class IlluminanceService implements BrickletService {
         LOG.debug("Setting up sensor {}.", illuminanceSensorDomain.getName());
 
         if (!illuminanceSensors.containsKey(illuminanceSensorDomain)) {
-            BrickletAmbientLight brickletAmbientLight;
-
             setupIlluminanceSensor(illuminanceSensorDomain);
         }
 

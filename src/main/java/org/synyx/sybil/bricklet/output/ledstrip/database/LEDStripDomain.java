@@ -1,18 +1,8 @@
 package org.synyx.sybil.bricklet.output.ledstrip.database;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
-
 import org.springframework.hateoas.core.Relation;
 
 import org.synyx.sybil.DeviceDomain;
-import org.synyx.sybil.brick.database.BrickDomain;
-
-import java.util.Objects;
 
 
 /**
@@ -21,12 +11,8 @@ import java.util.Objects;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@NodeEntity
 @Relation(collectionRelation = "ledstrips")
 public class LEDStripDomain implements DeviceDomain {
-
-    @GraphId
-    private Long id;
 
     private String name;
 
@@ -34,10 +20,7 @@ public class LEDStripDomain implements DeviceDomain {
 
     private int length;
 
-    @Fetch
-    @RelatedTo(type = "IS_PART_OF")
-    @JsonProperty("brick")
-    private BrickDomain brickDomain;
+    private String brick;
 
     protected LEDStripDomain() {
 
@@ -51,44 +34,15 @@ public class LEDStripDomain implements DeviceDomain {
      * @param  name  The name to address the Bricklet with, always lowercase!
      * @param  uid  The Bricklet's UID
      * @param  length  The length, i.e. the number of LEDs
-     * @param  brickDomain  The domain associated with the connected Brick
+     * @param  brick  The name of the connected Brick
      */
-    public LEDStripDomain(String name, String uid, int length, BrickDomain brickDomain) {
+    public LEDStripDomain(String name, String uid, int length, String brick) {
 
         this.name = name.toLowerCase();
         this.uid = uid;
         this.length = length;
-        this.brickDomain = brickDomain;
+        this.brick = brick;
     }
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        return areFieldsEqual((LEDStripDomain) o);
-    }
-
-
-    private boolean areFieldsEqual(LEDStripDomain o) {
-
-        return length == o.length && brickDomain.equals(o.brickDomain) && id.equals(o.id) && name.equals(o.name)
-            && uid.equals(o.uid);
-    }
-
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, name, uid, length, brickDomain);
-    }
-
 
     @Override
     public String getName() {
@@ -110,8 +64,8 @@ public class LEDStripDomain implements DeviceDomain {
     }
 
 
-    public BrickDomain getBrickDomain() {
+    public String getBrick() {
 
-        return brickDomain;
+        return brick;
     }
 }

@@ -9,7 +9,7 @@ import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
         multiplier = sensor.getMultiplier();
 
         for (String output : sensor.getOutputs()) {
-            LEDStripDomain domain = ledStripService.getDomain(output);
+            OLdLEDStripDomain domain = ledStripService.getDomain(output);
 
             if (domain != null) {
                 LEDStrip ledStrip = ledStripService.getLEDStrip(domain);

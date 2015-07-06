@@ -20,7 +20,7 @@ import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,14 +53,14 @@ public class ConfigurationLEDStripController {
     @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
     public Resources<LEDStripResource> ledstrips() {
 
-        List<LEDStripDomain> ledStrips = ledStripService.getAllDomains();
+        List<OLdLEDStripDomain> ledStrips = ledStripService.getAllDomains();
         List<LEDStripResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
         Link self = linkTo(ConfigurationLEDStripController.class).withSelfRel();
         links.add(self);
 
-        for (LEDStripDomain ledStripDomain : ledStrips) {
+        for (OLdLEDStripDomain ledStripDomain : ledStrips) {
             self = linkTo(methodOn(ConfigurationLEDStripController.class).ledStrip(ledStripDomain.getName()))
                 .withSelfRel();
 
@@ -77,7 +77,7 @@ public class ConfigurationLEDStripController {
     @RequestMapping(value = "/{name}", method = RequestMethod.GET, produces = { "application/hal+json" })
     public LEDStripResource ledStrip(@PathVariable String name) {
 
-        LEDStripDomain ledStripDomain = ledStripService.getDomain(name);
+        OLdLEDStripDomain ledStripDomain = ledStripService.getDomain(name);
 
         List<Link> links = new ArrayList<>();
 
@@ -94,7 +94,7 @@ public class ConfigurationLEDStripController {
     @RequestMapping(value = "/{name}/display", method = RequestMethod.GET, produces = { "application/hal+json" })
     public DisplayResource getDisplay(@PathVariable String name) {
 
-        LEDStripDomain ledStripDomain = ledStripService.getDomain(name);
+        OLdLEDStripDomain ledStripDomain = ledStripService.getDomain(name);
         LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 
         Link self = linkTo(methodOn(ConfigurationLEDStripController.class).getDisplay(ledStripDomain.getName()))
@@ -113,7 +113,7 @@ public class ConfigurationLEDStripController {
     @RequestMapping(value = "/{name}/display", method = RequestMethod.PUT, produces = { "application/hal+json" })
     public DisplayResource setDisplay(@PathVariable String name, @RequestBody DisplayResource display) {
 
-        LEDStripDomain ledStripDomain = ledStripService.getDomain(name);
+        OLdLEDStripDomain ledStripDomain = ledStripService.getDomain(name);
         LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 
         if (wasLoaded(display.getPixels())) {

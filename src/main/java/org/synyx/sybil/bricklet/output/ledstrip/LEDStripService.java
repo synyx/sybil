@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.bricklet.BrickletService;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public class LEDStripService implements BrickletService {
     private static final int FRAME_DURATION = 10;
     private static final int CHIP_TYPE = 2812;
 
-    private Map<LEDStripDomain, LEDStrip> outputLEDStrips = new HashMap<>();
+    private Map<OLdLEDStripDomain, LEDStrip> outputLEDStrips = new HashMap<>();
     private BrickService brickService;
     private LEDStripRepository ledStripRepository;
     private GraphDatabaseService graphDatabaseService;
@@ -69,7 +69,7 @@ public class LEDStripService implements BrickletService {
      *
      * @return  the domain
      */
-    public LEDStripDomain getDomain(String name) {
+    public OLdLEDStripDomain getDomain(String name) {
 
         return ledStripRepository.findByName(name);
     }
@@ -82,7 +82,7 @@ public class LEDStripService implements BrickletService {
      *
      * @return  the illuminance sensor domain
      */
-    public LEDStripDomain saveDomain(LEDStripDomain ledStripDomain) {
+    public OLdLEDStripDomain saveDomain(OLdLEDStripDomain ledStripDomain) {
 
         return ledStripRepository.save(ledStripDomain);
     }
@@ -93,9 +93,9 @@ public class LEDStripService implements BrickletService {
      *
      * @return  the all domains
      */
-    public List<LEDStripDomain> getAllDomains() {
+    public List<OLdLEDStripDomain> getAllDomains() {
 
-        List<LEDStripDomain> ledStripDomains;
+        List<OLdLEDStripDomain> ledStripDomains;
 
         try(Transaction tx = graphDatabaseService.beginTx()) {
             ledStripDomains = new ArrayList<>(IteratorUtil.asCollection(ledStripRepository.findAll()));
@@ -123,15 +123,13 @@ public class LEDStripService implements BrickletService {
      *
      * @return  The actual LEDStrip object.
      */
-    public LEDStrip getLEDStrip(LEDStripDomain ledStripDomain) {
+    public LEDStrip getLEDStrip(OLdLEDStripDomain ledStripDomain) {
 
         if (ledStripDomain == null) {
             return null;
         }
 
         if (!outputLEDStrips.containsKey(ledStripDomain)) {
-            BrickletLEDStrip brickletLEDStrip;
-
             setupLEDStrip(ledStripDomain);
         }
 
@@ -139,7 +137,7 @@ public class LEDStripService implements BrickletService {
     }
 
 
-    private void setupLEDStrip(LEDStripDomain ledStripDomain) {
+    private void setupLEDStrip(OLdLEDStripDomain ledStripDomain) {
 
         BrickletLEDStrip brickletLEDStrip;
 

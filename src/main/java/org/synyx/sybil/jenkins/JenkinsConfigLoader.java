@@ -18,7 +18,7 @@ import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripCustomColors;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStripRegistry;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 import org.synyx.sybil.jenkins.config.JenkinsConfig;
 import org.synyx.sybil.jenkins.domain.Status;
 
@@ -148,7 +148,7 @@ public class JenkinsConfigLoader {
                 String jobName = line.get("name").toString();
                 String ledstrip = line.get("ledstrip").toString();
 
-                LEDStripDomain ledStripDomain = ledStripService.getDomain(ledstrip.toLowerCase());
+                OLdLEDStripDomain ledStripDomain = ledStripService.getDomain(ledstrip.toLowerCase());
 
                 LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 

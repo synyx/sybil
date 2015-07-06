@@ -22,7 +22,7 @@ import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 import org.synyx.sybil.jenkins.config.JenkinsConfig;
 import org.synyx.sybil.jenkins.domain.JenkinsJob;
 import org.synyx.sybil.jenkins.domain.JenkinsProperties;
@@ -144,9 +144,9 @@ public class JenkinsService {
     @PreDestroy
     public void destroy() {
 
-        List<LEDStripDomain> ledStripDomains = ledStripService.getAllDomains();
+        List<OLdLEDStripDomain> ledStripDomains = ledStripService.getAllDomains();
 
-        for (LEDStripDomain ledStripDomain : ledStripDomains) {
+        for (OLdLEDStripDomain ledStripDomain : ledStripDomains) {
             LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
             ledStrip.setFill(Color.BLACK);
             ledStrip.updateDisplay();

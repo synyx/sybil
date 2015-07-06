@@ -15,7 +15,7 @@ import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class IlluminanceSensorUnitTest {
 
         BrickDomain test1 = new BrickDomain("localhost", "6dLj52", 14223);
 
-        LEDStripDomain testOne = new LEDStripDomain("testone", "abc", 30, test1);
+        OLdLEDStripDomain testOne = new OLdLEDStripDomain("testone", "abc", 30, test1);
 
         Mockito.when(ledStripService.getDomain("testone")).thenReturn(testOne);
 
