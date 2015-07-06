@@ -72,10 +72,14 @@ public class LEDStripDomain implements DeviceDomain {
             return false;
         }
 
-        LEDStripDomain that = (LEDStripDomain) o;
+        return areFieldsEqual((LEDStripDomain) o);
+    }
 
-        return length == that.length && brickDomain.equals(that.brickDomain) && id.equals(that.id)
-            && name.equals(that.name) && uid.equals(that.uid);
+
+    private boolean areFieldsEqual(LEDStripDomain o) {
+
+        return length == o.length && brickDomain.equals(o.brickDomain) && id.equals(o.id) && name.equals(o.name)
+            && uid.equals(o.uid);
     }
 
 

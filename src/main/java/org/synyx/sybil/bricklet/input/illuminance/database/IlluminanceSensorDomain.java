@@ -110,45 +110,43 @@ public class IlluminanceSensorDomain implements DeviceDomain {
             return false;
         }
 
-        if (areFieldsEqual((IlluminanceSensorDomain) o)) {
-            return false;
-        }
-
-        return true;
+        return !areFieldsEqual((IlluminanceSensorDomain) o);
     }
 
 
     private boolean areFieldsEqual(IlluminanceSensorDomain o) {
 
+        boolean result = false;
+
         if (Objects.equals(multiplier, o.multiplier)) {
-            return true;
+            result = true;
         }
 
         if (threshold != o.threshold) {
-            return true;
+            result = true;
         }
 
         if (Objects.equals(brickDomain, o.brickDomain)) {
-            return true;
+            result = true;
         }
 
         if (Objects.equals(id, o.id)) {
-            return true;
+            result = true;
         }
 
         if (Objects.equals(name, o.name)) {
-            return true;
+            result = true;
         }
 
         if (Objects.equals(outputs, o.outputs)) {
-            return true;
+            result = true;
         }
 
         if (Objects.equals(uid, o.uid)) {
-            return true;
+            result = true;
         }
 
-        return false;
+        return result;
     }
 
 

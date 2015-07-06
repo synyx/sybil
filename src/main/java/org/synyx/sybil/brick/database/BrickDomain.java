@@ -142,10 +142,14 @@ public class BrickDomain implements DeviceDomain {
             return false;
         }
 
-        BrickDomain that = (BrickDomain) o;
+        return areFieldsEqual((BrickDomain) o);
+    }
 
-        return port == that.port && hostname.equals(that.hostname) && id.equals(that.id) && name.equals(that.name)
-            && uid.equals(that.uid);
+
+    private boolean areFieldsEqual(BrickDomain o) {
+
+        return port == o.port && hostname.equals(o.hostname) && id.equals(o.id) && name.equals(o.name)
+            && uid.equals(o.uid);
     }
 
 
