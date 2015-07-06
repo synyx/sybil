@@ -8,14 +8,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 
-public class ColorUnitTest {
+public class OldColorUnitTest {
 
-    private Color color;
+    private OldColor color;
 
     @Before
     public void setup() {
 
-        color = new Color(1024, 32, -50);
+        color = new OldColor(1024, 32, -50);
     }
 
 

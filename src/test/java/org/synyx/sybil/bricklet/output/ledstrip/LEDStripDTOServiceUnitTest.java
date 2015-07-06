@@ -75,7 +75,7 @@ public class LEDStripDTOServiceUnitTest {
 
         LEDStripDTO ledStripDTO = sut.getDTO("two");
 
-        assertThat(ledStripDTO.domain, is(ledStripDomains.get(1)));
+        assertThat(ledStripDTO.getDomain(), is(ledStripDomains.get(1)));
     }
 
 

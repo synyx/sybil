@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.api.HealthController;
-import org.synyx.sybil.brick.BrickService;
+import org.synyx.sybil.brick.OldBrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.bricklet.BrickletNameService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
@@ -42,14 +42,14 @@ public class LEDStripConfigLoader {
     private String configDir;
     private ObjectMapper mapper;
     private BrickletNameService brickletNameRegistry;
-    private LEDStripService ledStripService;
-    private BrickService brickService;
+    private OldLEDStripService ledStripService;
+    private OldBrickService brickService;
     private LEDStripCustomColors ledStripCustomColors;
 
     @Autowired
     public LEDStripConfigLoader(ObjectMapper mapper, BrickletNameService brickletNameRegistry,
-        BrickService brickService, LEDStripCustomColors ledStripCustomColors, Environment environment,
-        LEDStripService ledStripRepository) {
+        OldBrickService brickService, LEDStripCustomColors ledStripCustomColors, Environment environment,
+        OldLEDStripService ledStripRepository) {
 
         this.mapper = mapper;
         this.brickletNameRegistry = brickletNameRegistry;
@@ -158,7 +158,7 @@ public class LEDStripConfigLoader {
 
         if (hasCustomColors(ledstrip)) {
             String name = getString(ledstrip, "name");
-            Map<String, Color> colors = new HashMap<>();
+            Map<String, OldColor> colors = new HashMap<>();
 
             for (String status : new String[] { "okay", "warning", "critical" }) {
                 colors.put(status, createCustomColor(ledstrip, status));
@@ -175,12 +175,12 @@ public class LEDStripConfigLoader {
     }
 
 
-    private Color createCustomColor(Map ledstrip, String status) {
+    private OldColor createCustomColor(Map ledstrip, String status) {
 
         int red = getInt(ledstrip, status + "Red");
         int green = getInt(ledstrip, status + "Green");
         int blue = getInt(ledstrip, status + "Blue");
 
-        return new Color(red, green, blue);
+        return new OldColor(red, green, blue);
     }
 }

@@ -1,14 +1,8 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
 import com.tinkerforge.BrickletLEDStrip;
-import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
-
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-
-import org.neo4j.helpers.collection.IteratorUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.bricklet.BrickletService;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
+import org.synyx.sybil.AttributeEmptyException;
+import org.synyx.sybil.bricklet.BrickletProvider;
+import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
+import org.synyx.sybil.jenkins.domain.Status;
+import org.synyx.sybil.jenkins.domain.StatusInformation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 
 
@@ -35,144 +29,118 @@ import java.util.Map;
  */
 
 @Service
-public class LEDStripService implements BrickletService {
+public class LEDStripService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LEDStripService.class);
-    private static final int FRAME_DURATION = 10;
-    private static final int CHIP_TYPE = 2812;
 
-    private Map<OLdLEDStripDomain, LEDStrip> outputLEDStrips = new HashMap<>();
-    private BrickService brickService;
-    private LEDStripRepository ledStripRepository;
-    private GraphDatabaseService graphDatabaseService;
+    private static final int SIXTEEN = 16;
+    private static final short MAX_PRIMARY_COLOR = (short) 255;
 
-    /**
-     * Instantiates a new LEDStrip registry.
-     *
-     * @param  brickService  The brick registry
-     * @param  ledStripRepository  LED strip database repository
-     * @param  graphDatabaseService  Neo4j service
-     */
+    BrickletProvider brickletProvider;
+
     @Autowired
-    public LEDStripService(BrickService brickService, LEDStripRepository ledStripRepository,
-        GraphDatabaseService graphDatabaseService) {
+    public LEDStripService(BrickletProvider brickletProvider) {
 
-        this.brickService = brickService;
-        this.ledStripRepository = ledStripRepository;
-        this.graphDatabaseService = graphDatabaseService;
+        this.brickletProvider = brickletProvider;
     }
 
-    /**
-     * Gets domain.
-     *
-     * @param  name  the name
-     *
-     * @return  the domain
-     */
-    public OLdLEDStripDomain getDomain(String name) {
+    public void handleStatus(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
+        AttributeEmptyException {
 
-        return ledStripRepository.findByName(name);
-    }
+        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
+        StatusInformation statusInformation = ledStripDTO.getStatus();
 
+        Sprite1D sprite1D = new Sprite1D(ledStripDomain.getLength(), statusInformation.getSource());
+        sprite1D.setFill(getColorFromStatus(ledStripDomain, statusInformation));
 
-    /**
-     * Save domain.
-     *
-     * @param  ledStripDomain  the ledStrip domain
-     *
-     * @return  the illuminance sensor domain
-     */
-    public OLdLEDStripDomain saveDomain(OLdLEDStripDomain ledStripDomain) {
+        ledStripDTO.setSprite(sprite1D);
 
-        return ledStripRepository.save(ledStripDomain);
+        handleSprite(ledStripDTO);
     }
 
 
-    /**
-     * Gets all domains.
-     *
-     * @return  the all domains
-     */
-    public List<OLdLEDStripDomain> getAllDomains() {
+    private OldColor getColorFromStatus(LEDStripDomain ledStripDomain, StatusInformation statusInformation) {
 
-        List<OLdLEDStripDomain> ledStripDomains;
+        if (ledStripDomain.hasCustomColors()) {
+            Map<Status, OldColor> customColors = ledStripDomain.getCustomColors();
 
-        try(Transaction tx = graphDatabaseService.beginTx()) {
-            ledStripDomains = new ArrayList<>(IteratorUtil.asCollection(ledStripRepository.findAll()));
-
-            tx.success();
+            return customColors.get(statusInformation.getStatus());
+        } else {
+            return OldColor.colorFromStatus(statusInformation.getStatus());
         }
-
-        return ledStripDomains;
     }
 
 
-    /**
-     * Delete all domains.
-     */
-    public void deleteAllDomains() {
+    public void handleSprite(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException {
 
-        ledStripRepository.deleteAll();
+        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
+        Sprite1D sprite = ledStripDTO.getSprite();
+
+        int pixelBufferSize = getPixelBufferSize(ledStripDomain);
+
+        final int[] pixelBufferRed = new int[pixelBufferSize];
+        final int[] pixelBufferGreen = new int[pixelBufferSize];
+        final int[] pixelBufferBlue = new int[pixelBufferSize];
+
+        // Copy the sprite's content into the pixelbuffer
+        System.arraycopy(sprite.getRed(), 0, pixelBufferRed, 0, sprite.getLength());
+        System.arraycopy(sprite.getGreen(), 0, pixelBufferGreen, 0, sprite.getLength());
+        System.arraycopy(sprite.getBlue(), 0, pixelBufferBlue, 0, sprite.getLength());
+
+        drawSprite(ledStripDomain, pixelBufferRed, pixelBufferGreen, pixelBufferBlue);
     }
 
 
-    /**
-     * Get a LEDStrip object, instantiate a new one if necessary.
-     *
-     * @param  ledStripDomain  The bricklet's domain from the database.
-     *
-     * @return  The actual LEDStrip object.
-     */
-    public LEDStrip getLEDStrip(OLdLEDStripDomain ledStripDomain) {
+    private void drawSprite(LEDStripDomain ledStripDomain, int[] pixelBufferRed, int[] pixelBufferGreen,
+        int[] pixelBufferBlue) throws TimeoutException, NotConnectedException {
 
-        if (ledStripDomain == null) {
-            return null;
+        short[] transferBufferRed; // NOSONAR Tinkerforge library uses shorts
+        short[] transferBufferGreen; // NOSONAR Tinkerforge library uses shorts
+        short[] transferBufferBlue; // NOSONAR Tinkerforge library uses shorts
+
+        double brightness = getBrightness(ledStripDomain);
+        BrickletLEDStrip brickletLEDStrip = brickletProvider.getBrickletLEDStrip(ledStripDomain);
+
+        for (int positionOnLedStrip = 0; positionOnLedStrip < pixelBufferRed.length; positionOnLedStrip += SIXTEEN) {
+            transferBufferRed = applyBrightnessAndCastToShort(Arrays.copyOfRange(pixelBufferRed, positionOnLedStrip,
+                        positionOnLedStrip + SIXTEEN), brightness);
+            transferBufferGreen = applyBrightnessAndCastToShort(Arrays.copyOfRange(pixelBufferGreen, positionOnLedStrip,
+                        positionOnLedStrip + SIXTEEN), brightness);
+            transferBufferBlue = applyBrightnessAndCastToShort(Arrays.copyOfRange(pixelBufferBlue, positionOnLedStrip,
+                        positionOnLedStrip + SIXTEEN), brightness);
+
+            brickletLEDStrip.setRGBValues(positionOnLedStrip, (short) SIXTEEN, transferBufferBlue, transferBufferRed,
+                transferBufferGreen);
         }
-
-        if (!outputLEDStrips.containsKey(ledStripDomain)) {
-            setupLEDStrip(ledStripDomain);
-        }
-
-        return outputLEDStrips.get(ledStripDomain);
     }
 
 
-    private void setupLEDStrip(OLdLEDStripDomain ledStripDomain) {
+    private int getPixelBufferSize(LEDStripDomain ledStripDomain) {
 
-        BrickletLEDStrip brickletLEDStrip;
+        int differenceToMultipleOfSixteen = ledStripDomain.getLength() % SIXTEEN;
 
-        try {
-            IPConnection ipConnection = brickService.getIPConnection(ledStripDomain.getBrickDomain(), this);
+        return ledStripDomain.getLength() + (SIXTEEN - differenceToMultipleOfSixteen);
+    }
 
-            if (ipConnection != null) {
-                brickletLEDStrip = new BrickletLEDStrip(ledStripDomain.getUid(), ipConnection);
-                brickletLEDStrip.setFrameDuration(FRAME_DURATION);
-                brickletLEDStrip.setChipType(CHIP_TYPE);
-            } else {
-                LOG.error("Error setting up LED Strip {}: Brick {} not available.", ledStripDomain.getName(),
-                    ledStripDomain.getBrickDomain().getHostname());
 
-                brickletLEDStrip = null;
+    private double getBrightness(LEDStripDomain ledStripDomain) {
+
+        return 1.0; // TODO: Poll the associated sensor, if any.
+    }
+
+
+    private short[] applyBrightnessAndCastToShort(int[] pixels, double brightness) { // NOSONAR Tinkerforge library uses shorts
+
+        short[] result = new short[pixels.length]; // NOSONAR Tinkerforge library uses shorts
+
+        for (int index = 0; index < pixels.length; index++) {
+            result[index] = (short) (pixels[index] * brightness);
+
+            if (result[index] > MAX_PRIMARY_COLOR) {
+                result[index] = MAX_PRIMARY_COLOR;
             }
-        } catch (TimeoutException | NotConnectedException e) {
-            LOG.error("Error setting up LED Strip {}: {}", ledStripDomain.getName(), e.toString());
-            brickletLEDStrip = null;
         }
 
-        if (brickletLEDStrip != null) {
-            LEDStrip ledStrip = new LEDStrip(brickletLEDStrip, ledStripDomain.getLength(), ledStripDomain.getName());
-
-            outputLEDStrips.put(ledStripDomain, ledStrip);
-        }
-    }
-
-
-    /**
-     * Remove all OutputLEDStrips from the registry.
-     */
-    @Override
-    public void clear() {
-
-        outputLEDStrips.clear();
+        return result;
     }
 }

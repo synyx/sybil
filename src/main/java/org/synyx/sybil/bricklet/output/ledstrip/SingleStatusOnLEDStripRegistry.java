@@ -52,7 +52,7 @@ public class SingleStatusOnLEDStripRegistry implements BrickletService {
      *
      * @return  The SingleStatusOnLEDStrip object.
      */
-    public SingleStatusOnLEDStrip get(LEDStrip ledStrip, Color okay, Color warning, Color critical) {
+    public SingleStatusOnLEDStrip get(LEDStrip ledStrip, OldColor okay, OldColor warning, OldColor critical) {
 
         if (ledStrip == null) {
             return null;

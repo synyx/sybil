@@ -15,15 +15,15 @@ import java.util.Map;
 @Component
 public class LEDStripCustomColors {
 
-    private Map<String, Map<String, Color>> customStatusColors = new HashMap<>();
+    private Map<String, Map<String, OldColor>> customStatusColors = new HashMap<>();
 
-    public void put(String name, Map<String, Color> colors) {
+    public void put(String name, Map<String, OldColor> colors) {
 
         customStatusColors.put(name, colors);
     }
 
 
-    public Map<String, Color> get(String name) {
+    public Map<String, OldColor> get(String name) {
 
         return customStatusColors.get(name);
     }

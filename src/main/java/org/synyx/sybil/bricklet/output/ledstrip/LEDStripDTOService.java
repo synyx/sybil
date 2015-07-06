@@ -26,10 +26,10 @@ import java.util.List;
  */
 
 @Component
-public final class LEDStripDTOService {
+public class LEDStripDTOService {
 
-    private ObjectMapper objectMapper;
-    private String configDir;
+    private final ObjectMapper objectMapper;
+    private final String configDir;
 
     @Autowired
     public LEDStripDTOService(ObjectMapper objectMapper, Environment environment) {
@@ -55,11 +55,11 @@ public final class LEDStripDTOService {
 
         for (LEDStripDomain ledStripDomain : ledStripDomains) {
             if (ledStripDomain.getName().equals(name)) {
-                ledStripDTO.domain = ledStripDomain;
+                ledStripDTO.setDomain(ledStripDomain);
             }
         }
 
-        if (ledStripDTO.domain == null) {
+        if (ledStripDTO.getDomain() == null) {
             throw new LoadFailedException("LED strip " + name + " does not exist.");
         }
 

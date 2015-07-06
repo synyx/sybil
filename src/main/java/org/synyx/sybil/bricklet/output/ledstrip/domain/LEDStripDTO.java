@@ -1,10 +1,9 @@
 package org.synyx.sybil.bricklet.output.ledstrip.domain;
 
+import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
-
-import java.util.List;
 
 
 /**
@@ -14,11 +13,56 @@ import java.util.List;
  */
 public class LEDStripDTO {
 
-    public LEDStripDomain domain;
+    private LEDStripDomain domain;
 
-    public StatusInformation status;
+    private StatusInformation status;
 
-    public List<Sprite1D> sprites;
+    private Sprite1D sprite;
 
-    public double brightness;
+    public Sprite1D getSprite() {
+
+        if (sprite == null) {
+            throw new AttributeEmptyException("sprite undefined");
+        }
+
+        return sprite;
+    }
+
+
+    public void setSprite(Sprite1D sprite) {
+
+        this.sprite = sprite;
+    }
+
+
+    public StatusInformation getStatus() {
+
+        if (status == null) {
+            throw new AttributeEmptyException("status undefined");
+        }
+
+        return status;
+    }
+
+
+    public void setStatus(StatusInformation status) {
+
+        this.status = status;
+    }
+
+
+    public LEDStripDomain getDomain() {
+
+        if (domain == null) {
+            throw new AttributeEmptyException("domain undefined");
+        }
+
+        return domain;
+    }
+
+
+    public void setDomain(LEDStripDomain domain) {
+
+        this.domain = domain;
+    }
 }

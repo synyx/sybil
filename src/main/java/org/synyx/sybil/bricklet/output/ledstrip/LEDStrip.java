@@ -84,12 +84,12 @@ public class LEDStrip implements Bricklet {
     }
 
 
-    public List<Color> getPixelBuffer() {
+    public List<OldColor> getPixelBuffer() {
 
-        List<Color> pixelBuffer = new ArrayList<>();
+        List<OldColor> pixelBuffer = new ArrayList<>();
 
         for (int i = 0; i < length; i++) {
-            pixelBuffer.add(new Color(pixelBufferRed[i], pixelBufferGreen[i], pixelBufferBlue[i]));
+            pixelBuffer.add(new OldColor(pixelBufferRed[i], pixelBufferGreen[i], pixelBufferBlue[i]));
         }
 
         return pixelBuffer;
@@ -101,7 +101,7 @@ public class LEDStrip implements Bricklet {
      *
      * @param  color  The color the strip should be
      */
-    public void setFill(Color color) {
+    public void setFill(OldColor color) {
 
         LOG.debug("Setting LEDstrip {} to color {}", name, color);
 
@@ -138,7 +138,7 @@ public class LEDStrip implements Bricklet {
     }
 
 
-    public void setPixelColor(int positionOnLedStrip, Color color) {
+    public void setPixelColor(int positionOnLedStrip, OldColor color) {
 
         LOG.debug("Setting pixel {} of LEDstrip {} to {}", positionOnLedStrip, name, color);
 
@@ -148,14 +148,14 @@ public class LEDStrip implements Bricklet {
     }
 
 
-    public Color getPixelColor(int positionOnLedStrip) {
+    public OldColor getPixelColor(int positionOnLedStrip) {
 
         LOG.debug("Retrieving color of pixel {} of LEDstrip {}", positionOnLedStrip, name);
 
-        Color color = null;
+        OldColor color = null;
 
         try {
-            color = Color.colorFromLedStrip(brickletLEDStrip.getRGBValues(positionOnLedStrip, (short) 1));
+            color = OldColor.colorFromLedStrip(brickletLEDStrip.getRGBValues(positionOnLedStrip, (short) 1));
             setHealthOkay();
         } catch (TimeoutException | NotConnectedException exception) {
             logConnectionError(exception);
@@ -223,19 +223,19 @@ public class LEDStrip implements Bricklet {
     }
 
 
-    public void drawSprite(Sprite1D sprite, int positionOnLedStrip) {
+    public void drawSprite(OldSprite1D sprite, int positionOnLedStrip) {
 
         drawSprite(sprite, positionOnLedStrip, false);
     }
 
 
-    public void drawSpriteWithWrap(Sprite1D sprite, int positionOnLedStrip) {
+    public void drawSpriteWithWrap(OldSprite1D sprite, int positionOnLedStrip) {
 
         drawSprite(sprite, positionOnLedStrip, true);
     }
 
 
-    private void drawSprite(Sprite1D sprite, int position, boolean wrap) {
+    private void drawSprite(OldSprite1D sprite, int position, boolean wrap) {
 
         LOG.debug("Drawing Sprite {} to LEDstrip {}", sprite.getName(), name);
 
@@ -259,7 +259,7 @@ public class LEDStrip implements Bricklet {
     }
 
 
-    private void copySpriteColorToPixelBuffer(Sprite1D sprite, int positionOnSprite, int positionOnPixelBuffer) {
+    private void copySpriteColorToPixelBuffer(OldSprite1D sprite, int positionOnSprite, int positionOnPixelBuffer) {
 
         pixelBufferRed[positionOnPixelBuffer] = sprite.getRed()[positionOnSprite];
         pixelBufferGreen[positionOnPixelBuffer] = sprite.getGreen()[positionOnSprite];

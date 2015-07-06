@@ -42,12 +42,12 @@ public class BrickServiceUnitTest {
     @Mock
     IPConnection ipConnection;
 
-    private BrickService brickService;
+    private OldBrickService brickService;
 
     @Before
     public void setup() {
 
-        brickService = new BrickService(brickRepository, graphDatabaseService);
+        brickService = new OldBrickService(brickRepository, graphDatabaseService);
 
         Mockito.when(graphDatabaseService.beginTx()).thenReturn(transaction);
 

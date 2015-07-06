@@ -13,11 +13,11 @@ import java.util.List;
  */
 
 @Relation(collectionRelation = "sprites")
-public class Sprite1D {
+public class OldSprite1D {
 
-    private final int[] red;
-    private final int[] green;
-    private final int[] blue;
+    private final short[] red; // NOSONAR Tinkerforge library uses shorts
+    private final short[] green; // NOSONAR Tinkerforge library uses shorts
+    private final short[] blue; // NOSONAR Tinkerforge library uses shorts
     private final int length;
     private final String name;
 
@@ -27,28 +27,28 @@ public class Sprite1D {
      * @param  length  The number of pixels the sprite will be long
      * @param  name  The name of the Sprite (optional)
      */
-    public Sprite1D(int length, String name) {
+    public OldSprite1D(int length, String name) {
 
         this.length = length;
-        red = new int[length];
-        green = new int[length];
-        blue = new int[length];
+        red = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        green = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        blue = new short[length]; // NOSONAR Tinkerforge library uses shorts
         this.name = name;
     }
 
 
-    public Sprite1D(int length, String name, List<Color> pixels) {
+    public OldSprite1D(int length, String name, List<OldColor> pixels) {
 
         this.length = length;
-        red = new int[length];
-        green = new int[length];
-        blue = new int[length];
+        red = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        green = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        blue = new short[length]; // NOSONAR Tinkerforge library uses shorts
         this.name = name;
 
         for (int i = 0; i < length; i++) {
-            red[i] = pixels.get(i).getRed();
-            green[i] = pixels.get(i).getGreen();
-            blue[i] = pixels.get(i).getBlue();
+            red[i] = pixels.get(i).getRedAsShort();
+            green[i] = pixels.get(i).getGreenAsShort();
+            blue[i] = pixels.get(i).getBlueAsShort();
         }
     }
 
@@ -58,9 +58,13 @@ public class Sprite1D {
      *
      * @param  length  The number of pixels the sprite will be long
      */
-    public Sprite1D(int length) {
+    public OldSprite1D(int length) {
 
-        this(length, "Unnamed");
+        this.length = length;
+        red = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        green = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        blue = new short[length]; // NOSONAR Tinkerforge library uses shorts
+        name = "Unnamed";
     }
 
     /**
@@ -109,25 +113,25 @@ public class Sprite1D {
      *
      * @return  Color object
      */
-    public Color getPixel(int position) {
+    public OldColor getPixel(int position) {
 
-        return new Color(red[position], green[position], blue[position]);
+        return new OldColor(red[position], green[position], blue[position]);
     }
 
 
-    public int[] getRed() {
+    public short[] getRed() { // NOSONAR Tinkerforge library uses shorts
 
         return Arrays.copyOf(red, red.length);
     }
 
 
-    public int[] getGreen() {
+    public short[] getGreen() { // NOSONAR Tinkerforge library uses shorts
 
         return Arrays.copyOf(green, green.length);
     }
 
 
-    public int[] getBlue() {
+    public short[] getBlue() { // NOSONAR Tinkerforge library uses shorts
 
         return Arrays.copyOf(blue, blue.length);
     }

@@ -17,7 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.OldLEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.config.DevSpringConfig;
 
@@ -38,13 +38,13 @@ public class BrickServiceIntegTest {
     private static final Logger LOG = LoggerFactory.getLogger(BrickServiceIntegTest.class);
 
     @Autowired
-    private LEDStripService LEDStripService;
+    private OldLEDStripService LEDStripService;
 
     @Autowired
     private LEDStripRepository LEDStripRepository;
 
     @Autowired
-    private BrickService brickService;
+    private OldBrickService brickService;
 
     @Test
     public void testReConnectAll() throws Exception {

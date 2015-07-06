@@ -50,7 +50,7 @@ public class LEDStripUnitTest {
 
         LOG.info("START Test testSetFill");
 
-        ledStrip.setFill(new Color(16, 32, 8));
+        ledStrip.setFill(new OldColor(16, 32, 8));
         ledStrip.updateDisplay();
 
         short[] red = new short[16];
@@ -74,7 +74,7 @@ public class LEDStripUnitTest {
 
         LOG.info("START Test testSetPixel");
 
-        Color color = new Color(16, 35, 77);
+        OldColor color = new OldColor(16, 35, 77);
 
         ledStrip.setPixelColor(1, color);
         ledStrip.updateDisplay();
@@ -97,7 +97,7 @@ public class LEDStripUnitTest {
 
         LOG.info("START Test testBrightnessHalf");
 
-        ledStrip.setFill(Color.WHITE);
+        ledStrip.setFill(OldColor.WHITE);
 
         ledStrip.setBrightness(.5);
         ledStrip.updateDisplay();
@@ -117,7 +117,7 @@ public class LEDStripUnitTest {
 
         LOG.info("START Test testBrightnessFull");
 
-        ledStrip.setFill(Color.WHITE);
+        ledStrip.setFill(OldColor.WHITE);
 
         ledStrip.setBrightness(1);
         ledStrip.updateDisplay();
@@ -137,7 +137,7 @@ public class LEDStripUnitTest {
 
         LOG.info("START Test testWhiteBrightnessDouble");
 
-        ledStrip.setFill(Color.WHITE);
+        ledStrip.setFill(OldColor.WHITE);
 
         ledStrip.setBrightness(2);
         ledStrip.updateDisplay();
@@ -157,7 +157,7 @@ public class LEDStripUnitTest {
 
         LOG.info("START Test testBrightnessDouble");
 
-        ledStrip.setFill(new Color(2, 16, 128));
+        ledStrip.setFill(new OldColor(2, 16, 128));
 
         ledStrip.setBrightness(2);
         ledStrip.updateDisplay();
@@ -183,8 +183,8 @@ public class LEDStripUnitTest {
 
         LOG.info("START Test testDrawSprite");
 
-        Sprite1D sprite = new Sprite1D(10, "10 red");
-        sprite.setFill(new Color(127, 0, 0));
+        OldSprite1D sprite = new OldSprite1D(10, "10 red");
+        sprite.setFill(new OldColor(127, 0, 0));
 
         ledStrip.drawSprite(sprite, 5);
         ledStrip.updateDisplay();
@@ -203,8 +203,8 @@ public class LEDStripUnitTest {
 
         LOG.info("START Test testDrawSpriteWithoutWrap");
 
-        Sprite1D sprite = new Sprite1D(10, "10 red");
-        sprite.setFill(new Color(127, 0, 0));
+        OldSprite1D sprite = new OldSprite1D(10, "10 red");
+        sprite.setFill(new OldColor(127, 0, 0));
 
         ledStrip.drawSprite(sprite, 25);
         ledStrip.updateDisplay();
@@ -223,8 +223,8 @@ public class LEDStripUnitTest {
 
         LOG.info("START Test testDrawSpriteWithWrap");
 
-        Sprite1D sprite = new Sprite1D(10, "10 red");
-        sprite.setFill(new Color(127, 0, 0));
+        OldSprite1D sprite = new OldSprite1D(10, "10 red");
+        sprite.setFill(new OldColor(127, 0, 0));
 
         ledStrip.drawSpriteWithWrap(sprite, 25);
         ledStrip.updateDisplay();
@@ -244,8 +244,8 @@ public class LEDStripUnitTest {
 
         LOG.info("START Test testDrawSpriteOverlong");
 
-        Sprite1D sprite = new Sprite1D(50, "50 red");
-        sprite.setFill(new Color(127, 0, 0));
+        OldSprite1D sprite = new OldSprite1D(50, "50 red");
+        sprite.setFill(new OldColor(127, 0, 0));
 
         ledStrip.drawSpriteWithWrap(sprite, 25);
         ledStrip.updateDisplay();

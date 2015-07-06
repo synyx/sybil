@@ -13,7 +13,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.api.HealthController;
-import org.synyx.sybil.brick.BrickService;
+import org.synyx.sybil.brick.OldBrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.bricklet.BrickletNameService;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
@@ -43,11 +43,11 @@ public class SensorConfigLoader {
     private String configDir;
     private IlluminanceService illuminanceService;
     private BrickletNameService brickletNameRegistry;
-    private BrickService brickService;
+    private OldBrickService brickService;
 
     @Autowired
     public SensorConfigLoader(ObjectMapper mapper, IlluminanceService illuminanceService,
-        BrickletNameService brickletNameRegistry, BrickService brickService, Environment environment) {
+        BrickletNameService brickletNameRegistry, OldBrickService brickService, Environment environment) {
 
         this.mapper = mapper;
         this.illuminanceService = illuminanceService;

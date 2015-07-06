@@ -37,25 +37,25 @@ public class SingleStatusOnLEDStripUnitTest {
 
         singleStatusOnLEDStrip.showStatus();
 
-        inOrder.verify(ledStrip).setFill(Color.OKAY);
+        inOrder.verify(ledStrip).setFill(OldColor.OKAY);
         inOrder.verify(ledStrip).updateDisplay();
 
         singleStatusOnLEDStrip.setStatus(new StatusInformation("Test", Status.WARNING));
         singleStatusOnLEDStrip.showStatus();
 
-        inOrder.verify(ledStrip).setFill(Color.WARNING);
+        inOrder.verify(ledStrip).setFill(OldColor.WARNING);
         inOrder.verify(ledStrip).updateDisplay();
 
         singleStatusOnLEDStrip.setStatus(new StatusInformation("Test", Status.CRITICAL));
         singleStatusOnLEDStrip.showStatus();
 
-        inOrder.verify(ledStrip).setFill(Color.CRITICAL);
+        inOrder.verify(ledStrip).setFill(OldColor.CRITICAL);
         inOrder.verify(ledStrip).updateDisplay();
 
         singleStatusOnLEDStrip.setStatus(new StatusInformation("Test", Status.OKAY));
         singleStatusOnLEDStrip.showStatus();
 
-        inOrder.verify(ledStrip).setFill(Color.OKAY);
+        inOrder.verify(ledStrip).setFill(OldColor.OKAY);
         inOrder.verify(ledStrip).updateDisplay();
     }
 
@@ -63,9 +63,9 @@ public class SingleStatusOnLEDStripUnitTest {
     @Test
     public void testCustomColors() {
 
-        Color okay = new Color(12, 13, 14);
-        Color warning = new Color(66, 66, 66);
-        Color critical = new Color(255, 128, 0);
+        OldColor okay = new OldColor(12, 13, 14);
+        OldColor warning = new OldColor(66, 66, 66);
+        OldColor critical = new OldColor(255, 128, 0);
 
         singleStatusOnLEDStrip = new SingleStatusOnLEDStrip(ledStrip, okay, warning, critical);
 

@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
-import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
+import org.synyx.sybil.bricklet.output.ledstrip.OldColor;
+import org.synyx.sybil.bricklet.output.ledstrip.OldLEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.OldSprite1D;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 
 import java.util.ArrayList;
@@ -41,10 +41,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RequestMapping("/configuration/ledstrips")
 public class ConfigurationLEDStripController {
 
-    private LEDStripService ledStripService;
+    private OldLEDStripService ledStripService;
 
     @Autowired
-    public ConfigurationLEDStripController(LEDStripService ledStripService) {
+    public ConfigurationLEDStripController(OldLEDStripService ledStripService) {
 
         this.ledStripService = ledStripService;
     }
@@ -117,7 +117,7 @@ public class ConfigurationLEDStripController {
         LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
 
         if (wasLoaded(display.getPixels())) {
-            Sprite1D pixels = new Sprite1D(display.getPixels().size(), "setDisplay", display.getPixels());
+            OldSprite1D pixels = new OldSprite1D(display.getPixels().size(), "setDisplay", display.getPixels());
             ledStrip.drawSprite(pixels, 0);
             ledStrip.updateDisplay();
         }
@@ -133,7 +133,7 @@ public class ConfigurationLEDStripController {
     }
 
 
-    private boolean wasLoaded(List<Color> pixels) {
+    private boolean wasLoaded(List<OldColor> pixels) {
 
         return pixels != null && !pixels.isEmpty();
     }

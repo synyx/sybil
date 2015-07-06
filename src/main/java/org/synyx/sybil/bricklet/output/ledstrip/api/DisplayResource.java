@@ -2,7 +2,7 @@ package org.synyx.sybil.bricklet.output.ledstrip.api;
 
 import org.springframework.hateoas.ResourceSupport;
 
-import org.synyx.sybil.bricklet.output.ledstrip.Color;
+import org.synyx.sybil.bricklet.output.ledstrip.OldColor;
 
 import java.util.List;
 
@@ -14,15 +14,15 @@ import java.util.List;
  */
 public class DisplayResource extends ResourceSupport {
 
-    private List<Color> pixels;
+    private List<OldColor> pixels;
 
-    public List<Color> getPixels() {
+    public List<OldColor> getPixels() {
 
         return pixels;
     }
 
 
-    public void setPixels(List<Color> pixels) {
+    public void setPixels(List<OldColor> pixels) {
 
         this.pixels = pixels;
     }

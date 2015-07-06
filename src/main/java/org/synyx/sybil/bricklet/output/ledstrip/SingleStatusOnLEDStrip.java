@@ -18,11 +18,11 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
 
     private static final Logger LOG = LoggerFactory.getLogger(SingleStatusOnLEDStrip.class);
     private final LEDStrip ledStrip;
-    private Color color;
+    private OldColor color;
     private Status status = Status.OKAY;
-    private final Color critical;
-    private final Color warning;
-    private final Color okay;
+    private final OldColor critical;
+    private final OldColor warning;
+    private final OldColor okay;
 
     /**
      * Instantiates a new SingleStatusOnLEDStrip with custom status colors.
@@ -32,7 +32,7 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
      * @param  warning  The Color for status WARNING
      * @param  critical  The Color for status CRITICAL
      */
-    public SingleStatusOnLEDStrip(LEDStrip ledStrip, Color okay, Color warning, Color critical) {
+    public SingleStatusOnLEDStrip(LEDStrip ledStrip, OldColor okay, OldColor warning, OldColor critical) {
 
         this.okay = okay;
         this.critical = critical;
@@ -49,9 +49,9 @@ public class SingleStatusOnLEDStrip implements SingleStatusOutput {
     public SingleStatusOnLEDStrip(LEDStrip ledStrip) {
 
         this.ledStrip = ledStrip;
-        critical = Color.CRITICAL;
-        warning = Color.WARNING;
-        okay = Color.OKAY;
+        critical = OldColor.CRITICAL;
+        warning = OldColor.WARNING;
+        okay = OldColor.OKAY;
     }
 
     @Override

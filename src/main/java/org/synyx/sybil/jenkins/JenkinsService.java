@@ -18,9 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.OldColor;
+import org.synyx.sybil.bricklet.output.ledstrip.OldLEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 import org.synyx.sybil.jenkins.config.JenkinsConfig;
@@ -50,7 +50,7 @@ public class JenkinsService {
     private static final Logger LOG = LoggerFactory.getLogger(JenkinsService.class);
     private final RestTemplate restTemplate = new RestTemplate();
     private final JenkinsConfig jenkinsConfig;
-    private final LEDStripService ledStripService;
+    private final OldLEDStripService ledStripService;
 
     /**
      * Instantiates a new Jenkins service.
@@ -59,7 +59,7 @@ public class JenkinsService {
      * @param  ledStripService  the output lED strip registry
      */
     @Autowired
-    public JenkinsService(JenkinsConfig jenkinsConfig, LEDStripService ledStripService) {
+    public JenkinsService(JenkinsConfig jenkinsConfig, OldLEDStripService ledStripService) {
 
         this.jenkinsConfig = jenkinsConfig;
         this.ledStripService = ledStripService;
@@ -148,7 +148,7 @@ public class JenkinsService {
 
         for (OLdLEDStripDomain ledStripDomain : ledStripDomains) {
             LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
-            ledStrip.setFill(Color.BLACK);
+            ledStrip.setFill(OldColor.BLACK);
             ledStrip.updateDisplay();
         }
     }

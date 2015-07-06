@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.OldLEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 import org.synyx.sybil.jenkins.domain.Status;
 
@@ -31,7 +31,7 @@ public class IlluminanceListener implements BrickletAmbientLight.IlluminanceList
     private int threshold;
     private double multiplier;
 
-    public IlluminanceListener(IlluminanceSensorDomain sensor, LEDStripService ledStripService) {
+    public IlluminanceListener(IlluminanceSensorDomain sensor, OldLEDStripService ledStripService) {
 
         LOG.debug("Listener added to {}", sensor.getName());
 

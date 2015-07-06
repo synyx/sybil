@@ -14,7 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.OldLEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import java.util.List;
 public class IlluminanceSensorUnitTest {
 
     @Mock
-    private LEDStripService ledStripService;
+    private OldLEDStripService ledStripService;
 
     @Mock
     private LEDStrip ledstrip;

@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.brick.BrickService;
+import org.synyx.sybil.brick.OldBrickService;
 import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorDomain;
 import org.synyx.sybil.bricklet.input.illuminance.database.IlluminanceSensorRepository;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.OldLEDStripService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,8 +42,8 @@ public class IlluminanceService implements BrickletService {
     private static final int CALLBACK_PERIOD = 5000;
 
     private Map<IlluminanceSensorDomain, BrickletAmbientLight> illuminanceSensors = new HashMap<>();
-    private BrickService brickService;
-    private LEDStripService ledStripService;
+    private OldBrickService brickService;
+    private OldLEDStripService ledStripService;
     private IlluminanceSensorRepository illuminanceSensorRepository;
     private GraphDatabaseService graphDatabaseService;
 
@@ -56,7 +56,7 @@ public class IlluminanceService implements BrickletService {
      * @param  graphDatabaseService  the graph database service
      */
     @Autowired
-    public IlluminanceService(BrickService brickService, LEDStripService ledStripService,
+    public IlluminanceService(OldBrickService brickService, OldLEDStripService ledStripService,
         IlluminanceSensorRepository illuminanceSensorRepository, GraphDatabaseService graphDatabaseService) {
 
         this.brickService = brickService;

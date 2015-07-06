@@ -43,9 +43,9 @@ import java.util.Set;
  */
 
 @Service
-public class BrickService {
+public class OldBrickService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BrickService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OldBrickService.class);
 
     private Map<BrickDomain, IPConnection> ipConnections = new HashMap<>();
     private Set<BrickletService> registries = new HashSet<>();
@@ -60,7 +60,7 @@ public class BrickService {
      * @param  graphDatabaseService  The graph database service
      */
     @Autowired
-    public BrickService(BrickRepository brickRepository, GraphDatabaseService graphDatabaseService) {
+    public OldBrickService(BrickRepository brickRepository, GraphDatabaseService graphDatabaseService) {
 
         this.brickRepository = brickRepository;
         this.graphDatabaseService = graphDatabaseService;
@@ -81,12 +81,6 @@ public class BrickService {
         connect(brickDomain);
 
         return ipConnections.get(brickDomain);
-    }
-
-
-    public IPConnection getIPConnection(String name) {
-
-        return getIPConnection(getDomain(name));
     }
 
 

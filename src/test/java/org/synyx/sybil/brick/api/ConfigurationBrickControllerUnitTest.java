@@ -12,7 +12,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.springframework.test.web.servlet.MockMvc;
 
-import org.synyx.sybil.brick.BrickService;
+import org.synyx.sybil.brick.OldBrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 public class ConfigurationBrickControllerUnitTest {
 
     @Mock
-    BrickService brickService;
+    OldBrickService brickService;
 
     ConfigurationBricksController configurationBricksController;
 

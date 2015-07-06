@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.OldColor;
+import org.synyx.sybil.bricklet.output.ledstrip.OldLEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
@@ -51,7 +51,7 @@ public class JenkinsServiceIntegTest {
     JenkinsConfig jenkinsConfig;
 
     @Autowired
-    LEDStripService ledStripService;
+    OldLEDStripService ledStripService;
 
     @Autowired
     LEDStripRepository ledStripRepository;
@@ -80,9 +80,9 @@ public class JenkinsServiceIntegTest {
         stubTwo = ledStripService.getLEDStrip(ledStripRepository.findByName("ledtwo"));
         stubThree = ledStripService.getLEDStrip(ledStripRepository.findByName("ledthree"));
 
-        stubOne.setFill(Color.BLACK);
-        stubTwo.setFill(Color.BLACK);
-        stubThree.setFill(Color.BLACK);
+        stubOne.setFill(OldColor.BLACK);
+        stubTwo.setFill(OldColor.BLACK);
+        stubThree.setFill(OldColor.BLACK);
 
         stubOneStatus = singleStatusOnLEDStripRegistry.get(stubOne);
         stubTwoStatus = singleStatusOnLEDStripRegistry.get(stubTwo);
@@ -103,7 +103,7 @@ public class JenkinsServiceIntegTest {
 
         jenkinsService.handleJobs();
 
-        Color blue = new Color(0, 0, 127);
+        OldColor blue = new OldColor(0, 0, 127);
 
         assertThat(stubOne.getPixelColor(0), is(blue));
 
@@ -113,7 +113,7 @@ public class JenkinsServiceIntegTest {
 
         jenkinsService.handleJobs();
 
-        assertThat(stubOne.getPixelColor(0), is(Color.WARNING));
+        assertThat(stubOne.getPixelColor(0), is(OldColor.WARNING));
 
         // OKAY
         jenkinsConfig.reset();
@@ -121,7 +121,7 @@ public class JenkinsServiceIntegTest {
 
         jenkinsService.handleJobs();
 
-        Color grey = new Color(16, 16, 16);
+        OldColor grey = new OldColor(16, 16, 16);
 
         assertThat(stubOne.getPixelColor(0), is(grey));
 
@@ -134,15 +134,15 @@ public class JenkinsServiceIntegTest {
 
         LOG.info("START testJenkinsService");
 
-        Color blue = new Color(0, 0, 127);
-        Color grey = new Color(16, 16, 16);
+        OldColor blue = new OldColor(0, 0, 127);
+        OldColor grey = new OldColor(16, 16, 16);
 
         // As configured
         jenkinsService.handleJobs();
 
         assertThat(stubOne.getPixelColor(0), is(blue));
-        assertThat(stubTwo.getPixelColor(0), is(Color.WARNING));
-        assertThat(stubThree.getPixelColor(0), is(Color.OKAY));
+        assertThat(stubTwo.getPixelColor(0), is(OldColor.WARNING));
+        assertThat(stubThree.getPixelColor(0), is(OldColor.OKAY));
 
         // *_anime statuses
         jenkinsConfig.reset();
@@ -153,8 +153,8 @@ public class JenkinsServiceIntegTest {
         jenkinsService.handleJobs();
 
         assertThat(stubOne.getPixelColor(0), is(blue));
-        assertThat(stubTwo.getPixelColor(0), is(Color.WARNING));
-        assertThat(stubThree.getPixelColor(0), is(Color.OKAY));
+        assertThat(stubTwo.getPixelColor(0), is(OldColor.WARNING));
+        assertThat(stubThree.getPixelColor(0), is(OldColor.OKAY));
 
         // undefined statuses
         jenkinsConfig.reset();
@@ -165,8 +165,8 @@ public class JenkinsServiceIntegTest {
         jenkinsService.handleJobs();
 
         assertThat(stubOne.getPixelColor(0), is(grey));
-        assertThat(stubTwo.getPixelColor(0), is(Color.OKAY));
-        assertThat(stubThree.getPixelColor(0), is(Color.OKAY));
+        assertThat(stubTwo.getPixelColor(0), is(OldColor.OKAY));
+        assertThat(stubThree.getPixelColor(0), is(OldColor.OKAY));
 
         LOG.info("FINISH testJenkinsService");
     }

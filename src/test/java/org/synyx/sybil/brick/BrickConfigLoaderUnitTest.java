@@ -47,7 +47,7 @@ public class BrickConfigLoaderUnitTest {
     private Environment environment;
 
     @Mock
-    private BrickService brickService;
+    private OldBrickService brickService;
 
     @Mock
     private BrickMaster brickMaster;

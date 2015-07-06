@@ -17,9 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.synyx.sybil.api.PatchResource;
 import org.synyx.sybil.api.SinglePatchResource;
-import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.OldColor;
+import org.synyx.sybil.bricklet.output.ledstrip.OldLEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripRepository;
 import org.synyx.sybil.config.DevSpringConfig;
 import org.synyx.sybil.config.StartupLoader;
@@ -60,7 +60,7 @@ public class ConfigurationLEDStripControllerIntegTest {
     ConfigurationLEDStripController configurationLEDStripController;
 
     @Autowired
-    LEDStripService outputLEDStripService;
+    OldLEDStripService outputLEDStripService;
 
     @Autowired
     LEDStripRepository outputLEDStripRepository;
@@ -78,9 +78,9 @@ public class ConfigurationLEDStripControllerIntegTest {
         stubTwo = outputLEDStripService.getLEDStrip(outputLEDStripRepository.findByName("ledtwo"));
         stubThree = outputLEDStripService.getLEDStrip(outputLEDStripRepository.findByName("ledthree"));
 
-        stubOne.setFill(Color.BLACK);
-        stubTwo.setFill(Color.BLACK);
-        stubThree.setFill(Color.BLACK);
+        stubOne.setFill(OldColor.BLACK);
+        stubTwo.setFill(OldColor.BLACK);
+        stubThree.setFill(OldColor.BLACK);
 
         stubOne.setBrightness(1.0);
         stubTwo.setBrightness(1.0);
@@ -138,7 +138,7 @@ public class ConfigurationLEDStripControllerIntegTest {
             .andExpect(jsonPath("$.pixels[0].green", is(0)))
             .andExpect(jsonPath("$.pixels[0].blue", is(0)));
 
-        stubOne.setFill(new Color(8, 64, 255));
+        stubOne.setFill(new OldColor(8, 64, 255));
         stubOne.setBrightness(.3);
         stubOne.updateDisplay();
 
@@ -157,11 +157,11 @@ public class ConfigurationLEDStripControllerIntegTest {
 
         MockMvc mockMvc = standaloneSetup(configurationLEDStripController).build();
 
-        stubOne.setPixelColor(0, new Color(255, 0, 0));
-        stubOne.setPixelColor(1, new Color(0, 255, 0));
-        stubOne.setPixelColor(2, new Color(0, 0, 255));
-        stubOne.setPixelColor(3, new Color(255, 255, 255));
-        stubOne.setPixelColor(4, new Color(0, 0, 0));
+        stubOne.setPixelColor(0, new OldColor(255, 0, 0));
+        stubOne.setPixelColor(1, new OldColor(0, 255, 0));
+        stubOne.setPixelColor(2, new OldColor(0, 0, 255));
+        stubOne.setPixelColor(3, new OldColor(255, 255, 255));
+        stubOne.setPixelColor(4, new OldColor(0, 0, 0));
 
         stubOne.setBrightness(.2);
 

@@ -13,10 +13,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.api.HealthController;
-import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripCustomColors;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.OldColor;
+import org.synyx.sybil.bricklet.output.ledstrip.OldLEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStripRegistry;
 import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
 import org.synyx.sybil.jenkins.config.JenkinsConfig;
@@ -42,7 +42,7 @@ public class JenkinsConfigLoader {
     private final ObjectMapper mapper;
     private final String configDirectory;
     private final String jenkinsServerConfigFile;
-    private final LEDStripService ledStripService;
+    private final OldLEDStripService ledStripService;
     private final SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry;
     private final JenkinsConfig jenkinsConfig;
     private final LEDStripCustomColors ledStripCustomColors;
@@ -58,7 +58,7 @@ public class JenkinsConfigLoader {
      * @param  objectMapper  the mapper
      */
     @Autowired
-    public JenkinsConfigLoader(Environment environment, LEDStripService ledStripService, JenkinsConfig jenkinsConfig,
+    public JenkinsConfigLoader(Environment environment, OldLEDStripService ledStripService, JenkinsConfig jenkinsConfig,
         SingleStatusOnLEDStripRegistry singleStatusOnLEDStripRegistry, LEDStripCustomColors ledStripCustomColors,
         ObjectMapper objectMapper) {
 
@@ -167,7 +167,7 @@ public class JenkinsConfigLoader {
                 HealthController.setHealth(Status.WARNING, "loadJenkinsConfig");
             }
         } else {
-            Map<String, Color> colors = ledStripCustomColors.get(ledstrip);
+            Map<String, OldColor> colors = ledStripCustomColors.get(ledstrip);
 
             if (colors == null) {
                 jenkinsConfig.put(server, jobName, singleStatusOnLEDStripRegistry.get(ledStrip));
