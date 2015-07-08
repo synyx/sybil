@@ -14,6 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.springframework.core.env.Environment;
 
+import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
@@ -83,5 +84,14 @@ public class LEDStripDTOServiceUnitTest {
     public void getNonexistentLEDStripDTO() throws Exception {
 
         sut.getDTO("does not exist");
+    }
+
+
+    @Test(expected = AttributeEmptyException.class)
+    public void getCustomColorsWhereNoneWereDefined() throws Exception {
+
+        LEDStripDTO ledStripDTO = sut.getDTO("one");
+        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
+        ledStripDomain.getCustomColors();
     }
 }

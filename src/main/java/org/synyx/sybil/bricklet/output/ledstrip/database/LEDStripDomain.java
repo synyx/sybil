@@ -35,31 +35,11 @@ public class LEDStripDomain implements DeviceDomain {
     private int criticalGreen;
     private int criticalBlue;
 
-    private boolean customColors = false;
+    private boolean hasCustomColors = false;
 
     protected LEDStripDomain() {
 
         // Default constructor deliberately left empty
-    }
-
-
-    public LEDStripDomain(String name, String uid, int length, String brick, int okayRed, int okayGreen, int okayBlue,
-        int warningRed, int warningGreen, int warningBlue, int criticalRed, int criticalGreen, int criticalBlue) {
-
-        this.name = name;
-        this.uid = uid;
-        this.length = length;
-        this.brick = brick;
-        this.okayRed = okayRed;
-        this.okayGreen = okayGreen;
-        this.okayBlue = okayBlue;
-        this.warningRed = warningRed;
-        this.warningGreen = warningGreen;
-        this.warningBlue = warningBlue;
-        this.criticalRed = criticalRed;
-        this.criticalGreen = criticalGreen;
-        this.criticalBlue = criticalBlue;
-        customColors = true;
     }
 
 
@@ -107,70 +87,70 @@ public class LEDStripDomain implements DeviceDomain {
 
     public boolean hasCustomColors() {
 
-        return customColors;
+        return hasCustomColors;
     }
 
 
     public void setOkayRed(int okayRed) {
 
         this.okayRed = okayRed;
-        customColors = true;
+        hasCustomColors = true;
     }
 
 
     public void setOkayGreen(int okayGreen) {
 
         this.okayGreen = okayGreen;
-        customColors = true;
+        hasCustomColors = true;
     }
 
 
     public void setOkayBlue(int okayBlue) {
 
         this.okayBlue = okayBlue;
-        customColors = true;
+        hasCustomColors = true;
     }
 
 
     public void setWarningRed(int warningRed) {
 
         this.warningRed = warningRed;
-        customColors = true;
+        hasCustomColors = true;
     }
 
 
     public void setWarningGreen(int warningGreen) {
 
         this.warningGreen = warningGreen;
-        customColors = true;
+        hasCustomColors = true;
     }
 
 
     public void setWarningBlue(int warningBlue) {
 
         this.warningBlue = warningBlue;
-        customColors = true;
+        hasCustomColors = true;
     }
 
 
     public void setCriticalRed(int criticalRed) {
 
         this.criticalRed = criticalRed;
-        customColors = true;
+        hasCustomColors = true;
     }
 
 
     public void setCriticalGreen(int criticalGreen) {
 
         this.criticalGreen = criticalGreen;
-        customColors = true;
+        hasCustomColors = true;
     }
 
 
     public void setCriticalBlue(int criticalBlue) {
 
         this.criticalBlue = criticalBlue;
-        customColors = true;
+        hasCustomColors = true;
     }
 
 

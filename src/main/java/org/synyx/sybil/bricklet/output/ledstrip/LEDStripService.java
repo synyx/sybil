@@ -104,8 +104,8 @@ public class LEDStripService {
             transferBufferBlue = applyBrightnessAndCastToShort(Arrays.copyOfRange(pixelBufferBlue, positionOnLedStrip,
                         positionOnLedStrip + SIXTEEN), brightness);
 
-            brickletLEDStrip.setRGBValues(positionOnLedStrip, (short) SIXTEEN, transferBufferBlue, transferBufferRed,
-                transferBufferGreen); // NOSONAR Tinkerforge library uses shorts
+            brickletLEDStrip.setRGBValues(positionOnLedStrip, (short) SIXTEEN, // NOSONAR Tinkerforge uses shorts
+                transferBufferBlue, transferBufferRed, transferBufferGreen);
         }
     }
 
