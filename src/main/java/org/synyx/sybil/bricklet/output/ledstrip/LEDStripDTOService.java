@@ -47,7 +47,7 @@ public class LEDStripDTOService {
      */
     public LEDStripDTO getDTO(String name) throws IOException {
 
-        LEDStripDTO ledStripDTO = new LEDStripDTO();
+        LEDStripDTO ledStripDTO = null;
 
         List<LEDStripDomain> ledStripDomains = objectMapper.readValue(new File(configDir + "ledstrips.json"),
                 new TypeReference<List<LEDStripDomain>>() {
@@ -55,11 +55,12 @@ public class LEDStripDTOService {
 
         for (LEDStripDomain ledStripDomain : ledStripDomains) {
             if (ledStripDomain.getName().equals(name)) {
+                ledStripDTO = new LEDStripDTO();
                 ledStripDTO.setDomain(ledStripDomain);
             }
         }
 
-        if (ledStripDTO.getDomain() == null) {
+        if (ledStripDTO == null) {
             throw new LoadFailedException("LED strip " + name + " does not exist.");
         }
 

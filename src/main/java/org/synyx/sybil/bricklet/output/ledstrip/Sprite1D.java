@@ -37,6 +37,13 @@ public class Sprite1D {
     }
 
 
+    /**
+     * Instantiates a new sprite with a given list of colors as pixels.
+     *
+     * @param  length  The number of pixels the sprite will be long
+     * @param  name  The name of the Sprite
+     * @param  pixels  A list of Colors.
+     */
     public Sprite1D(int length, String name, List<Color> pixels) {
 
         this.length = length;
@@ -45,7 +52,9 @@ public class Sprite1D {
         blue = new int[length];
         this.name = name;
 
-        for (int i = 0; i < length; i++) {
+        int minimum = Math.min(pixels.size(), length);
+
+        for (int i = 0; i < minimum; i++) {
             red[i] = pixels.get(i).getRed();
             green[i] = pixels.get(i).getGreen();
             blue[i] = pixels.get(i).getBlue();
@@ -54,7 +63,7 @@ public class Sprite1D {
 
 
     /**
-     * Creates a new sprite, all black.
+     * Creates a new sprite, named "Unnamed", all black.
      *
      * @param  length  The number of pixels the sprite will be long
      */
@@ -63,17 +72,29 @@ public class Sprite1D {
         this(length, "Unnamed");
     }
 
+
+    /**
+     * Instantiates a new sprite, named "Unnamed", with a given list of colors as pixels.
+     *
+     * @param  length  The number of pixels the sprite will be long
+     * @param  pixels  A list of Colors.
+     */
+    public Sprite1D(int length, List<Color> pixels) {
+
+        this(length, "Unnamed", pixels);
+    }
+
     /**
      * Fills the sprite with a single color.
      *
      * @param  color  The color the sprite should be
      */
 
-    public void setFill(OldColor color) {
+    public void setFill(Color color) {
 
-        Arrays.fill(red, color.getRedAsShort());
-        Arrays.fill(green, color.getGreenAsShort());
-        Arrays.fill(blue, color.getBlueAsShort());
+        Arrays.fill(red, color.getRed());
+        Arrays.fill(green, color.getGreen());
+        Arrays.fill(blue, color.getBlue());
     }
 
 
@@ -83,11 +104,11 @@ public class Sprite1D {
      * @param  position  The position of the pixel on the sprite.
      * @param  color  The color the pixel should be.
      */
-    public void setPixel(int position, OldColor color) {
+    public void setPixel(int position, Color color) {
 
-        red[position] = color.getRedAsShort();
-        green[position] = color.getGreenAsShort();
-        blue[position] = color.getBlueAsShort();
+        red[position] = color.getRed();
+        green[position] = color.getGreen();
+        blue[position] = color.getBlue();
     }
 
 
@@ -115,24 +136,44 @@ public class Sprite1D {
     }
 
 
+    /**
+     * Get red.
+     *
+     * @return  the int [ ]
+     */
     public int[] getRed() {
 
         return Arrays.copyOf(red, red.length);
     }
 
 
+    /**
+     * Get green.
+     *
+     * @return  the int [ ]
+     */
     public int[] getGreen() {
 
         return Arrays.copyOf(green, green.length);
     }
 
 
+    /**
+     * Get blue.
+     *
+     * @return  the int [ ]
+     */
     public int[] getBlue() {
 
         return Arrays.copyOf(blue, blue.length);
     }
 
 
+    /**
+     * Gets name.
+     *
+     * @return  the name
+     */
     public String getName() {
 
         return name;

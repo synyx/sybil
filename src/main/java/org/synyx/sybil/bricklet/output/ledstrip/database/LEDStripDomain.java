@@ -4,7 +4,7 @@ import org.springframework.hateoas.core.Relation;
 
 import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.DeviceDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.OldColor;
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.util.HashMap;
@@ -174,10 +174,10 @@ public class LEDStripDomain implements DeviceDomain {
     }
 
 
-    public Map<Status, OldColor> getCustomColors() {
+    public Map<Status, Color> getCustomColors() {
 
         if (hasCustomColors()) {
-            Map<Status, OldColor> customColors = new HashMap<>();
+            Map<Status, Color> customColors = new HashMap<>();
             customColors.put(Status.OKAY, getOkayColor());
             customColors.put(Status.WARNING, getWarningColor());
             customColors.put(Status.CRITICAL, getCriticalColor());
@@ -189,20 +189,20 @@ public class LEDStripDomain implements DeviceDomain {
     }
 
 
-    private OldColor getOkayColor() {
+    private Color getOkayColor() {
 
-        return new OldColor(okayRed, okayGreen, okayBlue);
+        return new Color(okayRed, okayGreen, okayBlue);
     }
 
 
-    private OldColor getWarningColor() {
+    private Color getWarningColor() {
 
-        return new OldColor(warningRed, warningGreen, warningBlue);
+        return new Color(warningRed, warningGreen, warningBlue);
     }
 
 
-    private OldColor getCriticalColor() {
+    private Color getCriticalColor() {
 
-        return new OldColor(criticalRed, criticalGreen, criticalBlue);
+        return new Color(criticalRed, criticalGreen, criticalBlue);
     }
 }

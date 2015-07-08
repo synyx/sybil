@@ -4,9 +4,6 @@ import com.tinkerforge.BrickletLEDStrip;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -30,8 +27,6 @@ import java.util.Map;
 
 @Service
 public class LEDStripService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(LEDStripService.class);
 
     private static final int SIXTEEN = 16;
     private static final short MAX_PRIMARY_COLOR = (short) 255;
@@ -59,14 +54,14 @@ public class LEDStripService {
     }
 
 
-    private OldColor getColorFromStatus(LEDStripDomain ledStripDomain, StatusInformation statusInformation) {
+    private Color getColorFromStatus(LEDStripDomain ledStripDomain, StatusInformation statusInformation) {
 
         if (ledStripDomain.hasCustomColors()) {
-            Map<Status, OldColor> customColors = ledStripDomain.getCustomColors();
+            Map<Status, Color> customColors = ledStripDomain.getCustomColors();
 
             return customColors.get(statusInformation.getStatus());
         } else {
-            return OldColor.colorFromStatus(statusInformation.getStatus());
+            return Color.colorFromStatus(statusInformation.getStatus());
         }
     }
 
