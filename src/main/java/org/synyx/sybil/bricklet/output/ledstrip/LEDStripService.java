@@ -29,14 +29,14 @@ import java.util.Map;
 public class LEDStripService {
 
     private static final int SIXTEEN = 16;
-    private static final short MAX_PRIMARY_COLOR = (short) 255;
+    private static final short MAX_PRIMARY_COLOR = (short) 255; // NOSONAR Tinkerforge library uses shorts
 
-    BrickletProvider brickletProvider;
+    private final BrickletProvider brickletProvider;
 
     @Autowired
-    public LEDStripService(BrickletProvider brickletProvider) {
+    public LEDStripService(BrickletProvider provider) {
 
-        this.brickletProvider = brickletProvider;
+        this.brickletProvider = provider;
     }
 
     public void handleStatus(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
@@ -105,7 +105,7 @@ public class LEDStripService {
                         positionOnLedStrip + SIXTEEN), brightness);
 
             brickletLEDStrip.setRGBValues(positionOnLedStrip, (short) SIXTEEN, transferBufferBlue, transferBufferRed,
-                transferBufferGreen);
+                transferBufferGreen); // NOSONAR Tinkerforge library uses shorts
         }
     }
 
@@ -129,7 +129,7 @@ public class LEDStripService {
         short[] result = new short[pixels.length]; // NOSONAR Tinkerforge library uses shorts
 
         for (int index = 0; index < pixels.length; index++) {
-            result[index] = (short) (pixels[index] * brightness);
+            result[index] = (short) (pixels[index] * brightness); // NOSONAR Tinkerforge library uses shorts
 
             if (result[index] > MAX_PRIMARY_COLOR) {
                 result[index] = MAX_PRIMARY_COLOR;

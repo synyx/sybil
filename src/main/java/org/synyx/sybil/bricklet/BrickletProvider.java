@@ -25,7 +25,7 @@ public class BrickletProvider {
     private static final int FRAME_DURATION = 10;
     private static final int CHIP_TYPE = 2812;
 
-    private BrickService brickService;
+    private final BrickService brickService;
 
     @Autowired
     public BrickletProvider(BrickService brickService) {
