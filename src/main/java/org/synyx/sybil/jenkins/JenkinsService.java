@@ -128,101 +128,6 @@ public class JenkinsService {
     }
 
 
-    private void applyStatuses(Map<String, StatusInformation> ledStripStatuses) {
-
-        for (String ledStrip : ledStripStatuses.keySet()) {
-            try {
-                LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(ledStrip);
-                ledStripDTO.setStatus(ledStripStatuses.get(ledStrip));
-                ledStripService.handleStatus(ledStripDTO);
-            } catch (TimeoutException | NotConnectedException | IOException exception) {
-                LOG.error("Error setting status on LED strip: {}", exception);
-            }
-        }
-    }
-
-
-    private Map<String, StatusInformation> getLEDStripStatusesFromJobs(List<JenkinsJob> jobs,
-        List<ConfiguredJob> configuredJobs, Map<String, StatusInformation> ledStripStatuses) {
-
-        if (configuredJobs == null) {
-            return ledStripStatuses;
-        }
-
-        for (JenkinsJob job : jobs) {
-            StatusInformation jobStatus = getStatusFromJob(job);
-            List<String> ledStrips = getLedStripFromConfiguredJob(job, configuredJobs);
-
-            if (ledStrips.isEmpty()) {
-                continue;
-            }
-
-            for (String ledStrip : ledStrips) {
-                ledStripStatuses.put(ledStrip, higherStatus(jobStatus, ledStripStatuses.get(ledStrip)));
-            }
-        }
-
-        return ledStripStatuses;
-    }
-
-
-    private StatusInformation higherStatus(StatusInformation newStatus, StatusInformation currentStatus) {
-
-        if (currentStatus == null || newStatus.getStatus().ordinal() > currentStatus.getStatus().ordinal()) {
-            return newStatus;
-        } else {
-            return currentStatus;
-        }
-    }
-
-
-    private List<String> getLedStripFromConfiguredJob(JenkinsJob job, List<ConfiguredJob> configuredJobs) {
-
-        List<String> result = new ArrayList<>();
-
-        for (ConfiguredJob configuredJob : configuredJobs) {
-            if (configuredJob.getName().equals(job.getName())) {
-                result.add(configuredJob.getLedstrip());
-            }
-        }
-
-        return result;
-    }
-
-
-    private StatusInformation getStatusFromJob(JenkinsJob job) {
-
-        StatusInformation statusInformation;
-
-        switch (job.getColor()) {
-            case "red":
-            case "red_anime":
-                statusInformation = new StatusInformation(job.getName(), Status.CRITICAL);
-                break;
-
-            case "yellow":
-            case "yellow_anime":
-                statusInformation = new StatusInformation(job.getName(), Status.WARNING);
-                break;
-
-            default:
-                statusInformation = new StatusInformation(job.getName(), Status.OKAY);
-                break;
-        }
-
-        return statusInformation;
-    }
-
-
-    private List<JenkinsJob> getJobsFromJenkins(String server, HttpEntity<JenkinsProperties[]> authorization) {
-
-        ResponseEntity<JenkinsProperties> response = restTemplate.exchange(server + "/api/json", HttpMethod.GET,
-                authorization, JenkinsProperties.class);
-
-        return Arrays.asList(response.getBody().getJobs());
-    }
-
-
     private Map<String, HttpEntity<JenkinsProperties[]>> loadAuthorizations() throws IOException {
 
         Map<String, HttpEntity<JenkinsProperties[]>> authorizations = new HashMap<>();
@@ -257,5 +162,100 @@ public class JenkinsService {
         return objectMapper.readValue(new File(configDirectory + "jenkins.json"),
                 new TypeReference<Map<String, List<ConfiguredJob>>>() {
                 });
+    }
+
+
+    private List<JenkinsJob> getJobsFromJenkins(String server, HttpEntity<JenkinsProperties[]> authorization) {
+
+        ResponseEntity<JenkinsProperties> response = restTemplate.exchange(server + "/api/json", HttpMethod.GET,
+                authorization, JenkinsProperties.class);
+
+        return Arrays.asList(response.getBody().getJobs());
+    }
+
+
+    private Map<String, StatusInformation> getLEDStripStatusesFromJobs(List<JenkinsJob> jobs,
+        List<ConfiguredJob> configuredJobs, Map<String, StatusInformation> ledStripStatuses) {
+
+        if (configuredJobs == null) {
+            return ledStripStatuses;
+        }
+
+        for (JenkinsJob job : jobs) {
+            StatusInformation jobStatus = getStatusFromJob(job);
+            List<String> ledStrips = getLedStripFromConfiguredJob(job, configuredJobs);
+
+            if (ledStrips.isEmpty()) {
+                continue;
+            }
+
+            for (String ledStrip : ledStrips) {
+                ledStripStatuses.put(ledStrip, higherStatus(jobStatus, ledStripStatuses.get(ledStrip)));
+            }
+        }
+
+        return ledStripStatuses;
+    }
+
+
+    private StatusInformation getStatusFromJob(JenkinsJob job) {
+
+        StatusInformation statusInformation;
+
+        switch (job.getColor()) {
+            case "red":
+            case "red_anime":
+                statusInformation = new StatusInformation(job.getName(), Status.CRITICAL);
+                break;
+
+            case "yellow":
+            case "yellow_anime":
+                statusInformation = new StatusInformation(job.getName(), Status.WARNING);
+                break;
+
+            default:
+                statusInformation = new StatusInformation(job.getName(), Status.OKAY);
+                break;
+        }
+
+        return statusInformation;
+    }
+
+
+    private List<String> getLedStripFromConfiguredJob(JenkinsJob job, List<ConfiguredJob> configuredJobs) {
+
+        List<String> result = new ArrayList<>();
+
+        for (ConfiguredJob configuredJob : configuredJobs) {
+            if (configuredJob.getName().equals(job.getName())) {
+                result.add(configuredJob.getLedstrip());
+            }
+        }
+
+        return result;
+    }
+
+
+    private StatusInformation higherStatus(StatusInformation newStatus, StatusInformation currentStatus) {
+
+        if (currentStatus == null || newStatus.getStatus().ordinal() > currentStatus.getStatus().ordinal()) {
+            return newStatus;
+        } else {
+            return currentStatus;
+        }
+    }
+
+
+    private void applyStatuses(Map<String, StatusInformation> ledStripStatuses) {
+
+        for (String ledStrip : ledStripStatuses.keySet()) {
+            try {
+                LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(ledStrip);
+                ledStripDTO.setStatus(ledStripStatuses.get(ledStrip));
+                ledStripService.handleStatus(ledStripDTO);
+            } catch (TimeoutException | NotConnectedException | IOException exception) {
+                LOG.error("Error setting status on LED strip: {}", exception);
+            }
+        }
     }
 }
