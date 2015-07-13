@@ -54,6 +54,20 @@ public class LEDStripService {
     }
 
 
+    public void turnOff(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
+        AttributeEmptyException {
+
+        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
+
+        Sprite1D sprite1D = new Sprite1D(ledStripDomain.getLength(), "OFF");
+        sprite1D.setFill(Color.BLACK);
+
+        ledStripDTO.setSprite(sprite1D);
+
+        handleSprite(ledStripDTO);
+    }
+
+
     private Color getColorFromStatus(LEDStripDomain ledStripDomain, StatusInformation statusInformation) {
 
         if (ledStripDomain.hasCustomColors()) {

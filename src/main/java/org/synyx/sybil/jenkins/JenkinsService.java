@@ -29,10 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
-import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 import org.synyx.sybil.jenkins.domain.ConfiguredJob;
 import org.synyx.sybil.jenkins.domain.ConfiguredServer;
@@ -94,12 +92,7 @@ public class JenkinsService {
         for (String ledStrip : ledStripStatuses.keySet()) {
             try {
                 LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(ledStrip);
-
-                Sprite1D sprite1D = new Sprite1D(ledStripDTO.getDomain().getLength());
-                sprite1D.setFill(Color.BLACK);
-
-                ledStripDTO.setSprite(sprite1D);
-                ledStripService.handleSprite(ledStripDTO);
+                ledStripService.turnOff(ledStripDTO);
             } catch (TimeoutException | NotConnectedException | IOException exception) {
                 LOG.error("Error turning off LED strip: {}", exception);
             }
@@ -179,7 +172,7 @@ public class JenkinsService {
         if (currentStatus == null) {
             return true;
         } else {
-            return (newStatus.getStatus().ordinal() > currentStatus.getStatus().ordinal());
+            return newStatus.getStatus().ordinal() > currentStatus.getStatus().ordinal();
         }
     }
 
