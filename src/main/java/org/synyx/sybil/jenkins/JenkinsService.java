@@ -104,7 +104,7 @@ public class JenkinsService {
 
         try {
             authorizations = loadAuthorizations();
-            configuredJobs = loadJobs();
+            configuredJobs = loadConfiguredJobs();
         } catch (IOException exception) {
             LOG.error("Error loading Jenkins configuration: {}", exception);
 
@@ -157,7 +157,7 @@ public class JenkinsService {
     }
 
 
-    private Map<String, List<ConfiguredJob>> loadJobs() throws IOException {
+    private Map<String, List<ConfiguredJob>> loadConfiguredJobs() throws IOException {
 
         return objectMapper.readValue(new File(configDirectory + "jenkins.json"),
                 new TypeReference<Map<String, List<ConfiguredJob>>>() {
