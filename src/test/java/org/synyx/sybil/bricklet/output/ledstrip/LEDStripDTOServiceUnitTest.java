@@ -94,4 +94,12 @@ public class LEDStripDTOServiceUnitTest {
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
         ledStripDomain.getCustomColors();
     }
+
+
+    @Test(expected = AttributeEmptyException.class)
+    public void getSpriteWhereNoneWereDefined() throws Exception {
+
+        LEDStripDTO ledStripDTO = sut.getDTO("one");
+        Sprite1D sprite1D = ledStripDTO.getSprite();
+    }
 }
