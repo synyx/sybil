@@ -74,8 +74,6 @@ public class JenkinsService {
     private final RestTemplate restTemplate;
     private final AppDestroyer appDestroyer;
 
-//    private Map<String, StatusInformation> ledStripStatuses = new HashMap<>();
-
     @Autowired
     public JenkinsService(ObjectMapper objectMapper, LEDStripService ledStripService,
         LEDStripDTOService ledStripDTOService, Environment environment, RestTemplate restTemplate,
@@ -160,9 +158,7 @@ public class JenkinsService {
             }
 
             for (String ledStrip : ledStrips) {
-                if (isNewStatusHigherThanCurrent(jobStatus, ledStripStatuses.get(ledStrip))) {
-                    ledStripStatuses.put(ledStrip, jobStatus);
-                }
+                ledStripStatuses.put(ledStrip, higherStatus(jobStatus, ledStripStatuses.get(ledStrip)));
             }
         }
 
@@ -170,12 +166,12 @@ public class JenkinsService {
     }
 
 
-    private boolean isNewStatusHigherThanCurrent(StatusInformation newStatus, StatusInformation currentStatus) {
+    private StatusInformation higherStatus(StatusInformation newStatus, StatusInformation currentStatus) {
 
-        if (currentStatus == null) {
-            return true;
+        if (currentStatus == null || newStatus.getStatus().ordinal() > currentStatus.getStatus().ordinal()) {
+            return newStatus;
         } else {
-            return newStatus.getStatus().ordinal() > currentStatus.getStatus().ordinal();
+            return currentStatus;
         }
     }
 

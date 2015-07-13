@@ -100,6 +100,7 @@ public class JenkinsServiceUnitTest {
         when(objectMapperMock.readValue(eq(new File("jenkinsconfig.json")), any(TypeReference.class))).thenReturn(
             authorizations);
 
+        ConfiguredJob job0 = new ConfiguredJob("jobundefined", "ledstripone");
         ConfiguredJob job1 = new ConfiguredJob("jobokay", "ledstripone");
         ConfiguredJob job2 = new ConfiguredJob("jobokay", "ledstriptwo");
         ConfiguredJob job3 = new ConfiguredJob("jobokay", "ledstripthree");
@@ -109,7 +110,7 @@ public class JenkinsServiceUnitTest {
 
         ConfiguredJob job6 = new ConfiguredJob("jobcritical", "ledstripthree");
 
-        List<ConfiguredJob> jobs = Arrays.asList(job1, job2, job3, job4, job5, job6);
+        List<ConfiguredJob> jobs = Arrays.asList(job0, job1, job2, job3, job6, job5, job4);
 
         Map<String, List<ConfiguredJob>> configuredJobs = new HashMap<>();
         configuredJobs.put("http://jenkins", jobs);
@@ -130,9 +131,10 @@ public class JenkinsServiceUnitTest {
         JenkinsJob jobOkay = new JenkinsJob("jobokay", "blue");
         JenkinsJob jobWarning = new JenkinsJob("jobwarning", "yellow");
         JenkinsJob jobCritical = new JenkinsJob("jobcritical", "red");
+        JenkinsJob jobUndefined = new JenkinsJob("jobundefined", "grey");
 
         JenkinsProperties jenkinsProperties = new JenkinsProperties(
-                new JenkinsJob[] { jobOkay, jobWarning, jobCritical });
+                new JenkinsJob[] { jobOkay, jobWarning, jobCritical, jobUndefined });
 
         ResponseEntity<JenkinsProperties> responseEntity = new ResponseEntity<>(jenkinsProperties, HttpStatus.OK);
 

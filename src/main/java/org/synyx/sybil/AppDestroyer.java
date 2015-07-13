@@ -28,6 +28,8 @@ import java.util.List;
 @Component
 public class AppDestroyer {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AppDestroyer.class);
+
     private LEDStripDTOService ledStripDTOService;
     private LEDStripService ledStripService;
 
@@ -39,8 +41,6 @@ public class AppDestroyer {
     }
 
     public void turnOffAllLEDStrips() {
-
-        final Logger LOG = LoggerFactory.getLogger(AppDestroyer.class);
 
         try {
             List<LEDStripDTO> ledstrips = ledStripDTOService.getAllDTOs();
