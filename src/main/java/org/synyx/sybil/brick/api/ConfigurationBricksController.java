@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.synyx.sybil.brick.OldBrickService;
+import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.database.BrickDomain;
 
 import java.util.ArrayList;
@@ -31,10 +31,10 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RequestMapping("/configuration/bricks")
 public class ConfigurationBricksController {
 
-    private OldBrickService brickService;
+    private BrickService brickService;
 
     @Autowired
-    public ConfigurationBricksController(OldBrickService brickService) {
+    public ConfigurationBricksController(BrickService brickService) {
 
         this.brickService = brickService;
     }

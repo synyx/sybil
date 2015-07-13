@@ -1,5 +1,13 @@
 package org.synyx.sybil.jenkins;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.tinkerforge.NotConnectedException;
+import com.tinkerforge.TimeoutException;
+
+import org.apache.commons.codec.binary.Base64;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Profile;
 
+import org.springframework.core.env.Environment;
+
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
@@ -18,25 +29,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.OldColor;
-import org.synyx.sybil.bricklet.output.ledstrip.OldLEDStripService;
-import org.synyx.sybil.bricklet.output.ledstrip.SingleStatusOnLEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.database.OLdLEDStripDomain;
-import org.synyx.sybil.jenkins.config.JenkinsConfig;
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
+import org.synyx.sybil.jenkins.domain.ConfiguredJob;
+import org.synyx.sybil.jenkins.domain.ConfiguredServer;
 import org.synyx.sybil.jenkins.domain.JenkinsJob;
 import org.synyx.sybil.jenkins.domain.JenkinsProperties;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
+import java.io.File;
+import java.io.IOException;
+
+import java.nio.charset.Charset;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
 
 /**
- * JenkinsService. Reads the Jenkins API in regular intervals, compares it to the Jenkins build alert configuration.
+ * JenkinsService.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
@@ -44,87 +64,155 @@ import javax.annotation.PreDestroy;
 @Service
 public class JenkinsService {
 
-    private static final int ONE_MINUTE_IN_MILLISECONDS = 60000;
-    private static final int TEN_MINUTES_IN_MILLISECONDS = 600000;
-
     private static final Logger LOG = LoggerFactory.getLogger(JenkinsService.class);
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final JenkinsConfig jenkinsConfig;
-    private final OldLEDStripService ledStripService;
+    private static final int ONE_MINUTE_IN_MILLISECONDS = 60000;
 
-    /**
-     * Instantiates a new Jenkins service.
-     *
-     * @param  jenkinsConfig  The Jenkins config bean, autowired in.
-     * @param  ledStripService  the output lED strip registry
-     */
+    private final ObjectMapper objectMapper;
+    private final LEDStripService ledStripService;
+    private final LEDStripDTOService ledStripDTOService;
+    private final String configDirectory;
+    private final String jenkinsServerConfigFile;
+    private final RestTemplate restTemplate;
+
+    private Map<String, StatusInformation> ledStripStatuses = new HashMap<>();
+
     @Autowired
-    public JenkinsService(JenkinsConfig jenkinsConfig, OldLEDStripService ledStripService) {
+    public JenkinsService(ObjectMapper objectMapper, LEDStripService ledStripService,
+        LEDStripDTOService ledStripDTOService, Environment environment, RestTemplate restTemplate) {
 
-        this.jenkinsConfig = jenkinsConfig;
+        this.objectMapper = objectMapper;
         this.ledStripService = ledStripService;
+        this.ledStripDTOService = ledStripDTOService;
+        this.restTemplate = restTemplate;
+        configDirectory = environment.getProperty("path.to.configfiles");
+        jenkinsServerConfigFile = environment.getProperty("jenkins.configfile");
     }
 
-    /**
-     * Retrieve the list of jobs from the Jenkins API.
-     *
-     * @param  serverURL  The Jenkins server URL (e.g. "http://jenkins.company.name")
-     *
-     * @return  A JenkinsProperties object, deserialized from the API.
-     */
-    private JenkinsProperties retrieveJobs(String serverURL) {
+    @PreDestroy
+    public void turnOffAllConfiguredLEDStrips() {
 
-        HttpEntity<JenkinsProperties[]> authorizationHeaderEntity = jenkinsConfig.getServer(serverURL);
+        for (String ledStrip : ledStripStatuses.keySet()) {
+            try {
+                LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(ledStrip);
 
-        try {
-            ResponseEntity<JenkinsProperties> response = restTemplate.exchange(serverURL + "/api/json", HttpMethod.GET,
-                    authorizationHeaderEntity, JenkinsProperties.class);
+                Sprite1D sprite1D = new Sprite1D(ledStripDTO.getDomain().getLength());
+                sprite1D.setFill(Color.BLACK);
 
-            return response.getBody();
-        } catch (RestClientException exception) {
-            LOG.warn("{}: {}", serverURL, exception.toString());
-
-            return null;
-        }
-    }
-
-
-    /**
-     * Update the status of the passed LED Strips, IF the new status is HIGHER than the old one.
-     *
-     * @param  ledStrips  The LED SingleStatusOnLEDStrip objects on which to update the status.
-     * @param  jobName  The name of the job the status came from.
-     * @param  jobStatus  The job's status.
-     */
-    private void updateStatus(List<SingleStatusOnLEDStrip> ledStrips, String jobName, String jobStatus) {
-
-        StatusInformation statusInformation = getStatusInformationFromJobStatus(jobName, jobStatus);
-
-        for (SingleStatusOnLEDStrip ledStrip : ledStrips) {
-            if (isNewStatusHigherThanCurrent(statusInformation.getStatus(), ledStrip.getStatus())) {
-                ledStrip.setStatus(statusInformation);
+                ledStripDTO.setSprite(sprite1D);
+                ledStripService.handleSprite(ledStripDTO);
+            } catch (TimeoutException | NotConnectedException | IOException exception) {
+                LOG.error("Error turning off LED strip: {}", exception);
             }
         }
     }
 
 
-    private StatusInformation getStatusInformationFromJobStatus(String jobName, String jobStatus) {
+    @Profile("default")
+    @Scheduled(fixedRate = ONE_MINUTE_IN_MILLISECONDS)
+    public void runEveryMinute() {
+
+        Map<String, HttpEntity<JenkinsProperties[]>> authorizations;
+        Map<String, List<ConfiguredJob>> configuredJobs;
+
+        try {
+            authorizations = loadAuthorizations();
+            configuredJobs = loadJobs();
+        } catch (IOException exception) {
+            LOG.error("Error loading Jenkins configuration: {}", exception);
+
+            return;
+        }
+
+        List<String> servers = new ArrayList<>(authorizations.keySet());
+        List<JenkinsJob> jobs;
+
+        for (String server : servers) {
+            try {
+                jobs = getJobsFromJenkins(server, authorizations.get(server));
+                getStatusesFromJobs(jobs, configuredJobs.get(server));
+            } catch (RestClientException exception) {
+                LOG.error("Error retrieving jobs from Jenkins: {}", exception);
+            }
+        }
+
+        applyStatuses();
+    }
+
+
+    private void applyStatuses() {
+
+        for (String ledStrip : ledStripStatuses.keySet()) {
+            try {
+                LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(ledStrip);
+                ledStripDTO.setStatus(ledStripStatuses.get(ledStrip));
+                ledStripService.handleStatus(ledStripDTO);
+            } catch (TimeoutException | NotConnectedException | IOException exception) {
+                LOG.error("Error setting status on LED strip: {}", exception);
+            }
+        }
+    }
+
+
+    private void getStatusesFromJobs(List<JenkinsJob> jobs, List<ConfiguredJob> configuredJobs) {
+
+        if (configuredJobs == null) {
+            return;
+        }
+
+        for (JenkinsJob job : jobs) {
+            StatusInformation jobStatus = getStatusFromJob(job);
+            String ledStrip = getLedStripFromConfiguredJob(job, configuredJobs);
+
+            if ("".equals(ledStrip)) {
+                continue;
+            }
+
+            if (isNewStatusHigherThanCurrent(jobStatus, ledStripStatuses.get(ledStrip))) {
+                ledStripStatuses.put(ledStrip, jobStatus);
+            }
+        }
+    }
+
+
+    private boolean isNewStatusHigherThanCurrent(StatusInformation newStatus, StatusInformation currentStatus) {
+
+        if (currentStatus == null) {
+            return true;
+        } else {
+            return (newStatus.getStatus().ordinal() > currentStatus.getStatus().ordinal());
+        }
+    }
+
+
+    private String getLedStripFromConfiguredJob(JenkinsJob job, List<ConfiguredJob> configuredJobs) {
+
+        for (ConfiguredJob configuredJob : configuredJobs) {
+            if (configuredJob.getName().equals(job.getName())) {
+                return configuredJob.getLedstrip();
+            }
+        }
+
+        return "";
+    }
+
+
+    private StatusInformation getStatusFromJob(JenkinsJob job) {
 
         StatusInformation statusInformation;
 
-        switch (jobStatus) {
+        switch (job.getColor()) {
             case "red":
             case "red_anime":
-                statusInformation = new StatusInformation(jobName, Status.CRITICAL);
+                statusInformation = new StatusInformation(job.getName(), Status.CRITICAL);
                 break;
 
             case "yellow":
             case "yellow_anime":
-                statusInformation = new StatusInformation(jobName, Status.WARNING);
+                statusInformation = new StatusInformation(job.getName(), Status.WARNING);
                 break;
 
             default:
-                statusInformation = new StatusInformation(jobName, Status.OKAY);
+                statusInformation = new StatusInformation(job.getName(), Status.OKAY);
                 break;
         }
 
@@ -132,110 +220,48 @@ public class JenkinsService {
     }
 
 
-    private boolean isNewStatusHigherThanCurrent(Status newStatus, Status currentStatus) {
+    private List<JenkinsJob> getJobsFromJenkins(String server, HttpEntity<JenkinsProperties[]> authorization) {
 
-        return newStatus.ordinal() > currentStatus.ordinal();
+        ResponseEntity<JenkinsProperties> response = restTemplate.exchange(server + "/api/json", HttpMethod.GET,
+                authorization, JenkinsProperties.class);
+
+        return Arrays.asList(response.getBody().getJobs());
     }
 
 
-    /**
-     * Destroy void. Is called when the program ends. Turns off all the LED Strips.
-     */
-    @PreDestroy
-    public void destroy() {
+    private Map<String, HttpEntity<JenkinsProperties[]>> loadAuthorizations() throws IOException {
 
-        List<OLdLEDStripDomain> ledStripDomains = ledStripService.getAllDomains();
+        Map<String, HttpEntity<JenkinsProperties[]>> authorizations = new HashMap<>();
 
-        for (OLdLEDStripDomain ledStripDomain : ledStripDomains) {
-            LEDStrip ledStrip = ledStripService.getLEDStrip(ledStripDomain);
-            ledStrip.setFill(OldColor.BLACK);
-            ledStrip.updateDisplay();
-        }
-    }
+        List<ConfiguredServer> configuredServers = objectMapper.readValue(new File(jenkinsServerConfigFile),
+                new TypeReference<List<ConfiguredServer>>() {
+                });
 
-
-    /**
-     * Clear all statuses on SingleStatusOnLEDStrips, so priority sorting can commence.
-     */
-    private void clearLEDStripStatuses() {
-
-        Set<SingleStatusOnLEDStrip> allLEDStrips = jenkinsConfig.getAll();
-
-        if (allLEDStrips == null) {
-            LOG.warn("No LED Strips configured.");
-        } else {
-            for (SingleStatusOnLEDStrip ledStrip : allLEDStrips) {
-                ledStrip.setStatus(new StatusInformation("Clear", Status.OKAY));
-            }
-        }
-    }
-
-
-    /**
-     * Show the statuses that were set on the LED Strips.
-     */
-    private void showStatuses() {
-
-        Set<SingleStatusOnLEDStrip> allLEDStrips = jenkinsConfig.getAll();
-
-        if (allLEDStrips == null) {
-            LOG.warn("No LED Strips configured.");
-        } else {
-            for (SingleStatusOnLEDStrip ledStrip : allLEDStrips) {
-                ledStrip.showStatus();
-            }
-        }
-    }
-
-
-    /**
-     * Clear the current statuses, iterate over servers and jobs, set their statuses and show them.
-     */
-    public void handleJobs() {
-
-        clearLEDStripStatuses();
-
-        for (String server : jenkinsConfig.getServers()) {
-            JenkinsProperties jobs = retrieveJobs(server);
-
-            if (jobs != null) {
-                iterateOverJobsAndUpdateStatuses(server, jobs);
-            }
+        for (ConfiguredServer configuredServer : configuredServers) {
+            authorizations.put(configuredServer.getUrl(), generateHTTPHeader(configuredServer));
         }
 
-        showStatuses();
+        return authorizations;
     }
 
 
-    private void iterateOverJobsAndUpdateStatuses(String server, JenkinsProperties jobs) {
+    private HttpEntity<JenkinsProperties[]> generateHTTPHeader(ConfiguredServer server) {
 
-        for (JenkinsJob job : jobs.getJobs()) {
-            if (jenkinsConfig.contains(server, job.getName())) {
-                updateStatus(jenkinsConfig.getSingleStatusOnLEDStrip(server, job.getName()), job.getName(),
-                    job.getColor());
-            }
-        }
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.set("Authorization",
+            "Basic "
+            + new String(
+                Base64.encodeBase64((server.getUser() + ":" + server.getKey()).getBytes(Charset.forName("US-ASCII")))));
+
+        return new HttpEntity<>(headers);
     }
 
 
-    /**
-     * Run every minute.
-     */
-    @Profile("default")
-    @Scheduled(fixedRate = ONE_MINUTE_IN_MILLISECONDS)
-    public void runEveryMinute() {
+    public Map<String, List<ConfiguredJob>> loadJobs() throws IOException {
 
-        handleJobs();
-    }
-
-
-    /**
-     * Run every ten minutes. Just here to keep the garbage collector from eating this in the dev profile.
-     */
-    @Profile("dev")
-    @Scheduled(fixedRate = TEN_MINUTES_IN_MILLISECONDS)
-    public void runEveryTenMinutes() {
-
-        LOG.debug("Runs every 10 minutes!");
+        return objectMapper.readValue(new File(configDirectory + "jenkins.json"),
+                new TypeReference<Map<String, List<ConfiguredJob>>>() {
+                });
     }
 }

@@ -23,17 +23,14 @@ import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.database.BrickRepository;
-import org.synyx.sybil.bricklet.BrickletService;
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -48,7 +45,6 @@ public class BrickService {
     private static final Logger LOG = LoggerFactory.getLogger(BrickService.class);
 
     private Map<BrickDomain, IPConnection> ipConnections = new HashMap<>();
-    private Set<BrickletService> registries = new HashSet<>();
 
     private BrickRepository brickRepository;
     private GraphDatabaseService graphDatabaseService;
@@ -65,24 +61,6 @@ public class BrickService {
         this.brickRepository = brickRepository;
         this.graphDatabaseService = graphDatabaseService;
     }
-
-    /**
-     * Register a connection to a Tinkerforge Brick.
-     *
-     * @param  brickDomain  the Brick's domain object.
-     * @param  brickletService  the bricklet registry
-     *
-     * @return  the iP connection
-     */
-    public IPConnection getIPConnection(BrickDomain brickDomain, BrickletService brickletService) {
-
-        registries.add(brickletService);
-
-        connect(brickDomain);
-
-        return ipConnections.get(brickDomain);
-    }
-
 
     public IPConnection getIPConnection(String name) {
 
@@ -225,10 +203,6 @@ public class BrickService {
         }
 
         ipConnections.clear();
-
-        for (BrickletService brickletService : registries) {
-            brickletService.clear();
-        }
     }
 
 

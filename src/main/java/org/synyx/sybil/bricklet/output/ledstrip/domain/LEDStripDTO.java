@@ -2,7 +2,6 @@ package org.synyx.sybil.bricklet.output.ledstrip.domain;
 
 import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
 

@@ -40,13 +40,13 @@ import java.util.List;
 public class BrickConfigLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(BrickConfigLoader.class);
-    private final OldBrickService brickService;
+    private final BrickService brickService;
     private final String configDir;
     private final ObjectMapper mapper;
     private final int timeoutLengthInSeconds;
 
     @Autowired
-    public BrickConfigLoader(OldBrickService brickService, ObjectMapper mapper, Environment environment) {
+    public BrickConfigLoader(BrickService brickService, ObjectMapper mapper, Environment environment) {
 
         this.brickService = brickService;
         this.mapper = mapper;

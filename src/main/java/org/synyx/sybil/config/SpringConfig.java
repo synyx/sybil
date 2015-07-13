@@ -11,6 +11,8 @@ import org.springframework.context.annotation.PropertySource;
 
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import org.springframework.web.client.RestTemplate;
+
 
 /**
  * Spring Configuration.
@@ -31,8 +33,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SpringConfig {
 
     @Bean
-    ObjectMapper mapper() {
+    ObjectMapper objectMapper() {
 
         return new ObjectMapper();
+    }
+
+
+    @Bean
+    RestTemplate restTemplate() {
+
+        return new RestTemplate();
     }
 }

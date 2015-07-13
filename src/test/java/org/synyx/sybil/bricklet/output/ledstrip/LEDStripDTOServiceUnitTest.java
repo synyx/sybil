@@ -16,8 +16,8 @@ import org.springframework.core.env.Environment;
 
 import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.LoadFailedException;
-import org.synyx.sybil.bricklet.output.ledstrip.database.LEDStripDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 
 import java.io.File;
 import java.io.IOException;

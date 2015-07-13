@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip.database;
+package org.synyx.sybil.bricklet.output.ledstrip.domain;
 
 import org.springframework.hateoas.core.Relation;
 
