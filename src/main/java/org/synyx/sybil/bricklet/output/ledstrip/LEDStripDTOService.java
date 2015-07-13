@@ -16,6 +16,7 @@ import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -65,5 +66,24 @@ public class LEDStripDTOService {
         }
 
         return ledStripDTO;
+    }
+
+
+    public List<LEDStripDTO> getAllDTOs() throws IOException {
+
+        List<LEDStripDTO> ledStripDTOs = new ArrayList<>();
+
+        List<LEDStripDomain> ledStripDomains = objectMapper.readValue(new File(configDir + "ledstrips.json"),
+                new TypeReference<List<LEDStripDomain>>() {
+                });
+
+        for (LEDStripDomain ledStripDomain : ledStripDomains) {
+            LEDStripDTO ledStripDTO;
+            ledStripDTO = new LEDStripDTO();
+            ledStripDTO.setDomain(ledStripDomain);
+            ledStripDTOs.add(ledStripDTO);
+        }
+
+        return ledStripDTOs;
     }
 }

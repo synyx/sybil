@@ -39,6 +39,20 @@ public class LEDStripService {
         this.brickletProvider = provider;
     }
 
+    public void turnOff(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
+        AttributeEmptyException {
+
+        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
+
+        Sprite1D sprite1D = new Sprite1D(ledStripDomain.getLength(), "OFF");
+        sprite1D.setFill(Color.BLACK);
+
+        ledStripDTO.setSprite(sprite1D);
+
+        handleSprite(ledStripDTO);
+    }
+
+
     public void handleStatus(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
         AttributeEmptyException {
 
@@ -47,20 +61,6 @@ public class LEDStripService {
 
         Sprite1D sprite1D = new Sprite1D(ledStripDomain.getLength(), statusInformation.getSource());
         sprite1D.setFill(getColorFromStatus(ledStripDomain, statusInformation));
-
-        ledStripDTO.setSprite(sprite1D);
-
-        handleSprite(ledStripDTO);
-    }
-
-
-    public void turnOff(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
-        AttributeEmptyException {
-
-        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
-
-        Sprite1D sprite1D = new Sprite1D(ledStripDomain.getLength(), "OFF");
-        sprite1D.setFill(Color.BLACK);
 
         ledStripDTO.setSprite(sprite1D);
 

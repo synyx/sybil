@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import org.synyx.sybil.AppDestroyer;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
@@ -71,32 +72,28 @@ public class JenkinsService {
     private final String configDirectory;
     private final String jenkinsServerConfigFile;
     private final RestTemplate restTemplate;
+    private final AppDestroyer appDestroyer;
 
-    private Map<String, StatusInformation> ledStripStatuses = new HashMap<>();
+//    private Map<String, StatusInformation> ledStripStatuses = new HashMap<>();
 
     @Autowired
     public JenkinsService(ObjectMapper objectMapper, LEDStripService ledStripService,
-        LEDStripDTOService ledStripDTOService, Environment environment, RestTemplate restTemplate) {
+        LEDStripDTOService ledStripDTOService, Environment environment, RestTemplate restTemplate,
+        AppDestroyer appDestroyer) {
 
         this.objectMapper = objectMapper;
         this.ledStripService = ledStripService;
         this.ledStripDTOService = ledStripDTOService;
         this.restTemplate = restTemplate;
+        this.appDestroyer = appDestroyer;
         configDirectory = environment.getProperty("path.to.configfiles");
         jenkinsServerConfigFile = environment.getProperty("jenkins.configfile");
     }
 
     @PreDestroy
-    public void turnOffAllConfiguredLEDStrips() {
+    public void destroyContext() {
 
-        for (String ledStrip : ledStripStatuses.keySet()) {
-            try {
-                LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(ledStrip);
-                ledStripService.turnOff(ledStripDTO);
-            } catch (TimeoutException | NotConnectedException | IOException exception) {
-                LOG.error("Error turning off LED strip: {}", exception);
-            }
-        }
+        appDestroyer.turnOffAllLEDStrips();
     }
 
 
@@ -118,21 +115,22 @@ public class JenkinsService {
 
         List<String> servers = new ArrayList<>(authorizations.keySet());
         List<JenkinsJob> jobs;
+        Map<String, StatusInformation> ledStripStatuses = new HashMap<>();
 
         for (String server : servers) {
             try {
                 jobs = getJobsFromJenkins(server, authorizations.get(server));
-                getStatusesFromJobs(jobs, configuredJobs.get(server));
+                ledStripStatuses = getLEDStripStatusesFromJobs(jobs, configuredJobs.get(server), ledStripStatuses);
             } catch (RestClientException exception) {
                 LOG.error("Error retrieving jobs from Jenkins: {}", exception);
             }
         }
 
-        applyStatuses();
+        applyStatuses(ledStripStatuses);
     }
 
 
-    private void applyStatuses() {
+    private void applyStatuses(Map<String, StatusInformation> ledStripStatuses) {
 
         for (String ledStrip : ledStripStatuses.keySet()) {
             try {
@@ -146,24 +144,29 @@ public class JenkinsService {
     }
 
 
-    private void getStatusesFromJobs(List<JenkinsJob> jobs, List<ConfiguredJob> configuredJobs) {
+    private Map<String, StatusInformation> getLEDStripStatusesFromJobs(List<JenkinsJob> jobs,
+        List<ConfiguredJob> configuredJobs, Map<String, StatusInformation> ledStripStatuses) {
 
         if (configuredJobs == null) {
-            return;
+            return ledStripStatuses;
         }
 
         for (JenkinsJob job : jobs) {
             StatusInformation jobStatus = getStatusFromJob(job);
-            String ledStrip = getLedStripFromConfiguredJob(job, configuredJobs);
+            List<String> ledStrips = getLedStripFromConfiguredJob(job, configuredJobs);
 
-            if ("".equals(ledStrip)) {
+            if (ledStrips.isEmpty()) {
                 continue;
             }
 
-            if (isNewStatusHigherThanCurrent(jobStatus, ledStripStatuses.get(ledStrip))) {
-                ledStripStatuses.put(ledStrip, jobStatus);
+            for (String ledStrip : ledStrips) {
+                if (isNewStatusHigherThanCurrent(jobStatus, ledStripStatuses.get(ledStrip))) {
+                    ledStripStatuses.put(ledStrip, jobStatus);
+                }
             }
         }
+
+        return ledStripStatuses;
     }
 
 
@@ -177,15 +180,17 @@ public class JenkinsService {
     }
 
 
-    private String getLedStripFromConfiguredJob(JenkinsJob job, List<ConfiguredJob> configuredJobs) {
+    private List<String> getLedStripFromConfiguredJob(JenkinsJob job, List<ConfiguredJob> configuredJobs) {
+
+        List<String> result = new ArrayList<>();
 
         for (ConfiguredJob configuredJob : configuredJobs) {
             if (configuredJob.getName().equals(job.getName())) {
-                return configuredJob.getLedstrip();
+                result.add(configuredJob.getLedstrip());
             }
         }
 
-        return "";
+        return result;
     }
 
 
@@ -251,7 +256,7 @@ public class JenkinsService {
     }
 
 
-    public Map<String, List<ConfiguredJob>> loadJobs() throws IOException {
+    private Map<String, List<ConfiguredJob>> loadJobs() throws IOException {
 
         return objectMapper.readValue(new File(configDirectory + "jenkins.json"),
                 new TypeReference<Map<String, List<ConfiguredJob>>>() {
