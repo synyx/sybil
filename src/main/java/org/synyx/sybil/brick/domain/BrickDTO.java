@@ -1,7 +1,6 @@
 package org.synyx.sybil.brick.domain;
 
 import org.synyx.sybil.AttributeEmptyException;
-import org.synyx.sybil.brick.database.BrickDomain;
 
 
 /**

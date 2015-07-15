@@ -3,6 +3,7 @@ package org.synyx.sybil.jenkins;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
@@ -63,7 +64,8 @@ import javax.annotation.PreDestroy;
 public class JenkinsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(JenkinsService.class);
-    private static final int ONE_MINUTE_IN_MILLISECONDS = 60000;
+    private static final long ONE_MINUTE_IN_MILLISECONDS = 60000;
+    private static final int DELAY_DIVISOR = 4;
 
     private final ObjectMapper objectMapper;
     private final LEDStripService ledStripService;
@@ -93,14 +95,14 @@ public class JenkinsService {
             for (LEDStripDTO ledStripDTO : ledstrips) {
                 ledStripService.turnOff(ledStripDTO);
             }
-        } catch (IOException | TimeoutException | NotConnectedException exception) {
+        } catch (IOException | TimeoutException | NotConnectedException | AlreadyConnectedException exception) {
             LOG.error("Error turning off LED strips: {}", exception);
         }
     }
 
 
     @Profile("default")
-    @Scheduled(fixedRate = ONE_MINUTE_IN_MILLISECONDS)
+    @Scheduled(initialDelay = ONE_MINUTE_IN_MILLISECONDS / DELAY_DIVISOR, fixedRate = ONE_MINUTE_IN_MILLISECONDS)
     public void runEveryMinute() {
 
         Map<String, HttpEntity<JenkinsProperties[]>> authorizations;
@@ -257,7 +259,7 @@ public class JenkinsService {
                 LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(ledStrip);
                 ledStripDTO.setStatus(ledStripStatuses.get(ledStrip));
                 ledStripService.handleStatus(ledStripDTO);
-            } catch (TimeoutException | NotConnectedException | IOException exception) {
+            } catch (TimeoutException | NotConnectedException | IOException | AlreadyConnectedException exception) {
                 LOG.error("Error setting status on LED strip: {}", exception);
             }
         }

@@ -10,8 +10,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.LoadFailedException;
-import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.domain.BrickDTO;
+import org.synyx.sybil.brick.domain.BrickDomain;
 
 import java.io.File;
 import java.io.IOException;

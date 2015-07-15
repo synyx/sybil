@@ -3,9 +3,6 @@ package org.synyx.sybil.jenkins;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -143,7 +140,7 @@ public class JenkinsServiceUnitTest {
 
 
     @Test
-    public void runEveryMinute() throws TimeoutException, NotConnectedException {
+    public void runEveryMinute() throws Exception {
 
         // execution
         sut.runEveryMinute();

@@ -1,6 +1,6 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
-import com.tinkerforge.BrickletLEDStrip;
+import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
@@ -14,6 +14,8 @@ import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
+
+import java.io.IOException;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -40,7 +42,7 @@ public class LEDStripService {
     }
 
     public void turnOff(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
-        AttributeEmptyException {
+        AttributeEmptyException, IOException, AlreadyConnectedException {
 
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
 
@@ -54,7 +56,7 @@ public class LEDStripService {
 
 
     public void handleStatus(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
-        AttributeEmptyException {
+        AttributeEmptyException, IOException, AlreadyConnectedException {
 
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
         StatusInformation statusInformation = ledStripDTO.getStatus();
@@ -80,7 +82,8 @@ public class LEDStripService {
     }
 
 
-    public void handleSprite(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException {
+    public void handleSprite(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException, IOException,
+        AlreadyConnectedException {
 
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
         Sprite1D sprite = ledStripDTO.getSprite();
@@ -101,14 +104,14 @@ public class LEDStripService {
 
 
     private void drawSprite(LEDStripDomain ledStripDomain, int[] pixelBufferRed, int[] pixelBufferGreen,
-        int[] pixelBufferBlue) throws TimeoutException, NotConnectedException {
+        int[] pixelBufferBlue) throws TimeoutException, NotConnectedException, IOException, AlreadyConnectedException {
 
         short[] transferBufferRed; // NOSONAR Tinkerforge library uses shorts
         short[] transferBufferGreen; // NOSONAR Tinkerforge library uses shorts
         short[] transferBufferBlue; // NOSONAR Tinkerforge library uses shorts
 
         double brightness = getBrightness(ledStripDomain);
-        BrickletLEDStrip brickletLEDStrip = brickletProvider.getBrickletLEDStrip(ledStripDomain);
+        BrickletLEDStripWrapper brickletLEDStrip = brickletProvider.getBrickletLEDStrip(ledStripDomain);
 
         for (int positionOnLedStrip = 0; positionOnLedStrip < pixelBufferRed.length; positionOnLedStrip += SIXTEEN) {
             transferBufferRed = applyBrightnessAndCastToShort(Arrays.copyOfRange(pixelBufferRed, positionOnLedStrip,
@@ -121,6 +124,8 @@ public class LEDStripService {
             brickletLEDStrip.setRGBValues(positionOnLedStrip, (short) SIXTEEN, // NOSONAR Tinkerforge uses shorts
                 transferBufferBlue, transferBufferRed, transferBufferGreen);
         }
+
+        brickletLEDStrip.disconnect();
     }
 
 

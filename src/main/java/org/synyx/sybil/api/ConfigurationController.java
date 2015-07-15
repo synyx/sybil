@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.synyx.sybil.brick.api.ConfigurationBricksController;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +32,6 @@ public class ConfigurationController {
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(ConfigurationController.class).withSelfRel());
-        links.add(linkTo(ConfigurationBricksController.class).withRel("bricks"));
 
         return new Resources<>(Collections.emptySet(), links);
     }

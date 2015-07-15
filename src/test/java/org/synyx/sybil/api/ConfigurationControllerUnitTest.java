@@ -36,10 +36,8 @@ public class ConfigurationControllerUnitTest {
 
         mockMvc.perform(get("/configuration/"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.links", hasSize(2)))
+            .andExpect(jsonPath("$.links", hasSize(1)))
             .andExpect(jsonPath("$.links[0].rel", is("self")))
-            .andExpect(jsonPath("$.links[0].href", endsWith("/configuration")))
-            .andExpect(jsonPath("$.links[1].rel", is("bricks")))
-            .andExpect(jsonPath("$.links[1].href", endsWith("/configuration/bricks")));
+            .andExpect(jsonPath("$.links[0].href", endsWith("/configuration")));
     }
 }

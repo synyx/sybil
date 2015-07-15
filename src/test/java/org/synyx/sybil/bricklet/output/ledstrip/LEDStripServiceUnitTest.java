@@ -1,9 +1,5 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
-import com.tinkerforge.BrickletLEDStrip;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,7 +44,7 @@ public class LEDStripServiceUnitTest {
     BrickletProvider brickletProvider;
 
     @Mock
-    BrickletLEDStrip brickletLEDStrip;
+    BrickletLEDStripWrapper brickletLEDStrip;
 
     LEDStripService sut;
 
@@ -62,7 +58,7 @@ public class LEDStripServiceUnitTest {
 
 
     @Test
-    public void handleSprite() throws TimeoutException, NotConnectedException {
+    public void handleSprite() throws Exception {
 
         // setup
         LEDStripDTO ledStripDTO = new LEDStripDTO();

@@ -1,13 +1,8 @@
-package org.synyx.sybil.brick.database;
-
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.NodeEntity;
+package org.synyx.sybil.brick.domain;
 
 import org.springframework.hateoas.core.Relation;
 
 import org.synyx.sybil.DeviceDomain;
-
-import java.util.Objects;
 
 
 /**
@@ -16,14 +11,10 @@ import java.util.Objects;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@NodeEntity
 @Relation(collectionRelation = "bricks")
 public class BrickDomain implements DeviceDomain {
 
     private static final int DEFAULT_PORT = 4223;
-
-    @GraphId
-    private Long id;
 
     private String name;
 
@@ -112,34 +103,5 @@ public class BrickDomain implements DeviceDomain {
     public String getUid() {
 
         return uid;
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        return areFieldsEqual((BrickDomain) o);
-    }
-
-
-    private boolean areFieldsEqual(BrickDomain o) {
-
-        return port == o.port && hostname.equals(o.hostname) && id.equals(o.id) && name.equals(o.name)
-            && uid.equals(o.uid);
-    }
-
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, name, hostname, port, uid);
     }
 }

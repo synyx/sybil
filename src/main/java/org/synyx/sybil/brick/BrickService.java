@@ -4,37 +4,29 @@ import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.BrickMaster;
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
-
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
-
-import org.neo4j.helpers.collection.IteratorUtil;
+import com.tinkerforge.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.data.neo4j.conversion.Result;
-
 import org.springframework.stereotype.Service;
 
+import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.LoadFailedException;
-import org.synyx.sybil.api.HealthController;
-import org.synyx.sybil.brick.database.BrickDomain;
-import org.synyx.sybil.brick.database.BrickRepository;
-import org.synyx.sybil.jenkins.domain.Status;
+import org.synyx.sybil.brick.domain.BrickDTO;
+import org.synyx.sybil.brick.domain.BrickDomain;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 
 /**
- * IPConnectionRegistry.
+ * BrickService.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
@@ -44,174 +36,51 @@ public class BrickService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BrickService.class);
 
-    private Map<BrickDomain, IPConnection> ipConnections = new HashMap<>();
+    BrickDTOService brickDTOService;
 
-    private BrickRepository brickRepository;
-    private GraphDatabaseService graphDatabaseService;
-
-    /**
-     * Instantiates a new Brick registry.
-     *
-     * @param  brickRepository  The brick repository
-     * @param  graphDatabaseService  The graph database service
-     */
     @Autowired
-    public BrickService(BrickRepository brickRepository, GraphDatabaseService graphDatabaseService) {
+    public BrickService(BrickDTOService brickDTOService) {
 
-        this.brickRepository = brickRepository;
-        this.graphDatabaseService = graphDatabaseService;
+        this.brickDTOService = brickDTOService;
     }
 
-    public IPConnection getIPConnection(String name) {
+    public IPConnection connect(BrickDTO brickDTO) throws AlreadyConnectedException, IOException {
 
-        return getIPConnection(getDomain(name));
-    }
+        BrickDomain brickDomain = brickDTO.getDomain();
+        IPConnection ipConnection = new IPConnection();
+        ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort());
 
-
-    /**
-     * Register a connection to a Tinkerforge Brick.
-     *
-     * @param  brickDomain  the Brick's domain object.
-     *
-     * @return  the iP connection
-     */
-    public IPConnection getIPConnection(BrickDomain brickDomain) {
-
-        connect(brickDomain);
-
-        return ipConnections.get(brickDomain);
+        return ipConnection;
     }
 
 
-    public BrickDomain getDomain(String name) {
+    @PostConstruct
+    public void resetAllBricks() {
 
-        BrickDomain brickDomain = brickRepository.findByName(name);
+        try {
+            List<BrickDTO> brickDTOs = brickDTOService.getAllDTOs();
 
-        if (brickDomain == null) {
-            throw new LoadFailedException("Brick " + name + " does not exist.");
-        } else {
-            return brickDomain;
-        }
-    }
-
-
-    public List<BrickDomain> getAllDomains() {
-
-        List<BrickDomain> bricks;
-
-        try(Transaction tx = graphDatabaseService.beginTx()) {
-            Result<BrickDomain> result = brickRepository.findAll();
-
-            if (result != null) {
-                bricks = new ArrayList<>(IteratorUtil.asCollection(result));
-            } else {
-                bricks = null;
+            for (BrickDTO brickDTO : brickDTOs) {
+                reset(brickDTO);
             }
-
-            tx.success();
-        }
-
-        return bricks;
-    }
-
-
-    public void deleteDomain(BrickDomain brickDomain) {
-
-        brickRepository.delete(brickDomain);
-    }
-
-
-    public void deleteAllDomains() {
-
-        brickRepository.deleteAll();
-    }
-
-
-    public BrickDomain saveDomain(BrickDomain brickDomain) {
-
-        return brickRepository.save(brickDomain);
-    }
-
-
-    public List<BrickDomain> saveDomains(List<BrickDomain> brickDomains) {
-
-        return new ArrayList<>(IteratorUtil.asCollection(brickRepository.save(brickDomains)));
-    }
-
-
-    public BrickMaster getBrickMaster(String uid, IPConnection ipConnection) {
-
-        return new BrickMaster(uid, ipConnection);
-    }
-
-
-    /**
-     * Connect a brick and put it's connection into the HashMap.
-     *
-     * @param  brickDomain  The Domain of the Brick to be connected
-     */
-    private void connect(BrickDomain brickDomain) {
-
-        if (!ipConnections.containsKey(brickDomain)) {
-            IPConnection ipConnection = new IPConnection();
-
-            try {
-                ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort());
-
-                BrickConnectionListener brickConnectionListener = new BrickConnectionListener(ipConnection);
-
-                ipConnection.addConnectedListener(brickConnectionListener);
-                ipConnections.put(brickDomain, ipConnection);
-            } catch (IOException e) {
-                LOG.error("I/O Exception connecting to brick {}: {}", brickDomain.getName(), e.getMessage());
-                HealthController.setHealth(Status.CRITICAL, "brick" + brickDomain.getName());
-            } catch (AlreadyConnectedException e) {
-                LOG.info("IPConnection to {} already connected: {}", brickDomain.getHostname(), e.toString());
-            }
+        } catch (NotConnectedException | TimeoutException | AlreadyConnectedException | IOException
+                | AttributeEmptyException | LoadFailedException exception) {
+            LOG.error("Failed to reset bricks: {}", exception);
         }
     }
 
 
-    /**
-     * Connect all bricks.
-     */
-    public void connectAll() {
+    private void reset(BrickDTO brickDTO) throws IOException, AlreadyConnectedException, TimeoutException,
+        NotConnectedException {
 
-        LOG.debug("Connecting all bricks.");
+        BrickDomain brickDomain = brickDTO.getDomain();
 
-        List<BrickDomain> brickDomains = getAllDomains();
+        IPConnection ipConnection = connect(brickDTO);
 
-        for (BrickDomain brickDomain : brickDomains) {
-            connect(brickDomain);
-        }
-    }
+        BrickMaster brickMaster = new BrickMaster(brickDomain.getUid(), ipConnection);
 
+        brickMaster.reset();
 
-    /**
-     * Disconnect all bricks, clear all the registered bricklets.
-     */
-    public void disconnectAll() {
-
-        LOG.debug("Disconnecting all bricks and bricklets.");
-
-        for (IPConnection ipConnection : ipConnections.values()) {
-            try {
-                ipConnection.disconnect();
-            } catch (NotConnectedException e) {
-                LOG.info("IPConnection {} already disconnected: {}", ipConnection.toString(), e.toString());
-            }
-        }
-
-        ipConnections.clear();
-    }
-
-
-    /**
-     * Dis- and then reconnect all bricks.
-     */
-    public void reconnectAll() {
-
-        disconnectAll();
-        connectAll();
+        ipConnection.disconnect();
     }
 }

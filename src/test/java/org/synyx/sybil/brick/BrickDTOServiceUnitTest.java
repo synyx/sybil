@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.brick;
+package org.synyx.sybil.brick;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,9 +15,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
 
 import org.synyx.sybil.LoadFailedException;
-import org.synyx.sybil.brick.BrickDTOService;
-import org.synyx.sybil.brick.database.BrickDomain;
 import org.synyx.sybil.brick.domain.BrickDTO;
+import org.synyx.sybil.brick.domain.BrickDomain;
 
 import java.io.File;
 import java.io.IOException;
