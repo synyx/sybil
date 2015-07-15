@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import org.synyx.sybil.AppDestroyer;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
@@ -72,26 +71,31 @@ public class JenkinsService {
     private final String configDirectory;
     private final String jenkinsServerConfigFile;
     private final RestTemplate restTemplate;
-    private final AppDestroyer appDestroyer;
 
     @Autowired
     public JenkinsService(ObjectMapper objectMapper, LEDStripService ledStripService,
-        LEDStripDTOService ledStripDTOService, Environment environment, RestTemplate restTemplate,
-        AppDestroyer appDestroyer) {
+        LEDStripDTOService ledStripDTOService, Environment environment, RestTemplate restTemplate) {
 
         this.objectMapper = objectMapper;
         this.ledStripService = ledStripService;
         this.ledStripDTOService = ledStripDTOService;
         this.restTemplate = restTemplate;
-        this.appDestroyer = appDestroyer;
         configDirectory = environment.getProperty("path.to.configfiles");
         jenkinsServerConfigFile = environment.getProperty("jenkins.configfile");
     }
 
     @PreDestroy
-    public void destroyContext() {
+    public void turnOffAllLEDStrips() {
 
-        appDestroyer.turnOffAllLEDStrips();
+        try {
+            List<LEDStripDTO> ledstrips = ledStripDTOService.getAllDTOs();
+
+            for (LEDStripDTO ledStripDTO : ledstrips) {
+                ledStripService.turnOff(ledStripDTO);
+            }
+        } catch (IOException | TimeoutException | NotConnectedException exception) {
+            LOG.error("Error turning off LED strips: {}", exception);
+        }
     }
 
 

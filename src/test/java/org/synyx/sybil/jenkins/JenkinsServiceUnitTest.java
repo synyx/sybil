@@ -26,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.client.RestTemplate;
 
-import org.synyx.sybil.AppDestroyer;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
@@ -87,9 +86,6 @@ public class JenkinsServiceUnitTest {
     @Spy
     LEDStripDTO ledStripDTOThreeMock;
 
-    @Mock
-    AppDestroyer appDestroyer;
-
     @Before
     public void setUp() throws Exception {
 
@@ -142,7 +138,7 @@ public class JenkinsServiceUnitTest {
                     eq(JenkinsProperties.class))).thenReturn(responseEntity);
 
         sut = new JenkinsService(objectMapperMock, ledStripServiceMock, ledStripDTOServiceMock, environmentMock,
-                restTemplateMock, appDestroyer);
+                restTemplateMock);
     }
 
 
@@ -170,11 +166,20 @@ public class JenkinsServiceUnitTest {
 
 
     @Test
-    public void destroyContext() throws Exception {
+    public void turnOffAllLEDStrips() throws Exception {
+
+        // setup
+        List<LEDStripDTO> ledStripDTOList = Arrays.asList(ledStripDTOOneMock, ledStripDTOTwoMock, ledStripDTOThreeMock);
+        when(ledStripDTOServiceMock.getAllDTOs()).thenReturn(ledStripDTOList);
 
         // execution
-        sut.destroyContext();
+        sut.turnOffAllLEDStrips();
 
-        verify(appDestroyer, times(1)).turnOffAllLEDStrips();
+        // verification
+        verify(ledStripDTOServiceMock).getAllDTOs();
+
+        verify(ledStripServiceMock, times(1)).turnOff(ledStripDTOOneMock);
+        verify(ledStripServiceMock, times(1)).turnOff(ledStripDTOTwoMock);
+        verify(ledStripServiceMock, times(1)).turnOff(ledStripDTOThreeMock);
     }
 }

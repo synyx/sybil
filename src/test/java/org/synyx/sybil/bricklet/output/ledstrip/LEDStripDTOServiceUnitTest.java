@@ -102,4 +102,13 @@ public class LEDStripDTOServiceUnitTest {
         LEDStripDTO ledStripDTO = sut.getDTO("one");
         Sprite1D sprite1D = ledStripDTO.getSprite();
     }
+
+
+    @Test
+    public void getAllDTOs() throws Exception {
+
+        List<LEDStripDTO> ledStripDTOs = sut.getAllDTOs();
+        assertThat(ledStripDTOs.get(0).getDomain(), is(ledStripDomains.get(0)));
+        assertThat(ledStripDTOs.get(1).getDomain(), is(ledStripDomains.get(1)));
+    }
 }

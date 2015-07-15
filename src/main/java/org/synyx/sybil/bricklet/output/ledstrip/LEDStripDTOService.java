@@ -32,6 +32,12 @@ public class LEDStripDTOService {
     private final ObjectMapper objectMapper;
     private final String configDir;
 
+    /**
+     * Instantiates a new LED strip DTO service.
+     *
+     * @param  objectMapper  the object mapper
+     * @param  environment  the environment
+     */
     @Autowired
     public LEDStripDTOService(ObjectMapper objectMapper, Environment environment) {
 
@@ -45,6 +51,8 @@ public class LEDStripDTOService {
      * @param  name  The name of the LED strip.
      *
      * @return  The DTO containing the LED strip's configuration.
+     *
+     * @throws  IOException  The IO exception.
      */
     public LEDStripDTO getDTO(String name) throws IOException {
 
@@ -69,6 +77,13 @@ public class LEDStripDTOService {
     }
 
 
+    /**
+     * Gets pre-configured DTOs for all LED strips.
+     *
+     * @return  A List of all the DTOs.
+     *
+     * @throws  IOException  The IO exception.
+     */
     public List<LEDStripDTO> getAllDTOs() throws IOException {
 
         List<LEDStripDTO> ledStripDTOs = new ArrayList<>();

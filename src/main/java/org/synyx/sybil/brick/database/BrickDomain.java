@@ -61,22 +61,6 @@ public class BrickDomain implements DeviceDomain {
      *
      * @param  hostname  The hostname
      * @param  uid  The uid
-     * @param  port  The port (optional, defaults to 4223)
-     */
-    public BrickDomain(String hostname, String uid, int port) {
-
-        this.hostname = hostname;
-        this.name = hostname;
-        this.port = port;
-        this.uid = uid;
-    }
-
-
-    /**
-     * Instantiates a new Brick domain.
-     *
-     * @param  hostname  The hostname
-     * @param  uid  The uid
      */
     public BrickDomain(String hostname, String uid) {
 
