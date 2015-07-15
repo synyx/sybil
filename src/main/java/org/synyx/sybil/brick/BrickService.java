@@ -65,7 +65,7 @@ public class BrickService {
             }
         } catch (NotConnectedException | TimeoutException | AlreadyConnectedException | IOException
                 | AttributeEmptyException | LoadFailedException exception) {
-            LOG.error("Failed to reset bricks: {}", exception);
+            LOG.error("Failed to reset bricks:", exception);
         }
     }
 

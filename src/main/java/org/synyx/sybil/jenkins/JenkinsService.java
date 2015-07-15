@@ -96,7 +96,7 @@ public class JenkinsService {
                 ledStripService.turnOff(ledStripDTO);
             }
         } catch (IOException | TimeoutException | NotConnectedException | AlreadyConnectedException exception) {
-            LOG.error("Error turning off LED strips: {}", exception);
+            LOG.error("Error turning off LED strips:", exception);
         }
     }
 
@@ -112,7 +112,7 @@ public class JenkinsService {
             authorizations = loadAuthorizations();
             configuredJobs = loadConfiguredJobs();
         } catch (IOException exception) {
-            LOG.error("Error loading Jenkins configuration: {}", exception);
+            LOG.error("Error loading Jenkins configuration:", exception);
 
             return;
         }
@@ -126,7 +126,7 @@ public class JenkinsService {
                 jobs = getJobsFromJenkins(server, authorizations.get(server));
                 ledStripStatuses = getLEDStripStatusesFromJobs(jobs, configuredJobs.get(server), ledStripStatuses);
             } catch (RestClientException exception) {
-                LOG.error("Error retrieving jobs from Jenkins: {}", exception);
+                LOG.error("Error retrieving jobs from Jenkins:", exception);
             }
         }
 
@@ -260,7 +260,7 @@ public class JenkinsService {
                 ledStripDTO.setStatus(ledStripStatuses.get(ledStrip));
                 ledStripService.handleStatus(ledStripDTO);
             } catch (TimeoutException | NotConnectedException | IOException | AlreadyConnectedException exception) {
-                LOG.error("Error setting status on LED strip: {}", exception);
+                LOG.error("Error setting status on LED strip:", exception);
             }
         }
     }

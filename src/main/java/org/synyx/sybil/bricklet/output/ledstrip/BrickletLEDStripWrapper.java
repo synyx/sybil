@@ -12,7 +12,7 @@ import com.tinkerforge.NotConnectedException;
  */
 public class BrickletLEDStripWrapper extends BrickletLEDStrip {
 
-    private IPConnection ipConnection;
+    private final IPConnection ipConnection;
 
     /**
      * Creates an object with the unique device ID \c uid. and adds it to the IP Connection \c ipcon.
