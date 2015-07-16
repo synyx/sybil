@@ -1,5 +1,7 @@
 package org.synyx.sybil.bricklet.output.ledstrip.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.hateoas.core.Relation;
 
 import org.synyx.sybil.AttributeEmptyException;
@@ -154,6 +156,7 @@ public class LEDStripDomain implements DeviceDomain {
     }
 
 
+    @JsonIgnore
     public Map<Status, Color> getCustomColors() {
 
         if (hasCustomColors()) {
