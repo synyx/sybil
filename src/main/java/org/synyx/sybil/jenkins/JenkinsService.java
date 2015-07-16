@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import org.synyx.sybil.AttributeEmptyException;
+import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
@@ -95,7 +97,8 @@ public class JenkinsService {
             for (LEDStripDTO ledStripDTO : ledstrips) {
                 ledStripService.turnOff(ledStripDTO);
             }
-        } catch (IOException | TimeoutException | NotConnectedException | AlreadyConnectedException exception) {
+        } catch (IOException | TimeoutException | NotConnectedException | AlreadyConnectedException
+                | AttributeEmptyException | LoadFailedException exception) {
             LOG.error("Error turning off LED strips:", exception);
         }
     }
@@ -259,7 +262,8 @@ public class JenkinsService {
                 LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(ledStrip);
                 ledStripDTO.setStatus(ledStripStatuses.get(ledStrip));
                 ledStripService.handleStatus(ledStripDTO);
-            } catch (TimeoutException | NotConnectedException | IOException | AlreadyConnectedException exception) {
+            } catch (TimeoutException | NotConnectedException | IOException | AlreadyConnectedException
+                    | AttributeEmptyException | LoadFailedException exception) {
                 LOG.error("Error setting status on LED strip:", exception);
             }
         }
