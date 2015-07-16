@@ -106,6 +106,16 @@ gretty { // configure gretty
 }
 /*** END Load & Configure gretty embedded servlet container ***/
 
+
+/** START Cobertura Config ***/
+
+cobertura {
+    coverageFormats = [ 'html', 'xml' ]
+}
+
+/** END Cobertura Config ***/
+
+
 task testReport {
     
     dependsOn(clean, test, coberturaReport)
