@@ -44,7 +44,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 @PrepareForTest({ BrickService.class, LoggerFactory.class })
 public class BrickServiceUnitTest {
 
-    private static Logger loggerMock;
+    static Logger loggerMock;
 
     @Mock
     BrickDTOService brickDTOServiceMock;
@@ -65,6 +65,13 @@ public class BrickServiceUnitTest {
         loggerMock = mock(Logger.class);
 
         when(LoggerFactory.getLogger(any(Class.class))).thenReturn(loggerMock);
+    }
+
+
+    @AfterClass
+    public static void verifyStatic() {
+
+        verify(loggerMock).error(eq("Failed to reset bricks:"), any(Throwable.class));
     }
 
 
@@ -135,12 +142,5 @@ public class BrickServiceUnitTest {
 
         // execution
         sut.resetAllBricks();
-    }
-
-
-    @AfterClass
-    public static void verifyStatic() {
-
-        verify(loggerMock).error(eq("Failed to reset bricks:"), any(Throwable.class));
     }
 }
