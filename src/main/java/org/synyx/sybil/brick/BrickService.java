@@ -1,4 +1,3 @@
-// NOSONAR This class is thoroughly tested, but due to using Powermock jacoco is unable to trace it.
 package org.synyx.sybil.brick;
 
 import com.tinkerforge.AlreadyConnectedException;
