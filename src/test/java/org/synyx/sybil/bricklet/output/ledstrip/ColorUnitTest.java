@@ -1,13 +1,15 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
+import com.tinkerforge.BrickletLEDStrip;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import org.junit.runner.RunWith;
 
-import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.mockito.Mock;
 
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import org.synyx.sybil.jenkins.domain.Status;
 
@@ -16,9 +18,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Color.class)
+@RunWith(MockitoJUnitRunner.class)
 public class ColorUnitTest {
+
+    @Mock
+    BrickletLEDStrip.RGBValues rgbValues;
 
     private Color color;
 
@@ -85,5 +89,26 @@ public class ColorUnitTest {
         Color color = new Color(1, 2, 3);
 
         assertThat(color.toString(), is("(1, 2, 3)"));
+    }
+
+
+    @Test
+    public void colorFromLEDStrip() throws Exception {
+
+        // setup
+        short[] r = { 255, 0, 0 };
+        short[] g = { 0, 255, 0 };
+        short[] b = { 0, 0, 255 };
+
+        // WS2812 use BRG instead of RGB
+        rgbValues.r = b;
+        rgbValues.g = r;
+        rgbValues.b = g;
+
+        // execution
+        Color color = Color.colorFromLedStrip(rgbValues);
+
+        // verification
+        assertThat(color, is(new Color(255, 0, 0)));
     }
 }

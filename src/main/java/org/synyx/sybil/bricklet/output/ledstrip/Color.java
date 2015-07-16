@@ -73,15 +73,28 @@ public class Color {
 
 
     /**
-     * Converts Tinkerforge colors into the right format.
+     * Converts Tinkerforge colors into the right format for the first pixel.
      *
      * @param  rgbValues  Tinkerforge-returned color-object.
      */
     public static Color colorFromLedStrip(BrickletLEDStrip.RGBValues rgbValues) {
 
-        int red = rgbValues.g[0];
-        int green = rgbValues.b[0];
-        int blue = rgbValues.r[0];
+        return colorFromLEDStrip(rgbValues, 0);
+    }
+
+
+    /**
+     * Converts Tinkerforge colors into the right format.
+     *
+     * @param  rgbValues  Tinkerforge-returned color-object.
+     * @param  position  The position on the LED strip.
+     */
+    public static Color colorFromLEDStrip(BrickletLEDStrip.RGBValues rgbValues, int position) {
+
+        // WS2812 use BRG instead of RGB (think it through, this makes sense)
+        int red = rgbValues.g[position];
+        int green = rgbValues.b[position];
+        int blue = rgbValues.r[position];
 
         return new Color(red, green, blue);
     }

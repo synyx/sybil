@@ -1,5 +1,7 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
+import com.tinkerforge.BrickletLEDStrip;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,6 +48,9 @@ public class LEDStripServiceUnitTest {
     @Mock
     BrickletLEDStripWrapper brickletLEDStrip;
 
+    @Mock
+    BrickletLEDStrip.RGBValues rgbValues;
+
     LEDStripService sut;
 
     @Before
@@ -54,6 +59,36 @@ public class LEDStripServiceUnitTest {
         when(brickletProvider.getBrickletLEDStrip(any(LEDStripDomain.class))).thenReturn(brickletLEDStrip);
 
         sut = new LEDStripService(brickletProvider);
+    }
+
+
+    @Test
+    public void getPixels() throws Exception {
+
+        // setup
+        short[] r = { 255, 0, 255, 0, 0 };
+        short[] g = { 255, 0, 0, 255, 0 };
+        short[] b = { 255, 0, 0, 0, 255 };
+
+        // WS2812 use BRG instead of RGB
+        rgbValues.r = b;
+        rgbValues.g = r;
+        rgbValues.b = g;
+
+        when(brickletLEDStrip.getRGBValues(0, (short) 5)).thenReturn(rgbValues);
+
+        LEDStripDTO ledStripDTO = new LEDStripDTO();
+        ledStripDTO.setDomain(new LEDStripDomain("one", "abc", 5, "abrick"));
+
+        // execution
+        Sprite1D sprite1D = sut.getPixels(ledStripDTO);
+
+        // verification
+        assertThat(sprite1D.getPixel(0), is(Color.WHITE));
+        assertThat(sprite1D.getPixel(1), is(Color.BLACK));
+        assertThat(sprite1D.getPixel(2), is(new Color(255, 0, 0)));
+        assertThat(sprite1D.getPixel(3), is(new Color(0, 255, 0)));
+        assertThat(sprite1D.getPixel(4), is(new Color(0, 0, 255)));
     }
 
 

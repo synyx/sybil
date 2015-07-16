@@ -1,6 +1,7 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
 import com.tinkerforge.AlreadyConnectedException;
+import com.tinkerforge.BrickletLEDStrip;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
@@ -40,6 +41,26 @@ public class LEDStripService {
 
         this.brickletProvider = provider;
     }
+
+    public Sprite1D getPixels(LEDStripDTO ledStripDTO) throws AlreadyConnectedException, TimeoutException,
+        NotConnectedException, IOException {
+
+        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
+        Sprite1D result = new Sprite1D(ledStripDomain.getLength(), ledStripDomain.getName());
+
+        BrickletLEDStripWrapper brickletLEDStrip = brickletProvider.getBrickletLEDStrip(ledStripDomain);
+
+        BrickletLEDStrip.RGBValues values = brickletLEDStrip.getRGBValues(0, (short) ledStripDomain.getLength()); // NOSONAR Tinkerforge library uses shorts
+
+        for (int i = 0; i < ledStripDomain.getLength(); i++) {
+            result.setPixel(i, Color.colorFromLEDStrip(values, i));
+        }
+
+        brickletLEDStrip.disconnect();
+
+        return result;
+    }
+
 
     public void turnOff(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
         AttributeEmptyException, IOException, AlreadyConnectedException {
