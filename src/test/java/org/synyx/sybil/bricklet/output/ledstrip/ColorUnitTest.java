@@ -3,6 +3,12 @@ package org.synyx.sybil.bricklet.output.ledstrip;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
+
+import org.powermock.core.classloader.annotations.PrepareForTest;
+
+import org.powermock.modules.junit4.PowerMockRunner;
+
 import org.synyx.sybil.jenkins.domain.Status;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -10,6 +16,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Color.class)
 public class ColorUnitTest {
 
     private Color color;
@@ -58,6 +66,16 @@ public class ColorUnitTest {
         Color sameColor = new Color(1, 2, 3);
 
         assert (color.equals(sameColor));
+    }
+
+
+    @Test
+    public void isNotEqual() throws Exception {
+
+        Color color = new Color(1, 2, 3);
+        Color sameColor = new Color(3, 2, 1);
+
+        assert (!color.equals(sameColor));
     }
 
 
