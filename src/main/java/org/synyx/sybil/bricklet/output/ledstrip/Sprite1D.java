@@ -4,6 +4,7 @@ import org.springframework.hateoas.core.Relation;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -177,5 +178,45 @@ public class Sprite1D {
     public String getName() {
 
         return name;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Sprite1D sprite1D = (Sprite1D) o;
+
+        if (length != sprite1D.length) {
+            return false;
+        }
+
+        if (!Arrays.equals(blue, sprite1D.blue)) {
+            return false;
+        }
+
+        if (!Arrays.equals(green, sprite1D.green)) {
+            return false;
+        }
+
+        if (name != null ? !name.equals(sprite1D.name) : sprite1D.name != null) {
+            return false;
+        }
+
+        return Arrays.equals(red, sprite1D.red);
+    }
+
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(red, green, blue, length, name);
     }
 }

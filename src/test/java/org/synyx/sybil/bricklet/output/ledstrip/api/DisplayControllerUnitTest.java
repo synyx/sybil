@@ -1,19 +1,25 @@
 package org.synyx.sybil.bricklet.output.ledstrip.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import org.junit.runner.RunWith;
 
 import org.mockito.Mock;
+import org.mockito.Spy;
 
 import org.mockito.runners.MockitoJUnitRunner;
+
+import org.springframework.http.MediaType;
 
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 
 import java.io.IOException;
@@ -23,11 +29,16 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import static org.hamcrest.Matchers.hasSize;
 
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -42,11 +53,13 @@ public class DisplayControllerUnitTest {
     @Mock
     LEDStripDTOService ledStripDTOServiceMock;
 
-    @Mock
+    @Spy
     LEDStripDTO ledStripDTOMock;
 
     DisplayController sut;
     MockMvc mockMvc;
+    List<Color> colors;
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setUp() throws Exception {
@@ -54,7 +67,8 @@ public class DisplayControllerUnitTest {
         when(ledStripDTOServiceMock.getDTO("doesntexist")).thenThrow(new NullPointerException());
         when(ledStripDTOServiceMock.getDTO("ledone")).thenReturn(ledStripDTOMock);
 
-        List<Color> colors = new ArrayList<>();
+        colors = new ArrayList<>();
+
         colors.add(Color.BLACK);
         colors.add(Color.CRITICAL);
         colors.add(Color.WARNING);
@@ -78,11 +92,13 @@ public class DisplayControllerUnitTest {
     @Test
     public void testGetFailingDisplay() throws Exception {
 
+        // setup
         when(ledStripServiceMock.getPixels(ledStripDTOMock)).thenThrow(new IOException());
 
         sut = new DisplayController(ledStripDTOServiceMock, ledStripServiceMock);
         mockMvc = standaloneSetup(sut).build();
 
+        // execution & verification
         mockMvc.perform(get("/configuration/ledstrips/ledone/display")).andExpect(status().is5xxServerError());
     }
 
@@ -111,5 +127,86 @@ public class DisplayControllerUnitTest {
             .andExpect(jsonPath("$.pixels[4].red", is(255)))
             .andExpect(jsonPath("$.pixels[4].green", is(255)))
             .andExpect(jsonPath("$.pixels[4].blue", is(255)));
+    }
+
+
+    @Test
+    public void putFullDisplay() throws Exception {
+
+        // setup
+        DisplayResource displayResource = new DisplayResource();
+        displayResource.setPixels(colors);
+
+        Sprite1D sprite1D = new Sprite1D(5, colors);
+
+        // execution
+        mockMvc.perform(put("/configuration/ledstrips/ledone/display").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(displayResource)))
+            .andExpect(status().isOk());
+
+        // verification
+        assertThat(ledStripDTOMock.getSprite(), is(sprite1D));
+        verify(ledStripServiceMock).handleSprite(ledStripDTOMock);
+    }
+
+
+    @Test
+    public void putPartialDisplay() throws Exception {
+
+        // setup
+        colors = new ArrayList<>();
+
+        colors.add(Color.CRITICAL);
+        colors.add(Color.WARNING);
+        colors.add(Color.OKAY);
+
+        DisplayResource displayResource = new DisplayResource();
+        displayResource.setPixels(colors);
+
+        Sprite1D sprite1D = new Sprite1D(3, colors);
+
+        // execution
+        mockMvc.perform(put("/configuration/ledstrips/ledone/display").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(displayResource)))
+            .andExpect(status().isOk());
+
+        // verification
+        assertThat(ledStripDTOMock.getSprite(), is(sprite1D));
+        verify(ledStripServiceMock).handleSprite(ledStripDTOMock);
+    }
+
+
+    @Test
+    public void putNoPixelsDisplay() throws Exception {
+
+        // setup
+        colors = new ArrayList<>();
+
+        DisplayResource displayResource = new DisplayResource();
+        displayResource.setPixels(colors);
+
+        // execution
+        mockMvc.perform(put("/configuration/ledstrips/ledone/display").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(displayResource)))
+            .andExpect(status().isOk());
+
+        // verification
+        verify(ledStripServiceMock, never()).handleSprite(ledStripDTOMock);
+    }
+
+
+    @Test
+    public void putEmptyDisplay() throws Exception {
+
+        // setup
+        DisplayResource displayResource = new DisplayResource();
+
+        // execution
+        mockMvc.perform(put("/configuration/ledstrips/ledone/display").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(displayResource)))
+            .andExpect(status().isOk());
+
+        // verification
+        verify(ledStripServiceMock, never()).handleSprite(ledStripDTOMock);
     }
 }

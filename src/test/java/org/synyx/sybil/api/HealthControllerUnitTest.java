@@ -55,5 +55,9 @@ public class HealthControllerUnitTest {
         HealthController.setHealth(Status.OKAY, "someOtherSource");
 
         mockMvc.perform(get("/health")).andExpect(status().isOk()).andExpect(content().string("\"OKAY\""));
+
+        HealthController.setHealth(null, "someOtherSource");
+
+        mockMvc.perform(get("/health")).andExpect(status().isOk()).andExpect(content().string("\"OKAY\""));
     }
 }
