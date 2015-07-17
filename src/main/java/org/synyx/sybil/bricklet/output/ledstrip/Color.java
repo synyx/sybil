@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.tinkerforge.BrickletLEDStrip;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import org.synyx.sybil.jenkins.domain.Status;
 
 import java.util.Objects;
@@ -140,7 +142,12 @@ public class Color {
 
         Color color = (Color) o;
 
-        return Objects.equals(red, color.red) && Objects.equals(green, color.green) && Objects.equals(blue, color.blue);
+        EqualsBuilder builder = new EqualsBuilder();
+        builder.append(red, color.red);
+        builder.append(green, color.green);
+        builder.append(blue, color.blue);
+
+        return builder.isEquals();
     }
 
 

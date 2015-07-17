@@ -141,4 +141,34 @@ public class Sprite1DUnitTest {
         assertThat(green[2], is(0));
         assertThat(blue[2], is(64));
     }
+
+
+    @Test
+    public void equalsSame() {
+
+        Sprite1D sprite = new Sprite1D(3);
+        sprite.setFill(new Color(64, 128, 0));
+
+        sprite.equals(sprite);
+    }
+
+
+    @Test
+    public void equalsString() {
+
+        Sprite1D sprite = new Sprite1D(3);
+        sprite.setFill(new Color(64, 128, 0));
+
+        sprite.equals("test");
+    }
+
+
+    @Test
+    public void equalsNull() {
+
+        Sprite1D sprite = new Sprite1D(3);
+        sprite.setFill(new Color(64, 128, 0));
+
+        sprite.equals(null);
+    }
 }

@@ -1,5 +1,7 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 import org.springframework.hateoas.core.Relation;
 
 import java.util.Arrays;
@@ -194,23 +196,14 @@ public class Sprite1D {
 
         Sprite1D sprite1D = (Sprite1D) o;
 
-        if (length != sprite1D.length) {
-            return false;
-        }
+        EqualsBuilder builder = new EqualsBuilder();
+        builder.append(red, sprite1D.red);
+        builder.append(green, sprite1D.green);
+        builder.append(blue, sprite1D.blue);
+        builder.append(length, sprite1D.length);
+        builder.append(name, sprite1D.name);
 
-        if (!Arrays.equals(blue, sprite1D.blue)) {
-            return false;
-        }
-
-        if (!Arrays.equals(green, sprite1D.green)) {
-            return false;
-        }
-
-        if (name != null ? !name.equals(sprite1D.name) : sprite1D.name != null) {
-            return false;
-        }
-
-        return Arrays.equals(red, sprite1D.red);
+        return builder.isEquals();
     }
 
 
