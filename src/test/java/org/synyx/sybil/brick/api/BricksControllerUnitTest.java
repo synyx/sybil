@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
@@ -72,7 +71,7 @@ public class BricksControllerUnitTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.links", hasSize(1)))
             .andExpect(jsonPath("$.links[0].rel", is("self")))
-            .andExpect(jsonPath("$.links[0].href", endsWith("/configuration/bricks")))
+            .andExpect(jsonPath("$.links[0].href", is("http://localhost/configuration/bricks")))
             .andExpect(jsonPath("$.content", hasSize(2)))
             .andExpect(jsonPath("$.content[*].name", contains("host", "brick")))
             .andExpect(jsonPath("$.content[*].hostname", contains("host", "anotherhost")))

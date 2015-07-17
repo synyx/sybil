@@ -49,7 +49,10 @@ public class LEDStripServiceUnitTest {
     BrickletLEDStripWrapper brickletLEDStrip;
 
     @Mock
-    BrickletLEDStrip.RGBValues rgbValues;
+    BrickletLEDStrip.RGBValues rgbValuesOne;
+
+    @Mock
+    BrickletLEDStrip.RGBValues rgbValuesTwo;
 
     LEDStripService sut;
 
@@ -66,29 +69,45 @@ public class LEDStripServiceUnitTest {
     public void getPixels() throws Exception {
 
         // setup
-        short[] r = { 255, 0, 255, 0, 0 };
-        short[] g = { 255, 0, 0, 255, 0 };
-        short[] b = { 255, 0, 0, 0, 255 };
+        short[] r = new short[16];
+        short[] g = new short[16];
+        short[] b = new short[16];
+
+        for (int i = 0; i < 16; i++) {
+            r[i] = (short) i;
+            g[i] = (short) (i * 2);
+            b[i] = (short) (i * 3);
+        }
 
         // WS2812 use BRG instead of RGB
-        rgbValues.r = b;
-        rgbValues.g = r;
-        rgbValues.b = g;
+        rgbValuesOne.r = b.clone();
+        rgbValuesOne.g = r.clone();
+        rgbValuesOne.b = g.clone();
 
-        when(brickletLEDStrip.getRGBValues(0, (short) 5)).thenReturn(rgbValues);
+        for (int i = 0; i < 16; i++) {
+            r[i] = (short) (i + 16);
+            g[i] = (short) ((i + 16) * 2);
+            b[i] = (short) ((i + 16) * 3);
+        }
+
+        // WS2812 use BRG instead of RGB
+        rgbValuesTwo.r = b.clone();
+        rgbValuesTwo.g = r.clone();
+        rgbValuesTwo.b = g.clone();
+
+        when(brickletLEDStrip.getRGBValues(0, (short) 16)).thenReturn(rgbValuesOne);
+        when(brickletLEDStrip.getRGBValues(16, (short) 16)).thenReturn(rgbValuesTwo);
 
         LEDStripDTO ledStripDTO = new LEDStripDTO();
-        ledStripDTO.setDomain(new LEDStripDomain("one", "abc", 5, "abrick"));
+        ledStripDTO.setDomain(new LEDStripDomain("one", "abc", 30, "abrick"));
 
         // execution
-        Sprite1D sprite1D = sut.getPixels(ledStripDTO);
+        List<Color> pixels = sut.getPixels(ledStripDTO);
 
         // verification
-        assertThat(sprite1D.getPixel(0), is(Color.WHITE));
-        assertThat(sprite1D.getPixel(1), is(Color.BLACK));
-        assertThat(sprite1D.getPixel(2), is(new Color(255, 0, 0)));
-        assertThat(sprite1D.getPixel(3), is(new Color(0, 255, 0)));
-        assertThat(sprite1D.getPixel(4), is(new Color(0, 0, 255)));
+        for (int i = 0; i < 30; i++) {
+            assertThat(pixels.get(i), is(new Color(i, i * 2, i * 3)));
+        }
     }
 
 

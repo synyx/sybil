@@ -18,7 +18,9 @@ import org.synyx.sybil.jenkins.domain.StatusInformation;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -42,18 +44,20 @@ public class LEDStripService {
         this.brickletProvider = provider;
     }
 
-    public Sprite1D getPixels(LEDStripDTO ledStripDTO) throws AlreadyConnectedException, TimeoutException,
+    public List<Color> getPixels(LEDStripDTO ledStripDTO) throws AlreadyConnectedException, TimeoutException,
         NotConnectedException, IOException {
 
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
-        Sprite1D result = new Sprite1D(ledStripDomain.getLength(), ledStripDomain.getName());
+        List<Color> result = new ArrayList<>();
 
         BrickletLEDStripWrapper brickletLEDStrip = brickletProvider.getBrickletLEDStrip(ledStripDomain);
 
-        BrickletLEDStrip.RGBValues values = brickletLEDStrip.getRGBValues(0, (short) ledStripDomain.getLength()); // NOSONAR Tinkerforge library uses shorts
+        for (int pos = 0; pos < ledStripDomain.getLength(); pos += SIXTEEN) {
+            BrickletLEDStrip.RGBValues values = brickletLEDStrip.getRGBValues(pos, (short) SIXTEEN); // NOSONAR Tinkerforge library uses shorts
 
-        for (int i = 0; i < ledStripDomain.getLength(); i++) {
-            result.setPixel(i, Color.colorFromLEDStrip(values, i));
+            for (int i = 0; i < Math.min(ledStripDomain.getLength() - pos, SIXTEEN); i++) {
+                result.add(Color.colorFromLEDStrip(values, i));
+            }
         }
 
         brickletLEDStrip.disconnect();
