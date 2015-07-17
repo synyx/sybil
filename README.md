@@ -1,6 +1,8 @@
 Sybil
 =====
 
+**Documentation is outdated and will be updated soon**
+
 A project to illuminate and inform the people in the office(s).
 Uses WS2812 LED strips and AZ943-1CH-5DE relays connected to Tinkerforge bricks.
 
