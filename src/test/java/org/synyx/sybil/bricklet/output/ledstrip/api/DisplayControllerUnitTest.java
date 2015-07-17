@@ -51,6 +51,7 @@ public class DisplayControllerUnitTest {
     @Before
     public void setUp() throws Exception {
 
+        when(ledStripDTOServiceMock.getDTO("doesntexist")).thenThrow(new NullPointerException());
         when(ledStripDTOServiceMock.getDTO("ledone")).thenReturn(ledStripDTOMock);
 
         List<Color> colors = new ArrayList<>();
