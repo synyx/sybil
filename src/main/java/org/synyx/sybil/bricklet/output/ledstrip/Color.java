@@ -25,9 +25,9 @@ public class Color {
     private static final int MAX_PRIMARY_COLOR = 255;
     private static final int MIN_PRIMARY_COLOR = 0;
 
-    private final int red;
-    private final int green;
-    private final int blue;
+    private int red;
+    private int green;
+    private int blue;
 
     /**
      * Converts Red, Green and Blue into the right format.
@@ -41,6 +41,12 @@ public class Color {
         this.red = setColorLimits(red);
         this.green = setColorLimits(green);
         this.blue = setColorLimits(blue);
+    }
+
+
+    public Color() {
+
+        // default constructor deliberately left empty.
     }
 
     private int setColorLimits(int primaryColor) {
