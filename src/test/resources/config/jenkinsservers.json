@@ -1,8 +1,0 @@
-[
-  { "url": "http://localhost:8081", "user": "user", "key": "key"},
-  { "url": "http://localhost:8082", "user": "user", "key": "key"},
-  { "url": "http://localhost:8083", "user": "user", "key": "key"},
-  { "url": "http://localhost:8084", "user": "user", "key": "key"},
-  { "url": "http://localhost:8085", "user": "user", "key": "key"},
-  { "url": "http://localhost:8086", "user": "user", "key": "key"}
-]
