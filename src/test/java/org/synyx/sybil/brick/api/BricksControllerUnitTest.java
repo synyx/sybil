@@ -34,10 +34,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class ConfigurationBricksControllerUnitTest {
+public class BricksControllerUnitTest {
 
     MockMvc mockMvc;
-    ConfigurationBricksController configurationBricksController;
+    BricksController bricksController;
 
     @Mock
     BrickDTOService brickDTOServiceMock;
@@ -60,8 +60,8 @@ public class ConfigurationBricksControllerUnitTest {
         when(brickDTOServiceMock.getDTO("host")).thenReturn(brickDTOOne);
         when(brickDTOServiceMock.getDTO("brick")).thenReturn(brickDTOTwo);
 
-        configurationBricksController = new ConfigurationBricksController(brickDTOServiceMock);
-        mockMvc = standaloneSetup(configurationBricksController).build();
+        bricksController = new BricksController(brickDTOServiceMock);
+        mockMvc = standaloneSetup(bricksController).build();
     }
 
 

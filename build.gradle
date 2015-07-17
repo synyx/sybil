@@ -1,20 +1,5 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath group: 'org.akhikhl.gretty', name: 'gretty', version: '+'
-    }
-}
-
-plugins {
-    id 'net.saliman.cobertura' version '2.2.7'
-}
-
 apply plugin: 'java' //Java plugin
 apply plugin: 'war' //war plugin
-apply plugin: 'org.akhikhl.gretty' // gretty = embedded jetty 9
 
 sourceCompatibility = 1.8 //Java 8
 version = '0.2'
@@ -46,7 +31,6 @@ dependencies {
 }
 
 
-
 /**********************************
  * START of TESTING CONFIGURATION *
  **********************************/
@@ -70,16 +54,16 @@ dependencies {
     testCompile group: 'com.jayway.jsonpath', name: 'json-path', version: '1.2.0'
     testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.6.2'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.2'
-    
 }
 
+/*** Task: Show pretty test results ***/
 task showResults(type: Exec) {
     inputs.file file('build/reports/tests/index.html')
     outputs.file file('build/reports/tests/testresults.txt')
     commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16|sed \'s/[\\+| ]//g\' > build/reports/tests/testresults.txt && cat build/reports/tests/testresults.txt'
 }
 
-/*** Verbose Test ***/
+/*** Task: Verbose Test ***/
 task vTest (type: Test) {
     systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
@@ -93,13 +77,22 @@ task vTest (type: Test) {
         includeTestsMatching "*UnitTest"
     }
 }
-
-
 /*** END Configure unit tests ***/
 
 
-
 /*** START Load & Configure gretty embedded servlet container ***/
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath group: 'org.akhikhl.gretty', name: 'gretty', version: '+'
+    }
+}
+
+apply plugin: 'org.akhikhl.gretty' // gretty = embedded jetty 9
+
 gretty { // configure gretty
     recompileOnSourceChange = false; // not terribly useful with an autosaving IDE.
     contextPath = "/" // make the project available at / URL instead of /$projectname/
@@ -107,15 +100,25 @@ gretty { // configure gretty
 /*** END Load & Configure gretty embedded servlet container ***/
 
 
-/** START Cobertura Config ***/
+/*** START Configure Cobertura ***/
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.saliman:gradle-cobertura-plugin:2.2.7"
+    }
+}
+
+apply plugin: 'net.saliman.cobertura'
 
 cobertura {
     coverageFormats = [ 'html', 'xml' ]
 }
+/*** END Configure Cobertura ***/
 
-/** END Cobertura Config ***/
 
-
+/*** Task: Custom All-In-One test & report ***/
 task testReport {
     
     dependsOn(clean, test, coberturaReport)

@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.LoadFailedException;
+import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.brick.domain.BrickDTO;
 import org.synyx.sybil.brick.domain.BrickDomain;
+import org.synyx.sybil.jenkins.domain.Status;
 
 import java.io.IOException;
 
@@ -65,8 +67,15 @@ public class BrickService {
             }
         } catch (NotConnectedException | TimeoutException | AlreadyConnectedException | IOException
                 | AttributeEmptyException | LoadFailedException exception) {
-            LOG.error("Failed to reset bricks:", exception);
+            handleError("Failed to reset bricks:", exception);
         }
+    }
+
+
+    private void handleError(String message, Exception exception) {
+
+        LOG.error(message, exception);
+        HealthController.setHealth(Status.CRITICAL, this.getClass().toString());
     }
 
 

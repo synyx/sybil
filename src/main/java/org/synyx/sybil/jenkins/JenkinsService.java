@@ -32,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 
 import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.LoadFailedException;
+import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
@@ -99,8 +100,15 @@ public class JenkinsService {
             }
         } catch (IOException | TimeoutException | NotConnectedException | AlreadyConnectedException
                 | AttributeEmptyException | LoadFailedException exception) {
-            LOG.error("Error turning off LED strips:", exception);
+            handleError("Error turning off LED strips:", exception);
         }
+    }
+
+
+    private void handleError(String message, Exception exception) {
+
+        LOG.error(message, exception);
+        HealthController.setHealth(Status.WARNING, this.getClass().toString());
     }
 
 
@@ -115,7 +123,7 @@ public class JenkinsService {
             authorizations = loadAuthorizations();
             configuredJobs = loadConfiguredJobs();
         } catch (IOException exception) {
-            LOG.error("Error loading Jenkins configuration:", exception);
+            handleError("Error loading Jenkins configuration:", exception);
 
             return;
         }
@@ -129,7 +137,7 @@ public class JenkinsService {
                 jobs = getJobsFromJenkins(server, authorizations.get(server));
                 ledStripStatuses = getLEDStripStatusesFromJobs(jobs, configuredJobs.get(server), ledStripStatuses);
             } catch (RestClientException exception) {
-                LOG.error("Error retrieving jobs from Jenkins:", exception);
+                handleError("Error retrieving jobs from Jenkins:", exception);
             }
         }
 
@@ -264,7 +272,7 @@ public class JenkinsService {
                 ledStripService.handleStatus(ledStripDTO);
             } catch (TimeoutException | NotConnectedException | IOException | AlreadyConnectedException
                     | AttributeEmptyException | LoadFailedException exception) {
-                LOG.error("Error setting status on LED strip:", exception);
+                handleError("Error setting status on LED strip:", exception);
             }
         }
     }

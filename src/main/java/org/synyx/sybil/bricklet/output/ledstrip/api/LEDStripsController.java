@@ -33,12 +33,12 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/configuration/ledstrips")
-public class ConfigurationLEDStripsController {
+public class LEDStripsController {
 
     private final LEDStripDTOService ledStripDTOService;
 
     @Autowired
-    public ConfigurationLEDStripsController(LEDStripDTOService ledStripDTOService) {
+    public LEDStripsController(LEDStripDTOService ledStripDTOService) {
 
         this.ledStripDTOService = ledStripDTOService;
     }
@@ -51,7 +51,7 @@ public class ConfigurationLEDStripsController {
         List<LEDStripResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
-        Link self = linkTo(ConfigurationLEDStripsController.class).withSelfRel();
+        Link self = linkTo(LEDStripsController.class).withSelfRel();
         links.add(self);
 
         try {
@@ -63,8 +63,7 @@ public class ConfigurationLEDStripsController {
         for (LEDStripDTO ledStripDTO : ledStripDTOs) {
             LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
 
-            self = linkTo(methodOn(ConfigurationLEDStripsController.class).getLEDStrip(ledStripDomain.getName()))
-                .withSelfRel();
+            self = linkTo(methodOn(LEDStripsController.class).getLEDStrip(ledStripDomain.getName())).withSelfRel();
 
             LEDStripResource resource = new LEDStripResource(ledStripDomain, self);
 
@@ -87,8 +86,7 @@ public class ConfigurationLEDStripsController {
             throw new LoadFailedException("Error loading LED strip:", exception);
         }
 
-        Link self = linkTo(methodOn(ConfigurationLEDStripsController.class).getLEDStrip(ledStripDomain.getName()))
-            .withSelfRel();
+        Link self = linkTo(methodOn(LEDStripsController.class).getLEDStrip(ledStripDomain.getName())).withSelfRel();
 
         return new LEDStripResource(ledStripDomain, self);
     }

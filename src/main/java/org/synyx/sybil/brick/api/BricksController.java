@@ -33,12 +33,12 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/configuration/bricks")
-public class ConfigurationBricksController {
+public class BricksController {
 
     private final BrickDTOService brickDTOService;
 
     @Autowired
-    public ConfigurationBricksController(BrickDTOService brickDTOService) {
+    public BricksController(BrickDTOService brickDTOService) {
 
         this.brickDTOService = brickDTOService;
     }
@@ -51,7 +51,7 @@ public class ConfigurationBricksController {
         List<BrickResource> resources = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
-        Link self = linkTo(ConfigurationBricksController.class).withSelfRel();
+        Link self = linkTo(BricksController.class).withSelfRel();
         links.add(self);
 
         try {
@@ -63,7 +63,7 @@ public class ConfigurationBricksController {
         for (BrickDTO brickDTO : brickDTOs) {
             BrickDomain brickDomain = brickDTO.getDomain();
 
-            self = linkTo(methodOn(ConfigurationBricksController.class).getBrick(brickDomain.getName())).withSelfRel();
+            self = linkTo(methodOn(BricksController.class).getBrick(brickDomain.getName())).withSelfRel();
 
             BrickResource resource = new BrickResource(brickDomain, self);
 
@@ -86,7 +86,7 @@ public class ConfigurationBricksController {
             throw new LoadFailedException("Error loading brick:", exception);
         }
 
-        Link self = linkTo(methodOn(ConfigurationBricksController.class).getBrick(brickDomain.getName())).withSelfRel();
+        Link self = linkTo(methodOn(BricksController.class).getBrick(brickDomain.getName())).withSelfRel();
 
         return new BrickResource(brickDomain, self);
     }

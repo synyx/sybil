@@ -33,10 +33,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class ConfigurationLEDStripsControllerUnitTest {
+public class LEDStripsControllerUnitTest {
 
     MockMvc mockMvc;
-    ConfigurationLEDStripsController configurationLEDStripsController;
+    LEDStripsController LEDStripsController;
 
     @Mock
     LEDStripDTOService ledStripDTOServiceMock;
@@ -59,8 +59,8 @@ public class ConfigurationLEDStripsControllerUnitTest {
         when(ledStripDTOServiceMock.getDTO("ledone")).thenReturn(ledStripDTOOne);
         when(ledStripDTOServiceMock.getDTO("ledtwo")).thenReturn(ledStripDTOTwo);
 
-        configurationLEDStripsController = new ConfigurationLEDStripsController(ledStripDTOServiceMock);
-        mockMvc = standaloneSetup(configurationLEDStripsController).build();
+        LEDStripsController = new LEDStripsController(ledStripDTOServiceMock);
+        mockMvc = standaloneSetup(LEDStripsController).build();
     }
 
 
