@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.synyx.sybil.brick.api.BricksController;
+import org.synyx.sybil.bricklet.output.ledstrip.api.LEDStripsController;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class ConfigurationController {
 
         links.add(linkTo(ConfigurationController.class).withSelfRel());
         links.add(linkTo(BricksController.class).withRel("bricks"));
+        links.add(linkTo(LEDStripsController.class).withRel("ledstrips"));
 
         return new Resources<>(Collections.emptySet(), links);
     }

@@ -29,10 +29,12 @@ public class ConfigurationControllerUnitTest {
 
         mockMvc.perform(get("/configuration/"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.links", hasSize(2)))
+            .andExpect(jsonPath("$.links", hasSize(3)))
             .andExpect(jsonPath("$.links[0].rel", is("self")))
             .andExpect(jsonPath("$.links[0].href", is("http://localhost/configuration")))
             .andExpect(jsonPath("$.links[1].rel", is("bricks")))
-            .andExpect(jsonPath("$.links[1].href", is("http://localhost/configuration/bricks")));
+            .andExpect(jsonPath("$.links[1].href", is("http://localhost/configuration/bricks")))
+            .andExpect(jsonPath("$.links[2].rel", is("ledstrips")))
+            .andExpect(jsonPath("$.links[2].href", is("http://localhost/configuration/ledstrips")));
     }
 }
