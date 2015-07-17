@@ -1,5 +1,8 @@
 package org.synyx.sybil.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
@@ -8,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import org.synyx.sybil.webconfig.WebConfig;
+import org.springframework.web.client.RestTemplate;
 
 
 /**
@@ -23,8 +26,22 @@ import org.synyx.sybil.webconfig.WebConfig;
 @EnableScheduling
 @ComponentScan(
     basePackages = { "org.synyx.sybil" }, excludeFilters = {
+        // ignore the WebConfig, which is loaded by the ApiWebAppInitializer
         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = WebConfig.class)
     }
-) // scan for annotated classes, like @Service, @Configuration, etc. - while ignoring the WebConfig, which is loaded by the ApiWebAppInitializer
+)
 public class SpringConfig {
+
+    @Bean
+    ObjectMapper objectMapper() {
+
+        return new ObjectMapper();
+    }
+
+
+    @Bean
+    RestTemplate restTemplate() {
+
+        return new RestTemplate();
+    }
 }

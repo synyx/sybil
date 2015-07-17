@@ -2,7 +2,7 @@ apply plugin: 'java' //Java plugin
 apply plugin: 'war' //war plugin
 
 sourceCompatibility = 1.8 //Java 8
-version = '0.1'
+version = '0.2'
 
 repositories {
     mavenCentral()
@@ -13,28 +13,23 @@ repositories {
 dependencies {
     //spring
     compile group: 'org.springframework', name: 'spring-web', version: '4.1.6.RELEASE'
-    compile group: 'org.springframework.data', name: 'spring-data-neo4j', version: '3.3.0.RELEASE'
     compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.17.0.RELEASE'
     compile group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '1.2.0.RELEASE'
     compile group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final'
     compile group: 'org.hibernate', name: 'hibernate-validator', version: '5.1.3.Final'
     compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
     providedCompile group: 'javax', name: 'javaee-web-api', version: '7.0'
 
     //json
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.5.0'
-    compile group: 'com.jayway.jsonpath', name: 'json-path', version: '1.2.0'
-
+    
     //tinkerforge
     compile group: 'com.tinkerforge', name: 'tinkerforge', version: '2.1.4'
 
     //logging
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.3'
-    //compile group: 'ch.qos.logback.contrib', name: 'logback-json-classic', version: '0.1.2' //for logback jscon logging
-    //compile group: 'ch.qos.logback.contrib', name: 'logback-jackson', version: '0.1.2' //for logback jscon logging
-    //compile group: 'javax.mail', name: 'mail', version: '1.4.7' // for logback email notifications
 }
-
 
 
 /**********************************
@@ -42,17 +37,39 @@ dependencies {
  **********************************/
 
 /*** START Configure unit tests ***/
-task showResults(type: Exec) {
-    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16|sed \'s/[\\+| ]//g\''
-}
-
 test {
     systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
     systemProperty 'logDirectory', 'build/logs/' //set log directory 
-    systemProperty 'spring.profiles.active', 'dev'  //set active Spring profile to development
+    filter {
+        // only run tests ending in *UnitTest
+        includeTestsMatching "*UnitTest"
+    }
+    ignoreFailures = true //don't make the whole build fail when unit tests fail
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.springframework', name: 'spring-test', version: '4.1.6.RELEASE'
+    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
+    testCompile group: 'com.jayway.jsonpath', name: 'json-path', version: '1.2.0'
+    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.6.2'
+    testCompile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.2'
+}
+
+/*** Task: Show pretty test results ***/
+task showResults(type: Exec) {
+    inputs.file file('build/reports/tests/index.html')
+    outputs.file file('build/reports/tests/testresults.txt')
+    commandLine 'sh', '-c', 'pandoc -t plain build/reports/tests/index.html|uniq -u|head -20|tail -16|sed \'s/[\\+| ]//g\' > build/reports/tests/testresults.txt && cat build/reports/tests/testresults.txt'
+}
+
+/*** Task: Verbose Test ***/
+task vTest (type: Test) {
+    systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
+    systemProperty 'logDirectory', 'build/logs/' //set log directory 
     testLogging {
         events "passed", "skipped", "failed"
-        //showStandardStreams = true //show STDOUT and STDERR while gradle is running
     }
     //noinspection GroovyAssignabilityCheck
     finalizedBy(showResults)
@@ -61,14 +78,7 @@ test {
         includeTestsMatching "*UnitTest"
     }
 }
-
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.springframework', name: 'spring-test', version: '4.1.6.RELEASE'
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
-}
 /*** END Configure unit tests ***/
-
 
 
 /*** START Load & Configure gretty embedded servlet container ***/
@@ -87,143 +97,37 @@ apply plugin: 'org.akhikhl.gretty' // gretty = embedded jetty 9
 gretty { // configure gretty
     recompileOnSourceChange = false; // not terribly useful with an autosaving IDE.
     contextPath = "/" // make the project available at / URL instead of /$projectname/
-    //systemProperty 'logLevel', 'DEBUG' //enable debug logging
-    //jvmArgs = []
 }
 /*** END Load & Configure gretty embedded servlet container ***/
 
 
-
-/*** START Configure Integration tests ***/
-
-task deleteDatabase(type: Delete) {
-    delete '/tmp/sybildevdb/'
-}
-
-// kill processes that use certain ports
-task freeAllPorts << {
-    def ports = [14223, 14224, 14225, 8081, 8082, 8083, 8084, 8085, 8086]
-
-    ports.each { port ->
-        def cmd = "lsof -Fp -i :$port"
-        def process = cmd.execute()
-        process.in.eachLine { line ->
-            def killProcess = "kill -9 ${ line.substring(1) }".execute()
-            killProcess.waitFor()
-        }
+/*** START Configure Cobertura ***/
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.saliman:gradle-cobertura-plugin:2.2.7"
     }
 }
 
-task startRestServer1(type: ExecWait) {
-    command 'node server/http.js port=8081 index=red.json verbose=true launch=now'
-    ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/resources/RestServer'
+apply plugin: 'net.saliman.cobertura'
+
+cobertura {
+    coverageFormats = [ 'html', 'xml' ]
 }
+/*** END Configure Cobertura ***/
 
-task startRestServer2(type: ExecWait) {
-    command 'node server/http.js port=8082 index=red_anime.json verbose=true launch=now'
-    ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/resources/RestServer'
-}
 
-task startRestServer3(type: ExecWait) {
-    command 'node server/http.js port=8083 index=yellow.json verbose=true launch=now'
-    ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/resources/RestServer'
-}
-
-task startRestServer4(type: ExecWait) {
-    command 'node server/http.js port=8084 index=yellow_anime.json verbose=true launch=now'
-    ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/resources/RestServer'
-}
-
-task startRestServer5(type: ExecWait) {
-    command 'node server/http.js port=8085 index=blue.json verbose=true launch=now'
-    ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/resources/RestServer'
-}
-
-task startRestServer6(type: ExecWait) {
-    command 'node server/http.js port=8086 index=blue_anime.json verbose=true launch=now'
-    ready '### 0.0.0.0 server listening on port'
-    directory 'src/test/resources/RestServer'
-}
-
-task startTFStubserver1(type: ExecWait) {
-    command 'stubserver -p 14223 -d ' + projectDir + '/src/test/resources/TFStubserver/brick1.properties'
-    ready 'BrickThread is running'
-    directory '.'
-}
-
-task startTFStubserver2(type: ExecWait) {
-    command 'stubserver -p 14224 -d ' + projectDir + '/src/test/resources/TFStubserver/brick2.properties'
-    ready 'BrickThread is running'
-    directory '.'
-}
-
-task startTFStubserver3(type: ExecWait) {
-    command 'stubserver -p 14225 -d ' + projectDir + '/src/test/resources/TFStubserver/brick3.properties'
-    ready 'BrickThread is running'
-    directory '.'
-}
-
-task integTest(type: Test) { //define the integTest task as a Test task
-    dependsOn(deleteDatabase, startTFStubserver1, startTFStubserver2, startTFStubserver3, startRestServer1, startRestServer2, startRestServer3, startRestServer4, startRestServer5, startRestServer6)
-    finalizedBy(freeAllPorts, showResults)
-
-    systemProperty 'logLevel', 'DEBUG' //enable debug logging for tests
-    systemProperty 'logDirectory', 'build/logs/' //set log directory 
-    systemProperty 'spring.profiles.active', 'dev' //set active Spring profile to development
-    testLogging {
-        events "passed", "skipped", "failed"
-        //showExceptions false
-        //showStandardStreams = true //show STDOUT and STDERR while gradle is running
-    }
-    filter {
-        // only run tests ending in *UnitTest
-        includeTestsMatching "*IntegTest"
+/*** Task: Custom All-In-One test & report ***/
+task testReport {
+    
+    dependsOn(clean, test, coberturaReport)
+    
+    doLast {
+        println "See report at: file://${projectDir}/build/reports/cobertura/index.html"
     }
 }
-
-//uncomment to run integration tests with the build task. Check is a subtask of the build task, provided by java plugin
-//check.dependsOn integTest
-
-/**
- * ExecWait: Executes a task and waits for a certain output to continue.
- * 
- * @param  command  The command to execute
- * @param  ready  The String to look for in the command's output to continue with the build
- * @param  directory  The directory to execute the command in
- */
-class ExecWait extends DefaultTask {
-    String command
-    String ready
-    String directory
-
-    @TaskAction
-    def spawnProcess() {
-
-        ProcessBuilder builder = new ProcessBuilder(command.split(' '))
-        builder.redirectErrorStream(true)
-        builder.directory(new File(directory))
-        Process process = builder.start()
-
-        InputStream stdout = process.getInputStream()
-        BufferedReader reader = new BufferedReader(new
-                InputStreamReader(stdout))
-        
-        def line
-        while ((line = reader.readLine()) != null) {
-            println line
-            if (line.contains(ready)) {
-                println "$command is ready"
-                break;
-            }
-        }
-    }
-}
-/*** END Configure Integration tests ***/
 
 /********************************
  * END of TESTING CONFIGURATION *
