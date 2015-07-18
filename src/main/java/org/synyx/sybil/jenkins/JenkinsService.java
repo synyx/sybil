@@ -32,7 +32,6 @@ import org.springframework.web.client.RestTemplate;
 
 import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.LoadFailedException;
-import org.synyx.sybil.api.HealthController;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
@@ -108,7 +107,6 @@ public class JenkinsService {
     private void handleError(String message, Exception exception) {
 
         LOG.error(message, exception);
-        HealthController.setHealth(Status.WARNING, this.getClass().toString());
     }
 
 
