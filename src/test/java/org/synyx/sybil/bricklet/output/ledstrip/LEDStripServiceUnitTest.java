@@ -176,6 +176,35 @@ public class LEDStripServiceUnitTest {
 
 
     @Test
+    public void handleStatusOkayWithSensor() throws Exception {
+
+        // setup
+        LEDStripDTO ledStripDTO = new LEDStripDTO();
+        ledStripDTO.setDomain(new LEDStripDomain("one", "abc", 16, "abrick", "asensor"));
+
+        StatusInformation status = new StatusInformation("test", Status.OKAY);
+        ledStripDTO.setStatus(status);
+
+        // execution
+        sut.handleStatus(ledStripDTO);
+
+        // verification
+        Color color = new Color(0, 32, 0);
+
+        short[] red = new short[16];
+        short[] green = new short[16];
+        short[] blue = new short[16];
+
+        Arrays.fill(red, (short) color.getRed());
+        Arrays.fill(green, (short) color.getGreen());
+        Arrays.fill(blue, (short) color.getBlue());
+
+        // The LED chips expect data in BRG, not RGB
+        verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);
+    }
+
+
+    @Test
     public void handleStatusWarning() throws Exception {
 
         // setup
@@ -350,6 +379,26 @@ public class LEDStripServiceUnitTest {
         Arrays.fill(red, (short) 0);
         Arrays.fill(green, (short) 0);
         Arrays.fill(blue, (short) 255);
+
+        // The LED chips expect data in BRG, not RGB
+        verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);
+    }
+
+
+    @Test
+    public void turnOff() throws Exception {
+
+        // setup
+        LEDStripDTO ledStripDTO = new LEDStripDTO();
+        ledStripDTO.setDomain(new LEDStripDomain("one", "abc", 16, "abrick"));
+
+        // execution
+        sut.turnOff(ledStripDTO);
+
+        // verification
+        short[] red = new short[16];
+        short[] green = new short[16];
+        short[] blue = new short[16];
 
         // The LED chips expect data in BRG, not RGB
         verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);

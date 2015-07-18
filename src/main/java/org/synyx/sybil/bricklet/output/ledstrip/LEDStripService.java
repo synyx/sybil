@@ -35,6 +35,7 @@ public class LEDStripService {
 
     private static final int SIXTEEN = 16;
     private static final short MAX_PRIMARY_COLOR = (short) 255; // NOSONAR Tinkerforge library uses shorts
+    private static final double DEFAULT_BRIGHTNESS = 1.0;
 
     private final BrickletProvider brickletProvider;
 
@@ -135,7 +136,12 @@ public class LEDStripService {
         short[] transferBufferGreen; // NOSONAR Tinkerforge library uses shorts
         short[] transferBufferBlue; // NOSONAR Tinkerforge library uses shorts
 
-        double brightness = getBrightness(ledStripDomain);
+        double brightness = DEFAULT_BRIGHTNESS;
+
+        if (ledStripDomain.hasSensor()) {
+            brightness = getBrightness(ledStripDomain);
+        }
+
         BrickletLEDStripWrapper brickletLEDStrip = brickletProvider.getBrickletLEDStrip(ledStripDomain);
 
         for (int positionOnLedStrip = 0; positionOnLedStrip < pixelBufferRed.length; positionOnLedStrip += SIXTEEN) {
@@ -164,7 +170,11 @@ public class LEDStripService {
 
     private double getBrightness(LEDStripDomain ledStripDomain) {
 
-        return 1.0; // TODO: Poll the associated sensor, if any.
+        String sensor = ledStripDomain.getSensor();
+
+        // TODO: Poll the associated sensor, instead of just giving back double brightness for test purposes
+
+        return 2.0;
     }
 
 
@@ -173,13 +183,23 @@ public class LEDStripService {
         short[] result = new short[pixels.length]; // NOSONAR Tinkerforge library uses shorts
 
         for (int index = 0; index < pixels.length; index++) {
-            result[index] = (short) (pixels[index] * brightness); // NOSONAR Tinkerforge library uses shorts
-
-            if (result[index] > MAX_PRIMARY_COLOR) {
-                result[index] = MAX_PRIMARY_COLOR;
+            if (brightness == DEFAULT_BRIGHTNESS) {
+                result[index] = (short) pixels[index]; // NOSONAR Tinkerforge library uses shorts
+            } else {
+                result[index] = setColorLimits((short) (pixels[index] * brightness)); // NOSONAR Tinkerforge library uses shorts
             }
         }
 
         return result;
+    }
+
+
+    private short setColorLimits(short primaryColor) { // NOSONAR Tinkerforge library uses shorts
+
+        if (primaryColor > MAX_PRIMARY_COLOR) {
+            return MAX_PRIMARY_COLOR;
+        }
+
+        return primaryColor;
     }
 }

@@ -27,6 +27,9 @@ public class LEDStripDomain implements DeviceDomain {
     private int length;
     private String brick;
 
+    private String sensor;
+    private boolean hasSensor = false;
+
     private int okayRed;
     private int okayGreen;
     private int okayBlue;
@@ -61,6 +64,17 @@ public class LEDStripDomain implements DeviceDomain {
         this.brick = brick;
     }
 
+
+    public LEDStripDomain(String name, String uid, int length, String brick, String sensor) {
+
+        this.name = name;
+        this.uid = uid;
+        this.length = length;
+        this.brick = brick;
+        this.sensor = sensor;
+        hasSensor = true;
+    }
+
     @Override
     public String getName() {
 
@@ -84,6 +98,30 @@ public class LEDStripDomain implements DeviceDomain {
     public String getBrick() {
 
         return brick;
+    }
+
+
+    @JsonIgnore
+    public String getSensor() {
+
+        if (hasSensor) {
+            return sensor;
+        } else {
+            throw new AttributeEmptyException("LED strip " + name + " has no associated sensor.");
+        }
+    }
+
+
+    public void setSensor(String sensor) {
+
+        this.sensor = sensor;
+        hasSensor = true;
+    }
+
+
+    public boolean hasSensor() {
+
+        return hasSensor;
     }
 
 
