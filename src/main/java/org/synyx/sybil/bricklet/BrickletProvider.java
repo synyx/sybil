@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.synyx.sybil.brick.BrickDTOService;
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.domain.BrickDTO;
+import org.synyx.sybil.bricklet.input.illuminance.BrickletAmbientLightWrapper;
+import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.BrickletLEDStripWrapper;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 
@@ -53,5 +55,16 @@ public class BrickletProvider {
         brickletLEDStrip.setChipType(CHIP_TYPE);
 
         return brickletLEDStrip;
+    }
+
+
+    public BrickletAmbientLightWrapper getBrickletAmbientLight(IlluminanceDomain illuminanceDomain)
+        throws TimeoutException, NotConnectedException, IOException, AlreadyConnectedException {
+
+        BrickDTO brickDTO = brickDTOService.getDTO(illuminanceDomain.getBrick());
+
+        IPConnection ipConnection = brickService.connect(brickDTO);
+
+        return new BrickletAmbientLightWrapper(illuminanceDomain.getUid(), ipConnection);
     }
 }
