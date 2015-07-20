@@ -115,15 +115,16 @@ public class LEDStripService {
         Sprite1D sprite = ledStripDTO.getSprite();
 
         int pixelBufferSize = getPixelBufferSize(ledStripDomain);
+        int spriteMaxSize = Math.min(pixelBufferSize, sprite.getLength());
 
         final int[] pixelBufferRed = new int[pixelBufferSize];
         final int[] pixelBufferGreen = new int[pixelBufferSize];
         final int[] pixelBufferBlue = new int[pixelBufferSize];
 
         // Copy the sprite's content into the pixelbuffer
-        System.arraycopy(sprite.getRed(), 0, pixelBufferRed, 0, sprite.getLength());
-        System.arraycopy(sprite.getGreen(), 0, pixelBufferGreen, 0, sprite.getLength());
-        System.arraycopy(sprite.getBlue(), 0, pixelBufferBlue, 0, sprite.getLength());
+        System.arraycopy(sprite.getRed(), 0, pixelBufferRed, 0, spriteMaxSize);
+        System.arraycopy(sprite.getGreen(), 0, pixelBufferGreen, 0, spriteMaxSize);
+        System.arraycopy(sprite.getBlue(), 0, pixelBufferBlue, 0, spriteMaxSize);
 
         drawSprite(ledStripDomain, pixelBufferRed, pixelBufferGreen, pixelBufferBlue);
     }

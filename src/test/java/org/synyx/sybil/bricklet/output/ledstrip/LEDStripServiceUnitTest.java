@@ -147,6 +147,33 @@ public class LEDStripServiceUnitTest {
 
 
     @Test
+    public void handleTooLongSprite() throws Exception {
+
+        // setup
+        LEDStripDTO ledStripDTO = new LEDStripDTO();
+        ledStripDTO.setDomain(new LEDStripDomain("one", "abc", 31, "abrick"));
+
+        List<Color> colors = Arrays.asList(new Color[33]);
+        Collections.fill(colors, Color.WHITE);
+
+        assertThat(colors.size(), is(33));
+
+        Sprite1D sprite = new Sprite1D(colors.size(), colors);
+        ledStripDTO.setSprite(sprite);
+
+        // execution
+        sut.handleSprite(ledStripDTO);
+
+        // verification
+        short[] allWhite = new short[16];
+        Arrays.fill(allWhite, (short) 255);
+
+        verify(brickletLEDStrip).setRGBValues(0, (short) 16, allWhite, allWhite, allWhite);
+        verify(brickletLEDStrip).setRGBValues(16, (short) 16, allWhite, allWhite, allWhite);
+    }
+
+
+    @Test
     public void handleStatusOkay() throws Exception {
 
         // setup
