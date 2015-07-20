@@ -2,6 +2,7 @@
 plugins {
     id 'net.saliman.cobertura' version '2.2.8' //Cobertura = Code Coverage
     id 'org.akhikhl.gretty' version '1.2.4' //Gretty = Embdded Jetty
+    id 'pl.allegro.tech.build.axion-release' version '1.3.0'
 }
 
 // Internal plugins
@@ -10,7 +11,14 @@ apply plugin: 'war' //war plugin
 
 // Basic configuration
 sourceCompatibility = 1.8 //Java 8
-version = '0.2'
+
+// Versioning
+scmVersion {
+    tag {
+        prefix = ''
+    }
+}
+version = scmVersion.version
 
 repositories {
     mavenCentral()
