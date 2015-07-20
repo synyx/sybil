@@ -17,6 +17,10 @@ scmVersion {
     tag {
         prefix = ''
     }
+    nextVersion {
+        suffix = 'dev'
+        separator = '-'
+    }
 }
 version = scmVersion.version
 
