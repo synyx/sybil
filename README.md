@@ -99,7 +99,7 @@ When you are done, run
 
 ```
 docs/                               Documentation sources.
-| +-configfiles/                    Examples and simplified schemata for the config files.
+| +-configfiles/                    Examples and simple schemata for the config files.
 | +-staticwebsite/                  Sources of the sybil website.
 src/                                Source code.
   +-test/                           Unit tests.
