@@ -16,7 +16,6 @@ This project is under heavy development and further documentation is forthcoming
         - [Standalone](#standalone)
         - [With an application server](#with-an-application-server)
     - [Debugging](#debugging)
-    - [Integration Tests](#integration-tests)
 - [Structure](#structure)
 - [How to use](#how-to-use)
     - [Extending Sybil](#extending-sybil)
