@@ -1,0 +1,10 @@
+{
+    "https://jenkins.localdomain": [
+        {"name": "sybil", "ledstrip": "devled"}
+    ],
+    "http://jenkins.example.com": [
+        {"name": "project", "ledstrip": "prettylights"},
+        {"name": "anotherproject", "ledstrip": "devled"}
+    ]
+}
+

@@ -1,0 +1,4 @@
+[
+  { "url": "https://jenkins.localdomain", "user": "sybil", "key": "24c1b81fe668b4d2e9b50ac0f85187b7"},
+  { "url": "http://jenkins.example.com", "user": "johndoe", "key": "fc7df1e73d5ad27a71cadfacabb55bab"}
+]

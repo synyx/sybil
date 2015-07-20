@@ -1,0 +1,14 @@
+[
+{
+    "name": "devled",
+    "uid": "p5V",
+    "length": 30,
+    "brick": "devbrick"
+},
+{
+    "name": "prettylights",
+    "uid": "p3c",
+    "length": 31,
+    "brick": "remotebrick"
+}
+]

@@ -1,10 +1,7 @@
 Sybil
 =====
-
-**Documentation is outdated and will be updated soon**
-
 A project to illuminate and inform the people in the office(s).
-Uses WS2812 LED strips and AZ943-1CH-5DE relays connected to Tinkerforge bricks.
+Uses WS2812 LED strips connected to Tinkerforge bricks.
 
 This project is under heavy development and further documentation is forthcoming.
 
@@ -26,27 +23,20 @@ This project is under heavy development and further documentation is forthcoming
 
 ## Working so far
 
-* Saves and loads Tinkerforge bricks, LED Strip, Dual Relay, Ambient Light, and Motion
-  Detector bricklets to/from Neo4j database.
 * Reads configuration from JSON files.
-* Outputs statuses on LED strips
+* Outputs statuses on LED strips.
     * Outputs statuses of Jenkins build jobs, updated every 60 seconds.
-* Outputs arbitrary pixels and sprites on LED strips
+* Outputs arbitrary pixels and sprites on LED strips.
     * Does this via a HTTP API.
-* Controls relays
-    * Does this via a HTTP API.
-* Listens to Illuminance sensors and has them increase the LED strip brightness if illuminance falls under a threshold
-  value.
-* Listens to IO-Modules to which buttons can be connected and turns off relays when buttons are pressed. 
 * Serves a *very barebones* REST API showing the configured the bricks and bricklets. 
 
 ## Execution
 
 ### Configuration
 
-To run or deploy the server you need `bricks.json`, `ledstrips.json`, `relays.json`, `sensors.json`, and `jenkins.json`
-in `/home/sybil-config/`, and `jenkinsservers.json` in `/home/sybil/`.  
-See in `src/test/resources/config/` for example files, or `docs/configfiles` for simplified schemata.  
+To run or deploy the server you need `bricks.json`, `ledstrips.json`, and `jenkins.json` in `/home/sybil-config/`, and
+`jenkinsservers.json` in `/home/sybil/`.  
+See `docs/configfiles` for examples and simplified schemata.  
 The locations of these configuration files can be configured in `src/main/resources/config.properties`.  
 
 Note that all the names used in the configuration files *must* be lowercase.
@@ -105,127 +95,66 @@ When you are done, run
 
 `gradlew appStop`
 
-### Integration Tests
-
-Integration tests require [TFStubserver](https://github.com/PlayWithIt/TFStubserver), [node.js](https://nodejs.org/)
-and (the \*nix commands) `lsof` and `kill`.  
-Run them with `gradlew integTest`.
-
-If any of the tests fail with a `NullPointerException`, try running the tests again, it should eventually work.  
-This is a known bug.
-
-Integration tests are probably \*nix specific right now.  
-TODO: Make integration tests cross-platform.
-
 ## Structure
 
 ```
 docs/                               Documentation sources.
-| +-api/                            Source for the (unused) API documentation.
-| +-configfiles/                    Simplified schemas for the config files.
+| +-configfiles/                    Examples and simplified schemata for the config files.
 | +-staticwebsite/                  Sources of the sybil website.
 src/                                Source code.
-  +-test/                           Unit & Integration tests.
+  +-test/                           Unit tests.
   +-main/                           Main.
     +-java/org/synyx/sybil/         Java code base package.
     | +-AppInitializer              Found by Servlet 3.0 container, starts app.
+    | +-AttributeEmptyException     Custom exception, when accessing undef. attributes.
+    | +-DeviceDomain                Interface all Tinkerforge devices inherit from.
+    | +-LoadFailedException         Custom exception, when loading a file fails.
     | |
     | +-api/                        API-controller & helper for non-specific subject.
     | | +-ConfigurationController   MVC REST Controller for /configuration/ root.
-    | | +-HealthController          MVC Controller for setting & showing app health.
-    | | +-PatchResource             Object for de-serialising HTTP PATCH actions. 
     | | +-RootController            MVC Root (/) controller.
-    | | +-SinglePatchResource       Object for de-serialising a single PATCH action.
     | |
     | +-brick/                      Brick-specific classes.
     | | +-api/                      API-controller & helper for bricks.
     | | | +-BrickResource           Spring HATEOAS wrapper around brick configuration.
-    | | | +-Config…BricksController MVC Rest Controller for brick configuration.
+    | | | +-BricksController        MVC Rest Controller for brick configuration.
     | | |
-    | | +-database/                 Database classes for bricks
+    | | +-domain/                   Domain classes for bricks.
     | | | +-BrickDomain             Domain for Tinkerforge brick configurations.
-    | | | +-BrickRepository         DB-Interface for Tinkerforge brick configs.
+    | | | +-BrickDTO                Data Transfer Object for bricks. 
     | | |
-    | | +-BrickConnectionListener   Listener for Tinkerforge IP Connection callbacks.
-    | | +-BrickRegistry             Registers Tinkerforge bricks & their connections.
+    | | +-BrickDTOService           Creates pre-configured Brick DTOs.
+    | | +-BrickService              Accepts Brick DTOs and handles them.
     | |
     | +-bricklet/                   Bricklet-specific classes.
-    | | +-input/                    Bricklets that input data.
-    | | | |
-    | | | +-button/                 Button-inputs (connected to IO4-bricklets).
-    | | | | +-api/                  API-controller & helper for buttons.
-    | | | | | +-ButtonResource      Spring HATEOAS wrapper around button configuration.
-    | | | | | +-Co…ButtonController MVC controller for reading button configurations.
-    | | | | |
-    | | | | +-database/             Database classes & intefaces for buttons.
-    | | | | | +-ButtonDomain        Domain for button configurations.
-    | | | | | +-ButtonRepository    DB-Interface for button configurations.
-    | | | | |
-    | | | | +-ButtonListener        Listener for Button interrupts.
-    | | | | +-ButtonSensorRegistry  Registers Buttons, so they can listen f. interrupts.
-    | | | |
-    | | | +-illuminance/            Illuminance sensors (Ambient Brightness bricklets).
-    | | | | +-api/                  API-controller & helper for illumination sensors.
-    | | | | | +-Co…IlluminanceCont… MVC Controller for reading ill. sensor configuration.
-    | | | | | +-IlluminanceResource Spring HATEOAS wrapper around ill. sensor config.
-    | | | | |
-    | | | | +-database/             Database classes & interfaces for ill. sensors.
-    | | | | | +-Illumi…SensorDomain Domain for illuminance sensor configurations.
-    | | | | | +-Il…SensorRepository DB-Interface for illuminance sensor configs.
-    | | | | |
-    | | | | +-IlluminanceListener   Listener for illuminance sensors.
-    | | | | +-Illumi…SensorRegistry Registers illuminance sensors.
-    | | | |
-    | | | +-SensorType              Enum for sensor types (LUMINANCE, MOTION, BUTTON).
-    | | |
     | | +-output/                   Bricklets that output data.
-    | | | |
     | | | +-ledstrip/               LED strip bricklets.
-    | | | | +-api/                  API-controller & helpers for LED strips.
-    | | | | | +-Config…LEDStripCon… MVC Controller for interacting w/ LED strips.
-    | | | | | +-DisplayResource     Spring HATEOAS wrapper for LED strip direct access.
-    | | | | | +-LEDStripResource    Spring HATEOAS wrapper around LED strip config.
-    | | | | |
-    | | | | +-database/             Database classes & interfaces for LED strips.
-    | | | | | +-LEDStripDomain      Domain for LED strips.
-    | | | | | +-LEDStripRepository  DB-Interface for LED strips.
-    | | | | +-Color                 Color object, for LEDs.
-    | | | | +-LEDStrip              LED strip object, communicates with LEDs.
-    | | | | +-LEDStripRegistry      Provides LEDStrip objects.
-    | | | | +-SingleStatusOnL…Strip Display a single statusInformation on a LED strip.
-    | | | | +-SingleStatus…Registry Provides SingleStatusOnLEDStrip objects.
-    | | | | +-SingleStatusOutput    Interface for displaying a single status.
-    | | | | +-Sprite1D              Sprite object, for LED strips.
-    | | | |
-    | | | +-relay/                  Relay bricklets (technically Dual Relay bricklets).
-    | | |   +api/                   API-controller & helper for relays.
-    | | |   | +-Con…RelayController MVC controller for interacting w/ relays.
-    | | |   | +-RelayResource       Spring HATEOAS wrapper around Relay configuration.
+    | | |   +-api/                  API-controller & helpers for LED strips.
+    | | |   | +-DisplayController   MVC Controller for interacting w/ LED strips.
+    | | |   | +-DisplayResource     Spring HATEOAS wrapper for LED strip direct access.
+    | | |   | +-LEDStripResource    Spring HATEOAS wrapper around LED strip config.
+    | | |   | +-LEDStripsController MVC Controller for reading LED strip configurations.
     | | |   |
-    | | |   +database/              Database classes & interfaces for relays.
-    | | |   | +-RelayDomain         Domain for relays.
-    | | |   | +-RelayRepository     DB-Interface for relays.
+    | | |   +-domain/               Domain classes for LED strips.
+    | | |   | +-LEDStripDomain      Domain for LED strips.
+    | | |   | +-LEDStripDTO         Data Transfer Object for LED strips.
     | | |   |
-    | | |   +-EnumRelay             Relay helper Enum.
-    | | |   +-Relay                 Relay object, communicates with Relay bricklets.
-    | | |   +-RelayRegistry         Provides OutputRelay objects.
+    | | |   +-BrickletLEDS…Wrapper  Wrapper for Tinkerforge LED strip objects.
+    | | |   +-Color                 Color object, for LEDs.
+    | | |   +-LEDStripDTOService    Creates pre-configured LED strip DTOs.
+    | | |   +-LEDStripService       Accepts LED strip DTOs and handles them.
+    | | |   +-Sprite1D              Sprite object, for LED strips.
     | | |
-    | | +-Bricklet                  Interface all Bricklets inherit from. 
-    | | +-BrickletRegistry          Interface all registries for bricklets inherit from.
+    | | +-BrickletProvider          Provides Tinkerforge bricklet objects (or wrappers). 
     | |
     | +-config/                     Configuration classes.
-    | | +-ConfigLoader              Loads configuration from JSON files.
-    | | +-Neo4jConfig               Database configuration.
     | | +-SpringConfig              Spring configuration.
-    | | +-StartupLoader             Pulls up ConfigLoader at startup.
     | | +-WebConfig                 Configures the web app.
     | |
     | +-jenkins/                    Jenkins-specific classes.
-    |   |
-    |   +-config/                   Jenkins configuration classes.
-    |   | +-JenkinsConfig           Saves the configured Jenkins servers & jobs.
-    |   |
     |   +-domain/                   Jenkins-specific domains.
+    |   | +-ConfiguredJob           Object for job configuration.
+    |   | +-ConfiuredServer         Object for server configuration.
     |   | +-JenkinsJob              Object for a single returned Jenkins job.
     |   | +-JenkinsProperties       Object for Jenkins jobs returned from Jenkins API.
     |   | +-Status                  Enum for statuses (OKAY, WARNING & CRITICAL)
@@ -246,62 +175,27 @@ This then loads:
 * The **WebConfig** class.
     * Which in turn loads all the __*Controller__ classes, since they're annotated with @RestController
 * The Spring configuration in **SpringConfig**, which loads:
-    * All the __*Registry__ classes, since they're annotated with @Service.
-    * The database configuration from **Neo4jConfig**.
-        * Which in turn loads the __*Repository__ and __*Domain__ classes.
-    * The **StartupLoader** class, since it's annotated with @Component.
-        * Which in turn runs the **ConfigLoader**'s *loadConfig* method.
-    * The **JenkinsService** since it's annotated with @Service.
+    * All the __*Service__ classes, since they're annotated with @Service.
 
-The *loadConfig* method loads the brick, LED strip, relay, and sensor configurations from JSON files (the location of
-which is defined in the **config.properties** file) and saves them to the database. It then loads the configured Jenkins
-jobs from the Jenkins JSON configuration file. It also activates the __*Listener__ classes for the sensors, enabling
-them to react to changes.
-
-The **JenkinsService** has a *handleJobs* method, which is annotated with @Scheduled which means it is run every 60
+The **JenkinsService** has a *runEveryMinute* method, which is annotated with @Scheduled which means it is run every 60
 seconds. This method gets a list of all jobs from the Jenkins server(s), compares it to the list loaded from
 `jenkins.json` and then instructs the associated LED strips to show the jobs' statuses. 
 
-Bricks saved in the database can be listed via the REST API at `/configuration/bricks` and
+Bricks configured in the JSON files can be listed via the REST API at `/configuration/bricks` and
 `/configuration/bricks/{name}` respectively. Same goes for LED strips at `/configuration/ledstrips` and 
-`/configuration/ledstrips/{name}`, relays at `/configuration/relays` and `/configuration/relays/{name}`, buttons at
-`/configuration/buttons/` and `/configuration/buttons/{name}`, and illuminance sensors at
-`/configuration/illuminancesensors/` and `/configuration/illuminancesensors/{name}`.
+`/configuration/ledstrips/{name}`.
 
 A direct API for reading the LED strips' state and for writing to it (i.e. displaying things on it) is provided at
-`/configuration/ledstrips/{name}/display/`.  
-A direct API for switching relays is provided at `/configuration/relays/{name}`.
- 
+`/configuration/ledstrips/{name}/display/`.
+
 For further information on this see [the wiki](https://github.com/synyx/sybil-wiki).
 
 ### Extending Sybil
 
 If you want to extend Sybil's functionality, here's how you operate it "manually":
 
-You can create new **BrickDomain**s with a host and optionally a port.
-Save those to the **BrickRepository** with it's *save* method.  
-Create new **LEDStripDomain**s with a name to identify the Output, a Bricklet's UID, the number of LEDs on the 
-strip and the **BrickDomain** you created earlier.
-Save these to the **LEDStripRepository** with it's *save* method.  
-Now you are ready to get a **LEDStrip** from the **LEDStripRegistry** with it's *get* method, to which you pass the
-**LEDStripDomain**, which you either have left over from creating them for the database, or you fetch them fresh from
-the database with **LEDStripRepository**'s *findByName* method. 
+First, use the **LEDStripDTOService**'s *getDTO* method, to get a DTO, pre-configured with the configuration loaded from
+`ledstrips.json`. Then use the DTO's *setSprite* or *setStatus* methods to add either a sprite or a status to the DTO,
+and pass it to the corresponding method of the **LEDStripServic**, i.e. either *handleSprite* or *handleStatus*.
 
-The support classes **Color** and **Sprite1D** can be instantiated without any dependencies.  
-A **Color** is created by passing it an integer between 0 and 255 for red, green, and blue each. It can be passed to a
-**LEDStrip**'s or a **Sprite1D**'s methods.  
-A **Sprite1D** is simply an array of **Color**'s, it is created by passing it it's length and optionally a name.
-Then it can be drawn on with it's *setFill* and *setPixel* methods, both of which accept a **Color**. 
-
-Now you can call the **LEDStrip**'s methods, the most important of which are:
-
-* drawSprite - accepts a **Sprite1D**, it's position on the LED strip and an optional boolean, deciding whether it
-should wrap around at the end of the LED strip or not.
-* setBrightness - accepts a number of type double, between 0.0 - off - and 255.0 - maximum brightness.
-* setFill - sets the given **Color** for the whole LED strip.
-* setPixel -  accepts a number of type int as the position of the pixel on the LED strip and a **Color**.
-* updateDisplay - this must be called for any of the changes made with above methods to show on the LED strip.
-
-Additionally, you can create a new **SingleStatusOnLEDStrip** by passing it a **LEDStrip**, and then call it's
-*showStatus* method with a **StatusInformation** object, which is instantiated with a source String, a **Status** and
-optionally a priority.
+If you want to add support for further hardware, try to replicate this pattern.

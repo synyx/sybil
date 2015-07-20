@@ -1,0 +1,5 @@
+[
+	{"name": "devbrick", "hostname": "localhost", "uid": "68ymYA", "port": 4223},
+	{"name": "remotebrick", "hostname": "tinkerforge001", "uid": "6e6uJ7", "port": 4223}
+]
+

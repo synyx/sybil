@@ -1,5 +1,0 @@
-{
-  "type": "http://wiki.sybil.synyx.coffee/errors/link_not_found",
-  "title": "Associated link Not found",
-  "detail": "The output 'kerze' you tried to associate with this input to does not exist. You can only link to existing outputs."
-}

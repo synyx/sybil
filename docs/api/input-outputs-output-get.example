@@ -1,9 +1,0 @@
-{
-  "_links": {
-    "self": { "href": "https://api.sybil.synyx.coffee/inputs/hauptschalter/outputs/saeule_admins" },
-    "doc:edit": { "href": "https://api.sybil.synyx.coffee/outputs/saeule_admins" }
-  },
-  "doc:type": "light",
-  "doc:destination": [ "saeule_admins", 2 ],
-  "doc:state": true
-}
