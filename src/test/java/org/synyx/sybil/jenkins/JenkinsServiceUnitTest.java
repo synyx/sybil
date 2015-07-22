@@ -143,7 +143,7 @@ public class JenkinsServiceUnitTest {
     public void runEveryMinute() throws Exception {
 
         // execution
-        sut.runEveryMinute();
+        sut.runScheduled();
 
         // verify
         InOrder inOrder = inOrder(ledStripServiceMock, ledStripDTOOneMock);

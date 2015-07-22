@@ -66,7 +66,7 @@ import javax.annotation.PreDestroy;
 public class JenkinsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(JenkinsService.class);
-    private static final long ONE_MINUTE_IN_MILLISECONDS = 60000;
+    private static final long SCHEDULED_TIME_IN_MS = 60000;
     private static final int DELAY_DIVISOR = 4;
 
     private final ObjectMapper objectMapper;
@@ -111,8 +111,8 @@ public class JenkinsService {
 
 
     @Profile("default")
-    @Scheduled(initialDelay = ONE_MINUTE_IN_MILLISECONDS / DELAY_DIVISOR, fixedRate = ONE_MINUTE_IN_MILLISECONDS)
-    public void runEveryMinute() {
+    @Scheduled(initialDelay = SCHEDULED_TIME_IN_MS / DELAY_DIVISOR, fixedRate = SCHEDULED_TIME_IN_MS)
+    public void runScheduled() {
 
         Map<String, HttpEntity<JenkinsProperties[]>> authorizations;
         Map<String, List<ConfiguredJob>> configuredJobs;
