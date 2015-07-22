@@ -9,6 +9,7 @@
     "name": "prettylights",
     "uid": "p3c",
     "length": 31,
-    "brick": "remotebrick"
+    "brick": "remotebrick",
+    "sensor": "ambientlightsensor"
 }
 ]

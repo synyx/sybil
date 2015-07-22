@@ -18,6 +18,10 @@
       "brick": {
         "type": "string",
         "description": "The brick the LED Strip bricklet is connected to."
+      },
+      "sensor": {
+        "type": "string",
+        "description": "The Ambient Light Sensor that regulates the LED strip's brightness."
       }
     },
     "required": ["name", "uid", "length", "brick"]

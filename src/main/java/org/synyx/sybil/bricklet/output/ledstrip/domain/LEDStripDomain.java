@@ -1,6 +1,7 @@
 package org.synyx.sybil.bricklet.output.ledstrip.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.core.Relation;
 
@@ -27,6 +28,7 @@ public class LEDStripDomain implements DeviceDomain {
     private int length;
     private String brick;
 
+    @JsonProperty("sensor")
     private String sensor;
     private boolean hasSensor = false;
 

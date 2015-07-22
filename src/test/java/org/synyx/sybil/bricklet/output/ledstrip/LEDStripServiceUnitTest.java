@@ -14,6 +14,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import org.synyx.sybil.bricklet.BrickletProvider;
+import org.synyx.sybil.bricklet.input.illuminance.IlluminanceDTOService;
+import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
+import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
+import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 import org.synyx.sybil.jenkins.domain.Status;
@@ -43,25 +47,64 @@ import static org.mockito.Mockito.when;
 public class LEDStripServiceUnitTest {
 
     @Mock
-    BrickletProvider brickletProvider;
+    BrickletProvider brickletProviderMock;
 
     @Mock
-    BrickletLEDStripWrapper brickletLEDStrip;
+    BrickletLEDStripWrapper brickletLEDStripMock;
 
     @Mock
-    BrickletLEDStrip.RGBValues rgbValuesOne;
+    BrickletLEDStrip.RGBValues rgbValuesOneMock;
 
     @Mock
-    BrickletLEDStrip.RGBValues rgbValuesTwo;
+    BrickletLEDStrip.RGBValues rgbValuesTwoMock;
+
+    @Mock
+    IlluminanceDTOService illuminanceDTOServiceMock;
+
+    @Mock
+    IlluminanceService illuminanceServiceMock;
 
     LEDStripService sut;
 
     @Before
     public void setup() throws Exception {
 
-        when(brickletProvider.getBrickletLEDStrip(any(LEDStripDomain.class))).thenReturn(brickletLEDStrip);
+        when(brickletProviderMock.getBrickletLEDStrip(any(LEDStripDomain.class))).thenReturn(brickletLEDStripMock);
 
-        sut = new LEDStripService(brickletProvider);
+        sut = new LEDStripService(brickletProviderMock, illuminanceDTOServiceMock, illuminanceServiceMock);
+    }
+
+
+    @Test
+    public void getBrightness() throws Exception {
+
+        // setup
+        // multiplier of 1.0 means every 1 Lux less than threshold increases brightness by a factor of 1
+        IlluminanceDomain illuminanceDomain = new IlluminanceDomain("ambientlight", "abc", 16, 1.0, "somebrick");
+        IlluminanceDTO illuminanceDTO = new IlluminanceDTO();
+        illuminanceDTO.setDomain(illuminanceDomain);
+
+        when(illuminanceDTOServiceMock.getDTO("ambientlight")).thenReturn(illuminanceDTO);
+
+        // 140 decilux is 20 less than the configured threshold of 16 lux, so brigthness should triple.
+        when(illuminanceServiceMock.getIlluminance(illuminanceDTO)).thenReturn(140);
+
+        LEDStripDomain ledStripDomain = new LEDStripDomain("one", "xyz", 16, "abrick", "ambientlight");
+        LEDStripDTO ledStripDTO = new LEDStripDTO();
+        ledStripDTO.setDomain(ledStripDomain);
+        ledStripDTO.setStatus(new StatusInformation("test", Status.OKAY));
+
+        // execution
+        sut.handleStatus(ledStripDTO);
+
+        // verification
+        short[] zeroes = new short[16];
+        short[] green = new short[16];
+
+        // brightness should be tripled
+        Arrays.fill(green, (short) (Color.OKAY.getGreen() * 3));
+
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, zeroes, zeroes, green);
     }
 
 
@@ -80,9 +123,9 @@ public class LEDStripServiceUnitTest {
         }
 
         // WS2812 use BRG instead of RGB
-        rgbValuesOne.r = b.clone();
-        rgbValuesOne.g = r.clone();
-        rgbValuesOne.b = g.clone();
+        rgbValuesOneMock.r = b.clone();
+        rgbValuesOneMock.g = r.clone();
+        rgbValuesOneMock.b = g.clone();
 
         for (int i = 0; i < 16; i++) {
             r[i] = (short) (i + 16);
@@ -91,12 +134,12 @@ public class LEDStripServiceUnitTest {
         }
 
         // WS2812 use BRG instead of RGB
-        rgbValuesTwo.r = b.clone();
-        rgbValuesTwo.g = r.clone();
-        rgbValuesTwo.b = g.clone();
+        rgbValuesTwoMock.r = b.clone();
+        rgbValuesTwoMock.g = r.clone();
+        rgbValuesTwoMock.b = g.clone();
 
-        when(brickletLEDStrip.getRGBValues(0, (short) 16)).thenReturn(rgbValuesOne);
-        when(brickletLEDStrip.getRGBValues(16, (short) 16)).thenReturn(rgbValuesTwo);
+        when(brickletLEDStripMock.getRGBValues(0, (short) 16)).thenReturn(rgbValuesOneMock);
+        when(brickletLEDStripMock.getRGBValues(16, (short) 16)).thenReturn(rgbValuesTwoMock);
 
         LEDStripDTO ledStripDTO = new LEDStripDTO();
         ledStripDTO.setDomain(new LEDStripDomain("one", "abc", 30, "abrick"));
@@ -139,10 +182,10 @@ public class LEDStripServiceUnitTest {
             partlyWhite[i] = (short) 255;
         }
 
-        InOrder inOrder = Mockito.inOrder(brickletLEDStrip);
+        InOrder inOrder = Mockito.inOrder(brickletLEDStripMock);
 
-        inOrder.verify(brickletLEDStrip).setRGBValues(0, (short) 16, allWhite, allWhite, allWhite);
-        inOrder.verify(brickletLEDStrip).setRGBValues(16, (short) 16, partlyWhite, partlyWhite, partlyWhite);
+        inOrder.verify(brickletLEDStripMock).setRGBValues(0, (short) 16, allWhite, allWhite, allWhite);
+        inOrder.verify(brickletLEDStripMock).setRGBValues(16, (short) 16, partlyWhite, partlyWhite, partlyWhite);
     }
 
 
@@ -168,8 +211,8 @@ public class LEDStripServiceUnitTest {
         short[] allWhite = new short[16];
         Arrays.fill(allWhite, (short) 255);
 
-        verify(brickletLEDStrip).setRGBValues(0, (short) 16, allWhite, allWhite, allWhite);
-        verify(brickletLEDStrip).setRGBValues(16, (short) 16, allWhite, allWhite, allWhite);
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, allWhite, allWhite, allWhite);
+        verify(brickletLEDStripMock).setRGBValues(16, (short) 16, allWhite, allWhite, allWhite);
     }
 
 
@@ -198,36 +241,7 @@ public class LEDStripServiceUnitTest {
         Arrays.fill(blue, (short) color.getBlue());
 
         // The LED chips expect data in BRG, not RGB
-        verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);
-    }
-
-
-    @Test
-    public void handleStatusOkayWithSensor() throws Exception {
-
-        // setup
-        LEDStripDTO ledStripDTO = new LEDStripDTO();
-        ledStripDTO.setDomain(new LEDStripDomain("one", "abc", 16, "abrick", "asensor"));
-
-        StatusInformation status = new StatusInformation("test", Status.OKAY);
-        ledStripDTO.setStatus(status);
-
-        // execution
-        sut.handleStatus(ledStripDTO);
-
-        // verification
-        Color color = new Color(0, 32, 0);
-
-        short[] red = new short[16];
-        short[] green = new short[16];
-        short[] blue = new short[16];
-
-        Arrays.fill(red, (short) color.getRed());
-        Arrays.fill(green, (short) color.getGreen());
-        Arrays.fill(blue, (short) color.getBlue());
-
-        // The LED chips expect data in BRG, not RGB
-        verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, blue, red, green);
     }
 
 
@@ -256,7 +270,7 @@ public class LEDStripServiceUnitTest {
         Arrays.fill(blue, (short) color.getBlue());
 
         // The LED chips expect data in BRG, not RGB
-        verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, blue, red, green);
     }
 
 
@@ -285,7 +299,7 @@ public class LEDStripServiceUnitTest {
         Arrays.fill(blue, (short) color.getBlue());
 
         // The LED chips expect data in BRG, not RGB
-        verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, blue, red, green);
     }
 
 
@@ -326,7 +340,7 @@ public class LEDStripServiceUnitTest {
         Arrays.fill(blue, (short) 16);
 
         // The LED chips expect data in BRG, not RGB
-        verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, blue, red, green);
     }
 
 
@@ -367,7 +381,7 @@ public class LEDStripServiceUnitTest {
         Arrays.fill(blue, (short) 0);
 
         // The LED chips expect data in BRG, not RGB
-        verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, blue, red, green);
     }
 
 
@@ -408,7 +422,7 @@ public class LEDStripServiceUnitTest {
         Arrays.fill(blue, (short) 255);
 
         // The LED chips expect data in BRG, not RGB
-        verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, blue, red, green);
     }
 
 
@@ -428,6 +442,6 @@ public class LEDStripServiceUnitTest {
         short[] blue = new short[16];
 
         // The LED chips expect data in BRG, not RGB
-        verify(brickletLEDStrip).setRGBValues(0, (short) 16, blue, red, green);
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, blue, red, green);
     }
 }

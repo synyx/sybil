@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.bricklet.BrickletProvider;
+import org.synyx.sybil.bricklet.input.illuminance.IlluminanceDTOService;
+import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
+import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
+import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 import org.synyx.sybil.jenkins.domain.Status;
@@ -34,15 +38,21 @@ import java.util.Map;
 public class LEDStripService {
 
     private static final int SIXTEEN = 16;
+    private static final int TEN = 10;
     private static final short MAX_PRIMARY_COLOR = (short) 255; // NOSONAR Tinkerforge library uses shorts
     private static final double DEFAULT_BRIGHTNESS = 1.0;
 
     private final BrickletProvider brickletProvider;
+    private final IlluminanceDTOService illuminanceDTOService;
+    private final IlluminanceService illuminanceService;
 
     @Autowired
-    public LEDStripService(BrickletProvider provider) {
+    public LEDStripService(BrickletProvider provider, IlluminanceDTOService illuminanceDTOService,
+        IlluminanceService illuminanceService) {
 
         this.brickletProvider = provider;
+        this.illuminanceDTOService = illuminanceDTOService;
+        this.illuminanceService = illuminanceService;
     }
 
     public List<Color> getPixels(LEDStripDTO ledStripDTO) throws AlreadyConnectedException, TimeoutException,
@@ -169,13 +179,28 @@ public class LEDStripService {
     }
 
 
-    private double getBrightness(LEDStripDomain ledStripDomain) {
+    private double getBrightness(LEDStripDomain ledStripDomain) throws IOException, AlreadyConnectedException,
+        NotConnectedException, TimeoutException {
+
+        double brightness = DEFAULT_BRIGHTNESS;
 
         String sensor = ledStripDomain.getSensor();
 
-        // TODO: Poll the associated sensor, instead of just giving back double brightness for test purposes
+        IlluminanceDTO illuminanceDTO = illuminanceDTOService.getDTO(sensor);
 
-        return 2.0;
+        IlluminanceDomain illuminanceDomain = illuminanceDTO.getDomain();
+
+        // since the sensor reports in lux / 10, we have to multiply the threshold and divide the multiplier by 10 each.
+        int thresholdInDecilux = illuminanceDomain.getThreshold() * TEN;
+        double multiplier = illuminanceDomain.getMultiplier() / TEN;
+
+        int illuminance = illuminanceService.getIlluminance(illuminanceDTO);
+
+        if (illuminance < thresholdInDecilux) {
+            brightness += (thresholdInDecilux - illuminance) * multiplier;
+        }
+
+        return brightness;
     }
 
 
