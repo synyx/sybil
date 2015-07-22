@@ -12,11 +12,6 @@ public class IlluminanceDTO {
 
     IlluminanceDomain domain;
 
-    public IlluminanceDTO() {
-
-        // default constructor deliberately left empty
-    }
-
     public IlluminanceDomain getDomain() {
 
         if (domain == null) {
