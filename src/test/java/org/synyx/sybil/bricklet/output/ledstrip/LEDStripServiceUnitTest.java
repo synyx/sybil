@@ -76,7 +76,7 @@ public class LEDStripServiceUnitTest {
 
 
     @Test
-    public void getBrightness() throws Exception {
+    public void getBrightnessTripled() throws Exception {
 
         // setup
         // multiplier of 1.0 means every 1 Lux less than threshold increases brightness by a factor of 1
@@ -103,6 +103,72 @@ public class LEDStripServiceUnitTest {
 
         // brightness should be tripled
         Arrays.fill(green, (short) (Color.OKAY.getGreen() * 3));
+
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, zeroes, zeroes, green);
+    }
+
+
+    @Test
+    public void getBrightnessMax() throws Exception {
+
+        // setup
+        // multiplier of 1.0 means every 1 Lux less than threshold increases brightness by a factor of 1
+        IlluminanceDomain illuminanceDomain = new IlluminanceDomain("ambientlight", "abc", 16, 1.0, "somebrick");
+        IlluminanceDTO illuminanceDTO = new IlluminanceDTO();
+        illuminanceDTO.setDomain(illuminanceDomain);
+
+        when(illuminanceDTOServiceMock.getDTO("ambientlight")).thenReturn(illuminanceDTO);
+
+        // 0 decilux is absolute darkness and should result in maximal brightness.
+        when(illuminanceServiceMock.getIlluminance(illuminanceDTO)).thenReturn(0);
+
+        LEDStripDomain ledStripDomain = new LEDStripDomain("one", "xyz", 16, "abrick", "ambientlight");
+        LEDStripDTO ledStripDTO = new LEDStripDTO();
+        ledStripDTO.setDomain(ledStripDomain);
+        ledStripDTO.setStatus(new StatusInformation("test", Status.OKAY));
+
+        // execution
+        sut.handleStatus(ledStripDTO);
+
+        // verification
+        short[] zeroes = new short[16];
+        short[] green = new short[16];
+
+        // brightness should be tripled
+        Arrays.fill(green, (short) 255);
+
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, zeroes, zeroes, green);
+    }
+
+
+    @Test
+    public void getBrightnessMin() throws Exception {
+
+        // setup
+        // multiplier of 1.0 means every 1 Lux less than threshold increases brightness by a factor of 1
+        IlluminanceDomain illuminanceDomain = new IlluminanceDomain("ambientlight", "abc", 16, 1.0, "somebrick");
+        IlluminanceDTO illuminanceDTO = new IlluminanceDTO();
+        illuminanceDTO.setDomain(illuminanceDomain);
+
+        when(illuminanceDTOServiceMock.getDTO("ambientlight")).thenReturn(illuminanceDTO);
+
+        // 5000 lux is over the threshold, so the brightness should not change from default.
+        when(illuminanceServiceMock.getIlluminance(illuminanceDTO)).thenReturn(5000);
+
+        LEDStripDomain ledStripDomain = new LEDStripDomain("one", "xyz", 16, "abrick", "ambientlight");
+        LEDStripDTO ledStripDTO = new LEDStripDTO();
+        ledStripDTO.setDomain(ledStripDomain);
+        ledStripDTO.setStatus(new StatusInformation("test", Status.OKAY));
+
+        // execution
+        sut.handleStatus(ledStripDTO);
+
+        // verification
+        short[] zeroes = new short[16];
+        short[] green = new short[16];
+
+        // brightness should be tripled
+        Arrays.fill(green, (short) Color.OKAY.getGreen());
 
         verify(brickletLEDStripMock).setRGBValues(0, (short) 16, zeroes, zeroes, green);
     }
