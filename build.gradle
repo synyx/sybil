@@ -10,7 +10,7 @@ apply plugin: 'war' //war plugin
 
 // Basic configuration
 sourceCompatibility = 1.8 //Java 8
-version='0.3.1'
+version='0.4.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -114,8 +114,14 @@ task testReport {
 
 
 // Task: Copy libraries to build/libs
-task copyToLib(type: Copy) {
+task prepareLibrariesForSonar(type: Copy) {
     into 'build/libs'
     from configurations.runtime
+}
+
+// Task: Clean and clean logs
+task cleanLogs(type: Delete) {
+    dependsOn(clean)
+    delete 'logs'
 }
 /*** END Configure custom tasks ***/
