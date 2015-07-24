@@ -185,7 +185,9 @@ This then loads:
 
 The **JenkinsService** has a *runScheduled* method, which is annotated with @Scheduled which means it is run every 60
 seconds. This method gets a list of all jobs from the Jenkins server(s), compares it to the list loaded from
-`jenkins.json` and then instructs the associated LED strips to show the jobs' statuses. 
+`jenkins.json` and then instructs the associated LED strips to show the jobs' statuses.  
+If so configured, the LED strips will adjust their brightness depending on the ambient illuminance measured by their
+associated sensors.
 
 A direct API for reading the LED strips' state and for writing to it (i.e. displaying things on it) is provided at
 `/configuration/ledstrips/{name}/display/`.
