@@ -1,0 +1,121 @@
+#!/bin/bash
+
+# clean directory
+gradlew --quiet cleanLogs
+if [[ $? != 0 ]] # return value != 0
+  then
+    echo "Error: Could not clean directory"
+    exit
+fi
+
+# check if there are any uncommited files
+git status| grep -q "working directory clean"
+if [[ $? != 0 ]] # return value != 0
+  then
+    echo "Error: Uncommited files found"
+    exit
+fi
+
+# get current version
+CURRENT_VERSION=`cat build.gradle| grep "version="|cut -d"'" -f2`
+if [[ ${#CURRENT_VERSION} = 0 ]] # length = 0
+  then
+    echo "Error: Could not get current version"
+    exit
+fi
+echo "Current version:" $CURRENT_VERSION
+
+# remove -SNAPSHOT
+SNAPSHOT=`expr index "$CURRENT_VERSION" -SNAPSHOT`
+if [[ `expr index "$CURRENT_VERSION" -SNAPSHOT` != 0 ]]
+  then
+    NEW_VERSION=${CURRENT_VERSION:0:SNAPSHOT-1}
+  else
+    NEW_VERSION=`echo $CURRENT_VERSION|perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e'`  
+fi
+
+# read in new version
+read -p "Enter new version: " -e -i $NEW_VERSION NEW_VERSION
+read -p "You entered $NEW_VERSION. Are you sure you want to continue? <y/N> " PROMPT
+if  [[ ! $PROMPT =~ [yY](es)* ]] # prompt != regex
+  then
+    echo "Aborting."
+    exit
+fi
+
+# change version in build.gradle
+sed -i "s/version='$CURRENT_VERSION'/version='$NEW_VERSION'/g" build.gradle
+if [[ $? != 0 ]] # return value != 0
+  then
+    echo "Error: Could not edit build.gradle"
+    exit
+fi
+
+# change version in sonar-project.properties
+sed -i "s/sonar.projectVersion=$CURRENT_VERSION/sonar.projectVersion=$NEW_VERSION/g" sonar-project.properties
+if [[ $? != 0 ]] # return value != 0
+  then
+    echo "Error: Could not edit sonar-project.properties"
+    exit
+fi
+
+# add files to git
+git add build.gradle sonar-project.properties
+if [[ $? != 0 ]] # return value != 0
+  then
+    echo "Error: Could not add files to git"
+    exit
+fi
+
+# commit git
+git commit -m "Updated version to ${NEW_VERSION}" --quiet
+if [[ $? != 0 ]] # return value != 0
+  then
+    echo "Error: Could not commit git"
+    exit
+fi
+
+# tag git
+git tag -m "Updated version to ${NEW_VERSION}" $NEW_VERSION
+if [[ $? != 0 ]] # return value != 0
+  then
+    echo "Error: Could not tag git"
+    exit
+fi
+
+# push git
+git push --follow-tags --quiet
+if [[ $? != 0 ]] # return value != 0
+  then
+    echo "Error: Could not push git"
+    exit
+fi
+
+# generate next version
+NEXT_VERSION=`echo $NEW_VERSION|perl -pe 's/^((\d+\.)*)(\d+)(.*)$/$1.($3+1).$4/e'`-SNAPSHOT
+
+# read in next version
+read -p "Enter next version: " -e -i $NEXT_VERSION NEXT_VERSION
+read -p "You entered $NEXT_VERSION. Are you sure you want to continue? <y/N> " PROMPT
+while  [[ ! $PROMPT =~ [yY](es)* ]] # prompt != regex
+  do
+    read -p "Enter next version: " -e -i $NEXT_VERSION NEXT_VERSION
+    read -p "You entered $NEXT_VERSION. Are you sure you want to continue? <y/N> " PROMPT
+done
+
+
+# change version in build.gradle
+sed -i "s/version='$NEW_VERSION'/version='$NEXT_VERSION'/g" build.gradle
+if [[ $? != 0 ]] # return value != 0
+  then
+    echo "Error: Could not edit build.gradle"
+    exit
+fi
+
+# change version in sonar-project.properties
+sed -i "s/sonar.projectVersion=$NEW_VERSION/sonar.projectVersion=$NEXT_VERSION/g" sonar-project.properties
+if [[ $? != 0 ]] # return value != 0
+  then
+    echo "Error: Could not edit sonar-project.properties"
+    exit
+fi
