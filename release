@@ -13,7 +13,7 @@ git status| grep -q "working directory clean"
 if [[ $? != 0 ]] # return value != 0
   then
     echo "Error: Uncommited files found"
-    exit
+    exit 1
 fi
 
 # get current version
@@ -21,7 +21,7 @@ CURRENT_VERSION=`cat build.gradle| grep "version="|cut -d"'" -f2`
 if [[ ${#CURRENT_VERSION} = 0 ]] # length = 0
   then
     echo "Error: Could not get current version"
-    exit
+    exit 2
 fi
 echo "Current version:" $CURRENT_VERSION
 
@@ -40,7 +40,7 @@ read -p "You entered $NEW_VERSION. Are you sure you want to continue? <y/N> " PR
 if  [[ ! $PROMPT =~ [yY](es)* ]] # prompt != regex
   then
     echo "Aborting."
-    exit
+    exit 3
 fi
 
 # change version in build.gradle
@@ -48,7 +48,7 @@ sed -i "s/version='$CURRENT_VERSION'/version='$NEW_VERSION'/g" build.gradle
 if [[ $? != 0 ]] # return value != 0
   then
     echo "Error: Could not edit build.gradle"
-    exit
+    exit 4
 fi
 
 # change version in sonar-project.properties
@@ -56,7 +56,7 @@ sed -i "s/sonar.projectVersion=$CURRENT_VERSION/sonar.projectVersion=$NEW_VERSIO
 if [[ $? != 0 ]] # return value != 0
   then
     echo "Error: Could not edit sonar-project.properties"
-    exit
+    exit 5
 fi
 
 # add files to git
@@ -64,7 +64,7 @@ git add build.gradle sonar-project.properties
 if [[ $? != 0 ]] # return value != 0
   then
     echo "Error: Could not add files to git"
-    exit
+    exit 6
 fi
 
 # commit git
@@ -72,7 +72,7 @@ git commit -m "Updated version to ${NEW_VERSION}" --quiet
 if [[ $? != 0 ]] # return value != 0
   then
     echo "Error: Could not commit git"
-    exit
+    exit 7
 fi
 
 # tag git
@@ -80,7 +80,7 @@ git tag -m "Updated version to ${NEW_VERSION}" $NEW_VERSION
 if [[ $? != 0 ]] # return value != 0
   then
     echo "Error: Could not tag git"
-    exit
+    exit 8
 fi
 
 # push git
@@ -88,7 +88,7 @@ git push --follow-tags --quiet
 if [[ $? != 0 ]] # return value != 0
   then
     echo "Error: Could not push git"
-    exit
+    exit 9
 fi
 
 # generate next version
@@ -109,7 +109,7 @@ sed -i "s/version='$NEW_VERSION'/version='$NEXT_VERSION'/g" build.gradle
 if [[ $? != 0 ]] # return value != 0
   then
     echo "Error: Could not edit build.gradle"
-    exit
+    exit 10
 fi
 
 # change version in sonar-project.properties
@@ -117,5 +117,5 @@ sed -i "s/sonar.projectVersion=$NEW_VERSION/sonar.projectVersion=$NEXT_VERSION/g
 if [[ $? != 0 ]] # return value != 0
   then
     echo "Error: Could not edit sonar-project.properties"
-    exit
+    exit 11
 fi
