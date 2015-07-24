@@ -110,25 +110,22 @@ public class DisplayControllerUnitTest {
 
         mockMvc.perform(get("/configuration/ledstrips/ledone/display"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.links", hasSize(1)))
-            .andExpect(jsonPath("$.links[0].rel", is("self")))
-            .andExpect(jsonPath("$.links[0].href", is("http://localhost/configuration/ledstrips/ledone/display")))
-            .andExpect(jsonPath("$.pixels", hasSize(5)))
-            .andExpect(jsonPath("$.pixels[0].red", is(0)))
-            .andExpect(jsonPath("$.pixels[0].green", is(0)))
-            .andExpect(jsonPath("$.pixels[0].blue", is(0)))
-            .andExpect(jsonPath("$.pixels[1].red", is(127)))
-            .andExpect(jsonPath("$.pixels[1].green", is(0)))
-            .andExpect(jsonPath("$.pixels[1].blue", is(0)))
-            .andExpect(jsonPath("$.pixels[2].red", is(127)))
-            .andExpect(jsonPath("$.pixels[2].green", is(127)))
-            .andExpect(jsonPath("$.pixels[2].blue", is(0)))
-            .andExpect(jsonPath("$.pixels[3].red", is(0)))
-            .andExpect(jsonPath("$.pixels[3].green", is(16)))
-            .andExpect(jsonPath("$.pixels[3].blue", is(0)))
-            .andExpect(jsonPath("$.pixels[4].red", is(255)))
-            .andExpect(jsonPath("$.pixels[4].green", is(255)))
-            .andExpect(jsonPath("$.pixels[4].blue", is(255)));
+            .andExpect(jsonPath("$", hasSize(5)))
+            .andExpect(jsonPath("$[0].red", is(0)))
+            .andExpect(jsonPath("$[0].green", is(0)))
+            .andExpect(jsonPath("$[0].blue", is(0)))
+            .andExpect(jsonPath("$[1].red", is(127)))
+            .andExpect(jsonPath("$[1].green", is(0)))
+            .andExpect(jsonPath("$[1].blue", is(0)))
+            .andExpect(jsonPath("$[2].red", is(127)))
+            .andExpect(jsonPath("$[2].green", is(127)))
+            .andExpect(jsonPath("$[2].blue", is(0)))
+            .andExpect(jsonPath("$[3].red", is(0)))
+            .andExpect(jsonPath("$[3].green", is(16)))
+            .andExpect(jsonPath("$[3].blue", is(0)))
+            .andExpect(jsonPath("$[4].red", is(255)))
+            .andExpect(jsonPath("$[4].green", is(255)))
+            .andExpect(jsonPath("$[4].blue", is(255)));
     }
 
 
@@ -136,14 +133,11 @@ public class DisplayControllerUnitTest {
     public void putFullDisplay() throws Exception {
 
         // setup
-        DisplayResource displayResource = new DisplayResource();
-        displayResource.setPixels(colors);
-
         Sprite1D sprite1D = new Sprite1D(5, colors);
 
         // execution
         mockMvc.perform(put("/configuration/ledstrips/ledone/display").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(displayResource)))
+                .content(objectMapper.writeValueAsBytes(colors)))
             .andExpect(status().isOk());
 
         // verification
@@ -162,14 +156,11 @@ public class DisplayControllerUnitTest {
         colors.add(Color.WARNING);
         colors.add(Color.OKAY);
 
-        DisplayResource displayResource = new DisplayResource();
-        displayResource.setPixels(colors);
-
         Sprite1D sprite1D = new Sprite1D(3, colors);
 
         // execution
         mockMvc.perform(put("/configuration/ledstrips/ledone/display").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(displayResource)))
+                .content(objectMapper.writeValueAsBytes(colors)))
             .andExpect(status().isOk());
 
         // verification
@@ -184,28 +175,9 @@ public class DisplayControllerUnitTest {
         // setup
         colors = new ArrayList<>();
 
-        DisplayResource displayResource = new DisplayResource();
-        displayResource.setPixels(colors);
-
         // execution
         mockMvc.perform(put("/configuration/ledstrips/ledone/display").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(displayResource)))
-            .andExpect(status().isOk());
-
-        // verification
-        verify(ledStripServiceMock, never()).handleSprite(ledStripDTOMock);
-    }
-
-
-    @Test
-    public void putEmptyDisplay() throws Exception {
-
-        // setup
-        DisplayResource displayResource = new DisplayResource();
-
-        // execution
-        mockMvc.perform(put("/configuration/ledstrips/ledone/display").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(displayResource)))
+                .content(objectMapper.writeValueAsBytes(colors)))
             .andExpect(status().isOk());
 
         // verification

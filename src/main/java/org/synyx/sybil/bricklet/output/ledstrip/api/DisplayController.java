@@ -2,8 +2,6 @@ package org.synyx.sybil.bricklet.output.ledstrip.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.hateoas.Link;
-
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,9 +22,6 @@ import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 
 import java.util.List;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -52,38 +47,23 @@ public class DisplayController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = { "application/hal+json" })
-    public DisplayResource getDisplay(@PathVariable String name) {
+    @RequestMapping(method = RequestMethod.GET, produces = { "application/json" })
+    public List<Color> getDisplay(@PathVariable String name) {
 
-        LEDStripDTO ledStripDTO;
+        LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(name);
 
-        ledStripDTO = ledStripDTOService.getDTO(name);
-
-        Link self = linkTo(methodOn(DisplayController.class).getDisplay(name)).withSelfRel();
-
-        DisplayResource displayResource = new DisplayResource();
-
-        displayResource.add(self);
-
-        displayResource.setPixels(ledStripService.getPixels(ledStripDTO));
-
-        return displayResource;
+        return ledStripService.getPixels(ledStripDTO);
     }
 
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.PUT, produces = "application/hal+json")
-    public DisplayResource putDisplay(@PathVariable String name, @RequestBody DisplayResource displayResource) {
-
-        List<Color> pixels = displayResource.getPixels();
+    @RequestMapping(method = RequestMethod.PUT, produces = "application/json")
+    public List<Color> putDisplay(@PathVariable String name, @RequestBody List<Color> pixels) {
 
         if (pixels != null && !pixels.isEmpty()) {
-            Sprite1D sprite1D;
-            LEDStripDTO ledStripDTO;
+            LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(name);
 
-            ledStripDTO = ledStripDTOService.getDTO(name);
-            sprite1D = new Sprite1D(pixels.size(), pixels);
-            ledStripDTO.setSprite(sprite1D);
+            ledStripDTO.setSprite(new Sprite1D(pixels.size(), pixels));
 
             ledStripService.handleSprite(ledStripDTO);
         }
