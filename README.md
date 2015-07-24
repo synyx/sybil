@@ -25,16 +25,16 @@ This project is under heavy development and further documentation is forthcoming
 * Reads configuration from JSON files.
 * Outputs statuses on LED strips.
     * Outputs statuses of Jenkins build jobs, updated every 60 seconds.
+    * Adjusts brightness of LED strips based on ambient illuminance.
 * Outputs arbitrary pixels and sprites on LED strips.
     * Does this via a HTTP API.
-* Serves a *very barebones* REST API showing the configured the bricks and bricklets. 
 
 ## Execution
 
 ### Configuration
 
-To run or deploy the server you need `bricks.json`, `ledstrips.json`, and `jenkins.json` in `/home/sybil-config/`, and
-`jenkinsservers.json` in `/home/sybil/`.  
+To run or deploy the server you need `bricks.json`, `ledstrips.json`, `illuminances.json` and `jenkins.json` in
+`/home/sybil-config/`, and `jenkinsservers.json` in `/home/sybil/`.  
 See `docs/configfiles` for examples and simplified schemata.  
 The locations of these configuration files can be configured in `src/main/resources/config.properties`.  
 
@@ -100,6 +100,7 @@ When you are done, run
 docs/                               Documentation sources.
 | +-configfiles/                    Examples and simple schemata for the config files.
 | +-staticwebsite/                  Sources of the sybil website.
+|
 src/                                Source code.
   +-test/                           Unit tests.
   +-main/                           Main.
@@ -107,32 +108,36 @@ src/                                Source code.
     | +-AppInitializer              Found by Servlet 3.0 container, starts app.
     | +-AttributeEmptyException     Custom exception, when accessing undef. attributes.
     | +-DeviceDomain                Interface all Tinkerforge devices inherit from.
-    | +-LoadFailedException         Custom exception, when loading a file fails.
-    | |
-    | +-api/                        API-controller & helper for non-specific subject.
-    | | +-ConfigurationController   MVC REST Controller for /configuration/ root.
-    | | +-RootController            MVC Root (/) controller.
+    | +-LoadFailedException         Exception for when loading a file fails.
     | |
     | +-brick/                      Brick-specific classes.
-    | | +-api/                      API-controller & helper for bricks.
-    | | | +-BrickResource           Spring HATEOAS wrapper around brick configuration.
-    | | | +-BricksController        MVC Rest Controller for brick configuration.
-    | | |
     | | +-domain/                   Domain classes for bricks.
     | | | +-BrickDomain             Domain for Tinkerforge brick configurations.
     | | | +-BrickDTO                Data Transfer Object for bricks. 
     | | |
+    | | +-BrickConnectionException  Exception for connection errors.
     | | +-BrickDTOService           Creates pre-configured Brick DTOs.
+    | | +-BrickNotFoundException    Exception for non-existent bricks.
     | | +-BrickService              Accepts Brick DTOs and handles them.
     | |
     | +-bricklet/                   Bricklet-specific classes.
+    | | +-input/                    Bricklets that input data.
+    | | | +-illuminance/            Ambient Illuminance sensor bricklets.
+    | | |   +-domain/               Domain classes for illuminance sensors.
+    | | |   | +-IlluminanceDomain   Domain for illuminance sensors.
+    | | |   | +-IlluminanceDTO      Data Transfer Object for ill. sensors.
+    | | |   |
+    | | |   +-BrickletAmbie…Wrapper Wrapper for Tinkerforge ill. sensor objects.
+    | | |   +-I…ConnectionException Exception for connection errors.
+    | | |   +-IlluminanceDTOService Creates pre-configured ill. sensor DTOs.
+    | | |   +-Ill…NotFoundException Exception for non-existent ill. sensors.
+    | | |   +-IlluminanceService    Accepts Ill. DTOs and handles them.
+    | | |
     | | +-output/                   Bricklets that output data.
     | | | +-ledstrip/               LED strip bricklets.
     | | |   +-api/                  API-controller & helpers for LED strips.
+    | | |   | +-APIError            Object for returning errors.
     | | |   | +-DisplayController   MVC Controller for interacting w/ LED strips.
-    | | |   | +-DisplayResource     Spring HATEOAS wrapper for LED strip direct access.
-    | | |   | +-LEDStripResource    Spring HATEOAS wrapper around LED strip config.
-    | | |   | +-LEDStripsController MVC Controller for reading LED strip configurations.
     | | |   |
     | | |   +-domain/               Domain classes for LED strips.
     | | |   | +-LEDStripDomain      Domain for LED strips.
@@ -140,7 +145,9 @@ src/                                Source code.
     | | |   |
     | | |   +-BrickletLEDS…Wrapper  Wrapper for Tinkerforge LED strip objects.
     | | |   +-Color                 Color object, for LEDs.
+    | | |   +-L…ConnectionException Exception for connection errors.
     | | |   +-LEDStripDTOService    Creates pre-configured LED strip DTOs.
+    | | |   +-LED…NotFoundException Exception for non-existent LED strips.
     | | |   +-LEDStripService       Accepts LED strip DTOs and handles them.
     | | |   +-Sprite1D              Sprite object, for LED strips.
     | | |
@@ -176,13 +183,9 @@ This then loads:
 * The Spring configuration in **SpringConfig**, which loads:
     * All the __*Service__ classes, since they're annotated with @Service.
 
-The **JenkinsService** has a *runEveryMinute* method, which is annotated with @Scheduled which means it is run every 60
+The **JenkinsService** has a *runScheduled* method, which is annotated with @Scheduled which means it is run every 60
 seconds. This method gets a list of all jobs from the Jenkins server(s), compares it to the list loaded from
 `jenkins.json` and then instructs the associated LED strips to show the jobs' statuses. 
-
-Bricks configured in the JSON files can be listed via the REST API at `/configuration/bricks` and
-`/configuration/bricks/{name}` respectively. Same goes for LED strips at `/configuration/ledstrips` and 
-`/configuration/ledstrips/{name}`.
 
 A direct API for reading the LED strips' state and for writing to it (i.e. displaying things on it) is provided at
 `/configuration/ledstrips/{name}/display/`.
