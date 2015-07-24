@@ -14,7 +14,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.springframework.core.env.Environment;
 
-import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 
@@ -85,7 +84,7 @@ public class IlluminanceDTOServiceUnitTest {
     }
 
 
-    @Test(expected = LoadFailedException.class)
+    @Test(expected = IlluminanceNotFoundException.class)
     public void getNonexistentIlluminanceDTO() throws Exception {
 
         sut.getDTO("does not exist");

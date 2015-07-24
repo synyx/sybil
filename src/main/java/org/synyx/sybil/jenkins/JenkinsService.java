@@ -30,8 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.LoadFailedException;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConnectionException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
@@ -97,8 +97,7 @@ public class JenkinsService {
             for (LEDStripDTO ledStripDTO : ledstrips) {
                 ledStripService.turnOff(ledStripDTO);
             }
-        } catch (IOException | TimeoutException | NotConnectedException | AlreadyConnectedException
-                | AttributeEmptyException | LoadFailedException exception) {
+        } catch (LoadFailedException | LEDStripConnectionException exception) {
             handleError("Error turning off LED strips:", exception);
         }
     }
@@ -120,7 +119,7 @@ public class JenkinsService {
         try {
             authorizations = loadAuthorizations();
             configuredJobs = loadConfiguredJobs();
-        } catch (IOException exception) {
+        } catch (LoadFailedException exception) {
             handleError("Error loading Jenkins configuration:", exception);
 
             return;
@@ -143,13 +142,19 @@ public class JenkinsService {
     }
 
 
-    private Map<String, HttpEntity<JenkinsProperties[]>> loadAuthorizations() throws IOException {
+    private Map<String, HttpEntity<JenkinsProperties[]>> loadAuthorizations() {
 
         Map<String, HttpEntity<JenkinsProperties[]>> authorizations = new HashMap<>();
 
-        List<ConfiguredServer> configuredServers = objectMapper.readValue(new File(jenkinsServerConfigFile),
-                new TypeReference<List<ConfiguredServer>>() {
-                });
+        List<ConfiguredServer> configuredServers;
+
+        try {
+            configuredServers = objectMapper.readValue(new File(jenkinsServerConfigFile),
+                    new TypeReference<List<ConfiguredServer>>() {
+                    });
+        } catch (IOException exception) {
+            throw new LoadFailedException("Error loading jenkins server config:", exception);
+        }
 
         for (ConfiguredServer configuredServer : configuredServers) {
             authorizations.put(configuredServer.getUrl(), generateHTTPHeader(configuredServer));
@@ -172,11 +177,15 @@ public class JenkinsService {
     }
 
 
-    private Map<String, List<ConfiguredJob>> loadConfiguredJobs() throws IOException {
+    private Map<String, List<ConfiguredJob>> loadConfiguredJobs() {
 
-        return objectMapper.readValue(new File(configDirectory + "jenkins.json"),
-                new TypeReference<Map<String, List<ConfiguredJob>>>() {
-                });
+        try {
+            return objectMapper.readValue(new File(configDirectory + "jenkins.json"),
+                    new TypeReference<Map<String, List<ConfiguredJob>>>() {
+                    });
+        } catch (IOException exception) {
+            throw new LoadFailedException("Error loading jenkins config:", exception);
+        }
     }
 
 
@@ -269,7 +278,7 @@ public class JenkinsService {
                 ledStripDTO.setStatus(ledStripStatuses.get(ledStrip));
                 ledStripService.handleStatus(ledStripDTO);
             } catch (TimeoutException | NotConnectedException | IOException | AlreadyConnectedException
-                    | AttributeEmptyException | LoadFailedException exception) {
+                    | LoadFailedException exception) {
                 handleError("Error setting status on LED strip:", exception);
             }
         }

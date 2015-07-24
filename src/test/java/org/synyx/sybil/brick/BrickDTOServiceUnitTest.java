@@ -14,7 +14,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.springframework.core.env.Environment;
 
-import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.brick.domain.BrickDTO;
 import org.synyx.sybil.brick.domain.BrickDomain;
 
@@ -88,7 +87,7 @@ public class BrickDTOServiceUnitTest {
     }
 
 
-    @Test(expected = LoadFailedException.class)
+    @Test(expected = BrickNotFoundException.class)
     public void getNonexistentBrickDTO() throws Exception {
 
         sut.getDTO("does not exist");

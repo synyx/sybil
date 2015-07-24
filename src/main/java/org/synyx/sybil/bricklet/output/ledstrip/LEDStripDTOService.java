@@ -51,26 +51,19 @@ public class LEDStripDTOService {
      * @param  name  The name of the LED strip.
      *
      * @return  The DTO containing the LED strip's configuration.
-     *
-     * @throws  IOException  The IO exception.
      */
-    public LEDStripDTO getDTO(String name) throws IOException {
+    public LEDStripDTO getDTO(String name) {
 
         LEDStripDTO ledStripDTO = null;
 
-        List<LEDStripDomain> ledStripDomains = objectMapper.readValue(new File(configDir + "ledstrips.json"),
-                new TypeReference<List<LEDStripDomain>>() {
-                });
-
-        for (LEDStripDomain ledStripDomain : ledStripDomains) {
+        for (LEDStripDomain ledStripDomain : getLedStripDomains()) {
             if (ledStripDomain.getName().equals(name)) {
-                ledStripDTO = new LEDStripDTO();
-                ledStripDTO.setDomain(ledStripDomain);
+                ledStripDTO = new LEDStripDTO(ledStripDomain);
             }
         }
 
         if (ledStripDTO == null) {
-            throw new LoadFailedException("LED strip " + name + " does not exist.");
+            throw new LEDStripNotFoundException("LED strip " + name + " is not configured.");
         }
 
         return ledStripDTO;
@@ -81,24 +74,31 @@ public class LEDStripDTOService {
      * Gets pre-configured DTOs for all LED strips.
      *
      * @return  A List of all the DTOs.
-     *
-     * @throws  IOException  The IO exception.
      */
-    public List<LEDStripDTO> getAllDTOs() throws IOException {
+    public List<LEDStripDTO> getAllDTOs() {
 
         List<LEDStripDTO> ledStripDTOs = new ArrayList<>();
 
-        List<LEDStripDomain> ledStripDomains = objectMapper.readValue(new File(configDir + "ledstrips.json"),
-                new TypeReference<List<LEDStripDomain>>() {
-                });
-
-        for (LEDStripDomain ledStripDomain : ledStripDomains) {
-            LEDStripDTO ledStripDTO;
-            ledStripDTO = new LEDStripDTO();
-            ledStripDTO.setDomain(ledStripDomain);
-            ledStripDTOs.add(ledStripDTO);
+        for (LEDStripDomain ledStripDomain : getLedStripDomains()) {
+            ledStripDTOs.add(new LEDStripDTO(ledStripDomain));
         }
 
         return ledStripDTOs;
+    }
+
+
+    private List<LEDStripDomain> getLedStripDomains() {
+
+        List<LEDStripDomain> ledStripDomains;
+
+        try {
+            ledStripDomains = objectMapper.readValue(new File(configDir + "ledstrips.json"),
+                    new TypeReference<List<LEDStripDomain>>() {
+                    });
+        } catch (IOException exception) {
+            throw new LoadFailedException("Error loading LED strips config file:", exception);
+        }
+
+        return ledStripDomains;
     }
 }

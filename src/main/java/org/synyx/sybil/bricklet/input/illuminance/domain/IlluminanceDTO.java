@@ -1,8 +1,5 @@
 package org.synyx.sybil.bricklet.input.illuminance.domain;
 
-import org.synyx.sybil.AttributeEmptyException;
-
-
 /**
  * IlluminanceDTO.
  *
@@ -10,20 +7,15 @@ import org.synyx.sybil.AttributeEmptyException;
  */
 public class IlluminanceDTO {
 
-    IlluminanceDomain domain;
+    private final IlluminanceDomain domain;
+
+    public IlluminanceDTO(IlluminanceDomain domain) {
+
+        this.domain = domain;
+    }
 
     public IlluminanceDomain getDomain() {
 
-        if (domain == null) {
-            throw new AttributeEmptyException("domain undefined");
-        }
-
         return domain;
-    }
-
-
-    public void setDomain(IlluminanceDomain domain) {
-
-        this.domain = domain;
     }
 }

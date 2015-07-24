@@ -28,11 +28,13 @@ public class BrickletLEDStripWrapper extends BrickletLEDStrip {
 
     /**
      * Disconnect the bricklet and its brick.
-     *
-     * @throws  NotConnectedException  the not connected exception
      */
-    public void disconnect() throws NotConnectedException {
+    public void disconnect() {
 
-        ipConnection.disconnect();
+        try {
+            ipConnection.disconnect();
+        } catch (NotConnectedException exception) {
+            throw new LEDStripConnectionException("Error disconnecting:", exception);
+        }
     }
 }

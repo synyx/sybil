@@ -50,10 +50,8 @@ public class IlluminanceServiceUnitTest {
     @Test
     public void getIlluminance() throws Exception {
 
-        IlluminanceDTO illuminanceDTO = new IlluminanceDTO();
         IlluminanceDomain illuminanceDomain = new IlluminanceDomain();
-
-        illuminanceDTO.setDomain(illuminanceDomain);
+        IlluminanceDTO illuminanceDTO = new IlluminanceDTO(illuminanceDomain);
 
         int illuminance = sut.getIlluminance(illuminanceDTO);
 

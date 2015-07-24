@@ -112,6 +112,7 @@ task testReport {
     }
 }
 
+
 // Task: Copy libraries to build/libs
 task copyToLib(type: Copy) {
     into 'build/libs'

@@ -51,26 +51,21 @@ public class BrickDTOService {
      * @param  name  The name of the brick.
      *
      * @return  The DTO containing the brick's configuration.
-     *
-     * @throws  java.io.IOException  The IO exception.
      */
-    public BrickDTO getDTO(String name) throws IOException {
+    public BrickDTO getDTO(String name) {
 
         BrickDTO brickDTO = null;
 
-        List<BrickDomain> brickDomains = objectMapper.readValue(new File(configDir + "bricks.json"),
-                new TypeReference<List<BrickDomain>>() {
-                });
+        List<BrickDomain> brickDomains = getBrickDomains();
 
         for (BrickDomain brickDomain : brickDomains) {
             if (brickDomain.getName().equals(name)) {
-                brickDTO = new BrickDTO();
-                brickDTO.setDomain(brickDomain);
+                brickDTO = new BrickDTO(brickDomain);
             }
         }
 
         if (brickDTO == null) {
-            throw new LoadFailedException("Brick " + name + " does not exist.");
+            throw new BrickNotFoundException("Brick " + name + " does not exist.");
         }
 
         return brickDTO;
@@ -81,24 +76,29 @@ public class BrickDTOService {
      * Gets pre-configured DTOs for all bricks.
      *
      * @return  A List of all the DTOs.
-     *
-     * @throws  java.io.IOException  The IO exception.
      */
-    public List<BrickDTO> getAllDTOs() throws IOException {
+    public List<BrickDTO> getAllDTOs() {
 
         List<BrickDTO> brickDTOs = new ArrayList<>();
 
-        List<BrickDomain> brickDomains = objectMapper.readValue(new File(configDir + "bricks.json"),
-                new TypeReference<List<BrickDomain>>() {
-                });
+        List<BrickDomain> brickDomains = getBrickDomains();
 
         for (BrickDomain brickDomain : brickDomains) {
-            BrickDTO brickDTO;
-            brickDTO = new BrickDTO();
-            brickDTO.setDomain(brickDomain);
-            brickDTOs.add(brickDTO);
+            brickDTOs.add(new BrickDTO(brickDomain));
         }
 
         return brickDTOs;
+    }
+
+
+    private List<BrickDomain> getBrickDomains() {
+
+        try {
+            return objectMapper.readValue(new File(configDir + "bricks.json"),
+                    new TypeReference<List<BrickDomain>>() {
+                    });
+        } catch (IOException exception) {
+            throw new LoadFailedException("Error loading bricks config file:", exception);
+        }
     }
 }

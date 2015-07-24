@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.bricklet.BrickletProvider;
+import org.synyx.sybil.bricklet.input.illuminance.IlluminanceConnectionException;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceDTOService;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
@@ -55,8 +55,7 @@ public class LEDStripService {
         this.illuminanceService = illuminanceService;
     }
 
-    public List<Color> getPixels(LEDStripDTO ledStripDTO) throws AlreadyConnectedException, TimeoutException,
-        NotConnectedException, IOException {
+    public List<Color> getPixels(LEDStripDTO ledStripDTO) {
 
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
         List<Color> result = new ArrayList<>();
@@ -64,7 +63,7 @@ public class LEDStripService {
         BrickletLEDStripWrapper brickletLEDStrip = brickletProvider.getBrickletLEDStrip(ledStripDomain);
 
         for (int pos = 0; pos < ledStripDomain.getLength(); pos += SIXTEEN) {
-            BrickletLEDStrip.RGBValues values = brickletLEDStrip.getRGBValues(pos, (short) SIXTEEN); // NOSONAR Tinkerforge library uses shorts
+            BrickletLEDStrip.RGBValues values = getPixelValues(brickletLEDStrip, pos); // NOSONAR Tinkerforge library uses shorts
 
             for (int i = 0; i < Math.min(ledStripDomain.getLength() - pos, SIXTEEN); i++) {
                 result.add(Color.colorFromLEDStrip(values, i));
@@ -77,8 +76,17 @@ public class LEDStripService {
     }
 
 
-    public void turnOff(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
-        AttributeEmptyException, IOException, AlreadyConnectedException {
+    private BrickletLEDStrip.RGBValues getPixelValues(BrickletLEDStripWrapper brickletLEDStrip, int pos) {
+
+        try {
+            return brickletLEDStrip.getRGBValues(pos, (short) SIXTEEN);
+        } catch (TimeoutException | NotConnectedException exception) {
+            throw new LEDStripConnectionException("Error getting pixel values:", exception);
+        }
+    }
+
+
+    public void turnOff(LEDStripDTO ledStripDTO) {
 
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
 
@@ -91,8 +99,8 @@ public class LEDStripService {
     }
 
 
-    public void handleStatus(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException,
-        AttributeEmptyException, IOException, AlreadyConnectedException {
+    public void handleStatus(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException, IOException,
+        AlreadyConnectedException {
 
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
         StatusInformation statusInformation = ledStripDTO.getStatus();
@@ -118,8 +126,7 @@ public class LEDStripService {
     }
 
 
-    public void handleSprite(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException, IOException,
-        AlreadyConnectedException {
+    public void handleSprite(LEDStripDTO ledStripDTO) {
 
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
         Sprite1D sprite = ledStripDTO.getSprite();
@@ -141,7 +148,7 @@ public class LEDStripService {
 
 
     private void drawSprite(LEDStripDomain ledStripDomain, int[] pixelBufferRed, int[] pixelBufferGreen,
-        int[] pixelBufferBlue) throws TimeoutException, NotConnectedException, IOException, AlreadyConnectedException {
+        int[] pixelBufferBlue) {
 
         short[] transferBufferRed; // NOSONAR Tinkerforge library uses shorts
         short[] transferBufferGreen; // NOSONAR Tinkerforge library uses shorts
@@ -163,8 +170,12 @@ public class LEDStripService {
             transferBufferBlue = applyBrightnessAndCastToShort(Arrays.copyOfRange(pixelBufferBlue, positionOnLedStrip,
                         positionOnLedStrip + SIXTEEN), brightness);
 
-            brickletLEDStrip.setRGBValues(positionOnLedStrip, (short) SIXTEEN, // NOSONAR Tinkerforge uses shorts
-                transferBufferBlue, transferBufferRed, transferBufferGreen);
+            try {
+                brickletLEDStrip.setRGBValues(positionOnLedStrip, (short) SIXTEEN, // NOSONAR Tinkerforge uses shorts
+                    transferBufferBlue, transferBufferRed, transferBufferGreen);
+            } catch (TimeoutException | NotConnectedException exception) {
+                throw new LEDStripConnectionException("Error setting pixel values:", exception);
+            }
         }
 
         brickletLEDStrip.disconnect();
@@ -179,8 +190,7 @@ public class LEDStripService {
     }
 
 
-    private double getBrightness(LEDStripDomain ledStripDomain) throws IOException, AlreadyConnectedException,
-        NotConnectedException, TimeoutException {
+    private double getBrightness(LEDStripDomain ledStripDomain) {
 
         double brightness = DEFAULT_BRIGHTNESS;
 
@@ -190,11 +200,22 @@ public class LEDStripService {
 
         IlluminanceDomain illuminanceDomain = illuminanceDTO.getDomain();
 
-        // since the sensor reports in lux / 10, we have to multiply the threshold and divide the multiplier by 10 each.
+        /* since the sensor reports in lux / 10, we have to multiply the threshold and divide the multiplier by 10 each.
+         * A multiplier of 1.0 results in an increase in brightness of 100% per Lux that is below the threshold.
+         *      i.e. if the threshold is 20 Lux and the ambient illuminance is 19 Lux the brightness will be doubled.
+         *      If the ambient illuminance is 18, the brightness will be tripled.
+         */
+
         int thresholdInDecilux = illuminanceDomain.getThreshold() * TEN;
         double multiplier = illuminanceDomain.getMultiplier() / TEN;
 
-        int illuminance = illuminanceService.getIlluminance(illuminanceDTO);
+        int illuminance;
+
+        try {
+            illuminance = illuminanceService.getIlluminance(illuminanceDTO);
+        } catch (IlluminanceConnectionException exception) {
+            throw new LEDStripConnectionException("Error getting ambient illuminance:", exception);
+        }
 
         if (illuminance < thresholdInDecilux) {
             brightness += (thresholdInDecilux - illuminance) * multiplier;

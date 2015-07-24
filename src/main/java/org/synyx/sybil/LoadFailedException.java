@@ -1,14 +1,11 @@
 package org.synyx.sybil;
 
-import org.springframework.http.converter.HttpMessageNotWritableException;
-
-
 /**
  * ConfigLoaderException.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
-public class LoadFailedException extends HttpMessageNotWritableException {
+public class LoadFailedException extends RuntimeException {
 
     public LoadFailedException(String message) {
 

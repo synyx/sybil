@@ -1,6 +1,5 @@
 package org.synyx.sybil.bricklet.output.ledstrip.domain;
 
-import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
@@ -18,11 +17,18 @@ public class LEDStripDTO {
 
     private Sprite1D sprite;
 
-    public Sprite1D getSprite() {
+    LEDStripDTO() {
 
-        if (sprite == null) {
-            throw new AttributeEmptyException("sprite undefined");
-        }
+        // default constructor deliberately left empty, needed for Mockito @spy
+    }
+
+
+    public LEDStripDTO(LEDStripDomain domain) {
+
+        this.domain = domain;
+    }
+
+    public Sprite1D getSprite() {
 
         return sprite;
     }
@@ -36,10 +42,6 @@ public class LEDStripDTO {
 
     public StatusInformation getStatus() {
 
-        if (status == null) {
-            throw new AttributeEmptyException("status undefined");
-        }
-
         return status;
     }
 
@@ -52,16 +54,6 @@ public class LEDStripDTO {
 
     public LEDStripDomain getDomain() {
 
-        if (domain == null) {
-            throw new AttributeEmptyException("domain undefined");
-        }
-
         return domain;
-    }
-
-
-    public void setDomain(LEDStripDomain domain) {
-
-        this.domain = domain;
     }
 }

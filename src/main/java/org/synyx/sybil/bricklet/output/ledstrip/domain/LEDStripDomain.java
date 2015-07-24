@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.hateoas.core.Relation;
 
-import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.DeviceDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.jenkins.domain.Status;
@@ -106,11 +105,7 @@ public class LEDStripDomain implements DeviceDomain {
     @JsonIgnore
     public String getSensor() {
 
-        if (hasSensor) {
-            return sensor;
-        } else {
-            throw new AttributeEmptyException("LED strip " + name + " has no associated sensor.");
-        }
+        return sensor;
     }
 
 
@@ -199,16 +194,12 @@ public class LEDStripDomain implements DeviceDomain {
     @JsonIgnore
     public Map<Status, Color> getCustomColors() {
 
-        if (hasCustomColors()) {
-            Map<Status, Color> customColors = new HashMap<>();
-            customColors.put(Status.OKAY, getOkayColor());
-            customColors.put(Status.WARNING, getWarningColor());
-            customColors.put(Status.CRITICAL, getCriticalColor());
+        Map<Status, Color> customColors = new HashMap<>();
+        customColors.put(Status.OKAY, getOkayColor());
+        customColors.put(Status.WARNING, getWarningColor());
+        customColors.put(Status.CRITICAL, getCriticalColor());
 
-            return customColors;
-        } else {
-            throw new AttributeEmptyException("LED strip " + name + " has no custom colors.");
-        }
+        return customColors;
     }
 
 

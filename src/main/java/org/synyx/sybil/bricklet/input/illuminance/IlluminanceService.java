@@ -1,6 +1,5 @@
 package org.synyx.sybil.bricklet.input.illuminance;
 
-import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Service;
 import org.synyx.sybil.bricklet.BrickletProvider;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
-
-import java.io.IOException;
 
 
 /**
@@ -32,16 +29,21 @@ public class IlluminanceService {
         this.brickletProvider = brickletProvider;
     }
 
-    public int getIlluminance(IlluminanceDTO illuminanceDTO) throws AlreadyConnectedException, TimeoutException,
-        NotConnectedException, IOException {
+    public int getIlluminance(IlluminanceDTO illuminanceDTO) {
 
         IlluminanceDomain illuminanceDomain = illuminanceDTO.getDomain();
 
         BrickletAmbientLightWrapper brickletAmbientLight = brickletProvider.getBrickletAmbientLight(illuminanceDomain);
 
-        int illuminance = brickletAmbientLight.getIlluminance();
+        int illuminance;
 
-        brickletAmbientLight.disconnect();
+        try {
+            illuminance = brickletAmbientLight.getIlluminance();
+
+            brickletAmbientLight.disconnect();
+        } catch (TimeoutException | NotConnectedException exception) {
+            throw new IlluminanceConnectionException("Error getting sensor value:", exception);
+        }
 
         return illuminance;
     }

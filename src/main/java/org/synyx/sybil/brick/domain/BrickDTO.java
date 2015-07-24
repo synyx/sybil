@@ -1,8 +1,5 @@
 package org.synyx.sybil.brick.domain;
 
-import org.synyx.sybil.AttributeEmptyException;
-
-
 /**
  * BrickDTO.
  *
@@ -10,20 +7,15 @@ import org.synyx.sybil.AttributeEmptyException;
  */
 public class BrickDTO {
 
-    private BrickDomain domain;
+    private final BrickDomain domain;
+
+    public BrickDTO(BrickDomain domain) {
+
+        this.domain = domain;
+    }
 
     public BrickDomain getDomain() {
 
-        if (domain == null) {
-            throw new AttributeEmptyException("Domain undefined");
-        }
-
         return domain;
-    }
-
-
-    public void setDomain(BrickDomain domain) {
-
-        this.domain = domain;
     }
 }

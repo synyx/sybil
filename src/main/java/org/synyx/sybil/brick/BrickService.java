@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.brick.domain.BrickDTO;
 import org.synyx.sybil.brick.domain.BrickDomain;
@@ -44,11 +43,16 @@ public class BrickService {
         this.brickDTOService = brickDTOService;
     }
 
-    public IPConnection connect(BrickDTO brickDTO) throws AlreadyConnectedException, IOException {
+    public IPConnection connect(BrickDTO brickDTO) {
 
         BrickDomain brickDomain = brickDTO.getDomain();
         IPConnection ipConnection = new IPConnection();
-        ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort());
+
+        try {
+            ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort());
+        } catch (IOException | AlreadyConnectedException exception) {
+            throw new BrickConnectionException("Error connecting to brick:", exception);
+        }
 
         return ipConnection;
     }
@@ -63,8 +67,7 @@ public class BrickService {
             for (BrickDTO brickDTO : brickDTOs) {
                 reset(brickDTO);
             }
-        } catch (NotConnectedException | TimeoutException | AlreadyConnectedException | IOException
-                | AttributeEmptyException | LoadFailedException exception) {
+        } catch (BrickConnectionException | LoadFailedException exception) {
             handleError("Failed to reset bricks:", exception);
         }
     }
@@ -76,8 +79,7 @@ public class BrickService {
     }
 
 
-    private void reset(BrickDTO brickDTO) throws IOException, AlreadyConnectedException, TimeoutException,
-        NotConnectedException {
+    private void reset(BrickDTO brickDTO) {
 
         BrickDomain brickDomain = brickDTO.getDomain();
 
@@ -85,8 +87,11 @@ public class BrickService {
 
         BrickMaster brickMaster = new BrickMaster(brickDomain.getUid(), ipConnection);
 
-        brickMaster.reset();
-
-        ipConnection.disconnect();
+        try {
+            brickMaster.reset();
+            ipConnection.disconnect();
+        } catch (NotConnectedException | TimeoutException exception) {
+            throw new BrickConnectionException("Error resetting brick:", exception);
+        }
     }
 }

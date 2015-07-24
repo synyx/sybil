@@ -1,6 +1,5 @@
 package org.synyx.sybil.bricklet;
 
-import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.brick.BrickDTOService;
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.domain.BrickDTO;
@@ -16,8 +16,6 @@ import org.synyx.sybil.bricklet.input.illuminance.BrickletAmbientLightWrapper;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.BrickletLEDStripWrapper;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
-
-import java.io.IOException;
 
 
 /**
@@ -42,8 +40,7 @@ public class BrickletProvider {
         this.brickDTOService = brickDTOService;
     }
 
-    public BrickletLEDStripWrapper getBrickletLEDStrip(LEDStripDomain ledStripDomain) throws TimeoutException,
-        NotConnectedException, IOException, AlreadyConnectedException {
+    public BrickletLEDStripWrapper getBrickletLEDStrip(LEDStripDomain ledStripDomain) {
 
         BrickDTO brickDTO = brickDTOService.getDTO(ledStripDomain.getBrick());
 
@@ -51,15 +48,18 @@ public class BrickletProvider {
 
         BrickletLEDStripWrapper brickletLEDStrip = new BrickletLEDStripWrapper(ledStripDomain.getUid(), ipConnection);
 
-        brickletLEDStrip.setFrameDuration(FRAME_DURATION);
-        brickletLEDStrip.setChipType(CHIP_TYPE);
+        try {
+            brickletLEDStrip.setFrameDuration(FRAME_DURATION);
+            brickletLEDStrip.setChipType(CHIP_TYPE);
+        } catch (TimeoutException | NotConnectedException exception) {
+            throw new LoadFailedException("Error setting up LED strip:", exception);
+        }
 
         return brickletLEDStrip;
     }
 
 
-    public BrickletAmbientLightWrapper getBrickletAmbientLight(IlluminanceDomain illuminanceDomain)
-        throws TimeoutException, NotConnectedException, IOException, AlreadyConnectedException {
+    public BrickletAmbientLightWrapper getBrickletAmbientLight(IlluminanceDomain illuminanceDomain) {
 
         BrickDTO brickDTO = brickDTOService.getDTO(illuminanceDomain.getBrick());
 

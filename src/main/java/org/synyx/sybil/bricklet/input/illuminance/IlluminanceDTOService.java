@@ -51,26 +51,21 @@ public class IlluminanceDTOService {
      * @param  name  The name of the illuminance sensor.
      *
      * @return  The DTO containing the illuminance sensor's configuration.
-     *
-     * @throws  java.io.IOException  The IO exception.
      */
-    public IlluminanceDTO getDTO(String name) throws IOException {
+    public IlluminanceDTO getDTO(String name) {
 
         IlluminanceDTO illuminanceDTO = null;
 
-        List<IlluminanceDomain> illuminanceDomains = objectMapper.readValue(new File(configDir + "illuminances.json"),
-                new TypeReference<List<IlluminanceDomain>>() {
-                });
+        List<IlluminanceDomain> illuminanceDomains = getIlluminanceDomains();
 
-        for (IlluminanceDomain ledStripDomain : illuminanceDomains) {
-            if (ledStripDomain.getName().equals(name)) {
-                illuminanceDTO = new IlluminanceDTO();
-                illuminanceDTO.setDomain(ledStripDomain);
+        for (IlluminanceDomain illuminanceDomain : illuminanceDomains) {
+            if (illuminanceDomain.getName().equals(name)) {
+                illuminanceDTO = new IlluminanceDTO(illuminanceDomain);
             }
         }
 
         if (illuminanceDTO == null) {
-            throw new LoadFailedException("Illuminance sensor " + name + " does not exist.");
+            throw new IlluminanceNotFoundException("Illuminance sensor " + name + " does not exist.");
         }
 
         return illuminanceDTO;
@@ -81,24 +76,29 @@ public class IlluminanceDTOService {
      * Gets pre-configured DTOs for all illuminance sensors.
      *
      * @return  A List of all the DTOs.
-     *
-     * @throws  IOException  The IO exception.
      */
-    public List<IlluminanceDTO> getAllDTOs() throws IOException {
+    public List<IlluminanceDTO> getAllDTOs() {
 
         List<IlluminanceDTO> illuminanceDTOs = new ArrayList<>();
 
-        List<IlluminanceDomain> illuminanceDomains = objectMapper.readValue(new File(configDir + "illuminances.json"),
-                new TypeReference<List<IlluminanceDomain>>() {
-                });
+        List<IlluminanceDomain> illuminanceDomains = getIlluminanceDomains();
 
         for (IlluminanceDomain illuminanceDomain : illuminanceDomains) {
-            IlluminanceDTO ledStripDTO;
-            ledStripDTO = new IlluminanceDTO();
-            ledStripDTO.setDomain(illuminanceDomain);
-            illuminanceDTOs.add(ledStripDTO);
+            illuminanceDTOs.add(new IlluminanceDTO(illuminanceDomain));
         }
 
         return illuminanceDTOs;
+    }
+
+
+    private List<IlluminanceDomain> getIlluminanceDomains() {
+
+        try {
+            return objectMapper.readValue(new File(configDir + "illuminances.json"),
+                    new TypeReference<List<IlluminanceDomain>>() {
+                    });
+        } catch (IOException exception) {
+            throw new LoadFailedException("Error loading illumunance sensor config file:", exception);
+        }
     }
 }

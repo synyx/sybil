@@ -20,7 +20,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.synyx.sybil.AttributeEmptyException;
 import org.synyx.sybil.brick.domain.BrickDTO;
 import org.synyx.sybil.brick.domain.BrickDomain;
 
@@ -75,27 +74,11 @@ public class BrickServiceUnitTest {
     }
 
 
-    @Test(expected = AttributeEmptyException.class)
-    public void connectEmtpyDTO() throws Exception {
-
-        // setup
-        sut = new BrickService(brickDTOServiceMock);
-
-        BrickDTO brickDTO = new BrickDTO();
-
-        // execution
-        sut.connect(brickDTO);
-    }
-
-
     @Test
     public void resetAllBricks() throws Exception {
 
         // setup
-        BrickDTO brickDTO = new BrickDTO();
-
-        BrickDomain brickDomain = new BrickDomain("host", "uid");
-        brickDTO.setDomain(brickDomain);
+        BrickDTO brickDTO = new BrickDTO(new BrickDomain("host", "uid"));
 
         List<BrickDTO> brickDTOs = Arrays.asList(brickDTO);
 
@@ -123,10 +106,7 @@ public class BrickServiceUnitTest {
     public void resetAllBricksAndFail() throws Exception {
 
         // setup
-        BrickDTO brickDTO = new BrickDTO();
-
-        BrickDomain brickDomain = new BrickDomain("host", "uid");
-        brickDTO.setDomain(brickDomain);
+        BrickDTO brickDTO = new BrickDTO(new BrickDomain("host", "uid"));
 
         List<BrickDTO> brickDTOs = Arrays.asList(brickDTO);
 

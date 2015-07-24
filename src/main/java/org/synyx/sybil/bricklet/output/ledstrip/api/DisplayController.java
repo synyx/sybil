@@ -1,13 +1,12 @@
 package org.synyx.sybil.bricklet.output.ledstrip.api;
 
-import com.tinkerforge.AlreadyConnectedException;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.hateoas.Link;
 
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,17 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConnectionException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripNotFoundException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
-
-import java.io.IOException;
 
 import java.util.List;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 
 /**
@@ -56,11 +57,7 @@ public class DisplayController {
 
         LEDStripDTO ledStripDTO;
 
-        try {
-            ledStripDTO = ledStripDTOService.getDTO(name);
-        } catch (IOException | NullPointerException exception) {
-            throw new LoadFailedException("Error loading LED strip:", exception);
-        }
+        ledStripDTO = ledStripDTOService.getDTO(name);
 
         Link self = linkTo(methodOn(DisplayController.class).getDisplay(name)).withSelfRel();
 
@@ -68,11 +65,7 @@ public class DisplayController {
 
         displayResource.add(self);
 
-        try {
-            displayResource.setPixels(ledStripService.getPixels(ledStripDTO));
-        } catch (IOException | TimeoutException | AlreadyConnectedException | NotConnectedException exception) {
-            throw new LoadFailedException("Error getting Information from LED strip:", exception);
-        }
+        displayResource.setPixels(ledStripService.getPixels(ledStripDTO));
 
         return displayResource;
     }
@@ -88,23 +81,20 @@ public class DisplayController {
             Sprite1D sprite1D;
             LEDStripDTO ledStripDTO;
 
-            try {
-                ledStripDTO = ledStripDTOService.getDTO(name);
-            } catch (IOException | NullPointerException exception) {
-                throw new LoadFailedException("Error loading LED strip:", exception);
-            }
-
+            ledStripDTO = ledStripDTOService.getDTO(name);
             sprite1D = new Sprite1D(pixels.size(), pixels);
             ledStripDTO.setSprite(sprite1D);
 
-            try {
-                ledStripService.handleSprite(ledStripDTO);
-            } catch (TimeoutException | AlreadyConnectedException | IOException | NotConnectedException
-                    | NullPointerException exception) {
-                throw new LoadFailedException("Error setting pixels on LED strip:", exception);
-            }
+            ledStripService.handleSprite(ledStripDTO);
         }
 
         return getDisplay(name);
+    }
+
+
+    @ExceptionHandler({ LEDStripNotFoundException.class, LEDStripConnectionException.class, LoadFailedException.class })
+    public ResponseEntity<APIError> handleError(Exception exception) {
+
+        return new ResponseEntity<>(new APIError(exception.getMessage()), NOT_FOUND);
     }
 }
