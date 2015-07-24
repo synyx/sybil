@@ -3,10 +3,6 @@ package org.synyx.sybil.jenkins;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.tinkerforge.AlreadyConnectedException;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
-
 import org.apache.commons.codec.binary.Base64;
 
 import org.slf4j.Logger;
@@ -33,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConnectionException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripNotFoundException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 import org.synyx.sybil.jenkins.domain.ConfiguredJob;
@@ -277,8 +274,7 @@ public class JenkinsService {
                 LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(ledStrip);
                 ledStripDTO.setStatus(ledStripStatuses.get(ledStrip));
                 ledStripService.handleStatus(ledStripDTO);
-            } catch (TimeoutException | NotConnectedException | IOException | AlreadyConnectedException
-                    | LoadFailedException exception) {
+            } catch (LoadFailedException | LEDStripConnectionException | LEDStripNotFoundException exception) {
                 handleError("Error setting status on LED strip:", exception);
             }
         }

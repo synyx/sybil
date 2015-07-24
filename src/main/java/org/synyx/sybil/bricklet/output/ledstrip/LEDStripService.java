@@ -1,6 +1,5 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
-import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.BrickletLEDStrip;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
@@ -19,8 +18,6 @@ import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
-
-import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,7 +76,7 @@ public class LEDStripService {
     private BrickletLEDStrip.RGBValues getPixelValues(BrickletLEDStripWrapper brickletLEDStrip, int pos) {
 
         try {
-            return brickletLEDStrip.getRGBValues(pos, (short) SIXTEEN);
+            return brickletLEDStrip.getRGBValues(pos, (short) SIXTEEN); // NOSONAR Tinkerforge library uses shorts
         } catch (TimeoutException | NotConnectedException exception) {
             throw new LEDStripConnectionException("Error getting pixel values:", exception);
         }
@@ -99,8 +96,7 @@ public class LEDStripService {
     }
 
 
-    public void handleStatus(LEDStripDTO ledStripDTO) throws TimeoutException, NotConnectedException, IOException,
-        AlreadyConnectedException {
+    public void handleStatus(LEDStripDTO ledStripDTO) {
 
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
         StatusInformation statusInformation = ledStripDTO.getStatus();

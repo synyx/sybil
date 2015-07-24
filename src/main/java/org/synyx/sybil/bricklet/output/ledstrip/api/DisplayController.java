@@ -41,8 +41,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RequestMapping("/configuration/ledstrips/{name}/display")
 public class DisplayController {
 
-    private LEDStripDTOService ledStripDTOService;
-    private LEDStripService ledStripService;
+    private final LEDStripDTOService ledStripDTOService;
+    private final LEDStripService ledStripService;
 
     @Autowired
     public DisplayController(LEDStripDTOService ledStripDTOService, LEDStripService ledStripService) {
