@@ -27,7 +27,7 @@ echo "Current version:" $CURRENT_VERSION
 
 # remove -SNAPSHOT
 SNAPSHOT=`expr index "$CURRENT_VERSION" -SNAPSHOT`
-if [[ `expr index "$CURRENT_VERSION" -SNAPSHOT` != 0 ]]
+if [[ $SNAPSHOT != 0 ]]
   then
     NEW_VERSION=${CURRENT_VERSION:0:SNAPSHOT-1}
   else
