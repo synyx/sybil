@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
+import org.synyx.sybil.jenkins.domain.StatusInformation;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,28 +32,80 @@ public class LEDStripDTOService {
 
     private final ObjectMapper objectMapper;
     private final String configDir;
+    private final LEDStripService ledStripService;
 
     /**
      * Instantiates a new LED strip DTO service.
      *
-     * @param  objectMapper  the object mapper
-     * @param  environment  the environment
+     * @param  objectMapper  Jackson ObjectMapper
+     * @param  environment  Spring Environment
+     * @param  ledStripService  Sybil LED strip service
      */
     @Autowired
-    public LEDStripDTOService(ObjectMapper objectMapper, Environment environment) {
+    public LEDStripDTOService(ObjectMapper objectMapper, Environment environment, LEDStripService ledStripService) {
 
         this.objectMapper = objectMapper;
+        this.ledStripService = ledStripService;
         this.configDir = environment.getProperty("path.to.configfiles");
     }
 
     /**
-     * Gets a pre-configured DTO.
+     * Handle DTO with Status.
      *
-     * @param  name  The name of the LED strip.
-     *
-     * @return  The DTO containing the LED strip's configuration.
+     * @param  name  the name
+     * @param  statusInformation  the status
      */
-    public LEDStripDTO getDTO(String name) {
+    public void handleStatus(String name, StatusInformation statusInformation) {
+
+        LEDStripDTO ledStripDTO = getDTO(name);
+        ledStripDTO.setStatus(statusInformation);
+        ledStripService.handleStatus(ledStripDTO);
+    }
+
+
+    /**
+     * Handle DTO with Sprite.
+     *
+     * @param  name  the name
+     * @param  sprite1D  the sprite
+     */
+    public void handleSprite(String name, Sprite1D sprite1D) {
+
+        LEDStripDTO ledStripDTO = getDTO(name);
+        ledStripDTO.setSprite(sprite1D);
+        ledStripService.handleSprite(ledStripDTO);
+    }
+
+
+    /**
+     * Get pixels.
+     *
+     * @param  name  the name
+     *
+     * @return  List of Colors (pixels).
+     */
+    public List<Color> getPixels(String name) {
+
+        LEDStripDTO ledStripDTO = getDTO(name);
+
+        return ledStripService.getPixels(ledStripDTO);
+    }
+
+
+    /**
+     * Turn off all LED strips.
+     */
+    public void turnOffAllLEDStrips() {
+
+        List<LEDStripDTO> ledstrips = getAllDTOs();
+
+        for (LEDStripDTO ledStripDTO : ledstrips) {
+            ledStripService.turnOff(ledStripDTO);
+        }
+    }
+
+
+    private LEDStripDTO getDTO(String name) {
 
         LEDStripDTO ledStripDTO = null;
 
@@ -70,12 +123,7 @@ public class LEDStripDTOService {
     }
 
 
-    /**
-     * Gets pre-configured DTOs for all LED strips.
-     *
-     * @return  A List of all the DTOs.
-     */
-    public List<LEDStripDTO> getAllDTOs() {
+    private List<LEDStripDTO> getAllDTOs() {
 
         List<LEDStripDTO> ledStripDTOs = new ArrayList<>();
 

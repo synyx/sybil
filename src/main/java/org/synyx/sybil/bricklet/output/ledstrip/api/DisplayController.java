@@ -17,9 +17,7 @@ import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConnectionException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripNotFoundException;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 
 import java.util.List;
 
@@ -37,22 +35,18 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class DisplayController {
 
     private final LEDStripDTOService ledStripDTOService;
-    private final LEDStripService ledStripService;
 
     @Autowired
-    public DisplayController(LEDStripDTOService ledStripDTOService, LEDStripService ledStripService) {
+    public DisplayController(LEDStripDTOService ledStripDTOService) {
 
         this.ledStripDTOService = ledStripDTOService;
-        this.ledStripService = ledStripService;
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = { "application/json" })
     public List<Color> getDisplay(@PathVariable String name) {
 
-        LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(name);
-
-        return ledStripService.getPixels(ledStripDTO);
+        return ledStripDTOService.getPixels(name);
     }
 
 
@@ -61,11 +55,7 @@ public class DisplayController {
     public List<Color> putDisplay(@PathVariable String name, @RequestBody List<Color> pixels) {
 
         if (pixels != null && !pixels.isEmpty()) {
-            LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(name);
-
-            ledStripDTO.setSprite(new Sprite1D(pixels.size(), pixels));
-
-            ledStripService.handleSprite(ledStripDTO);
+            ledStripDTOService.handleSprite(name, new Sprite1D(pixels.size(), pixels));
         }
 
         return getDisplay(name);

@@ -30,8 +30,6 @@ import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConnectionException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripNotFoundException;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 import org.synyx.sybil.jenkins.domain.ConfiguredJob;
 import org.synyx.sybil.jenkins.domain.ConfiguredServer;
 import org.synyx.sybil.jenkins.domain.JenkinsJob;
@@ -67,18 +65,16 @@ public class JenkinsService {
     private static final int DELAY_DIVISOR = 4;
 
     private final ObjectMapper objectMapper;
-    private final LEDStripService ledStripService;
     private final LEDStripDTOService ledStripDTOService;
     private final String configDirectory;
     private final String jenkinsServerConfigFile;
     private final RestTemplate restTemplate;
 
     @Autowired
-    public JenkinsService(ObjectMapper objectMapper, LEDStripService ledStripService,
-        LEDStripDTOService ledStripDTOService, Environment environment, RestTemplate restTemplate) {
+    public JenkinsService(ObjectMapper objectMapper, LEDStripDTOService ledStripDTOService, Environment environment,
+        RestTemplate restTemplate) {
 
         this.objectMapper = objectMapper;
-        this.ledStripService = ledStripService;
         this.ledStripDTOService = ledStripDTOService;
         this.restTemplate = restTemplate;
         configDirectory = environment.getProperty("path.to.configfiles");
@@ -89,11 +85,7 @@ public class JenkinsService {
     public void turnOffAllLEDStrips() {
 
         try {
-            List<LEDStripDTO> ledstrips = ledStripDTOService.getAllDTOs();
-
-            for (LEDStripDTO ledStripDTO : ledstrips) {
-                ledStripService.turnOff(ledStripDTO);
-            }
+            ledStripDTOService.turnOffAllLEDStrips();
         } catch (LoadFailedException | LEDStripConnectionException exception) {
             handleError("Error turning off LED strips:", exception);
         }
@@ -271,9 +263,7 @@ public class JenkinsService {
 
         for (String ledStrip : ledStripStatuses.keySet()) {
             try {
-                LEDStripDTO ledStripDTO = ledStripDTOService.getDTO(ledStrip);
-                ledStripDTO.setStatus(ledStripStatuses.get(ledStrip));
-                ledStripService.handleStatus(ledStripDTO);
+                ledStripDTOService.handleStatus(ledStrip, ledStripStatuses.get(ledStrip));
             } catch (LoadFailedException | LEDStripConnectionException | LEDStripNotFoundException exception) {
                 handleError("Error setting status on LED strip:", exception);
             }

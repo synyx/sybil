@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.mockito.Mock;
-import org.mockito.Spy;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -20,18 +19,16 @@ import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripNotFoundException;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import static org.hamcrest.Matchers.hasSize;
+
+import static org.mockito.Matchers.any;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -48,13 +45,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 public class DisplayControllerUnitTest {
 
     @Mock
-    private LEDStripService ledStripServiceMock;
-
-    @Mock
     private LEDStripDTOService ledStripDTOServiceMock;
-
-    @Spy
-    private LEDStripDTO ledStripDTOMock;
 
     private DisplayController sut;
     private MockMvc mockMvc;
@@ -64,8 +55,6 @@ public class DisplayControllerUnitTest {
     @Before
     public void setUp() throws Exception {
 
-        when(ledStripDTOServiceMock.getDTO("ledone")).thenReturn(ledStripDTOMock);
-
         colors = new ArrayList<>();
 
         colors.add(Color.BLACK);
@@ -74,9 +63,9 @@ public class DisplayControllerUnitTest {
         colors.add(Color.OKAY);
         colors.add(Color.WHITE);
 
-        when(ledStripServiceMock.getPixels(ledStripDTOMock)).thenReturn(colors);
+        when(ledStripDTOServiceMock.getPixels("ledone")).thenReturn(colors);
 
-        sut = new DisplayController(ledStripDTOServiceMock, ledStripServiceMock);
+        sut = new DisplayController(ledStripDTOServiceMock);
         mockMvc = standaloneSetup(sut).build();
     }
 
@@ -84,7 +73,7 @@ public class DisplayControllerUnitTest {
     @Test
     public void testGetMissingDisplay() throws Exception {
 
-        when(ledStripDTOServiceMock.getDTO("doesntexist")).thenThrow(new LEDStripNotFoundException(
+        when(ledStripDTOServiceMock.getPixels("doesntexist")).thenThrow(new LEDStripNotFoundException(
                 "LED strip is not configured."));
 
         mockMvc.perform(get("/configuration/ledstrips/doesntexist/display")).andExpect(status().isNotFound());
@@ -95,9 +84,9 @@ public class DisplayControllerUnitTest {
     public void testGetFailingDisplay() throws Exception {
 
         // setup
-        when(ledStripServiceMock.getPixels(ledStripDTOMock)).thenThrow(new LoadFailedException("test"));
+        when(ledStripDTOServiceMock.getPixels("ledone")).thenThrow(new LoadFailedException("test"));
 
-        sut = new DisplayController(ledStripDTOServiceMock, ledStripServiceMock);
+        sut = new DisplayController(ledStripDTOServiceMock);
         mockMvc = standaloneSetup(sut).build();
 
         // execution & verification
@@ -141,8 +130,7 @@ public class DisplayControllerUnitTest {
             .andExpect(status().isOk());
 
         // verification
-        assertThat(ledStripDTOMock.getSprite(), is(sprite1D));
-        verify(ledStripServiceMock).handleSprite(ledStripDTOMock);
+        verify(ledStripDTOServiceMock).handleSprite("ledone", sprite1D);
     }
 
 
@@ -164,8 +152,7 @@ public class DisplayControllerUnitTest {
             .andExpect(status().isOk());
 
         // verification
-        assertThat(ledStripDTOMock.getSprite(), is(sprite1D));
-        verify(ledStripServiceMock).handleSprite(ledStripDTOMock);
+        verify(ledStripDTOServiceMock).handleSprite("ledone", sprite1D);
     }
 
 
@@ -181,6 +168,6 @@ public class DisplayControllerUnitTest {
             .andExpect(status().isOk());
 
         // verification
-        verify(ledStripServiceMock, never()).handleSprite(ledStripDTOMock);
+        verify(ledStripDTOServiceMock, never()).handleSprite(any(String.class), any(Sprite1D.class));
     }
 }

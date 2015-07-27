@@ -274,6 +274,37 @@ public class LEDStripServiceUnitTest {
 
 
     @Test
+    public void handleTooShortSprite() throws Exception {
+
+        // setup
+        LEDStripDTO ledStripDTO = new LEDStripDTO(new LEDStripDomain("one", "abc", 31, "abrick"));
+
+        List<Color> colors = Arrays.asList(new Color[15]);
+        Collections.fill(colors, Color.WHITE);
+
+        assertThat(colors.size(), is(15));
+
+        Sprite1D sprite = new Sprite1D(colors.size(), colors);
+        ledStripDTO.setSprite(sprite);
+
+        // execution
+        sut.handleSprite(ledStripDTO);
+
+        // verification
+        short[] partlyWhite = new short[16];
+
+        for (int i = 0; i < 15; i++) {
+            partlyWhite[i] = (short) 255;
+        }
+
+        short[] black = new short[16];
+
+        verify(brickletLEDStripMock).setRGBValues(0, (short) 16, partlyWhite, partlyWhite, partlyWhite);
+        verify(brickletLEDStripMock).setRGBValues(16, (short) 16, black, black, black);
+    }
+
+
+    @Test
     public void handleStatusOkay() throws Exception {
 
         // setup
