@@ -3,8 +3,6 @@ package org.synyx.sybil.jenkins;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.apache.commons.codec.binary.Base64;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +13,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
@@ -39,8 +36,6 @@ import org.synyx.sybil.jenkins.domain.StatusInformation;
 
 import java.io.File;
 import java.io.IOException;
-
-import java.nio.charset.Charset;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,23 +141,10 @@ public class JenkinsService {
         }
 
         for (ConfiguredServer configuredServer : configuredServers) {
-            authorizations.put(configuredServer.getUrl(), generateHTTPHeader(configuredServer));
+            authorizations.put(configuredServer.getUrl(), configuredServer.getHeader());
         }
 
         return authorizations;
-    }
-
-
-    private HttpEntity<JenkinsProperties[]> generateHTTPHeader(ConfiguredServer server) {
-
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.set("Authorization",
-            "Basic "
-            + new String(
-                Base64.encodeBase64((server.getUser() + ":" + server.getKey()).getBytes(Charset.forName("US-ASCII")))));
-
-        return new HttpEntity<>(headers);
     }
 
 

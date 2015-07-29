@@ -1,10 +1,25 @@
 package org.synyx.sybil.jenkins.domain;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
+import org.apache.commons.codec.binary.Base64;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+
+import java.nio.charset.Charset;
+
+
 /**
  * ConfiguredServer.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
+
+@JsonAutoDetect(
+    fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE
+)
 public class ConfiguredServer {
 
     private String url;
@@ -30,14 +45,14 @@ public class ConfiguredServer {
     }
 
 
-    public String getUser() {
+    public HttpEntity<JenkinsProperties[]> getHeader() {
 
-        return user;
-    }
+        HttpHeaders headers = new HttpHeaders();
 
+        headers.set("Authorization",
+            "Basic "
+            + new String(Base64.encodeBase64((user + ":" + key).getBytes(Charset.forName("US-ASCII")))));
 
-    public String getKey() {
-
-        return key;
+        return new HttpEntity<>(headers);
     }
 }
