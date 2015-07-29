@@ -3,12 +3,15 @@ package org.synyx.sybil.brick;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.hamcrest.Matchers;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import org.junit.runner.RunWith;
 
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -23,13 +26,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import static org.hamcrest.Matchers.is;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -50,13 +52,19 @@ public class BrickDTOServiceUnitTest {
     @Mock
     private Environment environmentMock;
 
+    @Mock
+    private BrickService brickServiceMock;
+
     private List<BrickDomain> brickDomains = new ArrayList<>();
+    private BrickDomain one;
+    private BrickDomain two;
 
     @Before
     public void setup() throws IOException {
 
-        BrickDomain one = new BrickDomain("host", "abc");
-        BrickDomain two = new BrickDomain("host", "123", 4224, "anotherbrick");
+        one = new BrickDomain("host", "abc");
+
+        two = new BrickDomain("host", "123", 4224, "anotherbrick");
 
         brickDomains.add(one);
         brickDomains.add(two);
@@ -65,40 +73,47 @@ public class BrickDTOServiceUnitTest {
         when(objectMapperMock.readValue(eq(new File("path/to/config/files/bricks.json")), any(TypeReference.class)))
             .thenReturn(brickDomains);
 
-        sut = new BrickDTOService(objectMapperMock, environmentMock);
+        sut = new BrickDTOService(objectMapperMock, environmentMock, brickServiceMock);
     }
 
 
     @Test
-    public void getConfiguredDTOForSmallConstructor() throws Exception {
+    public void resetAllBricks() throws Exception {
 
-        BrickDTO brickDTO = sut.getDTO("host");
+        // execution
+        sut.resetAllBricks();
 
-        assertThat(brickDTO.getDomain(), is(brickDomains.get(0)));
+        // verification
+        verify(brickServiceMock).reset(Mockito.argThat(Matchers.<BrickDTO>hasProperty("domain", is(one))));
+        verify(brickServiceMock).reset(Mockito.argThat(Matchers.<BrickDTO>hasProperty("domain", is(two))));
     }
 
 
     @Test
-    public void getConfiguredDTOForBigConstructor() throws Exception {
+    public void connectWithHostname() throws Exception {
 
-        BrickDTO brickDTO = sut.getDTO("anotherbrick");
+        // execution
+        sut.connect("host");
 
-        assertThat(brickDTO.getDomain(), is(brickDomains.get(1)));
+        // verification
+        verify(brickServiceMock).connect(Mockito.argThat(Matchers.<BrickDTO>hasProperty("domain", is(one))));
+    }
+
+
+    @Test
+    public void connectWithName() throws Exception {
+
+        // execution
+        sut.connect("anotherbrick");
+
+        // verification
+        verify(brickServiceMock).connect(Mockito.argThat(Matchers.<BrickDTO>hasProperty("domain", is(two))));
     }
 
 
     @Test(expected = BrickNotFoundException.class)
-    public void getNonexistentBrickDTO() throws Exception {
+    public void connectNonexistingBrick() throws Exception {
 
-        sut.getDTO("does not exist");
-    }
-
-
-    @Test
-    public void getAllDTOs() throws Exception {
-
-        List<BrickDTO> brickDTOs = sut.getAllDTOs();
-        assertThat(brickDTOs.get(0).getDomain(), is(brickDomains.get(0)));
-        assertThat(brickDTOs.get(1).getDomain(), is(brickDomains.get(1)));
+        sut.connect("nobrick");
     }
 }

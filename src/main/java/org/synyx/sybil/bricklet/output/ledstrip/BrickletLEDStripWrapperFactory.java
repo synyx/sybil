@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet;
+package org.synyx.sybil.bricklet.output.ledstrip;
 
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
@@ -10,11 +10,6 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.brick.BrickDTOService;
-import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.brick.domain.BrickDTO;
-import org.synyx.sybil.bricklet.input.illuminance.BrickletAmbientLightWrapper;
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
-import org.synyx.sybil.bricklet.output.ledstrip.BrickletLEDStripWrapper;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 
 
@@ -25,26 +20,22 @@ import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
  */
 
 @Service
-public class BrickletProvider {
+public class BrickletLEDStripWrapperFactory {
 
     private static final int FRAME_DURATION = 10;
     private static final int CHIP_TYPE = 2812;
 
-    private final BrickService brickService;
     private final BrickDTOService brickDTOService;
 
     @Autowired
-    public BrickletProvider(BrickService brickService, BrickDTOService brickDTOService) {
+    public BrickletLEDStripWrapperFactory(BrickDTOService brickDTOService) {
 
-        this.brickService = brickService;
         this.brickDTOService = brickDTOService;
     }
 
     public BrickletLEDStripWrapper getBrickletLEDStrip(LEDStripDomain ledStripDomain) {
 
-        BrickDTO brickDTO = brickDTOService.getDTO(ledStripDomain.getBrick());
-
-        IPConnection ipConnection = brickService.connect(brickDTO);
+        IPConnection ipConnection = brickDTOService.connect(ledStripDomain.getBrick());
 
         BrickletLEDStripWrapper brickletLEDStrip = new BrickletLEDStripWrapper(ledStripDomain.getUid(), ipConnection);
 
@@ -56,15 +47,5 @@ public class BrickletProvider {
         }
 
         return brickletLEDStrip;
-    }
-
-
-    public BrickletAmbientLightWrapper getBrickletAmbientLight(IlluminanceDomain illuminanceDomain) {
-
-        BrickDTO brickDTO = brickDTOService.getDTO(illuminanceDomain.getBrick());
-
-        IPConnection ipConnection = brickService.connect(brickDTO);
-
-        return new BrickletAmbientLightWrapper(illuminanceDomain.getUid(), ipConnection);
     }
 }

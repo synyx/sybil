@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
-import org.synyx.sybil.bricklet.BrickletProvider;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceDTOService;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
@@ -47,7 +46,7 @@ import static org.mockito.Mockito.when;
 public class LEDStripServiceUnitTest {
 
     @Mock
-    BrickletProvider brickletProviderMock;
+    BrickletLEDStripWrapperFactory brickletLEDStripWrapperFactoryMock;
 
     @Mock
     BrickletLEDStripWrapper brickletLEDStripMock;
@@ -69,9 +68,11 @@ public class LEDStripServiceUnitTest {
     @Before
     public void setup() throws Exception {
 
-        when(brickletProviderMock.getBrickletLEDStrip(any(LEDStripDomain.class))).thenReturn(brickletLEDStripMock);
+        when(brickletLEDStripWrapperFactoryMock.getBrickletLEDStrip(any(LEDStripDomain.class))).thenReturn(
+            brickletLEDStripMock);
 
-        sut = new LEDStripService(brickletProviderMock, illuminanceDTOServiceMock, illuminanceServiceMock);
+        sut = new LEDStripService(brickletLEDStripWrapperFactoryMock, illuminanceDTOServiceMock,
+                illuminanceServiceMock);
     }
 
 

@@ -6,22 +6,12 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.brick.domain.BrickDTO;
 import org.synyx.sybil.brick.domain.BrickDomain;
 
 import java.io.IOException;
-
-import java.util.List;
-
-import javax.annotation.PostConstruct;
 
 
 /**
@@ -33,17 +23,7 @@ import javax.annotation.PostConstruct;
 @Service
 public class BrickService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BrickService.class);
-
-    BrickDTOService brickDTOService;
-
-    @Autowired
-    public BrickService(BrickDTOService brickDTOService) {
-
-        this.brickDTOService = brickDTOService;
-    }
-
-    public IPConnection connect(BrickDTO brickDTO) {
+    IPConnection connect(BrickDTO brickDTO) {
 
         BrickDomain brickDomain = brickDTO.getDomain();
         IPConnection ipConnection = new IPConnection();
@@ -58,28 +38,7 @@ public class BrickService {
     }
 
 
-    @PostConstruct
-    public void resetAllBricks() {
-
-        try {
-            List<BrickDTO> brickDTOs = brickDTOService.getAllDTOs();
-
-            for (BrickDTO brickDTO : brickDTOs) {
-                reset(brickDTO);
-            }
-        } catch (BrickConnectionException | LoadFailedException exception) {
-            handleError("Failed to reset bricks:", exception);
-        }
-    }
-
-
-    private void handleError(String message, Exception exception) {
-
-        LOG.error(message, exception);
-    }
-
-
-    private void reset(BrickDTO brickDTO) {
+    void reset(BrickDTO brickDTO) {
 
         BrickDomain brickDomain = brickDTO.getDomain();
 

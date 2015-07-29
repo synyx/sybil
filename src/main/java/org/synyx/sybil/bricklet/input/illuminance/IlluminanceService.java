@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.bricklet.BrickletProvider;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 
@@ -21,19 +20,20 @@ import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 @Service
 public class IlluminanceService {
 
-    BrickletProvider brickletProvider;
+    BrickletAmbientLightWrapperFactory brickletAmbientLightWrapperFactory;
 
     @Autowired
-    public IlluminanceService(BrickletProvider brickletProvider) {
+    public IlluminanceService(BrickletAmbientLightWrapperFactory brickletAmbientLightWrapperFactory) {
 
-        this.brickletProvider = brickletProvider;
+        this.brickletAmbientLightWrapperFactory = brickletAmbientLightWrapperFactory;
     }
 
     public int getIlluminance(IlluminanceDTO illuminanceDTO) {
 
         IlluminanceDomain illuminanceDomain = illuminanceDTO.getDomain();
 
-        BrickletAmbientLightWrapper brickletAmbientLight = brickletProvider.getBrickletAmbientLight(illuminanceDomain);
+        BrickletAmbientLightWrapper brickletAmbientLight = brickletAmbientLightWrapperFactory.getBrickletAmbientLight(
+                illuminanceDomain);
 
         int illuminance;
 

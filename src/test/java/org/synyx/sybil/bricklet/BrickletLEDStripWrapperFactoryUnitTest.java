@@ -17,6 +17,7 @@ import org.synyx.sybil.brick.BrickDTOService;
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.domain.BrickDTO;
 import org.synyx.sybil.bricklet.output.ledstrip.BrickletLEDStripWrapper;
+import org.synyx.sybil.bricklet.output.ledstrip.BrickletLEDStripWrapperFactory;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 
 import static org.mockito.Mockito.inOrder;
@@ -26,8 +27,8 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(BrickletProvider.class)
-public class BrickletProviderUnitTest {
+@PrepareForTest(BrickletLEDStripWrapperFactory.class)
+public class BrickletLEDStripWrapperFactoryUnitTest {
 
     @Mock
     BrickService brickServiceMock;
@@ -53,13 +54,11 @@ public class BrickletProviderUnitTest {
         // setup
         when(ledStripDomainMock.getBrick()).thenReturn("brick");
 
-        when(brickDTOServiceMock.getDTO("brick")).thenReturn(brickDTOMock);
-
-        when(brickServiceMock.connect(brickDTOMock)).thenReturn(ipConnectionMock);
+        when(brickDTOServiceMock.connect("brick")).thenReturn(ipConnectionMock);
 
         whenNew(BrickletLEDStripWrapper.class).withAnyArguments().thenReturn(brickletLEDStripWrapperMock);
 
-        BrickletProvider sut = new BrickletProvider(brickServiceMock, brickDTOServiceMock);
+        BrickletLEDStripWrapperFactory sut = new BrickletLEDStripWrapperFactory(brickDTOServiceMock);
 
         // execution
         sut.getBrickletLEDStrip(ledStripDomainMock);

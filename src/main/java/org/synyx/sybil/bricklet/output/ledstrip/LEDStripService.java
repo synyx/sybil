@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.bricklet.BrickletProvider;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceConnectionException;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceDTOService;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
@@ -39,15 +38,15 @@ public class LEDStripService {
     private static final short MAX_PRIMARY_COLOR = (short) 255; // NOSONAR Tinkerforge library uses shorts
     private static final double DEFAULT_BRIGHTNESS = 1.0;
 
-    private final BrickletProvider brickletProvider;
+    private final BrickletLEDStripWrapperFactory brickletLEDStripWrapperFactory;
     private final IlluminanceDTOService illuminanceDTOService;
     private final IlluminanceService illuminanceService;
 
     @Autowired
-    public LEDStripService(BrickletProvider provider, IlluminanceDTOService illuminanceDTOService,
+    public LEDStripService(BrickletLEDStripWrapperFactory provider, IlluminanceDTOService illuminanceDTOService,
         IlluminanceService illuminanceService) {
 
-        this.brickletProvider = provider;
+        this.brickletLEDStripWrapperFactory = provider;
         this.illuminanceDTOService = illuminanceDTOService;
         this.illuminanceService = illuminanceService;
     }
@@ -57,7 +56,7 @@ public class LEDStripService {
         LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
         List<Color> result = new ArrayList<>();
 
-        BrickletLEDStripWrapper brickletLEDStrip = brickletProvider.getBrickletLEDStrip(ledStripDomain);
+        BrickletLEDStripWrapper brickletLEDStrip = brickletLEDStripWrapperFactory.getBrickletLEDStrip(ledStripDomain);
 
         for (int pos = 0; pos < ledStripDomain.getLength(); pos += SIXTEEN) {
             BrickletLEDStrip.RGBValues values = getPixelValues(brickletLEDStrip, pos); // NOSONAR Tinkerforge library uses shorts
@@ -156,7 +155,7 @@ public class LEDStripService {
             brightness = getBrightness(ledStripDomain);
         }
 
-        BrickletLEDStripWrapper brickletLEDStrip = brickletProvider.getBrickletLEDStrip(ledStripDomain);
+        BrickletLEDStripWrapper brickletLEDStrip = brickletLEDStripWrapperFactory.getBrickletLEDStrip(ledStripDomain);
 
         for (int positionOnLedStrip = 0; positionOnLedStrip < pixelBufferRed.length; positionOnLedStrip += SIXTEEN) {
             transferBufferRed = applyBrightnessAndCastToShort(Arrays.copyOfRange(pixelBufferRed, positionOnLedStrip,

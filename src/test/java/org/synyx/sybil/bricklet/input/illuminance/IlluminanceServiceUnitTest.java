@@ -10,7 +10,6 @@ import org.mockito.Mock;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
-import org.synyx.sybil.bricklet.BrickletProvider;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 
@@ -28,7 +27,7 @@ import static org.mockito.Mockito.when;
 public class IlluminanceServiceUnitTest {
 
     @Mock
-    BrickletProvider brickletProviderMock;
+    BrickletAmbientLightWrapperFactory brickletAmbientLightWrapperFactory;
 
     @Mock
     BrickletAmbientLightWrapper brickletAmbientLightWrapperMock;
@@ -38,12 +37,12 @@ public class IlluminanceServiceUnitTest {
     @Before
     public void setup() throws Exception {
 
-        when(brickletProviderMock.getBrickletAmbientLight(any(IlluminanceDomain.class))).thenReturn(
+        when(brickletAmbientLightWrapperFactory.getBrickletAmbientLight(any(IlluminanceDomain.class))).thenReturn(
             brickletAmbientLightWrapperMock);
 
         when(brickletAmbientLightWrapperMock.getIlluminance()).thenReturn(100);
 
-        sut = new IlluminanceService(brickletProviderMock);
+        sut = new IlluminanceService(brickletAmbientLightWrapperFactory);
     }
 
 

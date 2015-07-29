@@ -3,6 +3,11 @@ package org.synyx.sybil.brick;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.tinkerforge.IPConnection;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.core.env.Environment;
@@ -19,6 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 
 /**
  * BrickDTOService.
@@ -29,21 +36,47 @@ import java.util.List;
 @Component
 public class BrickDTOService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(BrickDTOService.class);
+
     private final ObjectMapper objectMapper;
     private final String configDir;
+    private final BrickService brickService;
 
     /**
      * Instantiates a new Brick DTO service.
      *
      * @param  objectMapper  the object mapper
      * @param  environment  the environment
+     * @param  brickService  the Brick service
      */
     @Autowired
-    public BrickDTOService(ObjectMapper objectMapper, Environment environment) {
+    public BrickDTOService(ObjectMapper objectMapper, Environment environment, BrickService brickService) {
 
         this.objectMapper = objectMapper;
+        this.brickService = brickService;
         this.configDir = environment.getProperty("path.to.configfiles");
     }
+
+    @PostConstruct
+    public void resetAllBricks() {
+
+        try {
+            List<BrickDTO> brickDTOs = getAllDTOs();
+
+            for (BrickDTO brickDTO : brickDTOs) {
+                brickService.reset(brickDTO);
+            }
+        } catch (BrickConnectionException | LoadFailedException exception) {
+            LOG.error("Failed to reset bricks:", exception);
+        }
+    }
+
+
+    public IPConnection connect(String name) {
+
+        return brickService.connect(getDTO(name));
+    }
+
 
     /**
      * Gets a pre-configured DTO.
@@ -52,7 +85,7 @@ public class BrickDTOService {
      *
      * @return  The DTO containing the brick's configuration.
      */
-    public BrickDTO getDTO(String name) {
+    private BrickDTO getDTO(String name) {
 
         BrickDTO brickDTO = null;
 
@@ -77,7 +110,7 @@ public class BrickDTOService {
      *
      * @return  A List of all the DTOs.
      */
-    public List<BrickDTO> getAllDTOs() {
+    private List<BrickDTO> getAllDTOs() {
 
         List<BrickDTO> brickDTOs = new ArrayList<>();
 
