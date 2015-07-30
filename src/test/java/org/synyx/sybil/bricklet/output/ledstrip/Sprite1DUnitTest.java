@@ -80,7 +80,40 @@ public class Sprite1DUnitTest {
         colors.add(new Color(0, 64, 0));
         colors.add(new Color(0, 0, 64));
 
-        Sprite1D sprite = new Sprite1D(5, colors);
+        Sprite1D sprite = new Sprite1D(colors);
+
+        int[] red = sprite.getRed();
+        int[] green = sprite.getGreen();
+        int[] blue = sprite.getBlue();
+
+        assertThat(red.length, is(3));
+
+        assertThat(red[0], is(64));
+        assertThat(green[0], is(0));
+        assertThat(blue[0], is(0));
+
+        assertThat(red[1], is(0));
+        assertThat(green[1], is(64));
+        assertThat(blue[1], is(0));
+
+        assertThat(red[2], is(0));
+        assertThat(green[2], is(0));
+        assertThat(blue[2], is(64));
+    }
+
+
+    @Test
+    public void spriteFromLongListOfColors() {
+
+        List<Color> colors = new ArrayList<>();
+
+        colors.add(new Color(64, 0, 0));
+        colors.add(new Color(0, 64, 0));
+        colors.add(new Color(0, 0, 64));
+        colors.add(Color.WHITE);
+        colors.add(Color.WHITE);
+
+        Sprite1D sprite = new Sprite1D(colors);
 
         int[] red = sprite.getRed();
         int[] green = sprite.getGreen();
@@ -100,46 +133,13 @@ public class Sprite1DUnitTest {
         assertThat(green[2], is(0));
         assertThat(blue[2], is(64));
 
-        assertThat(red[3], is(0));
-        assertThat(green[3], is(0));
-        assertThat(blue[3], is(0));
+        assertThat(red[3], is(255));
+        assertThat(green[3], is(255));
+        assertThat(blue[3], is(255));
 
-        assertThat(red[4], is(0));
-        assertThat(green[4], is(0));
-        assertThat(blue[4], is(0));
-    }
-
-
-    @Test
-    public void spriteFromLongListOfColors() {
-
-        List<Color> colors = new ArrayList<>();
-
-        colors.add(new Color(64, 0, 0));
-        colors.add(new Color(0, 64, 0));
-        colors.add(new Color(0, 0, 64));
-        colors.add(Color.WHITE);
-        colors.add(Color.WHITE);
-
-        Sprite1D sprite = new Sprite1D(3, colors);
-
-        int[] red = sprite.getRed();
-        int[] green = sprite.getGreen();
-        int[] blue = sprite.getBlue();
-
-        assertThat(red.length, is(3));
-
-        assertThat(red[0], is(64));
-        assertThat(green[0], is(0));
-        assertThat(blue[0], is(0));
-
-        assertThat(red[1], is(0));
-        assertThat(green[1], is(64));
-        assertThat(blue[1], is(0));
-
-        assertThat(red[2], is(0));
-        assertThat(green[2], is(0));
-        assertThat(blue[2], is(64));
+        assertThat(red[4], is(255));
+        assertThat(green[4], is(255));
+        assertThat(blue[4], is(255));
     }
 
 

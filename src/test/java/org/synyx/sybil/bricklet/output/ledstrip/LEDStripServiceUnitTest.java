@@ -17,8 +17,7 @@ import org.synyx.sybil.bricklet.input.illuminance.IlluminanceDTOService;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripConfig;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
@@ -26,9 +25,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 import static org.mockito.Matchers.any;
 
@@ -46,7 +45,16 @@ import static org.mockito.Mockito.when;
 public class LEDStripServiceUnitTest {
 
     @Mock
-    BrickletLEDStripWrapperFactory brickletLEDStripWrapperFactoryMock;
+    BrickletLEDStripWrapperService brickletLEDStripWrapperServiceMock;
+
+    @Mock
+    LEDStripRepository ledStripRepository;
+
+    @Mock
+    IlluminanceDTOService illuminanceDTOServiceMock;
+
+    @Mock
+    IlluminanceService illuminanceServiceMock;
 
     @Mock
     BrickletLEDStripWrapper brickletLEDStripMock;
@@ -57,22 +65,16 @@ public class LEDStripServiceUnitTest {
     @Mock
     BrickletLEDStrip.RGBValues rgbValuesTwoMock;
 
-    @Mock
-    IlluminanceDTOService illuminanceDTOServiceMock;
-
-    @Mock
-    IlluminanceService illuminanceServiceMock;
-
     LEDStripService sut;
 
     @Before
     public void setup() throws Exception {
 
-        when(brickletLEDStripWrapperFactoryMock.getBrickletLEDStrip(any(LEDStripConfig.class))).thenReturn(
+        when(brickletLEDStripWrapperServiceMock.getBrickletLEDStrip(any(LEDStrip.class))).thenReturn(
             brickletLEDStripMock);
 
-        sut = new LEDStripService(brickletLEDStripWrapperFactoryMock, illuminanceDTOServiceMock,
-                illuminanceServiceMock);
+        sut = new LEDStripService(brickletLEDStripWrapperServiceMock, illuminanceDTOServiceMock, illuminanceServiceMock,
+                ledStripRepository);
     }
 
 
@@ -89,12 +91,11 @@ public class LEDStripServiceUnitTest {
         // 140 decilux is 20 less than the configured threshold of 16 lux, so brigthness should triple.
         when(illuminanceServiceMock.getIlluminance(illuminanceDTO)).thenReturn(140);
 
-        LEDStripConfig ledStripConfig = new LEDStripConfig("one", "xyz", 16, "abrick", "ambientlight");
-        LEDStripDTO ledStripDTO = new LEDStripDTO(ledStripConfig);
-        ledStripDTO.setStatus(new StatusInformation("test", Status.OKAY));
+        LEDStrip ledStrip = new LEDStrip("one", "xyz", 16, "abrick", "ambientlight");
+        when(ledStripRepository.get("one")).thenReturn(ledStrip);
 
         // execution
-        sut.handleStatus(ledStripDTO);
+        sut.handleStatus("one", new StatusInformation("test", Status.OKAY));
 
         // verification
         short[] zeroes = new short[16];
@@ -120,12 +121,11 @@ public class LEDStripServiceUnitTest {
         // 0 decilux is absolute darkness and should result in maximal brightness.
         when(illuminanceServiceMock.getIlluminance(illuminanceDTO)).thenReturn(0);
 
-        LEDStripConfig ledStripConfig = new LEDStripConfig("one", "xyz", 16, "abrick", "ambientlight");
-        LEDStripDTO ledStripDTO = new LEDStripDTO(ledStripConfig);
-        ledStripDTO.setStatus(new StatusInformation("test", Status.OKAY));
+        LEDStrip ledStrip = new LEDStrip("one", "xyz", 16, "abrick", "ambientlight");
+        when(ledStripRepository.get("one")).thenReturn(ledStrip);
 
         // execution
-        sut.handleStatus(ledStripDTO);
+        sut.handleStatus("one", new StatusInformation("test", Status.OKAY));
 
         // verification
         short[] zeroes = new short[16];
@@ -151,12 +151,11 @@ public class LEDStripServiceUnitTest {
         // 5000 lux is over the threshold, so the brightness should not change from default.
         when(illuminanceServiceMock.getIlluminance(illuminanceDTO)).thenReturn(5000);
 
-        LEDStripConfig ledStripConfig = new LEDStripConfig("one", "xyz", 16, "abrick", "ambientlight");
-        LEDStripDTO ledStripDTO = new LEDStripDTO(ledStripConfig);
-        ledStripDTO.setStatus(new StatusInformation("test", Status.OKAY));
+        LEDStrip ledStrip = new LEDStrip("one", "xyz", 16, "abrick", "ambientlight");
+        when(ledStripRepository.get("one")).thenReturn(ledStrip);
 
         // execution
-        sut.handleStatus(ledStripDTO);
+        sut.handleStatus("one", new StatusInformation("test", Status.OKAY));
 
         // verification
         short[] zeroes = new short[16];
@@ -202,10 +201,10 @@ public class LEDStripServiceUnitTest {
         when(brickletLEDStripMock.getRGBValues(0, (short) 16)).thenReturn(rgbValuesOneMock);
         when(brickletLEDStripMock.getRGBValues(16, (short) 16)).thenReturn(rgbValuesTwoMock);
 
-        LEDStripDTO ledStripDTO = new LEDStripDTO(new LEDStripConfig("one", "abc", 30, "abrick"));
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
 
         // execution
-        List<Color> pixels = sut.getPixels(ledStripDTO);
+        List<Color> pixels = sut.getPixels("one");
 
         // verification
         for (int i = 0; i < 30; i++) {
@@ -218,18 +217,17 @@ public class LEDStripServiceUnitTest {
     public void handleSprite() throws Exception {
 
         // setup
-        LEDStripDTO ledStripDTO = new LEDStripDTO(new LEDStripConfig("one", "abc", 20, "abrick"));
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
 
         List<Color> colors = Arrays.asList(new Color[20]);
         Collections.fill(colors, Color.WHITE);
 
         assertThat(colors.size(), is(20));
 
-        Sprite1D sprite = new Sprite1D(20, colors);
-        ledStripDTO.setSprite(sprite);
+        Sprite1D sprite = new Sprite1D(colors);
 
         // execution
-        sut.handleSprite(ledStripDTO);
+        sut.handleSprite("one", sprite);
 
         // verification
         short[] allWhite = new short[16];
@@ -252,18 +250,17 @@ public class LEDStripServiceUnitTest {
     public void handleTooLongSprite() throws Exception {
 
         // setup
-        LEDStripDTO ledStripDTO = new LEDStripDTO(new LEDStripConfig("one", "abc", 31, "abrick"));
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
 
         List<Color> colors = Arrays.asList(new Color[33]);
         Collections.fill(colors, Color.WHITE);
 
         assertThat(colors.size(), is(33));
 
-        Sprite1D sprite = new Sprite1D(colors.size(), colors);
-        ledStripDTO.setSprite(sprite);
+        Sprite1D sprite = new Sprite1D(colors);
 
         // execution
-        sut.handleSprite(ledStripDTO);
+        sut.handleSprite("one", sprite);
 
         // verification
         short[] allWhite = new short[16];
@@ -278,18 +275,17 @@ public class LEDStripServiceUnitTest {
     public void handleTooShortSprite() throws Exception {
 
         // setup
-        LEDStripDTO ledStripDTO = new LEDStripDTO(new LEDStripConfig("one", "abc", 31, "abrick"));
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
 
         List<Color> colors = Arrays.asList(new Color[15]);
         Collections.fill(colors, Color.WHITE);
 
         assertThat(colors.size(), is(15));
 
-        Sprite1D sprite = new Sprite1D(colors.size(), colors);
-        ledStripDTO.setSprite(sprite);
+        Sprite1D sprite = new Sprite1D(colors);
 
         // execution
-        sut.handleSprite(ledStripDTO);
+        sut.handleSprite("one", sprite);
 
         // verification
         short[] partlyWhite = new short[16];
@@ -309,13 +305,12 @@ public class LEDStripServiceUnitTest {
     public void handleStatusOkay() throws Exception {
 
         // setup
-        LEDStripDTO ledStripDTO = new LEDStripDTO(new LEDStripConfig("one", "abc", 16, "abrick"));
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
 
         StatusInformation status = new StatusInformation("test", Status.OKAY);
-        ledStripDTO.setStatus(status);
 
         // execution
-        sut.handleStatus(ledStripDTO);
+        sut.handleStatus("one", status);
 
         // verification
         Color color = Color.OKAY;
@@ -337,13 +332,12 @@ public class LEDStripServiceUnitTest {
     public void handleStatusWarning() throws Exception {
 
         // setup
-        LEDStripDTO ledStripDTO = new LEDStripDTO(new LEDStripConfig("one", "abc", 16, "abrick"));
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
 
         StatusInformation status = new StatusInformation("test", Status.WARNING);
-        ledStripDTO.setStatus(status);
 
         // execution
-        sut.handleStatus(ledStripDTO);
+        sut.handleStatus("one", status);
 
         // verification
         Color color = Color.WARNING;
@@ -365,13 +359,12 @@ public class LEDStripServiceUnitTest {
     public void handleStatusCritical() throws Exception {
 
         // setup
-        LEDStripDTO ledStripDTO = new LEDStripDTO(new LEDStripConfig("one", "abc", 16, "abrick"));
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
 
         StatusInformation status = new StatusInformation("test", Status.CRITICAL);
-        ledStripDTO.setStatus(status);
 
         // execution
-        sut.handleStatus(ledStripDTO);
+        sut.handleStatus("one", status);
 
         // verification
         Color color = Color.CRITICAL;
@@ -393,27 +386,26 @@ public class LEDStripServiceUnitTest {
     public void handleStatusCustomOkay() throws Exception {
 
         // setup
-        LEDStripConfig ledStripConfig = new LEDStripConfig("one", "abc", 16, "abrick");
+        LEDStrip ledStrip = new LEDStrip("one", "abc", 16, "abrick");
 
-        ledStripConfig.setOkayRed(16);
-        ledStripConfig.setOkayGreen(16);
-        ledStripConfig.setOkayBlue(16);
+        ledStrip.setOkayRed(16);
+        ledStrip.setOkayGreen(16);
+        ledStrip.setOkayBlue(16);
 
-        ledStripConfig.setWarningRed(32);
-        ledStripConfig.setWarningGreen(32);
-        ledStripConfig.setWarningBlue(0);
+        ledStrip.setWarningRed(32);
+        ledStrip.setWarningGreen(32);
+        ledStrip.setWarningBlue(0);
 
-        ledStripConfig.setCriticalRed(0);
-        ledStripConfig.setCriticalGreen(0);
-        ledStripConfig.setCriticalBlue(255);
+        ledStrip.setCriticalRed(0);
+        ledStrip.setCriticalGreen(0);
+        ledStrip.setCriticalBlue(255);
 
-        LEDStripDTO ledStripDTO = new LEDStripDTO(ledStripConfig);
+        when(ledStripRepository.get("one")).thenReturn(ledStrip);
 
         StatusInformation status = new StatusInformation("test", Status.OKAY);
-        ledStripDTO.setStatus(status);
 
         // execution
-        sut.handleStatus(ledStripDTO);
+        sut.handleStatus("one", status);
 
         // verification
         short[] red = new short[16];
@@ -433,27 +425,26 @@ public class LEDStripServiceUnitTest {
     public void handleStatusCustomWarning() throws Exception {
 
         // setup
-        LEDStripConfig ledStripConfig = new LEDStripConfig("one", "abc", 16, "abrick");
+        LEDStrip ledStrip = new LEDStrip("one", "abc", 16, "abrick");
 
-        ledStripConfig.setOkayRed(16);
-        ledStripConfig.setOkayGreen(16);
-        ledStripConfig.setOkayBlue(16);
+        ledStrip.setOkayRed(16);
+        ledStrip.setOkayGreen(16);
+        ledStrip.setOkayBlue(16);
 
-        ledStripConfig.setWarningRed(32);
-        ledStripConfig.setWarningGreen(32);
-        ledStripConfig.setWarningBlue(0);
+        ledStrip.setWarningRed(32);
+        ledStrip.setWarningGreen(32);
+        ledStrip.setWarningBlue(0);
 
-        ledStripConfig.setCriticalRed(0);
-        ledStripConfig.setCriticalGreen(0);
-        ledStripConfig.setCriticalBlue(255);
+        ledStrip.setCriticalRed(0);
+        ledStrip.setCriticalGreen(0);
+        ledStrip.setCriticalBlue(255);
 
-        LEDStripDTO ledStripDTO = new LEDStripDTO(ledStripConfig);
+        when(ledStripRepository.get("one")).thenReturn(ledStrip);
 
         StatusInformation status = new StatusInformation("test", Status.WARNING);
-        ledStripDTO.setStatus(status);
 
         // execution
-        sut.handleStatus(ledStripDTO);
+        sut.handleStatus("one", status);
 
         // verification
         short[] red = new short[16];
@@ -473,27 +464,26 @@ public class LEDStripServiceUnitTest {
     public void handleStatusCustomCritical() throws Exception {
 
         // setup
-        LEDStripConfig ledStripConfig = new LEDStripConfig("one", "abc", 16, "abrick");
+        LEDStrip ledStrip = new LEDStrip("one", "abc", 16, "abrick");
 
-        ledStripConfig.setOkayRed(16);
-        ledStripConfig.setOkayGreen(16);
-        ledStripConfig.setOkayBlue(16);
+        ledStrip.setOkayRed(16);
+        ledStrip.setOkayGreen(16);
+        ledStrip.setOkayBlue(16);
 
-        ledStripConfig.setWarningRed(32);
-        ledStripConfig.setWarningGreen(32);
-        ledStripConfig.setWarningBlue(0);
+        ledStrip.setWarningRed(32);
+        ledStrip.setWarningGreen(32);
+        ledStrip.setWarningBlue(0);
 
-        ledStripConfig.setCriticalRed(0);
-        ledStripConfig.setCriticalGreen(0);
-        ledStripConfig.setCriticalBlue(9000);
+        ledStrip.setCriticalRed(0);
+        ledStrip.setCriticalGreen(0);
+        ledStrip.setCriticalBlue(9000);
 
-        LEDStripDTO ledStripDTO = new LEDStripDTO(ledStripConfig);
+        when(ledStripRepository.get("one")).thenReturn(ledStrip);
 
         StatusInformation status = new StatusInformation("test", Status.CRITICAL);
-        ledStripDTO.setStatus(status);
 
         // execution
-        sut.handleStatus(ledStripDTO);
+        sut.handleStatus("one", status);
 
         // verification
         short[] red = new short[16];
@@ -510,13 +500,15 @@ public class LEDStripServiceUnitTest {
 
 
     @Test
-    public void turnOff() throws Exception {
+    public void turnOffAllLEDStrips() throws Exception {
 
         // setup
-        LEDStripDTO ledStripDTO = new LEDStripDTO(new LEDStripConfig("one", "abc", 16, "abrick"));
+        List<LEDStrip> ledStrips = Arrays.asList(new LEDStrip("one", "abc", 16, "abrick"));
+
+        when(ledStripRepository.getAll()).thenReturn(ledStrips);
 
         // execution
-        sut.turnOff(ledStripDTO);
+        sut.turnOffAllLEDStrips();
 
         // verification
         short[] red = new short[16];

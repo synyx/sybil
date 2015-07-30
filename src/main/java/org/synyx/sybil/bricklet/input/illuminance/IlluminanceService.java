@@ -20,19 +20,19 @@ import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
 @Service
 public class IlluminanceService {
 
-    BrickletAmbientLightWrapperFactory brickletAmbientLightWrapperFactory;
+    BrickletAmbientLightWrapperService brickletAmbientLightWrapperService;
 
     @Autowired
-    public IlluminanceService(BrickletAmbientLightWrapperFactory brickletAmbientLightWrapperFactory) {
+    public IlluminanceService(BrickletAmbientLightWrapperService brickletAmbientLightWrapperService) {
 
-        this.brickletAmbientLightWrapperFactory = brickletAmbientLightWrapperFactory;
+        this.brickletAmbientLightWrapperService = brickletAmbientLightWrapperService;
     }
 
     public int getIlluminance(IlluminanceDTO illuminanceDTO) {
 
         IlluminanceConfig illuminanceConfig = illuminanceDTO.getConfig();
 
-        BrickletAmbientLightWrapper brickletAmbientLight = brickletAmbientLightWrapperFactory.getBrickletAmbientLight(
+        BrickletAmbientLightWrapper brickletAmbientLight = brickletAmbientLightWrapperService.getBrickletAmbientLight(
                 illuminanceConfig);
 
         int illuminance;

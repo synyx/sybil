@@ -10,17 +10,17 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.brick.BrickDTOService;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripConfig;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
 
 
 /**
- * BrickletProvider.
+ * BrickletLEDStripWrapperService.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
 @Service
-public class BrickletLEDStripWrapperFactory {
+public class BrickletLEDStripWrapperService {
 
     private static final int FRAME_DURATION = 10;
     private static final int CHIP_TYPE = 2812;
@@ -28,16 +28,16 @@ public class BrickletLEDStripWrapperFactory {
     private final BrickDTOService brickDTOService;
 
     @Autowired
-    public BrickletLEDStripWrapperFactory(BrickDTOService brickDTOService) {
+    public BrickletLEDStripWrapperService(BrickDTOService brickDTOService) {
 
         this.brickDTOService = brickDTOService;
     }
 
-    public BrickletLEDStripWrapper getBrickletLEDStrip(LEDStripConfig ledStripConfig) {
+    public BrickletLEDStripWrapper getBrickletLEDStrip(LEDStrip ledStrip) {
 
-        IPConnection ipConnection = brickDTOService.connect(ledStripConfig.getBrick());
+        IPConnection ipConnection = brickDTOService.connect(ledStrip.getBrick());
 
-        BrickletLEDStripWrapper brickletLEDStrip = new BrickletLEDStripWrapper(ledStripConfig.getUid(), ipConnection);
+        BrickletLEDStripWrapper brickletLEDStrip = new BrickletLEDStripWrapper(ledStrip.getUid(), ipConnection);
 
         try {
             brickletLEDStrip.setFrameDuration(FRAME_DURATION);

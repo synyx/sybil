@@ -1,7 +1,10 @@
 package org.synyx.sybil.bricklet.output.ledstrip.domain;
 
-import org.synyx.sybil.bricklet.output.ledstrip.Sprite1D;
-import org.synyx.sybil.jenkins.domain.StatusInformation;
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
+
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
 
 
 /**
@@ -11,49 +14,23 @@ import org.synyx.sybil.jenkins.domain.StatusInformation;
  */
 public class LEDStripDTO {
 
-    private LEDStripConfig config;
+    @NotNull
+    private final List<Color> pixels;
 
-    private StatusInformation status;
+    public LEDStripDTO(List<Color> pixels) {
 
-    private Sprite1D sprite;
-
-    LEDStripDTO() {
-
-        // default constructor deliberately left empty, needed for Mockito @spy
+        this.pixels = pixels;
     }
 
 
-    public LEDStripDTO(LEDStripConfig config) {
+    public LEDStripDTO() {
 
-        this.config = config;
+        // default constructor deliberately left (almost) empty
+        this.pixels = null;
     }
 
-    public Sprite1D getSprite() {
+    public List<Color> getPixels() {
 
-        return sprite;
-    }
-
-
-    public void setSprite(Sprite1D sprite) {
-
-        this.sprite = sprite;
-    }
-
-
-    public StatusInformation getStatus() {
-
-        return status;
-    }
-
-
-    public void setStatus(StatusInformation status) {
-
-        this.status = status;
-    }
-
-
-    public LEDStripConfig getConfig() {
-
-        return config;
+        return pixels;
     }
 }

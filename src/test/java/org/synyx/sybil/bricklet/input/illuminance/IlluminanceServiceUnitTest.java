@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 public class IlluminanceServiceUnitTest {
 
     @Mock
-    BrickletAmbientLightWrapperFactory brickletAmbientLightWrapperFactory;
+    BrickletAmbientLightWrapperService brickletAmbientLightWrapperService;
 
     @Mock
     BrickletAmbientLightWrapper brickletAmbientLightWrapperMock;
@@ -37,12 +37,12 @@ public class IlluminanceServiceUnitTest {
     @Before
     public void setup() throws Exception {
 
-        when(brickletAmbientLightWrapperFactory.getBrickletAmbientLight(any(IlluminanceConfig.class))).thenReturn(
+        when(brickletAmbientLightWrapperService.getBrickletAmbientLight(any(IlluminanceConfig.class))).thenReturn(
             brickletAmbientLightWrapperMock);
 
         when(brickletAmbientLightWrapperMock.getIlluminance()).thenReturn(100);
 
-        sut = new IlluminanceService(brickletAmbientLightWrapperFactory);
+        sut = new IlluminanceService(brickletAmbientLightWrapperService);
     }
 
 

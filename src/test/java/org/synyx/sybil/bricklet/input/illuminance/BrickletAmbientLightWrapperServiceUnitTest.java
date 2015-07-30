@@ -27,8 +27,8 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(BrickletAmbientLightWrapperFactory.class)
-public class BrickletAmbientLightWrapperFactoryUnitTest {
+@PrepareForTest(BrickletAmbientLightWrapperService.class)
+public class BrickletAmbientLightWrapperServiceUnitTest {
 
     @Mock
     BrickService brickServiceMock;
@@ -48,7 +48,7 @@ public class BrickletAmbientLightWrapperFactoryUnitTest {
     @Mock
     BrickletAmbientLightWrapper brickletAmbientLightWrapperMock;
 
-    BrickletAmbientLightWrapperFactory sut;
+    BrickletAmbientLightWrapperService sut;
 
     @Test
     public void getBrickletAmbientLightWrapper() throws Exception {
@@ -60,7 +60,7 @@ public class BrickletAmbientLightWrapperFactoryUnitTest {
 
         whenNew(BrickletAmbientLightWrapper.class).withAnyArguments().thenReturn(brickletAmbientLightWrapperMock);
 
-        sut = new BrickletAmbientLightWrapperFactory(brickDTOServiceMock);
+        sut = new BrickletAmbientLightWrapperService(brickDTOServiceMock);
 
         // execution
         BrickletAmbientLightWrapper brickletAmbientLightWrapper = sut.getBrickletAmbientLight(illuminanceConfigMock);

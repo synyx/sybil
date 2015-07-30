@@ -11,18 +11,18 @@ import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
 
 
 /**
- * BrickletAmbientLightWrapperFactory.
+ * BrickletAmbientLightWrapperService.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
 @Service
-public class BrickletAmbientLightWrapperFactory {
+public class BrickletAmbientLightWrapperService {
 
     BrickDTOService brickDTOService;
 
     @Autowired
-    public BrickletAmbientLightWrapperFactory(BrickDTOService brickDTOService) {
+    public BrickletAmbientLightWrapperService(BrickDTOService brickDTOService) {
 
         this.brickDTOService = brickDTOService;
     }

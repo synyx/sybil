@@ -3,9 +3,6 @@ package org.synyx.sybil.bricklet.output.ledstrip.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.springframework.hateoas.core.Relation;
-
-import org.synyx.sybil.DeviceDomain;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.jenkins.domain.Status;
 
@@ -19,8 +16,7 @@ import java.util.Map;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Relation(collectionRelation = "ledstrips")
-public class LEDStripConfig implements DeviceDomain {
+public class LEDStrip {
 
     private String name;
     private String uid;
@@ -43,7 +39,7 @@ public class LEDStripConfig implements DeviceDomain {
 
     private boolean hasCustomColors = false;
 
-    protected LEDStripConfig() {
+    protected LEDStrip() {
 
         // Default constructor deliberately left empty
     }
@@ -57,7 +53,7 @@ public class LEDStripConfig implements DeviceDomain {
      * @param  length  The length, i.e. the number of LEDs
      * @param  brick  The name of the connected Brick
      */
-    public LEDStripConfig(String name, String uid, int length, String brick) {
+    public LEDStrip(String name, String uid, int length, String brick) {
 
         this.name = name.toLowerCase();
         this.uid = uid;
@@ -66,7 +62,7 @@ public class LEDStripConfig implements DeviceDomain {
     }
 
 
-    public LEDStripConfig(String name, String uid, int length, String brick, String sensor) {
+    public LEDStrip(String name, String uid, int length, String brick, String sensor) {
 
         this.name = name;
         this.uid = uid;
@@ -76,14 +72,12 @@ public class LEDStripConfig implements DeviceDomain {
         hasSensor = true;
     }
 
-    @Override
     public String getName() {
 
         return name;
     }
 
 
-    @Override
     public String getUid() {
 
         return uid;

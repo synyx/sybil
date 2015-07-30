@@ -13,8 +13,7 @@ import org.synyx.sybil.bricklet.input.illuminance.IlluminanceDTOService;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripConfig;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
@@ -38,30 +37,32 @@ public class LEDStripService {
     private static final short MAX_PRIMARY_COLOR = (short) 255; // NOSONAR Tinkerforge library uses shorts
     private static final double DEFAULT_BRIGHTNESS = 1.0;
 
-    private final BrickletLEDStripWrapperFactory brickletLEDStripWrapperFactory;
+    private final BrickletLEDStripWrapperService brickletLEDStripWrapperService;
     private final IlluminanceDTOService illuminanceDTOService;
     private final IlluminanceService illuminanceService;
+    private final LEDStripRepository ledStripRepository;
 
     @Autowired
-    public LEDStripService(BrickletLEDStripWrapperFactory provider, IlluminanceDTOService illuminanceDTOService,
-        IlluminanceService illuminanceService) {
+    public LEDStripService(BrickletLEDStripWrapperService provider, IlluminanceDTOService illuminanceDTOService,
+        IlluminanceService illuminanceService, LEDStripRepository ledStripRepository) {
 
-        this.brickletLEDStripWrapperFactory = provider;
+        this.brickletLEDStripWrapperService = provider;
         this.illuminanceDTOService = illuminanceDTOService;
         this.illuminanceService = illuminanceService;
+        this.ledStripRepository = ledStripRepository;
     }
 
-    public List<Color> getPixels(LEDStripDTO ledStripDTO) {
+    public List<Color> getPixels(String name) {
 
-        LEDStripConfig ledStripConfig = ledStripDTO.getConfig();
+        LEDStrip ledStrip = ledStripRepository.get(name);
         List<Color> result = new ArrayList<>();
 
-        BrickletLEDStripWrapper brickletLEDStrip = brickletLEDStripWrapperFactory.getBrickletLEDStrip(ledStripConfig);
+        BrickletLEDStripWrapper brickletLEDStrip = brickletLEDStripWrapperService.getBrickletLEDStrip(ledStrip);
 
-        for (int pos = 0; pos < ledStripConfig.getLength(); pos += SIXTEEN) {
+        for (int pos = 0; pos < ledStrip.getLength(); pos += SIXTEEN) {
             BrickletLEDStrip.RGBValues values = getPixelValues(brickletLEDStrip, pos); // NOSONAR Tinkerforge library uses shorts
 
-            for (int i = 0; i < Math.min(ledStripConfig.getLength() - pos, SIXTEEN); i++) {
+            for (int i = 0; i < Math.min(ledStrip.getLength() - pos, SIXTEEN); i++) {
                 result.add(Color.colorFromLEDStrip(values, i));
             }
         }
@@ -82,37 +83,44 @@ public class LEDStripService {
     }
 
 
-    public void turnOff(LEDStripDTO ledStripDTO) {
+    public void turnOffAllLEDStrips() {
 
-        LEDStripConfig ledStripConfig = ledStripDTO.getConfig();
+        List<LEDStrip> ledStrips = ledStripRepository.getAll();
 
-        Sprite1D sprite1D = new Sprite1D(ledStripConfig.getLength(), "OFF");
+        for (LEDStrip ledStrip : ledStrips) {
+            turnOff(ledStrip);
+        }
+    }
+
+
+    private void turnOff(LEDStrip ledStrip) {
+
+        Sprite1D sprite1D = new Sprite1D(ledStrip.getLength(), "OFF");
         sprite1D.setFill(Color.BLACK);
 
-        ledStripDTO.setSprite(sprite1D);
-
-        handleSprite(ledStripDTO);
+        drawSprite(ledStrip, sprite1D);
     }
 
 
-    public void handleStatus(LEDStripDTO ledStripDTO) {
+    public void handleStatus(String name, StatusInformation statusInformation) {
 
-        LEDStripConfig ledStripConfig = ledStripDTO.getConfig();
-        StatusInformation statusInformation = ledStripDTO.getStatus();
+        LEDStrip ledStrip = ledStripRepository.get(name);
 
-        Sprite1D sprite1D = new Sprite1D(ledStripConfig.getLength(), statusInformation.getSource());
-        sprite1D.setFill(getColorFromStatus(ledStripConfig, statusInformation));
+        if (ledStrip == null) {
+            throw new LEDStripNotFoundException("LED strip " + name + " not found");
+        }
 
-        ledStripDTO.setSprite(sprite1D);
+        Sprite1D sprite1D = new Sprite1D(ledStrip.getLength(), statusInformation.getSource());
+        sprite1D.setFill(getColorFromStatus(ledStrip, statusInformation));
 
-        handleSprite(ledStripDTO);
+        drawSprite(ledStrip, sprite1D);
     }
 
 
-    private Color getColorFromStatus(LEDStripConfig ledStripConfig, StatusInformation statusInformation) {
+    private Color getColorFromStatus(LEDStrip ledStrip, StatusInformation statusInformation) {
 
-        if (ledStripConfig.hasCustomColors()) {
-            Map<Status, Color> customColors = ledStripConfig.getCustomColors();
+        if (ledStrip.hasCustomColors()) {
+            Map<Status, Color> customColors = ledStrip.getCustomColors();
 
             return customColors.get(statusInformation.getStatus());
         } else {
@@ -121,12 +129,21 @@ public class LEDStripService {
     }
 
 
-    public void handleSprite(LEDStripDTO ledStripDTO) {
+    public void handleSprite(String name, Sprite1D sprite) {
 
-        LEDStripConfig ledStripConfig = ledStripDTO.getConfig();
-        Sprite1D sprite = ledStripDTO.getSprite();
+        LEDStrip ledStrip = ledStripRepository.get(name);
 
-        int pixelBufferSize = getPixelBufferSize(ledStripConfig);
+        if (ledStrip == null) {
+            throw new LEDStripNotFoundException("LED strip " + name + " not found");
+        }
+
+        drawSprite(ledStrip, sprite);
+    }
+
+
+    private void drawSprite(LEDStrip ledStrip, Sprite1D sprite) {
+
+        int pixelBufferSize = getPixelBufferSize(ledStrip);
         int spriteMaxSize = Math.min(pixelBufferSize, sprite.getLength());
 
         final int[] pixelBufferRed = new int[pixelBufferSize];
@@ -138,24 +155,17 @@ public class LEDStripService {
         System.arraycopy(sprite.getGreen(), 0, pixelBufferGreen, 0, spriteMaxSize);
         System.arraycopy(sprite.getBlue(), 0, pixelBufferBlue, 0, spriteMaxSize);
 
-        drawSprite(ledStripConfig, pixelBufferRed, pixelBufferGreen, pixelBufferBlue);
-    }
-
-
-    private void drawSprite(LEDStripConfig ledStripConfig, int[] pixelBufferRed, int[] pixelBufferGreen,
-        int[] pixelBufferBlue) {
-
         short[] transferBufferRed; // NOSONAR Tinkerforge library uses shorts
         short[] transferBufferGreen; // NOSONAR Tinkerforge library uses shorts
         short[] transferBufferBlue; // NOSONAR Tinkerforge library uses shorts
 
         double brightness = DEFAULT_BRIGHTNESS;
 
-        if (ledStripConfig.hasSensor()) {
-            brightness = getBrightness(ledStripConfig);
+        if (ledStrip.hasSensor()) {
+            brightness = getBrightness(ledStrip);
         }
 
-        BrickletLEDStripWrapper brickletLEDStrip = brickletLEDStripWrapperFactory.getBrickletLEDStrip(ledStripConfig);
+        BrickletLEDStripWrapper brickletLEDStrip = brickletLEDStripWrapperService.getBrickletLEDStrip(ledStrip);
 
         for (int positionOnLedStrip = 0; positionOnLedStrip < pixelBufferRed.length; positionOnLedStrip += SIXTEEN) {
             transferBufferRed = applyBrightnessAndCastToShort(Arrays.copyOfRange(pixelBufferRed, positionOnLedStrip,
@@ -177,19 +187,19 @@ public class LEDStripService {
     }
 
 
-    private int getPixelBufferSize(LEDStripConfig ledStripConfig) {
+    private int getPixelBufferSize(LEDStrip ledStrip) {
 
-        int differenceToMultipleOfSixteen = ledStripConfig.getLength() % SIXTEEN;
+        int differenceToMultipleOfSixteen = ledStrip.getLength() % SIXTEEN;
 
-        return ledStripConfig.getLength() + (SIXTEEN - differenceToMultipleOfSixteen);
+        return ledStrip.getLength() + (SIXTEEN - differenceToMultipleOfSixteen);
     }
 
 
-    private double getBrightness(LEDStripConfig ledStripConfig) {
+    private double getBrightness(LEDStrip ledStrip) {
 
         double brightness = DEFAULT_BRIGHTNESS;
 
-        String sensor = ledStripConfig.getSensor();
+        String sensor = ledStrip.getSensor();
 
         IlluminanceDTO illuminanceDTO = illuminanceDTOService.getDTO(sensor);
 

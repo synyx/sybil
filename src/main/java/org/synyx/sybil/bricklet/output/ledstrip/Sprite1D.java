@@ -43,13 +43,12 @@ public class Sprite1D {
     /**
      * Instantiates a new sprite with a given list of colors as pixels.
      *
-     * @param  length  The number of pixels the sprite will be long
      * @param  name  The name of the Sprite
      * @param  pixels  A list of Colors.
      */
-    public Sprite1D(int length, String name, List<Color> pixels) {
+    public Sprite1D(String name, List<Color> pixels) {
 
-        this.length = length;
+        this.length = pixels.size();
         red = new int[length];
         green = new int[length];
         blue = new int[length];
@@ -79,12 +78,11 @@ public class Sprite1D {
     /**
      * Instantiates a new sprite, named "Unnamed", with a given list of colors as pixels.
      *
-     * @param  length  The number of pixels the sprite will be long
      * @param  pixels  A list of Colors.
      */
-    public Sprite1D(int length, List<Color> pixels) {
+    public Sprite1D(List<Color> pixels) {
 
-        this(length, "Unnamed", pixels);
+        this("Unnamed", pixels);
     }
 
     /**

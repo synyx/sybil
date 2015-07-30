@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet;
+package org.synyx.sybil.bricklet.output.ledstrip;
 
 import com.tinkerforge.IPConnection;
 
@@ -16,9 +16,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.synyx.sybil.brick.BrickDTOService;
 import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.domain.BrickDTO;
-import org.synyx.sybil.bricklet.output.ledstrip.BrickletLEDStripWrapper;
-import org.synyx.sybil.bricklet.output.ledstrip.BrickletLEDStripWrapperFactory;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripConfig;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
@@ -27,8 +25,8 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(BrickletLEDStripWrapperFactory.class)
-public class BrickletLEDStripWrapperFactoryUnitTest {
+@PrepareForTest(BrickletLEDStripWrapperService.class)
+public class BrickletLEDStripWrapperServiceUnitTest {
 
     @Mock
     BrickService brickServiceMock;
@@ -37,7 +35,7 @@ public class BrickletLEDStripWrapperFactoryUnitTest {
     BrickDTOService brickDTOServiceMock;
 
     @Mock
-    LEDStripConfig ledStripConfigMock;
+    LEDStrip ledStripMock;
 
     @Mock
     BrickDTO brickDTOMock;
@@ -52,16 +50,16 @@ public class BrickletLEDStripWrapperFactoryUnitTest {
     public void getBrickletLEDStrip() throws Exception {
 
         // setup
-        when(ledStripConfigMock.getBrick()).thenReturn("brick");
+        when(ledStripMock.getBrick()).thenReturn("brick");
 
         when(brickDTOServiceMock.connect("brick")).thenReturn(ipConnectionMock);
 
         whenNew(BrickletLEDStripWrapper.class).withAnyArguments().thenReturn(brickletLEDStripWrapperMock);
 
-        BrickletLEDStripWrapperFactory sut = new BrickletLEDStripWrapperFactory(brickDTOServiceMock);
+        BrickletLEDStripWrapperService sut = new BrickletLEDStripWrapperService(brickDTOServiceMock);
 
         // execution
-        sut.getBrickletLEDStrip(ledStripConfigMock);
+        sut.getBrickletLEDStrip(ledStripMock);
 
         // verification
         InOrder inOrder = inOrder(brickletLEDStripWrapperMock);

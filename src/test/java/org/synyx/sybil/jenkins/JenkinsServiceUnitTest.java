@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.client.RestTemplate;
 
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
+import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
 import org.synyx.sybil.jenkins.domain.JenkinsJob;
 import org.synyx.sybil.jenkins.domain.JenkinsProperties;
 import org.synyx.sybil.jenkins.domain.JobConfig;
@@ -58,7 +58,7 @@ public class JenkinsServiceUnitTest {
     ObjectMapper objectMapperMock;
 
     @Mock
-    LEDStripDTOService ledStripDTOServiceMock;
+    LEDStripService ledStripServiceMock;
 
     @Mock
     Environment environmentMock;
@@ -108,7 +108,7 @@ public class JenkinsServiceUnitTest {
         when(restTemplateMock.exchange(eq("http://jenkins/api/json"), eq(HttpMethod.GET), any(HttpEntity.class),
                     eq(JenkinsProperties.class))).thenReturn(responseEntity);
 
-        sut = new JenkinsService(objectMapperMock, ledStripDTOServiceMock, environmentMock, restTemplateMock);
+        sut = new JenkinsService(objectMapperMock, ledStripServiceMock, environmentMock, restTemplateMock);
     }
 
 
@@ -121,16 +121,16 @@ public class JenkinsServiceUnitTest {
         // verification
         ArgumentCaptor<StatusInformation> argumentCaptor = ArgumentCaptor.forClass(StatusInformation.class);
 
-        verify(ledStripDTOServiceMock).handleStatus(eq("ledstripone"), argumentCaptor.capture());
+        verify(ledStripServiceMock).handleStatus(eq("ledstripone"), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().getStatus(), is(Status.OKAY));
 
-        verify(ledStripDTOServiceMock).handleStatus(eq("ledstriptwo"), argumentCaptor.capture());
+        verify(ledStripServiceMock).handleStatus(eq("ledstriptwo"), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().getStatus(), is(Status.WARNING));
 
-        verify(ledStripDTOServiceMock).handleStatus(eq("ledstripthree"), argumentCaptor.capture());
+        verify(ledStripServiceMock).handleStatus(eq("ledstripthree"), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().getStatus(), is(Status.CRITICAL));
 
-        verifyNoMoreInteractions(ledStripDTOServiceMock);
+        verifyNoMoreInteractions(ledStripServiceMock);
     }
 
 
@@ -141,6 +141,6 @@ public class JenkinsServiceUnitTest {
         sut.turnOffAllLEDStrips();
 
         // verification
-        verify(ledStripDTOServiceMock).turnOffAllLEDStrips();
+        verify(ledStripServiceMock).turnOffAllLEDStrips();
     }
 }
