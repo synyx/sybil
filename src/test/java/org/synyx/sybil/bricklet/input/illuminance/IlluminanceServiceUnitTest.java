@@ -10,8 +10,8 @@ import org.mockito.Mock;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
+import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -37,7 +37,7 @@ public class IlluminanceServiceUnitTest {
     @Before
     public void setup() throws Exception {
 
-        when(brickletAmbientLightWrapperFactory.getBrickletAmbientLight(any(IlluminanceDomain.class))).thenReturn(
+        when(brickletAmbientLightWrapperFactory.getBrickletAmbientLight(any(IlluminanceConfig.class))).thenReturn(
             brickletAmbientLightWrapperMock);
 
         when(brickletAmbientLightWrapperMock.getIlluminance()).thenReturn(100);
@@ -49,8 +49,8 @@ public class IlluminanceServiceUnitTest {
     @Test
     public void getIlluminance() throws Exception {
 
-        IlluminanceDomain illuminanceDomain = new IlluminanceDomain();
-        IlluminanceDTO illuminanceDTO = new IlluminanceDTO(illuminanceDomain);
+        IlluminanceConfig illuminanceConfig = new IlluminanceConfig();
+        IlluminanceDTO illuminanceDTO = new IlluminanceDTO(illuminanceConfig);
 
         int illuminance = sut.getIlluminance(illuminanceDTO);
 

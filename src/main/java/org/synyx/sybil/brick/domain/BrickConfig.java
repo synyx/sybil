@@ -12,7 +12,7 @@ import org.synyx.sybil.DeviceDomain;
  */
 
 @Relation(collectionRelation = "bricks")
-public class BrickDomain implements DeviceDomain {
+public class BrickConfig implements DeviceDomain {
 
     private static final int DEFAULT_PORT = 4223;
 
@@ -24,7 +24,7 @@ public class BrickDomain implements DeviceDomain {
 
     private String uid;
 
-    protected BrickDomain() {
+    protected BrickConfig() {
 
         // Default constructor deliberately left empty
     }
@@ -38,7 +38,7 @@ public class BrickDomain implements DeviceDomain {
      * @param  port  The port
      * @param  name  The name
      */
-    public BrickDomain(String hostname, String uid, int port, String name) {
+    public BrickConfig(String hostname, String uid, int port, String name) {
 
         this.name = name;
         this.hostname = hostname;
@@ -53,7 +53,7 @@ public class BrickDomain implements DeviceDomain {
      * @param  hostname  The hostname
      * @param  uid  The uid
      */
-    public BrickDomain(String hostname, String uid) {
+    public BrickConfig(String hostname, String uid) {
 
         this.hostname = hostname;
         this.name = hostname;

@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceConnectionException;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceDTOService;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
+import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripConfig;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
@@ -53,15 +53,15 @@ public class LEDStripService {
 
     public List<Color> getPixels(LEDStripDTO ledStripDTO) {
 
-        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
+        LEDStripConfig ledStripConfig = ledStripDTO.getConfig();
         List<Color> result = new ArrayList<>();
 
-        BrickletLEDStripWrapper brickletLEDStrip = brickletLEDStripWrapperFactory.getBrickletLEDStrip(ledStripDomain);
+        BrickletLEDStripWrapper brickletLEDStrip = brickletLEDStripWrapperFactory.getBrickletLEDStrip(ledStripConfig);
 
-        for (int pos = 0; pos < ledStripDomain.getLength(); pos += SIXTEEN) {
+        for (int pos = 0; pos < ledStripConfig.getLength(); pos += SIXTEEN) {
             BrickletLEDStrip.RGBValues values = getPixelValues(brickletLEDStrip, pos); // NOSONAR Tinkerforge library uses shorts
 
-            for (int i = 0; i < Math.min(ledStripDomain.getLength() - pos, SIXTEEN); i++) {
+            for (int i = 0; i < Math.min(ledStripConfig.getLength() - pos, SIXTEEN); i++) {
                 result.add(Color.colorFromLEDStrip(values, i));
             }
         }
@@ -84,9 +84,9 @@ public class LEDStripService {
 
     public void turnOff(LEDStripDTO ledStripDTO) {
 
-        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
+        LEDStripConfig ledStripConfig = ledStripDTO.getConfig();
 
-        Sprite1D sprite1D = new Sprite1D(ledStripDomain.getLength(), "OFF");
+        Sprite1D sprite1D = new Sprite1D(ledStripConfig.getLength(), "OFF");
         sprite1D.setFill(Color.BLACK);
 
         ledStripDTO.setSprite(sprite1D);
@@ -97,11 +97,11 @@ public class LEDStripService {
 
     public void handleStatus(LEDStripDTO ledStripDTO) {
 
-        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
+        LEDStripConfig ledStripConfig = ledStripDTO.getConfig();
         StatusInformation statusInformation = ledStripDTO.getStatus();
 
-        Sprite1D sprite1D = new Sprite1D(ledStripDomain.getLength(), statusInformation.getSource());
-        sprite1D.setFill(getColorFromStatus(ledStripDomain, statusInformation));
+        Sprite1D sprite1D = new Sprite1D(ledStripConfig.getLength(), statusInformation.getSource());
+        sprite1D.setFill(getColorFromStatus(ledStripConfig, statusInformation));
 
         ledStripDTO.setSprite(sprite1D);
 
@@ -109,10 +109,10 @@ public class LEDStripService {
     }
 
 
-    private Color getColorFromStatus(LEDStripDomain ledStripDomain, StatusInformation statusInformation) {
+    private Color getColorFromStatus(LEDStripConfig ledStripConfig, StatusInformation statusInformation) {
 
-        if (ledStripDomain.hasCustomColors()) {
-            Map<Status, Color> customColors = ledStripDomain.getCustomColors();
+        if (ledStripConfig.hasCustomColors()) {
+            Map<Status, Color> customColors = ledStripConfig.getCustomColors();
 
             return customColors.get(statusInformation.getStatus());
         } else {
@@ -123,10 +123,10 @@ public class LEDStripService {
 
     public void handleSprite(LEDStripDTO ledStripDTO) {
 
-        LEDStripDomain ledStripDomain = ledStripDTO.getDomain();
+        LEDStripConfig ledStripConfig = ledStripDTO.getConfig();
         Sprite1D sprite = ledStripDTO.getSprite();
 
-        int pixelBufferSize = getPixelBufferSize(ledStripDomain);
+        int pixelBufferSize = getPixelBufferSize(ledStripConfig);
         int spriteMaxSize = Math.min(pixelBufferSize, sprite.getLength());
 
         final int[] pixelBufferRed = new int[pixelBufferSize];
@@ -138,11 +138,11 @@ public class LEDStripService {
         System.arraycopy(sprite.getGreen(), 0, pixelBufferGreen, 0, spriteMaxSize);
         System.arraycopy(sprite.getBlue(), 0, pixelBufferBlue, 0, spriteMaxSize);
 
-        drawSprite(ledStripDomain, pixelBufferRed, pixelBufferGreen, pixelBufferBlue);
+        drawSprite(ledStripConfig, pixelBufferRed, pixelBufferGreen, pixelBufferBlue);
     }
 
 
-    private void drawSprite(LEDStripDomain ledStripDomain, int[] pixelBufferRed, int[] pixelBufferGreen,
+    private void drawSprite(LEDStripConfig ledStripConfig, int[] pixelBufferRed, int[] pixelBufferGreen,
         int[] pixelBufferBlue) {
 
         short[] transferBufferRed; // NOSONAR Tinkerforge library uses shorts
@@ -151,11 +151,11 @@ public class LEDStripService {
 
         double brightness = DEFAULT_BRIGHTNESS;
 
-        if (ledStripDomain.hasSensor()) {
-            brightness = getBrightness(ledStripDomain);
+        if (ledStripConfig.hasSensor()) {
+            brightness = getBrightness(ledStripConfig);
         }
 
-        BrickletLEDStripWrapper brickletLEDStrip = brickletLEDStripWrapperFactory.getBrickletLEDStrip(ledStripDomain);
+        BrickletLEDStripWrapper brickletLEDStrip = brickletLEDStripWrapperFactory.getBrickletLEDStrip(ledStripConfig);
 
         for (int positionOnLedStrip = 0; positionOnLedStrip < pixelBufferRed.length; positionOnLedStrip += SIXTEEN) {
             transferBufferRed = applyBrightnessAndCastToShort(Arrays.copyOfRange(pixelBufferRed, positionOnLedStrip,
@@ -177,23 +177,23 @@ public class LEDStripService {
     }
 
 
-    private int getPixelBufferSize(LEDStripDomain ledStripDomain) {
+    private int getPixelBufferSize(LEDStripConfig ledStripConfig) {
 
-        int differenceToMultipleOfSixteen = ledStripDomain.getLength() % SIXTEEN;
+        int differenceToMultipleOfSixteen = ledStripConfig.getLength() % SIXTEEN;
 
-        return ledStripDomain.getLength() + (SIXTEEN - differenceToMultipleOfSixteen);
+        return ledStripConfig.getLength() + (SIXTEEN - differenceToMultipleOfSixteen);
     }
 
 
-    private double getBrightness(LEDStripDomain ledStripDomain) {
+    private double getBrightness(LEDStripConfig ledStripConfig) {
 
         double brightness = DEFAULT_BRIGHTNESS;
 
-        String sensor = ledStripDomain.getSensor();
+        String sensor = ledStripConfig.getSensor();
 
         IlluminanceDTO illuminanceDTO = illuminanceDTOService.getDTO(sensor);
 
-        IlluminanceDomain illuminanceDomain = illuminanceDTO.getDomain();
+        IlluminanceConfig illuminanceConfig = illuminanceDTO.getConfig();
 
         /* since the sensor reports in lux / 10, we have to multiply the threshold and divide the multiplier by 10 each.
          * A multiplier of 1.0 results in an increase in brightness of 100% per Lux that is below the threshold.
@@ -201,8 +201,8 @@ public class LEDStripService {
          *      If the ambient illuminance is 18, the brightness will be tripled.
          */
 
-        int thresholdInDecilux = illuminanceDomain.getThreshold() * TEN;
-        double multiplier = illuminanceDomain.getMultiplier() / TEN;
+        int thresholdInDecilux = illuminanceConfig.getThreshold() * TEN;
+        double multiplier = illuminanceConfig.getMultiplier() / TEN;
 
         int illuminance;
 

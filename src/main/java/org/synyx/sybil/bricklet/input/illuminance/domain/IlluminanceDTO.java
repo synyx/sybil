@@ -7,15 +7,15 @@ package org.synyx.sybil.bricklet.input.illuminance.domain;
  */
 public class IlluminanceDTO {
 
-    private final IlluminanceDomain domain;
+    private final IlluminanceConfig config;
 
-    public IlluminanceDTO(IlluminanceDomain domain) {
+    public IlluminanceDTO(IlluminanceConfig config) {
 
-        this.domain = domain;
+        this.config = config;
     }
 
-    public IlluminanceDomain getDomain() {
+    public IlluminanceConfig getConfig() {
 
-        return domain;
+        return config;
     }
 }

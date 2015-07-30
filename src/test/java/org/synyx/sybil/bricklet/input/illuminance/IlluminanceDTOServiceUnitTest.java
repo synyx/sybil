@@ -14,8 +14,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.springframework.core.env.Environment;
 
+import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,26 +50,26 @@ public class IlluminanceDTOServiceUnitTest {
     @Mock
     private Environment environmentMock;
 
-    private List<IlluminanceDomain> illuminanceDomains = new ArrayList<>();
+    private List<IlluminanceConfig> illuminanceConfigs = new ArrayList<>();
 
     @Before
     public void setup() throws IOException {
 
-        IlluminanceDomain one = new IlluminanceDomain();
+        IlluminanceConfig one = new IlluminanceConfig();
         one.setName("one");
         one.setUid("abc");
         one.setThreshold(16);
         one.setMultiplier(.05);
         one.setBrick("abrick");
 
-        IlluminanceDomain two = new IlluminanceDomain("two", "xyz", 32, 1.0, "anotherbrick");
+        IlluminanceConfig two = new IlluminanceConfig("two", "xyz", 32, 1.0, "anotherbrick");
 
-        illuminanceDomains.add(one);
-        illuminanceDomains.add(two);
+        illuminanceConfigs.add(one);
+        illuminanceConfigs.add(two);
 
         when(environmentMock.getProperty("path.to.configfiles")).thenReturn("path/to/config/files/");
         when(objectMapperMock.readValue(eq(new File("path/to/config/files/illuminances.json")),
-                    any(TypeReference.class))).thenReturn(illuminanceDomains);
+                    any(TypeReference.class))).thenReturn(illuminanceConfigs);
 
         sut = new IlluminanceDTOService(objectMapperMock, environmentMock);
     }
@@ -80,7 +80,7 @@ public class IlluminanceDTOServiceUnitTest {
 
         IlluminanceDTO illuminanceDTO = sut.getDTO("two");
 
-        assertThat(illuminanceDTO.getDomain(), is(illuminanceDomains.get(1)));
+        assertThat(illuminanceDTO.getConfig(), is(illuminanceConfigs.get(1)));
     }
 
 
@@ -95,14 +95,14 @@ public class IlluminanceDTOServiceUnitTest {
     public void getAllDTOs() throws Exception {
 
         List<IlluminanceDTO> illuminanceDTOs = sut.getAllDTOs();
-        assertThat(illuminanceDTOs.get(0).getDomain(), is(illuminanceDomains.get(0)));
+        assertThat(illuminanceDTOs.get(0).getConfig(), is(illuminanceConfigs.get(0)));
 
-        IlluminanceDomain illuminanceDomain = illuminanceDTOs.get(1).getDomain();
+        IlluminanceConfig illuminanceConfig = illuminanceDTOs.get(1).getConfig();
 
-        assertThat(illuminanceDomain.getName(), is("two"));
-        assertThat(illuminanceDomain.getUid(), is("xyz"));
-        assertThat(illuminanceDomain.getThreshold(), is(32));
-        assertThat(illuminanceDomain.getMultiplier(), is(1.0));
-        assertThat(illuminanceDomain.getBrick(), is("anotherbrick"));
+        assertThat(illuminanceConfig.getName(), is("two"));
+        assertThat(illuminanceConfig.getUid(), is("xyz"));
+        assertThat(illuminanceConfig.getThreshold(), is(32));
+        assertThat(illuminanceConfig.getMultiplier(), is(1.0));
+        assertThat(illuminanceConfig.getBrick(), is("anotherbrick"));
     }
 }

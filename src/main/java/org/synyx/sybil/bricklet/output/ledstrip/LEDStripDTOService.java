@@ -10,8 +10,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.LoadFailedException;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripConfig;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
 import java.io.File;
@@ -109,9 +109,9 @@ public class LEDStripDTOService {
 
         LEDStripDTO ledStripDTO = null;
 
-        for (LEDStripDomain ledStripDomain : getLedStripDomains()) {
-            if (ledStripDomain.getName().equals(name)) {
-                ledStripDTO = new LEDStripDTO(ledStripDomain);
+        for (LEDStripConfig ledStripConfig : getLedStripDomains()) {
+            if (ledStripConfig.getName().equals(name)) {
+                ledStripDTO = new LEDStripDTO(ledStripConfig);
             }
         }
 
@@ -127,26 +127,26 @@ public class LEDStripDTOService {
 
         List<LEDStripDTO> ledStripDTOs = new ArrayList<>();
 
-        for (LEDStripDomain ledStripDomain : getLedStripDomains()) {
-            ledStripDTOs.add(new LEDStripDTO(ledStripDomain));
+        for (LEDStripConfig ledStripConfig : getLedStripDomains()) {
+            ledStripDTOs.add(new LEDStripDTO(ledStripConfig));
         }
 
         return ledStripDTOs;
     }
 
 
-    private List<LEDStripDomain> getLedStripDomains() {
+    private List<LEDStripConfig> getLedStripDomains() {
 
-        List<LEDStripDomain> ledStripDomains;
+        List<LEDStripConfig> ledStripConfigs;
 
         try {
-            ledStripDomains = objectMapper.readValue(new File(configDir + "ledstrips.json"),
-                    new TypeReference<List<LEDStripDomain>>() {
+            ledStripConfigs = objectMapper.readValue(new File(configDir + "ledstrips.json"),
+                    new TypeReference<List<LEDStripConfig>>() {
                     });
         } catch (IOException exception) {
             throw new LoadFailedException("Error loading LED strips config file:", exception);
         }
 
-        return ledStripDomains;
+        return ledStripConfigs;
     }
 }

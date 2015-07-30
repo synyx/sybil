@@ -11,7 +11,7 @@ import org.synyx.sybil.jenkins.domain.StatusInformation;
  */
 public class LEDStripDTO {
 
-    private LEDStripDomain domain;
+    private LEDStripConfig config;
 
     private StatusInformation status;
 
@@ -23,9 +23,9 @@ public class LEDStripDTO {
     }
 
 
-    public LEDStripDTO(LEDStripDomain domain) {
+    public LEDStripDTO(LEDStripConfig config) {
 
-        this.domain = domain;
+        this.config = config;
     }
 
     public Sprite1D getSprite() {
@@ -52,8 +52,8 @@ public class LEDStripDTO {
     }
 
 
-    public LEDStripDomain getDomain() {
+    public LEDStripConfig getConfig() {
 
-        return domain;
+        return config;
     }
 }

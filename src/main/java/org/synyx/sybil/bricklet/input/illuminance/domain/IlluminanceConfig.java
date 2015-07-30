@@ -12,7 +12,7 @@ import org.synyx.sybil.DeviceDomain;
  */
 
 @Relation(collectionRelation = "illuminances")
-public class IlluminanceDomain implements DeviceDomain {
+public class IlluminanceConfig implements DeviceDomain {
 
     private String name;
     private String uid;
@@ -20,7 +20,7 @@ public class IlluminanceDomain implements DeviceDomain {
     private double multiplier;
     private String brick;
 
-    public IlluminanceDomain(String name, String uid, int threshold, double multiplier, String brick) {
+    public IlluminanceConfig(String name, String uid, int threshold, double multiplier, String brick) {
 
         this.name = name;
         this.uid = uid;
@@ -30,7 +30,7 @@ public class IlluminanceDomain implements DeviceDomain {
     }
 
 
-    public IlluminanceDomain() {
+    public IlluminanceConfig() {
 
         // default constructor deliberately left empty
     }

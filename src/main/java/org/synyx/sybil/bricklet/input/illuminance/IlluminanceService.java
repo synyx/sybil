@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 
 
 /**
@@ -30,10 +30,10 @@ public class IlluminanceService {
 
     public int getIlluminance(IlluminanceDTO illuminanceDTO) {
 
-        IlluminanceDomain illuminanceDomain = illuminanceDTO.getDomain();
+        IlluminanceConfig illuminanceConfig = illuminanceDTO.getConfig();
 
         BrickletAmbientLightWrapper brickletAmbientLight = brickletAmbientLightWrapperFactory.getBrickletAmbientLight(
-                illuminanceDomain);
+                illuminanceConfig);
 
         int illuminance;
 

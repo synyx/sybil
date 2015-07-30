@@ -10,8 +10,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.LoadFailedException;
+import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDomain;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,11 +56,11 @@ public class IlluminanceDTOService {
 
         IlluminanceDTO illuminanceDTO = null;
 
-        List<IlluminanceDomain> illuminanceDomains = getIlluminanceDomains();
+        List<IlluminanceConfig> illuminanceConfigs = getIlluminanceDomains();
 
-        for (IlluminanceDomain illuminanceDomain : illuminanceDomains) {
-            if (illuminanceDomain.getName().equals(name)) {
-                illuminanceDTO = new IlluminanceDTO(illuminanceDomain);
+        for (IlluminanceConfig illuminanceConfig : illuminanceConfigs) {
+            if (illuminanceConfig.getName().equals(name)) {
+                illuminanceDTO = new IlluminanceDTO(illuminanceConfig);
             }
         }
 
@@ -81,21 +81,21 @@ public class IlluminanceDTOService {
 
         List<IlluminanceDTO> illuminanceDTOs = new ArrayList<>();
 
-        List<IlluminanceDomain> illuminanceDomains = getIlluminanceDomains();
+        List<IlluminanceConfig> illuminanceConfigs = getIlluminanceDomains();
 
-        for (IlluminanceDomain illuminanceDomain : illuminanceDomains) {
-            illuminanceDTOs.add(new IlluminanceDTO(illuminanceDomain));
+        for (IlluminanceConfig illuminanceConfig : illuminanceConfigs) {
+            illuminanceDTOs.add(new IlluminanceDTO(illuminanceConfig));
         }
 
         return illuminanceDTOs;
     }
 
 
-    private List<IlluminanceDomain> getIlluminanceDomains() {
+    private List<IlluminanceConfig> getIlluminanceDomains() {
 
         try {
             return objectMapper.readValue(new File(configDir + "illuminances.json"),
-                    new TypeReference<List<IlluminanceDomain>>() {
+                    new TypeReference<List<IlluminanceConfig>>() {
                     });
         } catch (IOException exception) {
             throw new LoadFailedException("Error loading illumunance sensor config file:", exception);

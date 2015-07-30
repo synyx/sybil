@@ -15,8 +15,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import org.synyx.sybil.LoadFailedException;
+import org.synyx.sybil.brick.domain.BrickConfig;
 import org.synyx.sybil.brick.domain.BrickDTO;
-import org.synyx.sybil.brick.domain.BrickDomain;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,11 +89,11 @@ public class BrickDTOService {
 
         BrickDTO brickDTO = null;
 
-        List<BrickDomain> brickDomains = getBrickDomains();
+        List<BrickConfig> brickConfigs = getBrickDomains();
 
-        for (BrickDomain brickDomain : brickDomains) {
-            if (brickDomain.getName().equals(name)) {
-                brickDTO = new BrickDTO(brickDomain);
+        for (BrickConfig brickConfig : brickConfigs) {
+            if (brickConfig.getName().equals(name)) {
+                brickDTO = new BrickDTO(brickConfig);
             }
         }
 
@@ -114,21 +114,21 @@ public class BrickDTOService {
 
         List<BrickDTO> brickDTOs = new ArrayList<>();
 
-        List<BrickDomain> brickDomains = getBrickDomains();
+        List<BrickConfig> brickConfigs = getBrickDomains();
 
-        for (BrickDomain brickDomain : brickDomains) {
-            brickDTOs.add(new BrickDTO(brickDomain));
+        for (BrickConfig brickConfig : brickConfigs) {
+            brickDTOs.add(new BrickDTO(brickConfig));
         }
 
         return brickDTOs;
     }
 
 
-    private List<BrickDomain> getBrickDomains() {
+    private List<BrickConfig> getBrickDomains() {
 
         try {
             return objectMapper.readValue(new File(configDir + "bricks.json"),
-                    new TypeReference<List<BrickDomain>>() {
+                    new TypeReference<List<BrickConfig>>() {
                     });
         } catch (IOException exception) {
             throw new LoadFailedException("Error loading bricks config file:", exception);

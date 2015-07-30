@@ -18,8 +18,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.springframework.core.env.Environment;
 
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripConfig;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
@@ -61,23 +61,23 @@ public class LEDStripDTOServiceUnitTest {
     @Mock
     private LEDStripService ledStripService;
 
-    private List<LEDStripDomain> ledStripDomains = new ArrayList<>();
+    private List<LEDStripConfig> ledStripConfigs = new ArrayList<>();
 
-    LEDStripDomain one;
-    LEDStripDomain two;
+    LEDStripConfig one;
+    LEDStripConfig two;
 
     @Before
     public void setup() throws IOException {
 
-        one = new LEDStripDomain("one", "abc", 42, "abrick");
-        two = new LEDStripDomain("two", "xyz", 23, "anotherbrick");
+        one = new LEDStripConfig("one", "abc", 42, "abrick");
+        two = new LEDStripConfig("two", "xyz", 23, "anotherbrick");
 
-        ledStripDomains.add(one);
-        ledStripDomains.add(two);
+        ledStripConfigs.add(one);
+        ledStripConfigs.add(two);
 
         when(environmentMock.getProperty("path.to.configfiles")).thenReturn("path/to/config/files/");
         when(objectMapperMock.readValue(eq(new File("path/to/config/files/ledstrips.json")), any(TypeReference.class)))
-            .thenReturn(ledStripDomains);
+            .thenReturn(ledStripConfigs);
 
         sut = new LEDStripDTOService(objectMapperMock, environmentMock, ledStripService);
     }
@@ -97,7 +97,7 @@ public class LEDStripDTOServiceUnitTest {
 
         verify(ledStripService).handleStatus(argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().getStatus(), is(statusInformation));
-        assertThat(argumentCaptor.getValue().getDomain(), is(two));
+        assertThat(argumentCaptor.getValue().getConfig(), is(two));
     }
 
 
@@ -115,7 +115,7 @@ public class LEDStripDTOServiceUnitTest {
 
         verify(ledStripService).handleSprite(argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().getSprite(), is(sprite1D));
-        assertThat(argumentCaptor.getValue().getDomain(), is(one));
+        assertThat(argumentCaptor.getValue().getConfig(), is(one));
     }
 
 
@@ -146,8 +146,8 @@ public class LEDStripDTOServiceUnitTest {
         sut.turnOffAllLEDStrips();
 
         // verification
-        verify(ledStripService).turnOff(Mockito.argThat(Matchers.<LEDStripDTO>hasProperty("domain", is(one))));
-        verify(ledStripService).turnOff(Mockito.argThat(Matchers.<LEDStripDTO>hasProperty("domain", is(two))));
+        verify(ledStripService).turnOff(Mockito.argThat(Matchers.<LEDStripDTO>hasProperty("config", is(one))));
+        verify(ledStripService).turnOff(Mockito.argThat(Matchers.<LEDStripDTO>hasProperty("config", is(two))));
         verifyNoMoreInteractions(ledStripService);
     }
 

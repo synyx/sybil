@@ -18,7 +18,7 @@ import org.synyx.sybil.brick.BrickService;
 import org.synyx.sybil.brick.domain.BrickDTO;
 import org.synyx.sybil.bricklet.output.ledstrip.BrickletLEDStripWrapper;
 import org.synyx.sybil.bricklet.output.ledstrip.BrickletLEDStripWrapperFactory;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripConfig;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
@@ -37,7 +37,7 @@ public class BrickletLEDStripWrapperFactoryUnitTest {
     BrickDTOService brickDTOServiceMock;
 
     @Mock
-    LEDStripDomain ledStripDomainMock;
+    LEDStripConfig ledStripConfigMock;
 
     @Mock
     BrickDTO brickDTOMock;
@@ -52,7 +52,7 @@ public class BrickletLEDStripWrapperFactoryUnitTest {
     public void getBrickletLEDStrip() throws Exception {
 
         // setup
-        when(ledStripDomainMock.getBrick()).thenReturn("brick");
+        when(ledStripConfigMock.getBrick()).thenReturn("brick");
 
         when(brickDTOServiceMock.connect("brick")).thenReturn(ipConnectionMock);
 
@@ -61,7 +61,7 @@ public class BrickletLEDStripWrapperFactoryUnitTest {
         BrickletLEDStripWrapperFactory sut = new BrickletLEDStripWrapperFactory(brickDTOServiceMock);
 
         // execution
-        sut.getBrickletLEDStrip(ledStripDomainMock);
+        sut.getBrickletLEDStrip(ledStripConfigMock);
 
         // verification
         InOrder inOrder = inOrder(brickletLEDStripWrapperMock);

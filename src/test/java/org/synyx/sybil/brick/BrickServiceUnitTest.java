@@ -14,8 +14,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import org.synyx.sybil.brick.domain.BrickConfig;
 import org.synyx.sybil.brick.domain.BrickDTO;
-import org.synyx.sybil.brick.domain.BrickDomain;
 
 import static org.hamcrest.CoreMatchers.is;
 
@@ -43,8 +43,8 @@ public class BrickServiceUnitTest {
     @Before
     public void setup() throws Exception {
 
-        BrickDomain brickDomain = new BrickDomain("host", "abc");
-        brickDTO = new BrickDTO(brickDomain);
+        BrickConfig brickConfig = new BrickConfig("host", "abc");
+        brickDTO = new BrickDTO(brickConfig);
 
         whenNew(IPConnection.class).withNoArguments().thenReturn(ipConnectionMock);
         whenNew(BrickMaster.class).withAnyArguments().thenReturn(brickMasterMock);

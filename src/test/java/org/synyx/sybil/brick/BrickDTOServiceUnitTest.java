@@ -17,8 +17,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.springframework.core.env.Environment;
 
+import org.synyx.sybil.brick.domain.BrickConfig;
 import org.synyx.sybil.brick.domain.BrickDTO;
-import org.synyx.sybil.brick.domain.BrickDomain;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,23 +55,23 @@ public class BrickDTOServiceUnitTest {
     @Mock
     private BrickService brickServiceMock;
 
-    private List<BrickDomain> brickDomains = new ArrayList<>();
-    private BrickDomain one;
-    private BrickDomain two;
+    private List<BrickConfig> brickConfigs = new ArrayList<>();
+    private BrickConfig one;
+    private BrickConfig two;
 
     @Before
     public void setup() throws IOException {
 
-        one = new BrickDomain("host", "abc");
+        one = new BrickConfig("host", "abc");
 
-        two = new BrickDomain("host", "123", 4224, "anotherbrick");
+        two = new BrickConfig("host", "123", 4224, "anotherbrick");
 
-        brickDomains.add(one);
-        brickDomains.add(two);
+        brickConfigs.add(one);
+        brickConfigs.add(two);
 
         when(environmentMock.getProperty("path.to.configfiles")).thenReturn("path/to/config/files/");
         when(objectMapperMock.readValue(eq(new File("path/to/config/files/bricks.json")), any(TypeReference.class)))
-            .thenReturn(brickDomains);
+            .thenReturn(brickConfigs);
 
         sut = new BrickDTOService(objectMapperMock, environmentMock, brickServiceMock);
     }
@@ -84,8 +84,8 @@ public class BrickDTOServiceUnitTest {
         sut.resetAllBricks();
 
         // verification
-        verify(brickServiceMock).reset(Mockito.argThat(Matchers.<BrickDTO>hasProperty("domain", is(one))));
-        verify(brickServiceMock).reset(Mockito.argThat(Matchers.<BrickDTO>hasProperty("domain", is(two))));
+        verify(brickServiceMock).reset(Mockito.argThat(Matchers.<BrickDTO>hasProperty("config", is(one))));
+        verify(brickServiceMock).reset(Mockito.argThat(Matchers.<BrickDTO>hasProperty("config", is(two))));
     }
 
 
@@ -96,7 +96,7 @@ public class BrickDTOServiceUnitTest {
         sut.connect("host");
 
         // verification
-        verify(brickServiceMock).connect(Mockito.argThat(Matchers.<BrickDTO>hasProperty("domain", is(one))));
+        verify(brickServiceMock).connect(Mockito.argThat(Matchers.<BrickDTO>hasProperty("config", is(one))));
     }
 
 
@@ -107,7 +107,7 @@ public class BrickDTOServiceUnitTest {
         sut.connect("anotherbrick");
 
         // verification
-        verify(brickServiceMock).connect(Mockito.argThat(Matchers.<BrickDTO>hasProperty("domain", is(two))));
+        verify(brickServiceMock).connect(Mockito.argThat(Matchers.<BrickDTO>hasProperty("config", is(two))));
     }
 
 

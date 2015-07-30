@@ -8,8 +8,8 @@ import com.tinkerforge.TimeoutException;
 
 import org.springframework.stereotype.Service;
 
+import org.synyx.sybil.brick.domain.BrickConfig;
 import org.synyx.sybil.brick.domain.BrickDTO;
-import org.synyx.sybil.brick.domain.BrickDomain;
 
 import java.io.IOException;
 
@@ -25,11 +25,11 @@ public class BrickService {
 
     IPConnection connect(BrickDTO brickDTO) {
 
-        BrickDomain brickDomain = brickDTO.getDomain();
+        BrickConfig brickConfig = brickDTO.getConfig();
         IPConnection ipConnection = new IPConnection();
 
         try {
-            ipConnection.connect(brickDomain.getHostname(), brickDomain.getPort());
+            ipConnection.connect(brickConfig.getHostname(), brickConfig.getPort());
         } catch (IOException | AlreadyConnectedException exception) {
             throw new BrickConnectionException("Error connecting to brick:", exception);
         }
@@ -40,11 +40,11 @@ public class BrickService {
 
     void reset(BrickDTO brickDTO) {
 
-        BrickDomain brickDomain = brickDTO.getDomain();
+        BrickConfig brickConfig = brickDTO.getConfig();
 
         IPConnection ipConnection = connect(brickDTO);
 
-        BrickMaster brickMaster = new BrickMaster(brickDomain.getUid(), ipConnection);
+        BrickMaster brickMaster = new BrickMaster(brickConfig.getUid(), ipConnection);
 
         try {
             brickMaster.reset();

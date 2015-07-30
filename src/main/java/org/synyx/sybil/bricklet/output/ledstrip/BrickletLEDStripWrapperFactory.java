@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.brick.BrickDTOService;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDomain;
+import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripConfig;
 
 
 /**
@@ -33,11 +33,11 @@ public class BrickletLEDStripWrapperFactory {
         this.brickDTOService = brickDTOService;
     }
 
-    public BrickletLEDStripWrapper getBrickletLEDStrip(LEDStripDomain ledStripDomain) {
+    public BrickletLEDStripWrapper getBrickletLEDStrip(LEDStripConfig ledStripConfig) {
 
-        IPConnection ipConnection = brickDTOService.connect(ledStripDomain.getBrick());
+        IPConnection ipConnection = brickDTOService.connect(ledStripConfig.getBrick());
 
-        BrickletLEDStripWrapper brickletLEDStrip = new BrickletLEDStripWrapper(ledStripDomain.getUid(), ipConnection);
+        BrickletLEDStripWrapper brickletLEDStrip = new BrickletLEDStripWrapper(ledStripConfig.getUid(), ipConnection);
 
         try {
             brickletLEDStrip.setFrameDuration(FRAME_DURATION);

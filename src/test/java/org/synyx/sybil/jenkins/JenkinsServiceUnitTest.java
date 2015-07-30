@@ -23,10 +23,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
-import org.synyx.sybil.jenkins.domain.ConfiguredJob;
-import org.synyx.sybil.jenkins.domain.ConfiguredServer;
 import org.synyx.sybil.jenkins.domain.JenkinsJob;
 import org.synyx.sybil.jenkins.domain.JenkinsProperties;
+import org.synyx.sybil.jenkins.domain.JobConfig;
+import org.synyx.sybil.jenkins.domain.ServerConfig;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
@@ -72,24 +72,24 @@ public class JenkinsServiceUnitTest {
         when(environmentMock.getProperty("path.to.configfiles")).thenReturn("/path/");
         when(environmentMock.getProperty("jenkins.configfile")).thenReturn("jenkinsconfig.json");
 
-        List<ConfiguredServer> authorizations = Arrays.asList(new ConfiguredServer("http://jenkins", "user", "key"));
+        List<ServerConfig> authorizations = Arrays.asList(new ServerConfig("http://jenkins", "user", "key"));
 
         when(objectMapperMock.readValue(eq(new File("jenkinsconfig.json")), any(TypeReference.class))).thenReturn(
             authorizations);
 
-        ConfiguredJob job0 = new ConfiguredJob("jobundefined", "ledstripone");
-        ConfiguredJob job1 = new ConfiguredJob("jobokay", "ledstripone");
-        ConfiguredJob job2 = new ConfiguredJob("jobokay", "ledstriptwo");
-        ConfiguredJob job3 = new ConfiguredJob("jobokay", "ledstripthree");
+        JobConfig job0 = new JobConfig("jobundefined", "ledstripone");
+        JobConfig job1 = new JobConfig("jobokay", "ledstripone");
+        JobConfig job2 = new JobConfig("jobokay", "ledstriptwo");
+        JobConfig job3 = new JobConfig("jobokay", "ledstripthree");
 
-        ConfiguredJob job4 = new ConfiguredJob("jobwarning", "ledstriptwo");
-        ConfiguredJob job5 = new ConfiguredJob("jobwarning", "ledstripthree");
+        JobConfig job4 = new JobConfig("jobwarning", "ledstriptwo");
+        JobConfig job5 = new JobConfig("jobwarning", "ledstripthree");
 
-        ConfiguredJob job6 = new ConfiguredJob("jobcritical", "ledstripthree");
+        JobConfig job6 = new JobConfig("jobcritical", "ledstripthree");
 
-        List<ConfiguredJob> jobs = Arrays.asList(job0, job1, job2, job3, job6, job5, job4);
+        List<JobConfig> jobs = Arrays.asList(job0, job1, job2, job3, job6, job5, job4);
 
-        Map<String, List<ConfiguredJob>> configuredJobs = new HashMap<>();
+        Map<String, List<JobConfig>> configuredJobs = new HashMap<>();
         configuredJobs.put("http://jenkins", jobs);
 
         when(objectMapperMock.readValue(eq(new File("/path/jenkins.json")), any(TypeReference.class))).thenReturn(

@@ -5,19 +5,19 @@ package org.synyx.sybil.jenkins.domain;
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
-public class ConfiguredJob {
+public class JobConfig {
 
     private String name;
     private String ledstrip;
 
-    public ConfiguredJob(String name, String ledstrip) {
+    public JobConfig(String name, String ledstrip) {
 
         this.name = name;
         this.ledstrip = ledstrip;
     }
 
 
-    public ConfiguredJob() {
+    public JobConfig() {
 
         // Default constructor deliberately left empty
     }

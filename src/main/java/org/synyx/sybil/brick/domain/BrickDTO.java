@@ -7,15 +7,15 @@ package org.synyx.sybil.brick.domain;
  */
 public class BrickDTO {
 
-    private final BrickDomain domain;
+    private final BrickConfig config;
 
-    public BrickDTO(BrickDomain domain) {
+    public BrickDTO(BrickConfig config) {
 
-        this.domain = domain;
+        this.config = config;
     }
 
-    public BrickDomain getDomain() {
+    public BrickConfig getConfig() {
 
-        return domain;
+        return config;
     }
 }

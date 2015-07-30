@@ -17,16 +17,14 @@ import java.nio.charset.Charset;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@JsonAutoDetect(
-    fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE
-)
-public class ConfiguredServer {
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
+public class ServerConfig {
 
     private String url;
     private String user;
     private String key;
 
-    public ConfiguredServer(String url, String user, String key) {
+    public ServerConfig(String url, String user, String key) {
 
         this.url = url;
         this.user = user;
@@ -34,7 +32,7 @@ public class ConfiguredServer {
     }
 
 
-    public ConfiguredServer() {
+    public ServerConfig() {
 
         // Default constructor deliberately left empty
     }

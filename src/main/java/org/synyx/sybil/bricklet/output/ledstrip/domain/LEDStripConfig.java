@@ -20,7 +20,7 @@ import java.util.Map;
  */
 
 @Relation(collectionRelation = "ledstrips")
-public class LEDStripDomain implements DeviceDomain {
+public class LEDStripConfig implements DeviceDomain {
 
     private String name;
     private String uid;
@@ -43,7 +43,7 @@ public class LEDStripDomain implements DeviceDomain {
 
     private boolean hasCustomColors = false;
 
-    protected LEDStripDomain() {
+    protected LEDStripConfig() {
 
         // Default constructor deliberately left empty
     }
@@ -57,7 +57,7 @@ public class LEDStripDomain implements DeviceDomain {
      * @param  length  The length, i.e. the number of LEDs
      * @param  brick  The name of the connected Brick
      */
-    public LEDStripDomain(String name, String uid, int length, String brick) {
+    public LEDStripConfig(String name, String uid, int length, String brick) {
 
         this.name = name.toLowerCase();
         this.uid = uid;
@@ -66,7 +66,7 @@ public class LEDStripDomain implements DeviceDomain {
     }
 
 
-    public LEDStripDomain(String name, String uid, int length, String brick, String sensor) {
+    public LEDStripConfig(String name, String uid, int length, String brick, String sensor) {
 
         this.name = name;
         this.uid = uid;

@@ -27,10 +27,10 @@ import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConnectionException;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
 import org.synyx.sybil.bricklet.output.ledstrip.LEDStripNotFoundException;
-import org.synyx.sybil.jenkins.domain.ConfiguredJob;
-import org.synyx.sybil.jenkins.domain.ConfiguredServer;
 import org.synyx.sybil.jenkins.domain.JenkinsJob;
 import org.synyx.sybil.jenkins.domain.JenkinsProperties;
+import org.synyx.sybil.jenkins.domain.JobConfig;
+import org.synyx.sybil.jenkins.domain.ServerConfig;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
@@ -98,11 +98,11 @@ public class JenkinsService {
     public void runScheduled() {
 
         Map<String, HttpEntity<JenkinsProperties[]>> authorizations;
-        Map<String, List<ConfiguredJob>> configuredJobs;
+        Map<String, List<JobConfig>> jobConfigs;
 
         try {
             authorizations = loadAuthorizations();
-            configuredJobs = loadConfiguredJobs();
+            jobConfigs = loadJobConfigs();
         } catch (LoadFailedException exception) {
             handleError("Error loading Jenkins configuration:", exception);
 
@@ -116,7 +116,7 @@ public class JenkinsService {
         for (String server : servers) {
             try {
                 jobs = getJobsFromJenkins(server, authorizations.get(server));
-                ledStripStatuses = getLEDStripStatusesFromJobs(jobs, configuredJobs.get(server), ledStripStatuses);
+                ledStripStatuses = getLEDStripStatusesFromJobs(jobs, jobConfigs.get(server), ledStripStatuses);
             } catch (RestClientException exception) {
                 handleError("Error retrieving jobs from Jenkins:", exception);
             }
@@ -130,29 +130,29 @@ public class JenkinsService {
 
         Map<String, HttpEntity<JenkinsProperties[]>> authorizations = new HashMap<>();
 
-        List<ConfiguredServer> configuredServers;
+        List<ServerConfig> serverConfigs;
 
         try {
-            configuredServers = objectMapper.readValue(new File(jenkinsServerConfigFile),
-                    new TypeReference<List<ConfiguredServer>>() {
+            serverConfigs = objectMapper.readValue(new File(jenkinsServerConfigFile),
+                    new TypeReference<List<ServerConfig>>() {
                     });
         } catch (IOException exception) {
             throw new LoadFailedException("Error loading jenkins server config:", exception);
         }
 
-        for (ConfiguredServer configuredServer : configuredServers) {
-            authorizations.put(configuredServer.getUrl(), configuredServer.getHeader());
+        for (ServerConfig serverConfig : serverConfigs) {
+            authorizations.put(serverConfig.getUrl(), serverConfig.getHeader());
         }
 
         return authorizations;
     }
 
 
-    private Map<String, List<ConfiguredJob>> loadConfiguredJobs() {
+    private Map<String, List<JobConfig>> loadJobConfigs() {
 
         try {
             return objectMapper.readValue(new File(configDirectory + "jenkins.json"),
-                    new TypeReference<Map<String, List<ConfiguredJob>>>() {
+                    new TypeReference<Map<String, List<JobConfig>>>() {
                     });
         } catch (IOException exception) {
             throw new LoadFailedException("Error loading jenkins config:", exception);
@@ -170,15 +170,15 @@ public class JenkinsService {
 
 
     private Map<String, StatusInformation> getLEDStripStatusesFromJobs(List<JenkinsJob> jobs,
-        List<ConfiguredJob> configuredJobs, Map<String, StatusInformation> ledStripStatuses) {
+        List<JobConfig> jobConfigs, Map<String, StatusInformation> ledStripStatuses) {
 
-        if (configuredJobs == null) {
+        if (jobConfigs == null) {
             return ledStripStatuses;
         }
 
         for (JenkinsJob job : jobs) {
             StatusInformation jobStatus = getStatusFromJob(job);
-            List<String> ledStrips = getLedStripFromConfiguredJob(job, configuredJobs);
+            List<String> ledStrips = getLedStripFromConfiguredJob(job, jobConfigs);
 
             if (ledStrips.isEmpty()) {
                 continue;
@@ -217,13 +217,13 @@ public class JenkinsService {
     }
 
 
-    private List<String> getLedStripFromConfiguredJob(JenkinsJob job, List<ConfiguredJob> configuredJobs) {
+    private List<String> getLedStripFromConfiguredJob(JenkinsJob job, List<JobConfig> jobConfigs) {
 
         List<String> result = new ArrayList<>();
 
-        for (ConfiguredJob configuredJob : configuredJobs) {
-            if (configuredJob.getName().equals(job.getName())) {
-                result.add(configuredJob.getLedstrip());
+        for (JobConfig jobConfig : jobConfigs) {
+            if (jobConfig.getName().equals(job.getName())) {
+                result.add(jobConfig.getLedstrip());
             }
         }
 
