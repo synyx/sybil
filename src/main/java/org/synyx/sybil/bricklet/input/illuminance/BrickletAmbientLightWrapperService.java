@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.brick.BrickDTOService;
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
+import org.synyx.sybil.bricklet.input.illuminance.domain.Illuminance;
 
 
 /**
@@ -27,10 +27,10 @@ public class BrickletAmbientLightWrapperService {
         this.brickDTOService = brickDTOService;
     }
 
-    public BrickletAmbientLightWrapper getBrickletAmbientLight(IlluminanceConfig illuminanceConfig) {
+    public BrickletAmbientLightWrapper getBrickletAmbientLight(Illuminance illuminance) {
 
-        IPConnection ipConnection = brickDTOService.connect(illuminanceConfig.getBrick());
+        IPConnection ipConnection = brickDTOService.connect(illuminance.getBrick());
 
-        return new BrickletAmbientLightWrapper(illuminanceConfig.getUid(), ipConnection);
+        return new BrickletAmbientLightWrapper(illuminance.getUid(), ipConnection);
     }
 }

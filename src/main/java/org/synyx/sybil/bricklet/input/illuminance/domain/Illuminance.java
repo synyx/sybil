@@ -1,18 +1,12 @@
 package org.synyx.sybil.bricklet.input.illuminance.domain;
 
-import org.springframework.hateoas.core.Relation;
-
-import org.synyx.sybil.DeviceDomain;
-
-
 /**
  * IlluminanceDomain.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Relation(collectionRelation = "illuminances")
-public class IlluminanceConfig implements DeviceDomain {
+public class Illuminance {
 
     private String name;
     private String uid;
@@ -20,7 +14,7 @@ public class IlluminanceConfig implements DeviceDomain {
     private double multiplier;
     private String brick;
 
-    public IlluminanceConfig(String name, String uid, int threshold, double multiplier, String brick) {
+    public Illuminance(String name, String uid, int threshold, double multiplier, String brick) {
 
         this.name = name;
         this.uid = uid;
@@ -30,12 +24,11 @@ public class IlluminanceConfig implements DeviceDomain {
     }
 
 
-    public IlluminanceConfig() {
+    public Illuminance() {
 
         // default constructor deliberately left empty
     }
 
-    @Override
     public String getName() {
 
         return name;
@@ -48,7 +41,6 @@ public class IlluminanceConfig implements DeviceDomain {
     }
 
 
-    @Override
     public String getUid() {
 
         return uid;

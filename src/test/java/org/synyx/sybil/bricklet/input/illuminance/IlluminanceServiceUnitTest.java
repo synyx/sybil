@@ -1,25 +1,24 @@
 package org.synyx.sybil.bricklet.input.illuminance;
 
+import com.tinkerforge.NotConnectedException;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import org.junit.runner.RunWith;
 
-import org.mockito.InOrder;
 import org.mockito.Mock;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
+import org.synyx.sybil.bricklet.input.illuminance.domain.Illuminance;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.lang.reflect.Constructor;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.Is.is;
 
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertThat;
 
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
 
@@ -30,6 +29,9 @@ public class IlluminanceServiceUnitTest {
     BrickletAmbientLightWrapperService brickletAmbientLightWrapperService;
 
     @Mock
+    IlluminanceRepository illuminanceRepository;
+
+    @Mock
     BrickletAmbientLightWrapper brickletAmbientLightWrapperMock;
 
     IlluminanceService sut;
@@ -37,28 +39,85 @@ public class IlluminanceServiceUnitTest {
     @Before
     public void setup() throws Exception {
 
-        when(brickletAmbientLightWrapperService.getBrickletAmbientLight(any(IlluminanceConfig.class))).thenReturn(
+        // multiplier of 1.0 means every 1 Lux less than threshold increases brightness by a factor of 1
+        Illuminance illuminance = new Illuminance("ambientlight", "abc", 16, 1.0, "somebrick");
+
+        when(brickletAmbientLightWrapperService.getBrickletAmbientLight(illuminance)).thenReturn(
             brickletAmbientLightWrapperMock);
 
         when(brickletAmbientLightWrapperMock.getIlluminance()).thenReturn(100);
 
-        sut = new IlluminanceService(brickletAmbientLightWrapperService);
+        when(illuminanceRepository.get("ambientlight")).thenReturn(illuminance);
+
+        sut = new IlluminanceService(brickletAmbientLightWrapperService, illuminanceRepository);
     }
 
 
     @Test
-    public void getIlluminance() throws Exception {
+    public void getBrightnessTripled() throws Exception {
 
-        IlluminanceConfig illuminanceConfig = new IlluminanceConfig();
-        IlluminanceDTO illuminanceDTO = new IlluminanceDTO(illuminanceConfig);
+        // setup
+        // 140 decilux is 20 less than the configured threshold of 16 lux, so brigthness should triple.
+        when(brickletAmbientLightWrapperMock.getIlluminance()).thenReturn(140);
 
-        int illuminance = sut.getIlluminance(illuminanceDTO);
+        // execution
+        double brightness = sut.getBrightness("ambientlight");
 
-        InOrder inOrder = inOrder(brickletAmbientLightWrapperMock);
+        // verification
+        assertThat(brightness, is(3.0));
+    }
 
-        inOrder.verify(brickletAmbientLightWrapperMock).getIlluminance();
-        inOrder.verify(brickletAmbientLightWrapperMock).disconnect();
 
-        assertThat(illuminance, is(100));
+    @Test
+    public void getBrightnessMax() throws Exception {
+
+        // setup
+        // 0 decilux is complete darkness, so it should return a brightness of 1.0 + (threshold * multiplier)
+        when(brickletAmbientLightWrapperMock.getIlluminance()).thenReturn(0);
+
+        // execution
+        double brightness = sut.getBrightness("ambientlight");
+
+        // verification
+        assertThat(brightness, is(17.0));
+    }
+
+
+    @Test
+    public void getBrightnessMin() throws Exception {
+
+        // setup
+        // 200 decilux is more than the configured threshold so it should return 1.0
+        when(brickletAmbientLightWrapperMock.getIlluminance()).thenReturn(200);
+
+        // execution
+        double brightness = sut.getBrightness("ambientlight");
+
+        // verification
+        assertThat(brightness, is(1.0));
+    }
+
+
+    @Test(expected = IlluminanceNotFoundException.class)
+    public void getBrightnessNonExistentSensor() {
+
+        sut.getBrightness("does_not_exist");
+    }
+
+
+    @Test(expected = IlluminanceConnectionException.class)
+    public void getBrightnessWithNotConnectedException() throws Exception {
+
+        // setup
+        // set up exception through reflection
+        Constructor<NotConnectedException> constructor;
+        constructor = NotConnectedException.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        NotConnectedException exception = constructor.newInstance();
+
+        when(brickletAmbientLightWrapperMock.getIlluminance()).thenThrow(exception);
+
+        sut.getBrightness("ambientlight");
     }
 }

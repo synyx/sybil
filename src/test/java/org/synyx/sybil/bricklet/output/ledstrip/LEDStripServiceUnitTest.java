@@ -16,10 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceConnectionException;
-import org.synyx.sybil.bricklet.input.illuminance.IlluminanceDTOService;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
-import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
@@ -60,9 +57,6 @@ public class LEDStripServiceUnitTest {
     LEDStripRepository ledStripRepository;
 
     @Mock
-    IlluminanceDTOService illuminanceDTOServiceMock;
-
-    @Mock
     IlluminanceService illuminanceServiceMock;
 
     @Mock
@@ -82,8 +76,7 @@ public class LEDStripServiceUnitTest {
         when(brickletLEDStripWrapperServiceMock.getBrickletLEDStrip(any(LEDStrip.class))).thenReturn(
             brickletLEDStripMock);
 
-        sut = new LEDStripService(brickletLEDStripWrapperServiceMock, illuminanceDTOServiceMock, illuminanceServiceMock,
-                ledStripRepository);
+        sut = new LEDStripService(brickletLEDStripWrapperServiceMock, illuminanceServiceMock, ledStripRepository);
     }
 
 
@@ -91,17 +84,11 @@ public class LEDStripServiceUnitTest {
     public void getBrightnessTripled() throws Exception {
 
         // setup
-        // multiplier of 1.0 means every 1 Lux less than threshold increases brightness by a factor of 1
-        IlluminanceConfig illuminanceConfig = new IlluminanceConfig("ambientlight", "abc", 16, 1.0, "somebrick");
-        IlluminanceDTO illuminanceDTO = new IlluminanceDTO(illuminanceConfig);
-
-        when(illuminanceDTOServiceMock.getDTO("ambientlight")).thenReturn(illuminanceDTO);
-
-        // 140 decilux is 20 less than the configured threshold of 16 lux, so brigthness should triple.
-        when(illuminanceServiceMock.getIlluminance(illuminanceDTO)).thenReturn(140);
 
         LEDStrip ledStrip = new LEDStrip("one", "xyz", 16, "abrick", "ambientlight");
         when(ledStripRepository.get("one")).thenReturn(ledStrip);
+
+        when(illuminanceServiceMock.getBrightness("ambientlight")).thenReturn(3.0);
 
         // execution
         sut.handleStatus("one", new StatusInformation("test", Status.OKAY));
@@ -121,14 +108,7 @@ public class LEDStripServiceUnitTest {
     public void getBrightnessMax() throws Exception {
 
         // setup
-        // multiplier of 1.0 means every 1 Lux less than threshold increases brightness by a factor of 1
-        IlluminanceConfig illuminanceConfig = new IlluminanceConfig("ambientlight", "abc", 16, 1.0, "somebrick");
-        IlluminanceDTO illuminanceDTO = new IlluminanceDTO(illuminanceConfig);
-
-        when(illuminanceDTOServiceMock.getDTO("ambientlight")).thenReturn(illuminanceDTO);
-
-        // 0 decilux is absolute darkness and should result in maximal brightness.
-        when(illuminanceServiceMock.getIlluminance(illuminanceDTO)).thenReturn(0);
+        when(illuminanceServiceMock.getBrightness("ambientlight")).thenReturn(9000.0);
 
         LEDStrip ledStrip = new LEDStrip("one", "xyz", 16, "abrick", "ambientlight");
         when(ledStripRepository.get("one")).thenReturn(ledStrip);
@@ -150,15 +130,7 @@ public class LEDStripServiceUnitTest {
     @Test
     public void getBrightnessMin() throws Exception {
 
-        // setup
-        // multiplier of 1.0 means every 1 Lux less than threshold increases brightness by a factor of 1
-        IlluminanceConfig illuminanceConfig = new IlluminanceConfig("ambientlight", "abc", 16, 1.0, "somebrick");
-        IlluminanceDTO illuminanceDTO = new IlluminanceDTO(illuminanceConfig);
-
-        when(illuminanceDTOServiceMock.getDTO("ambientlight")).thenReturn(illuminanceDTO);
-
-        // 5000 lux is over the threshold, so the brightness should not change from default.
-        when(illuminanceServiceMock.getIlluminance(illuminanceDTO)).thenReturn(5000);
+        when(illuminanceServiceMock.getBrightness("ambientlight")).thenReturn(1.0);
 
         LEDStrip ledStrip = new LEDStrip("one", "xyz", 16, "abrick", "ambientlight");
         when(ledStripRepository.get("one")).thenReturn(ledStrip);
@@ -649,7 +621,7 @@ public class LEDStripServiceUnitTest {
     public void getIlluminanceWithException() {
 
         // setup
-        doThrow(new IlluminanceConnectionException("")).when(illuminanceServiceMock).getIlluminance(any());
+        doThrow(new IlluminanceConnectionException("")).when(illuminanceServiceMock).getBrightness(any());
 
         List<Color> colors = Arrays.asList(new Color[20]);
         Collections.fill(colors, Color.WHITE);
@@ -659,7 +631,6 @@ public class LEDStripServiceUnitTest {
         Sprite1D sprite = new Sprite1D(colors);
 
         when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick", "somesensor"));
-        when(illuminanceDTOServiceMock.getDTO("somesensor")).thenReturn(new IlluminanceDTO(new IlluminanceConfig()));
 
         // execution
         sut.handleSprite("one", sprite);
