@@ -1,6 +1,8 @@
 package org.synyx.sybil.bricklet.output.ledstrip;
 
 import com.tinkerforge.BrickletLEDStrip;
+import com.tinkerforge.NotConnectedException;
+import com.tinkerforge.TimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +15,7 @@ import org.mockito.Mockito;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
+import org.synyx.sybil.bricklet.input.illuminance.IlluminanceConnectionException;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceDTOService;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
 import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceConfig;
@@ -20,6 +23,8 @@ import org.synyx.sybil.bricklet.input.illuminance.domain.IlluminanceDTO;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
+
+import java.lang.reflect.Constructor;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +35,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyShort;
+import static org.mockito.Matchers.eq;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -531,5 +540,128 @@ public class LEDStripServiceUnitTest {
     public void handleSpriteWithNonexistentLEDStrip() {
 
         sut.handleSprite("noledstrip", new Sprite1D(1));
+    }
+
+
+    @Test(expected = LEDStripConnectionException.class)
+    public void getPixelsWithTimeoutException() throws Exception {
+
+        // setup
+        // set up exception through reflection
+        Constructor<TimeoutException> constructor;
+        constructor = TimeoutException.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        TimeoutException exception = constructor.newInstance();
+
+        when(brickletLEDStripMock.getRGBValues(anyInt(), anyShort())).thenThrow(exception);
+
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
+
+        // execution
+        sut.getPixels("one");
+    }
+
+
+    @Test(expected = LEDStripConnectionException.class)
+    public void getPixelsWithNotConnectedException() throws Exception {
+
+        // setup
+        // set up exception through reflection
+        Constructor<NotConnectedException> constructor;
+        constructor = NotConnectedException.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        NotConnectedException exception = constructor.newInstance();
+
+        when(brickletLEDStripMock.getRGBValues(anyInt(), anyShort())).thenThrow(exception);
+
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
+
+        // execution
+        sut.getPixels("one");
+    }
+
+
+    @Test(expected = LEDStripConnectionException.class)
+    public void handleSpriteWithTimeoutException() throws Exception {
+
+        // setup
+        // set up exception through reflection
+        Constructor<TimeoutException> constructor;
+        constructor = TimeoutException.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        TimeoutException exception = constructor.newInstance();
+
+        short[] white = new short[16];
+        Arrays.fill(white, (short) 255);
+
+        doThrow(exception).when(brickletLEDStripMock)
+            .setRGBValues(anyInt(), eq((short) 16), eq(white), eq(white), eq(white));
+
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
+
+        List<Color> colors = Arrays.asList(new Color[20]);
+        Collections.fill(colors, Color.WHITE);
+
+        assertThat(colors.size(), is(20));
+
+        Sprite1D sprite = new Sprite1D(colors);
+
+        // execution
+        sut.handleSprite("one", sprite);
+    }
+
+
+    @Test(expected = LEDStripConnectionException.class)
+    public void handleSpriteWithNotConnectedException() throws Exception {
+
+        // setup
+        // set up exception through reflection
+        Constructor<NotConnectedException> constructor;
+        constructor = NotConnectedException.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        NotConnectedException exception = constructor.newInstance();
+
+        short[] white = new short[16];
+        Arrays.fill(white, (short) 255);
+
+        doThrow(exception).when(brickletLEDStripMock)
+            .setRGBValues(anyInt(), eq((short) 16), eq(white), eq(white), eq(white));
+
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick"));
+
+        List<Color> colors = Arrays.asList(new Color[20]);
+        Collections.fill(colors, Color.WHITE);
+
+        assertThat(colors.size(), is(20));
+
+        Sprite1D sprite = new Sprite1D(colors);
+
+        // execution
+        sut.handleSprite("one", sprite);
+    }
+
+
+    @Test(expected = LEDStripConnectionException.class)
+    public void getIlluminanceWithException() {
+
+        // setup
+        doThrow(new IlluminanceConnectionException("")).when(illuminanceServiceMock).getIlluminance(any());
+
+        List<Color> colors = Arrays.asList(new Color[20]);
+        Collections.fill(colors, Color.WHITE);
+
+        assertThat(colors.size(), is(20));
+
+        Sprite1D sprite = new Sprite1D(colors);
+
+        when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick", "somesensor"));
+        when(illuminanceDTOServiceMock.getDTO("somesensor")).thenReturn(new IlluminanceDTO(new IlluminanceConfig()));
+
+        // execution
+        sut.handleSprite("one", sprite);
     }
 }
