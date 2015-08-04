@@ -518,4 +518,18 @@ public class LEDStripServiceUnitTest {
         // The LED chips expect data in BRG, not RGB
         verify(brickletLEDStripMock).setRGBValues(0, (short) 16, blue, red, green);
     }
+
+
+    @Test(expected = LEDStripNotFoundException.class)
+    public void handleStatusWithNonexistentLEDStrip() {
+
+        sut.handleStatus("noledstrip", new StatusInformation("Test", Status.OKAY));
+    }
+
+
+    @Test(expected = LEDStripNotFoundException.class)
+    public void handleSpriteWithNonexistentLEDStrip() {
+
+        sut.handleSprite("noledstrip", new Sprite1D(1));
+    }
 }
