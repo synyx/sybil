@@ -6,12 +6,19 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.brick.domain.BrickConfig;
-import org.synyx.sybil.brick.domain.BrickDTO;
+import org.synyx.sybil.LoadFailedException;
+import org.synyx.sybil.brick.domain.Brick;
 
 import java.io.IOException;
+
+import javax.annotation.PostConstruct;
 
 
 /**
@@ -23,13 +30,37 @@ import java.io.IOException;
 @Service
 public class BrickService {
 
-    IPConnection connect(BrickDTO brickDTO) {
+    private static final Logger LOG = LoggerFactory.getLogger(BrickService.class);
 
-        BrickConfig brickConfig = brickDTO.getConfig();
+    private final BrickRepository brickRepository;
+
+    @Autowired
+    public BrickService(BrickRepository brickRepository) {
+
+        this.brickRepository = brickRepository;
+    }
+
+    @PostConstruct
+    public void resetAllBricks() {
+
+        try {
+            for (Brick brick : brickRepository.getAll()) {
+                reset(brick);
+            }
+        } catch (BrickConnectionException | LoadFailedException exception) {
+            LOG.error("Failed to reset bricks:", exception);
+        }
+    }
+
+
+    public IPConnection connect(String name) {
+
+        Brick brick = brickRepository.get(name);
+
         IPConnection ipConnection = new IPConnection();
 
         try {
-            ipConnection.connect(brickConfig.getHostname(), brickConfig.getPort());
+            ipConnection.connect(brick.getHostname(), brick.getPort());
         } catch (IOException | AlreadyConnectedException exception) {
             throw new BrickConnectionException("Error connecting to brick:", exception);
         }
@@ -38,13 +69,11 @@ public class BrickService {
     }
 
 
-    void reset(BrickDTO brickDTO) {
+    private void reset(Brick brick) {
 
-        BrickConfig brickConfig = brickDTO.getConfig();
+        IPConnection ipConnection = connect(brick.getName());
 
-        IPConnection ipConnection = connect(brickDTO);
-
-        BrickMaster brickMaster = new BrickMaster(brickConfig.getUid(), ipConnection);
+        BrickMaster brickMaster = new BrickMaster(brick.getUid(), ipConnection);
 
         try {
             brickMaster.reset();

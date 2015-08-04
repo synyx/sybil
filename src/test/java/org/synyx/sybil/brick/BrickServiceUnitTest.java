@@ -14,14 +14,18 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import org.synyx.sybil.brick.domain.BrickConfig;
-import org.synyx.sybil.brick.domain.BrickDTO;
+import org.synyx.sybil.brick.domain.Brick;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
@@ -30,9 +34,9 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 @PrepareForTest(BrickService.class)
 public class BrickServiceUnitTest {
 
-    private BrickDTO brickDTO;
+    private Brick brick;
 
-    BrickService sut;
+    private BrickService sut;
 
     @Mock
     private IPConnection ipConnectionMock;
@@ -40,16 +44,26 @@ public class BrickServiceUnitTest {
     @Mock
     private BrickMaster brickMasterMock;
 
+    @Mock
+    BrickRepository brickRepository;
+
     @Before
     public void setup() throws Exception {
 
-        BrickConfig brickConfig = new BrickConfig("host", "abc");
-        brickDTO = new BrickDTO(brickConfig);
+        brick = new Brick("host", "abc");
+
+        Brick brickTwo = new Brick("host", "cde", 4224, "anotherbrick");
+
+        List<Brick> bricks = Arrays.asList(brickTwo, brick);
+
+        when(brickRepository.get("host")).thenReturn(brick);
+        when(brickRepository.get("anotherbrick")).thenReturn(brickTwo);
+        when(brickRepository.getAll()).thenReturn(bricks);
 
         whenNew(IPConnection.class).withNoArguments().thenReturn(ipConnectionMock);
         whenNew(BrickMaster.class).withAnyArguments().thenReturn(brickMasterMock);
 
-        sut = new BrickService();
+        sut = new BrickService(brickRepository);
     }
 
 
@@ -57,7 +71,7 @@ public class BrickServiceUnitTest {
     public void connect() throws Exception {
 
         // execution
-        IPConnection ipConnection = sut.connect(brickDTO);
+        IPConnection ipConnection = sut.connect("host");
 
         // verification
         verify(ipConnectionMock).connect("host", 4223);
@@ -69,10 +83,10 @@ public class BrickServiceUnitTest {
     public void reset() throws Exception {
 
         // execution
-        sut.reset(brickDTO);
+        sut.resetAllBricks();
 
         // verification
-        verify(brickMasterMock).reset();
-        verify(ipConnectionMock).disconnect();
+        verify(brickMasterMock, times(2)).reset();
+        verify(ipConnectionMock, times(2)).disconnect();
     }
 }

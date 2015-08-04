@@ -13,9 +13,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import org.synyx.sybil.brick.BrickDTOService;
 import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.brick.domain.BrickDTO;
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
 
 import static org.mockito.Mockito.inOrder;
@@ -32,13 +30,7 @@ public class BrickletLEDStripWrapperServiceUnitTest {
     BrickService brickServiceMock;
 
     @Mock
-    BrickDTOService brickDTOServiceMock;
-
-    @Mock
     LEDStrip ledStripMock;
-
-    @Mock
-    BrickDTO brickDTOMock;
 
     @Mock
     IPConnection ipConnectionMock;
@@ -52,11 +44,11 @@ public class BrickletLEDStripWrapperServiceUnitTest {
         // setup
         when(ledStripMock.getBrick()).thenReturn("brick");
 
-        when(brickDTOServiceMock.connect("brick")).thenReturn(ipConnectionMock);
+        when(brickServiceMock.connect("brick")).thenReturn(ipConnectionMock);
 
         whenNew(BrickletLEDStripWrapper.class).withAnyArguments().thenReturn(brickletLEDStripWrapperMock);
 
-        BrickletLEDStripWrapperService sut = new BrickletLEDStripWrapperService(brickDTOServiceMock);
+        BrickletLEDStripWrapperService sut = new BrickletLEDStripWrapperService(brickServiceMock);
 
         // execution
         sut.getBrickletLEDStrip(ledStripMock);

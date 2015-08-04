@@ -12,9 +12,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import org.synyx.sybil.brick.BrickDTOService;
 import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.brick.domain.BrickDTO;
 import org.synyx.sybil.bricklet.input.illuminance.domain.Illuminance;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -34,13 +32,7 @@ public class BrickletAmbientLightWrapperServiceUnitTest {
     BrickService brickServiceMock;
 
     @Mock
-    BrickDTOService brickDTOServiceMock;
-
-    @Mock
     Illuminance illuminanceMock;
-
-    @Mock
-    BrickDTO brickDTOMock;
 
     @Mock
     IPConnection ipConnectionMock;
@@ -56,11 +48,11 @@ public class BrickletAmbientLightWrapperServiceUnitTest {
         // setup
         when(illuminanceMock.getBrick()).thenReturn("brick");
 
-        when(brickDTOServiceMock.connect("brick")).thenReturn(ipConnectionMock);
+        when(brickServiceMock.connect("brick")).thenReturn(ipConnectionMock);
 
         whenNew(BrickletAmbientLightWrapper.class).withAnyArguments().thenReturn(brickletAmbientLightWrapperMock);
 
-        sut = new BrickletAmbientLightWrapperService(brickDTOServiceMock);
+        sut = new BrickletAmbientLightWrapperService(brickServiceMock);
 
         // execution
         BrickletAmbientLightWrapper brickletAmbientLightWrapper = sut.getBrickletAmbientLight(illuminanceMock);
