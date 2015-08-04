@@ -73,16 +73,6 @@ public class LEDStripService {
     }
 
 
-    private BrickletLEDStrip.RGBValues getPixelValues(BrickletLEDStripWrapper brickletLEDStrip, int pos) {
-
-        try {
-            return brickletLEDStrip.getRGBValues(pos, (short) SIXTEEN); // NOSONAR Tinkerforge library uses shorts
-        } catch (TimeoutException | NotConnectedException exception) {
-            throw new LEDStripConnectionException("Error getting pixel values:", exception);
-        }
-    }
-
-
     public void turnOffAllLEDStrips() {
 
         List<LEDStrip> ledStrips = ledStripRepository.getAll();
@@ -90,15 +80,6 @@ public class LEDStripService {
         for (LEDStrip ledStrip : ledStrips) {
             turnOff(ledStrip);
         }
-    }
-
-
-    private void turnOff(LEDStrip ledStrip) {
-
-        Sprite1D sprite1D = new Sprite1D(ledStrip.getLength(), "OFF");
-        sprite1D.setFill(Color.BLACK);
-
-        drawSprite(ledStrip, sprite1D);
     }
 
 
@@ -117,18 +98,6 @@ public class LEDStripService {
     }
 
 
-    private Color getColorFromStatus(LEDStrip ledStrip, StatusInformation statusInformation) {
-
-        if (ledStrip.hasCustomColors()) {
-            Map<Status, Color> customColors = ledStrip.getCustomColors();
-
-            return customColors.get(statusInformation.getStatus());
-        } else {
-            return Color.colorFromStatus(statusInformation.getStatus());
-        }
-    }
-
-
     public void handleSprite(String name, Sprite1D sprite) {
 
         LEDStrip ledStrip = ledStripRepository.get(name);
@@ -138,6 +107,37 @@ public class LEDStripService {
         }
 
         drawSprite(ledStrip, sprite);
+    }
+
+
+    private BrickletLEDStrip.RGBValues getPixelValues(BrickletLEDStripWrapper brickletLEDStrip, int pos) {
+
+        try {
+            return brickletLEDStrip.getRGBValues(pos, (short) SIXTEEN); // NOSONAR Tinkerforge library uses shorts
+        } catch (TimeoutException | NotConnectedException exception) {
+            throw new LEDStripConnectionException("Error getting pixel values:", exception);
+        }
+    }
+
+
+    private void turnOff(LEDStrip ledStrip) {
+
+        Sprite1D sprite1D = new Sprite1D(ledStrip.getLength(), "OFF");
+        sprite1D.setFill(Color.BLACK);
+
+        drawSprite(ledStrip, sprite1D);
+    }
+
+
+    private Color getColorFromStatus(LEDStrip ledStrip, StatusInformation statusInformation) {
+
+        if (ledStrip.hasCustomColors()) {
+            Map<Status, Color> customColors = ledStrip.getCustomColors();
+
+            return customColors.get(statusInformation.getStatus());
+        } else {
+            return Color.colorFromStatus(statusInformation.getStatus());
+        }
     }
 
 

@@ -2,7 +2,7 @@ package org.synyx.sybil.bricklet.output.ledstrip;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * @author  Tobias Theuer - theuer@synyx.de
  */
 
-@Component
+@Service
 public class LEDStripDTOService {
 
     private final LEDStripService ledStripService;
