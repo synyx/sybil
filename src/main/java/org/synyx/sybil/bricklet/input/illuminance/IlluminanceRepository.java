@@ -20,7 +20,7 @@ import java.util.List;
 
 
 /**
- * IlluminanceDTOService.
+ * IlluminanceRepository.
  *
  * @author  Tobias Theuer - theuer@synyx.de
  */
@@ -46,7 +46,7 @@ public class IlluminanceRepository {
 
     public Illuminance get(String name) {
 
-        for (Illuminance illuminance : getIlluminanceDomains()) {
+        for (Illuminance illuminance : getIlluminances()) {
             if (illuminance.getName().equals(name)) {
                 return illuminance;
             }
@@ -60,7 +60,7 @@ public class IlluminanceRepository {
 
         List<Illuminance> illuminances = new ArrayList<>();
 
-        for (Illuminance illuminance : getIlluminanceDomains()) {
+        for (Illuminance illuminance : getIlluminances()) {
             illuminances.add(illuminance);
         }
 
@@ -68,7 +68,7 @@ public class IlluminanceRepository {
     }
 
 
-    private List<Illuminance> getIlluminanceDomains() {
+    private List<Illuminance> getIlluminances() {
 
         try {
             return objectMapper.readValue(new File(configDir + "illuminances.json"),
