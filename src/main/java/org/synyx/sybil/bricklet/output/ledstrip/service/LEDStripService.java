@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip;
+package org.synyx.sybil.bricklet.output.ledstrip.service;
 
 import com.tinkerforge.BrickletLEDStrip;
 import com.tinkerforge.NotConnectedException;
@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceConnectionException;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceNotFoundException;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
+import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStripRepository;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
@@ -93,7 +95,7 @@ public class LEDStripService {
     }
 
 
-    public void handleSprite(String name, Sprite1D sprite) {
+    public void setColors(String name, List<Color> pixels) {
 
         LEDStrip ledStrip = ledStripRepository.get(name);
 
@@ -101,7 +103,7 @@ public class LEDStripService {
             throw new LEDStripNotFoundException("LED strip " + name + " not found");
         }
 
-        drawSprite(ledStrip, sprite);
+        drawSprite(ledStrip, new Sprite1D(pixels));
     }
 
 

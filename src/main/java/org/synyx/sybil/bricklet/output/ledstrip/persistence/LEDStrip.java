@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip.domain;
+package org.synyx.sybil.bricklet.output.ledstrip.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

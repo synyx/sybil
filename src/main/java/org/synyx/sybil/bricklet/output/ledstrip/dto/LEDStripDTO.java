@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip.domain;
+package org.synyx.sybil.bricklet.output.ledstrip.dto;
 
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 

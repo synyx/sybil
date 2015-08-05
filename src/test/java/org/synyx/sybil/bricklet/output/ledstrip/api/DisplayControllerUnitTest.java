@@ -20,9 +20,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripNotFoundException;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
+import org.synyx.sybil.bricklet.output.ledstrip.dto.LEDStripDTO;
+import org.synyx.sybil.bricklet.output.ledstrip.dto.LEDStripDTOService;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,6 +2,8 @@ package org.synyx.sybil.bricklet.output.ledstrip;
 
 import org.junit.Test;
 
+import org.synyx.sybil.bricklet.output.ledstrip.service.Sprite1D;
+
 import java.util.ArrayList;
 import java.util.List;
 

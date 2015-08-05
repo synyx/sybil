@@ -24,9 +24,9 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import org.synyx.sybil.LoadFailedException;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConnectionException;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripNotFoundException;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripService;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripConnectionException;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripNotFoundException;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripService;
 import org.synyx.sybil.jenkins.domain.JenkinsJob;
 import org.synyx.sybil.jenkins.domain.JenkinsProperties;
 import org.synyx.sybil.jenkins.domain.JobConfig;

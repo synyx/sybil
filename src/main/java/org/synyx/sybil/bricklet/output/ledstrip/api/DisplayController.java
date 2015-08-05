@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.synyx.sybil.LoadFailedException;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripConnectionException;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripDTOService;
-import org.synyx.sybil.bricklet.output.ledstrip.LEDStripNotFoundException;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
+import org.synyx.sybil.bricklet.output.ledstrip.dto.LEDStripDTO;
+import org.synyx.sybil.bricklet.output.ledstrip.dto.LEDStripDTOService;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripConnectionException;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripNotFoundException;
 
 import javax.validation.Valid;
 

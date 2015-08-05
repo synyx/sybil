@@ -1,8 +1,10 @@
-package org.synyx.sybil.bricklet.output.ledstrip;
+package org.synyx.sybil.bricklet.output.ledstrip.service;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import org.springframework.hateoas.core.Relation;
+
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
 
 import java.util.Arrays;
 import java.util.List;

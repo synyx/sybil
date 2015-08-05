@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip;
+package org.synyx.sybil.bricklet.output.ledstrip.service;
 
 /**
  * LEDStripConnectionException.

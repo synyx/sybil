@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip;
+package org.synyx.sybil.bricklet.output.ledstrip.persistence;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +10,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
 import org.synyx.sybil.LoadFailedException;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
 
 import java.io.File;
 import java.io.IOException;

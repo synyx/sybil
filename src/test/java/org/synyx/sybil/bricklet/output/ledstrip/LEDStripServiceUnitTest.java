@@ -17,7 +17,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceConnectionException;
 import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStripRepository;
+import org.synyx.sybil.bricklet.output.ledstrip.service.BrickletLEDStripWrapper;
+import org.synyx.sybil.bricklet.output.ledstrip.service.BrickletLEDStripWrapperService;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripConnectionException;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripNotFoundException;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripService;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 
@@ -205,10 +211,8 @@ public class LEDStripServiceUnitTest {
 
         assertThat(colors.size(), is(20));
 
-        Sprite1D sprite = new Sprite1D(colors);
-
         // execution
-        sut.handleSprite("one", sprite);
+        sut.setColors("one", colors);
 
         // verification
         short[] allWhite = new short[16];
@@ -238,10 +242,8 @@ public class LEDStripServiceUnitTest {
 
         assertThat(colors.size(), is(33));
 
-        Sprite1D sprite = new Sprite1D(colors);
-
         // execution
-        sut.handleSprite("one", sprite);
+        sut.setColors("one", colors);
 
         // verification
         short[] allWhite = new short[16];
@@ -263,10 +265,8 @@ public class LEDStripServiceUnitTest {
 
         assertThat(colors.size(), is(15));
 
-        Sprite1D sprite = new Sprite1D(colors);
-
         // execution
-        sut.handleSprite("one", sprite);
+        sut.setColors("one", colors);
 
         // verification
         short[] partlyWhite = new short[16];
@@ -511,7 +511,7 @@ public class LEDStripServiceUnitTest {
     @Test(expected = LEDStripNotFoundException.class)
     public void handleSpriteWithNonexistentLEDStrip() {
 
-        sut.handleSprite("noledstrip", new Sprite1D(1));
+        sut.setColors("noledstrip", Collections.<Color>emptyList());
     }
 
 
@@ -579,10 +579,8 @@ public class LEDStripServiceUnitTest {
 
         assertThat(colors.size(), is(20));
 
-        Sprite1D sprite = new Sprite1D(colors);
-
         // execution
-        sut.handleSprite("one", sprite);
+        sut.setColors("one", colors);
     }
 
 
@@ -610,10 +608,8 @@ public class LEDStripServiceUnitTest {
 
         assertThat(colors.size(), is(20));
 
-        Sprite1D sprite = new Sprite1D(colors);
-
         // execution
-        sut.handleSprite("one", sprite);
+        sut.setColors("one", colors);
     }
 
 
@@ -628,11 +624,9 @@ public class LEDStripServiceUnitTest {
 
         assertThat(colors.size(), is(20));
 
-        Sprite1D sprite = new Sprite1D(colors);
-
         when(ledStripRepository.get("one")).thenReturn(new LEDStrip("one", "abc", 30, "abrick", "somesensor"));
 
         // execution
-        sut.handleSprite("one", sprite);
+        sut.setColors("one", colors);
     }
 }

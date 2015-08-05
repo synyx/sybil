@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip;
+package org.synyx.sybil.bricklet.output.ledstrip.service;
 
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStrip;
 
 
 /**

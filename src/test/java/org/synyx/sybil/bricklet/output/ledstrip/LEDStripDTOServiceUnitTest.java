@@ -9,7 +9,10 @@ import org.mockito.Mock;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
+import org.synyx.sybil.bricklet.output.ledstrip.dto.LEDStripDTO;
+import org.synyx.sybil.bricklet.output.ledstrip.dto.LEDStripDTOService;
+import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStripRepository;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripService;
 
 import java.io.IOException;
 
@@ -81,7 +84,6 @@ public class LEDStripDTOServiceUnitTest {
         sut.setColorsOfLEDStrip("two", ledStripDTO);
 
         // verificatiom
-        Sprite1D sprite1D = new Sprite1D(colors);
-        verify(ledStripService).handleSprite(eq("two"), eq(sprite1D));
+        verify(ledStripService).setColors(eq("two"), eq(colors));
     }
 }

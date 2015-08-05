@@ -14,7 +14,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import org.springframework.core.env.Environment;
 
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStripRepository;
 
 import java.io.File;
 

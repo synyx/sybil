@@ -14,7 +14,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStrip;
+import org.synyx.sybil.bricklet.output.ledstrip.service.BrickletLEDStripWrapper;
+import org.synyx.sybil.bricklet.output.ledstrip.service.BrickletLEDStripWrapperService;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;

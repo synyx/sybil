@@ -1,10 +1,11 @@
-package org.synyx.sybil.bricklet.output.ledstrip;
+package org.synyx.sybil.bricklet.output.ledstrip.dto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.bricklet.output.ledstrip.domain.LEDStripDTO;
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
+import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripService;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class LEDStripDTOService {
 
     public void setColorsOfLEDStrip(String name, LEDStripDTO ledStripDTO) {
 
-        ledStripService.handleSprite(name, new Sprite1D(ledStripDTO.getPixels()));
+        ledStripService.setColors(name, ledStripDTO.getPixels());
     }
 
 
