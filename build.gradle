@@ -10,7 +10,7 @@ apply plugin: 'war' //war plugin
 
 // Basic configuration
 sourceCompatibility = 1.8 //Java 8
-version='0.4.2-SNAPSHOT'
+version='0.4.2'
 
 repositories {
     mavenCentral()
