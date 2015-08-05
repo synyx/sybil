@@ -1,4 +1,4 @@
-package org.synyx.sybil.brick.domain;
+package org.synyx.sybil.brick.persistence;
 
 import org.springframework.hateoas.core.Relation;
 

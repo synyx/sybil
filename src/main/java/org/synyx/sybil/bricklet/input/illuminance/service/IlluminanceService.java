@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.input.illuminance;
+package org.synyx.sybil.bricklet.input.illuminance.service;
 
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.bricklet.input.illuminance.domain.Illuminance;
+import org.synyx.sybil.bricklet.input.illuminance.persistence.Illuminance;
+import org.synyx.sybil.bricklet.input.illuminance.persistence.IlluminanceRepository;
 
 
 /**

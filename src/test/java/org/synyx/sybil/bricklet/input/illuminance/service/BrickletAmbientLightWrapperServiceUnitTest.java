@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.input.illuminance;
+package org.synyx.sybil.bricklet.input.illuminance.service;
 
 import com.tinkerforge.IPConnection;
 
@@ -12,8 +12,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import org.synyx.sybil.brick.BrickService;
-import org.synyx.sybil.bricklet.input.illuminance.domain.Illuminance;
+import org.synyx.sybil.brick.service.BrickService;
+import org.synyx.sybil.bricklet.input.illuminance.persistence.Illuminance;
 
 import static org.hamcrest.CoreMatchers.is;
 

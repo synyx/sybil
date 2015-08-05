@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import org.synyx.sybil.bricklet.input.illuminance.IlluminanceConnectionException;
-import org.synyx.sybil.bricklet.input.illuminance.IlluminanceNotFoundException;
-import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
+import org.synyx.sybil.bricklet.input.illuminance.service.IlluminanceConnectionException;
+import org.synyx.sybil.bricklet.input.illuminance.service.IlluminanceNotFoundException;
+import org.synyx.sybil.bricklet.input.illuminance.service.IlluminanceService;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStripRepository;

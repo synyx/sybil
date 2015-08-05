@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip;
+package org.synyx.sybil.bricklet.output.ledstrip.persistence;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,9 +13,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import org.springframework.core.env.Environment;
-
-import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStrip;
-import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStripRepository;
 
 import java.io.File;
 

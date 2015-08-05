@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.input.illuminance;
+package org.synyx.sybil.bricklet.input.illuminance.service;
 
 /**
  * IlluminanceNotFoundException.

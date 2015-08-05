@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip;
+package org.synyx.sybil.bricklet.output.ledstrip.service;
 
 import com.tinkerforge.BrickletLEDStrip;
 import com.tinkerforge.NotConnectedException;
@@ -15,15 +15,11 @@ import org.mockito.Mockito;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
-import org.synyx.sybil.bricklet.input.illuminance.IlluminanceConnectionException;
-import org.synyx.sybil.bricklet.input.illuminance.IlluminanceService;
+import org.synyx.sybil.bricklet.input.illuminance.service.IlluminanceConnectionException;
+import org.synyx.sybil.bricklet.input.illuminance.service.IlluminanceService;
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStripRepository;
-import org.synyx.sybil.bricklet.output.ledstrip.service.BrickletLEDStripWrapper;
-import org.synyx.sybil.bricklet.output.ledstrip.service.BrickletLEDStripWrapperService;
-import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripConnectionException;
-import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripNotFoundException;
-import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripService;
 import org.synyx.sybil.jenkins.domain.Status;
 import org.synyx.sybil.jenkins.domain.StatusInformation;
 

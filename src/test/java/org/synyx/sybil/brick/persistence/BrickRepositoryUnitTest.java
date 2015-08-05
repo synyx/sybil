@@ -1,4 +1,4 @@
-package org.synyx.sybil.brick;
+package org.synyx.sybil.brick.persistence;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,8 +13,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import org.springframework.core.env.Environment;
-
-import org.synyx.sybil.brick.domain.Brick;
 
 import java.io.File;
 import java.io.IOException;

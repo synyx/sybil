@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.input.illuminance;
+package org.synyx.sybil.bricklet.input.illuminance.service;
 
 import com.tinkerforge.BrickletAmbientLight;
 import com.tinkerforge.IPConnection;

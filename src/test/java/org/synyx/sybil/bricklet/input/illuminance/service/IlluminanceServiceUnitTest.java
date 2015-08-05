@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.input.illuminance;
+package org.synyx.sybil.bricklet.input.illuminance.service;
 
 import com.tinkerforge.NotConnectedException;
 
@@ -11,7 +11,8 @@ import org.mockito.Mock;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
-import org.synyx.sybil.bricklet.input.illuminance.domain.Illuminance;
+import org.synyx.sybil.bricklet.input.illuminance.persistence.Illuminance;
+import org.synyx.sybil.bricklet.input.illuminance.persistence.IlluminanceRepository;
 
 import java.lang.reflect.Constructor;
 

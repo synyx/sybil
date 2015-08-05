@@ -1,4 +1,4 @@
-package org.synyx.sybil.brick;
+package org.synyx.sybil.brick.service;
 
 import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.BrickMaster;
@@ -14,7 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.synyx.sybil.LoadFailedException;
-import org.synyx.sybil.brick.domain.Brick;
+import org.synyx.sybil.brick.persistence.Brick;
+import org.synyx.sybil.brick.persistence.BrickRepository;
 
 import java.io.IOException;
 
@@ -47,7 +48,7 @@ public class BrickService {
             for (Brick brick : brickRepository.getAll()) {
                 reset(brick);
             }
-        } catch (BrickConnectionException | LoadFailedException exception) {
+        } catch (BrickConnectionException | BrickNotFoundException | LoadFailedException exception) {
             LOG.error("Failed to reset bricks:", exception);
         }
     }
@@ -56,6 +57,10 @@ public class BrickService {
     public IPConnection connect(String name) {
 
         Brick brick = brickRepository.get(name);
+
+        if (brick == null) {
+            throw new BrickNotFoundException("Brick " + name + " is not configured.");
+        }
 
         IPConnection ipConnection = new IPConnection();
 

@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.input.illuminance.domain;
+package org.synyx.sybil.bricklet.input.illuminance.persistence;
 
 /**
  * IlluminanceDomain.

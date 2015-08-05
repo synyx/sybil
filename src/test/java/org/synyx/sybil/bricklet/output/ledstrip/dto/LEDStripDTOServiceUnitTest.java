@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip;
+package org.synyx.sybil.bricklet.output.ledstrip.dto;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,8 +9,7 @@ import org.mockito.Mock;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
-import org.synyx.sybil.bricklet.output.ledstrip.dto.LEDStripDTO;
-import org.synyx.sybil.bricklet.output.ledstrip.dto.LEDStripDTOService;
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStripRepository;
 import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripService;
 

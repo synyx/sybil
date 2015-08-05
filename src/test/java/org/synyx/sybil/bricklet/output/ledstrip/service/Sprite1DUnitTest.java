@@ -1,8 +1,8 @@
-package org.synyx.sybil.bricklet.output.ledstrip;
+package org.synyx.sybil.bricklet.output.ledstrip.service;
 
 import org.junit.Test;
 
-import org.synyx.sybil.bricklet.output.ledstrip.service.Sprite1D;
+import org.synyx.sybil.bricklet.output.ledstrip.Color;
 
 import java.util.ArrayList;
 import java.util.List;

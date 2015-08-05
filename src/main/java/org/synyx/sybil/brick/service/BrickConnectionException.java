@@ -1,4 +1,4 @@
-package org.synyx.sybil.brick;
+package org.synyx.sybil.brick.service;
 
 /**
  * BrickConnectionException.

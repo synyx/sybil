@@ -1,4 +1,4 @@
-package org.synyx.sybil.brick;
+package org.synyx.sybil.brick.service;
 
 import com.tinkerforge.BrickMaster;
 import com.tinkerforge.IPConnection;
@@ -14,7 +14,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import org.synyx.sybil.brick.domain.Brick;
+import org.synyx.sybil.brick.persistence.Brick;
+import org.synyx.sybil.brick.persistence.BrickRepository;
 
 import java.util.Arrays;
 import java.util.List;
