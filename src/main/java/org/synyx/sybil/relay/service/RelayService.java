@@ -34,7 +34,9 @@ public class RelayService {
     private static final String HTTP = "http://";
     private static final String RELAY_PREFIX = "F";
     private static final String RELAY_TOGGLE = "T";
+    private static final String ERROR_NOT_CONFIGURED = " is not configured.";
     private static final int EIGHT = 8;
+    private static final int TWENTY = 20;
 
     private final RelayRepository relayRepository;
     private final PwrControlRepository pwrControlRepository;
@@ -54,7 +56,7 @@ public class RelayService {
         Relay relay = relayRepository.get(name);
 
         if (relay == null) {
-            throw new RelayNotFoundException("Relay " + name + " is not configured.");
+            throw new RelayNotFoundException("Relay " + name + ERROR_NOT_CONFIGURED);
         }
 
         return getState(relay);
@@ -82,7 +84,7 @@ public class RelayService {
 
         boolean[] result = parseResponse(response.getBody());
 
-        if (result == null) {
+        if (result.length == 0) {
             throw new RelayConnectionException("Error getting relay status from host" + host);
         }
 
@@ -93,15 +95,15 @@ public class RelayService {
     private boolean[] parseResponse(String response) {
 
         if (!response.endsWith("end;NET - Power Control")) {
-            return null;
+            return new boolean[0];
         }
 
-        boolean[] result = new boolean[8];
+        boolean[] result = new boolean[EIGHT];
 
         String[] parts = response.split(";");
 
         for (int index = 0; index < EIGHT; index++) {
-            result[index] = (parts[index + 20].equals("1"));
+            result[index] = ("1".equals(parts[index + TWENTY]));
         }
 
         return result;
@@ -113,7 +115,7 @@ public class RelayService {
         Relay relay = relayRepository.get(name);
 
         if (relay == null) {
-            throw new RelayNotFoundException("Relay " + name + " is not configured.");
+            throw new RelayNotFoundException("Relay " + name + ERROR_NOT_CONFIGURED);
         }
 
         toggleRelay(relay);
@@ -130,11 +132,11 @@ public class RelayService {
         PwrControl pwrControl = pwrControlRepository.get(host);
 
         if (pwrControl == null) {
-            throw new RelayNotFoundException("NET PwrCtrl " + host + " is not configured.");
+            throw new RelayNotFoundException("NET PwrCtrl " + host + ERROR_NOT_CONFIGURED);
         }
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add((RELAY_PREFIX + String.valueOf(number)), RELAY_TOGGLE);
+        formData.add(RELAY_PREFIX + String.valueOf(number), RELAY_TOGGLE);
 
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(formData, pwrControl.getHeader());
 
@@ -152,7 +154,7 @@ public class RelayService {
         Relay relay = relayRepository.get(name);
 
         if (relay == null) {
-            throw new RelayNotFoundException("Relay " + name + " is not configured.");
+            throw new RelayNotFoundException("Relay " + name + ERROR_NOT_CONFIGURED);
         }
 
         if (!getState(relay)) {
@@ -168,7 +170,7 @@ public class RelayService {
         Relay relay = relayRepository.get(name);
 
         if (relay == null) {
-            throw new RelayNotFoundException("Relay " + name + " is not configured.");
+            throw new RelayNotFoundException("Relay " + name + ERROR_NOT_CONFIGURED);
         }
 
         if (getState(relay)) {
