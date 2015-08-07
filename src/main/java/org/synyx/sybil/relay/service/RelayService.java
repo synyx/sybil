@@ -35,6 +35,7 @@ public class RelayService {
     private static final String RELAY_PREFIX = "F";
     private static final String RELAY_TOGGLE = "T";
     private static final String ERROR_NOT_CONFIGURED = " is not configured.";
+    private static final String RELAY = "Relay ";
     private static final int EIGHT = 8;
     private static final int TWENTY = 20;
 
@@ -56,7 +57,7 @@ public class RelayService {
         Relay relay = relayRepository.get(name);
 
         if (relay == null) {
-            throw new RelayNotFoundException("Relay " + name + ERROR_NOT_CONFIGURED);
+            throw new RelayNotFoundException(RELAY + name + ERROR_NOT_CONFIGURED);
         }
 
         return getState(relay);
@@ -115,7 +116,7 @@ public class RelayService {
         Relay relay = relayRepository.get(name);
 
         if (relay == null) {
-            throw new RelayNotFoundException("Relay " + name + ERROR_NOT_CONFIGURED);
+            throw new RelayNotFoundException(RELAY + name + ERROR_NOT_CONFIGURED);
         }
 
         toggleRelay(relay);
@@ -154,7 +155,7 @@ public class RelayService {
         Relay relay = relayRepository.get(name);
 
         if (relay == null) {
-            throw new RelayNotFoundException("Relay " + name + ERROR_NOT_CONFIGURED);
+            throw new RelayNotFoundException(RELAY + name + ERROR_NOT_CONFIGURED);
         }
 
         if (!getState(relay)) {
@@ -170,7 +171,7 @@ public class RelayService {
         Relay relay = relayRepository.get(name);
 
         if (relay == null) {
-            throw new RelayNotFoundException("Relay " + name + ERROR_NOT_CONFIGURED);
+            throw new RelayNotFoundException(RELAY + name + ERROR_NOT_CONFIGURED);
         }
 
         if (getState(relay)) {
