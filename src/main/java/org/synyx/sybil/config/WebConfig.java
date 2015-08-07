@@ -13,9 +13,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  */
 
 @Configuration
-@ComponentScan(
-    basePackages = { "org.synyx.sybil.api", "org.synyx.sybil.brick.api", "org.synyx.sybil.bricklet.*.*.api" }
-)
+@ComponentScan(basePackages = { "org.synyx.sybil.bricklet.*.*.api", "org.synyx.sybil.relay.api" })
 @EnableWebMvc
 public class WebConfig {
 }

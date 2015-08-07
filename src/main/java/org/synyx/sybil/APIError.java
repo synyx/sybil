@@ -1,4 +1,4 @@
-package org.synyx.sybil.bricklet.output.ledstrip.api;
+package org.synyx.sybil;
 
 /**
  * APIError.
