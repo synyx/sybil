@@ -1,4 +1,4 @@
-package org.synyx.sybil.jenkins.domain;
+package org.synyx.sybil.jenkins.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -16,7 +16,8 @@ public class JenkinsJob {
     private String color;
 
     public JenkinsJob() {
-        // Default constructor deliberately left empty 
+
+        // Default constructor deliberately left empty
     }
 
 

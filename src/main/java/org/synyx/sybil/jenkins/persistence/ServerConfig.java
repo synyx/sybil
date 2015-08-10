@@ -1,4 +1,4 @@
-package org.synyx.sybil.jenkins.domain;
+package org.synyx.sybil.jenkins.persistence;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -7,6 +7,8 @@ import org.apache.commons.codec.binary.Base64;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+
+import org.synyx.sybil.jenkins.service.JenkinsProperties;
 
 import java.nio.charset.Charset;
 

@@ -1,4 +1,4 @@
-package org.synyx.sybil.jenkins.domain;
+package org.synyx.sybil.jenkins.service;
 
 /**
  * Status enum: OKAY, WARNING or CRITICAL.

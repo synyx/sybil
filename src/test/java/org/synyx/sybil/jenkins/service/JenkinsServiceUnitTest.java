@@ -1,7 +1,4 @@
-package org.synyx.sybil.jenkins;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+package org.synyx.sybil.jenkins.service;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -20,8 +17,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.core.env.Environment;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -33,15 +28,9 @@ import org.springframework.web.client.RestTemplate;
 import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripConnectionException;
 import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripService;
-import org.synyx.sybil.jenkins.domain.JenkinsJob;
-import org.synyx.sybil.jenkins.domain.JenkinsProperties;
-import org.synyx.sybil.jenkins.domain.JobConfig;
-import org.synyx.sybil.jenkins.domain.ServerConfig;
-import org.synyx.sybil.jenkins.domain.Status;
-import org.synyx.sybil.jenkins.domain.StatusInformation;
-
-import java.io.File;
-import java.io.IOException;
+import org.synyx.sybil.jenkins.persistence.JenkinsConfigRepository;
+import org.synyx.sybil.jenkins.persistence.JobConfig;
+import org.synyx.sybil.jenkins.persistence.ServerConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,13 +64,10 @@ public class JenkinsServiceUnitTest {
     private JenkinsService sut;
 
     @Mock
-    ObjectMapper objectMapperMock;
-
-    @Mock
     LEDStripService ledStripServiceMock;
 
     @Mock
-    Environment environmentMock;
+    JenkinsConfigRepository jenkinsConfigRepositoryMock;
 
     @Mock
     RestTemplate restTemplateMock;
@@ -100,13 +86,9 @@ public class JenkinsServiceUnitTest {
     @Before
     public void setUp() throws Exception {
 
-        when(environmentMock.getProperty("path.to.configfiles")).thenReturn("/path/");
-        when(environmentMock.getProperty("jenkins.configfile")).thenReturn("jenkinsconfig.json");
-
         List<ServerConfig> authorizations = Arrays.asList(new ServerConfig("http://jenkins", "user", "key"));
 
-        when(objectMapperMock.readValue(eq(new File("jenkinsconfig.json")), any(TypeReference.class))).thenReturn(
-            authorizations);
+        when(jenkinsConfigRepositoryMock.loadServerConfigs()).thenReturn(authorizations);
 
         JobConfig job0 = new JobConfig("jobundefined", "ledstripone");
         JobConfig job1 = new JobConfig("jobokay", "ledstripone");
@@ -126,8 +108,7 @@ public class JenkinsServiceUnitTest {
         Map<String, List<JobConfig>> configuredJobs = new HashMap<>();
         configuredJobs.put("http://jenkins", jobs);
 
-        when(objectMapperMock.readValue(eq(new File("/path/jenkins.json")), any(TypeReference.class))).thenReturn(
-            configuredJobs);
+        when(jenkinsConfigRepositoryMock.loadJobConfigs()).thenReturn(configuredJobs);
 
         JenkinsJob jobOkay = new JenkinsJob("jobokay", "blue");
         JenkinsJob jobWarning = new JenkinsJob("jobwarning", "yellow");
@@ -144,7 +125,7 @@ public class JenkinsServiceUnitTest {
         when(restTemplateMock.exchange(eq("http://jenkins/api/json"), eq(HttpMethod.GET), any(HttpEntity.class),
                     eq(JenkinsProperties.class))).thenReturn(responseEntity);
 
-        sut = new JenkinsService(objectMapperMock, ledStripServiceMock, environmentMock, restTemplateMock);
+        sut = new JenkinsService(ledStripServiceMock, restTemplateMock, jenkinsConfigRepositoryMock);
     }
 
 
@@ -218,28 +199,6 @@ public class JenkinsServiceUnitTest {
 
 
     @Test
-    public void loadAuthorizations() throws Exception {
-
-        when(objectMapperMock.readValue(eq(new File("jenkinsconfig.json")), any(TypeReference.class))).thenThrow(
-            new IOException("Test 4"));
-
-        // Should log "Error loading Jenkins configuration:"
-        sut.runScheduled();
-    }
-
-
-    @Test
-    public void loadJobConfigs() throws Exception {
-
-        when(objectMapperMock.readValue(eq(new File("/path/jenkins.json")), any(TypeReference.class))).thenThrow(
-            new IOException("Test 5"));
-
-        // Should log "Error loading Jenkins configuration:"
-        sut.runScheduled();
-    }
-
-
-    @Test
     public void getJobsFromJenkins() {
 
         when(restTemplateMock.exchange(eq("http://jenkins/api/json"), eq(HttpMethod.GET), any(HttpEntity.class),
@@ -288,8 +247,7 @@ public class JenkinsServiceUnitTest {
 
         Map<String, List<JobConfig>> configuredJobs = new HashMap<>();
 
-        when(objectMapperMock.readValue(eq(new File("/path/jenkins.json")), any(TypeReference.class))).thenReturn(
-            configuredJobs);
+        when(jenkinsConfigRepositoryMock.loadJobConfigs()).thenReturn(configuredJobs);
 
         sut.runScheduled();
 
@@ -306,8 +264,7 @@ public class JenkinsServiceUnitTest {
         List<JobConfig> jobs = new ArrayList<>();
         configuredJobs.put("http://jenkins", jobs);
 
-        when(objectMapperMock.readValue(eq(new File("/path/jenkins.json")), any(TypeReference.class))).thenReturn(
-            configuredJobs);
+        when(jenkinsConfigRepositoryMock.loadJobConfigs()).thenReturn(configuredJobs);
 
         sut.runScheduled();
 
@@ -321,8 +278,6 @@ public class JenkinsServiceUnitTest {
 
         // Only two of the three exceptions thrown with this error message should be logged!
         verify(loggerMock, times(2)).error(eq("Error turning off LED strips:"), any(RuntimeException.class));
-
-        verify(loggerMock, times(2)).error(eq("Error loading Jenkins configuration:"), any(RuntimeException.class));
 
         verify(loggerMock).error(eq("Error retrieving jobs from Jenkins:"), any(RuntimeException.class));
 

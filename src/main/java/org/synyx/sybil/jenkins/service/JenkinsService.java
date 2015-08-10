@@ -1,7 +1,4 @@
-package org.synyx.sybil.jenkins;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+package org.synyx.sybil.jenkins.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Profile;
-
-import org.springframework.core.env.Environment;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -27,15 +22,9 @@ import org.synyx.sybil.LoadFailedException;
 import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripConnectionException;
 import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripNotFoundException;
 import org.synyx.sybil.bricklet.output.ledstrip.service.LEDStripService;
-import org.synyx.sybil.jenkins.domain.JenkinsJob;
-import org.synyx.sybil.jenkins.domain.JenkinsProperties;
-import org.synyx.sybil.jenkins.domain.JobConfig;
-import org.synyx.sybil.jenkins.domain.ServerConfig;
-import org.synyx.sybil.jenkins.domain.Status;
-import org.synyx.sybil.jenkins.domain.StatusInformation;
-
-import java.io.File;
-import java.io.IOException;
+import org.synyx.sybil.jenkins.persistence.JenkinsConfigRepository;
+import org.synyx.sybil.jenkins.persistence.JobConfig;
+import org.synyx.sybil.jenkins.persistence.ServerConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,21 +48,17 @@ public class JenkinsService {
     private static final long SCHEDULED_TIME_IN_MS = 20000;
     private static final int DELAY_DIVISOR = 4;
 
-    private final ObjectMapper objectMapper;
     private final LEDStripService ledStripService;
-    private final String configDirectory;
-    private final String jenkinsServerConfigFile;
     private final RestTemplate restTemplate;
+    private final JenkinsConfigRepository jenkinsConfigRepository;
 
     @Autowired
-    public JenkinsService(ObjectMapper objectMapper, LEDStripService ledStripService, Environment environment,
-        RestTemplate restTemplate) {
+    public JenkinsService(LEDStripService ledStripService, RestTemplate restTemplate,
+        JenkinsConfigRepository jenkinsConfigRepository) {
 
-        this.objectMapper = objectMapper;
         this.ledStripService = ledStripService;
         this.restTemplate = restTemplate;
-        configDirectory = environment.getProperty("path.to.configfiles");
-        jenkinsServerConfigFile = environment.getProperty("jenkins.configfile");
+        this.jenkinsConfigRepository = jenkinsConfigRepository;
     }
 
     @PreDestroy
@@ -102,7 +87,7 @@ public class JenkinsService {
 
         try {
             authorizations = loadAuthorizations();
-            jobConfigs = loadJobConfigs();
+            jobConfigs = jenkinsConfigRepository.loadJobConfigs();
         } catch (LoadFailedException exception) {
             handleError("Error loading Jenkins configuration:", exception);
 
@@ -130,33 +115,11 @@ public class JenkinsService {
 
         Map<String, HttpEntity<JenkinsProperties[]>> authorizations = new HashMap<>();
 
-        List<ServerConfig> serverConfigs;
-
-        try {
-            serverConfigs = objectMapper.readValue(new File(jenkinsServerConfigFile),
-                    new TypeReference<List<ServerConfig>>() {
-                    });
-        } catch (IOException exception) {
-            throw new LoadFailedException("Error loading jenkins server config:", exception);
-        }
-
-        for (ServerConfig serverConfig : serverConfigs) {
+        for (ServerConfig serverConfig : jenkinsConfigRepository.loadServerConfigs()) {
             authorizations.put(serverConfig.getUrl(), serverConfig.getHeader());
         }
 
         return authorizations;
-    }
-
-
-    private Map<String, List<JobConfig>> loadJobConfigs() {
-
-        try {
-            return objectMapper.readValue(new File(configDirectory + "jenkins.json"),
-                    new TypeReference<Map<String, List<JobConfig>>>() {
-                    });
-        } catch (IOException exception) {
-            throw new LoadFailedException("Error loading jenkins config:", exception);
-        }
     }
 
 

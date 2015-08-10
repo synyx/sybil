@@ -14,8 +14,8 @@ import org.synyx.sybil.bricklet.input.illuminance.service.IlluminanceService;
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
 import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStrip;
 import org.synyx.sybil.bricklet.output.ledstrip.persistence.LEDStripRepository;
-import org.synyx.sybil.jenkins.domain.Status;
-import org.synyx.sybil.jenkins.domain.StatusInformation;
+import org.synyx.sybil.jenkins.service.Status;
+import org.synyx.sybil.jenkins.service.StatusInformation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
