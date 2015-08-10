@@ -8,7 +8,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
-import org.synyx.sybil.jenkins.service.JenkinsProperties;
+import org.synyx.sybil.jenkins.JenkinsProperties;
 
 import java.nio.charset.Charset;
 

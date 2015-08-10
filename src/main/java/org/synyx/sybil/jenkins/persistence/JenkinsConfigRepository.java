@@ -27,9 +27,9 @@ import java.util.Map;
 @Repository
 public class JenkinsConfigRepository {
 
-    private String configDirectory;
-    private String jenkinsServerConfigFile;
-    private ObjectMapper objectMapper;
+    private final String configDirectory;
+    private final String jenkinsServerConfigFile;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public JenkinsConfigRepository(ObjectMapper objectMapper, Environment environment) {

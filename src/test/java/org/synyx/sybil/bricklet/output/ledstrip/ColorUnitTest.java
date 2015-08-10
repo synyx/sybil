@@ -11,7 +11,7 @@ import org.mockito.Mock;
 
 import org.mockito.runners.MockitoJUnitRunner;
 
-import org.synyx.sybil.jenkins.service.Status;
+import org.synyx.sybil.jenkins.Status;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 

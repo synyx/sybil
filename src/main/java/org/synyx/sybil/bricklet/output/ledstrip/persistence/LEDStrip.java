@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.synyx.sybil.bricklet.output.ledstrip.Color;
-import org.synyx.sybil.jenkins.service.Status;
+import org.synyx.sybil.jenkins.Status;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -6,7 +6,7 @@ import com.tinkerforge.BrickletLEDStrip;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-import org.synyx.sybil.jenkins.service.Status;
+import org.synyx.sybil.jenkins.Status;
 
 import java.util.Objects;
 
