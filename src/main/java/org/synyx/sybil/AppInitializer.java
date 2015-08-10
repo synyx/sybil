@@ -15,16 +15,16 @@ import org.synyx.sybil.config.WebConfig;
 public class AppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
-    protected Class<?>[] getRootConfigClasses() {
+    protected Class[] getRootConfigClasses() {
 
-        return new Class<?>[] { SpringConfig.class };
+        return new Class[] { SpringConfig.class };
     }
 
 
     @Override
-    protected Class<?>[] getServletConfigClasses() {
+    protected Class[] getServletConfigClasses() {
 
-        return new Class<?>[] { WebConfig.class };
+        return new Class[] { WebConfig.class };
     }
 
 
