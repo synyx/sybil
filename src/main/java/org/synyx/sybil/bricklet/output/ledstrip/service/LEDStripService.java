@@ -82,11 +82,7 @@ public class LEDStripService {
 
     public void handleStatus(String name, StatusInformation statusInformation) {
 
-        LEDStrip ledStrip = ledStripRepository.get(name);
-
-        if (ledStrip == null) {
-            throw new LEDStripNotFoundException("LED strip " + name + " not found");
-        }
+        LEDStrip ledStrip = getLEDStrip(name);
 
         Sprite1D sprite1D = new Sprite1D(ledStrip.getLength(), statusInformation.getSource());
         sprite1D.setFill(getColorFromStatus(ledStrip, statusInformation));
@@ -97,13 +93,21 @@ public class LEDStripService {
 
     public void setColors(String name, List<Color> pixels) {
 
+        LEDStrip ledStrip = getLEDStrip(name);
+
+        drawSprite(ledStrip, new Sprite1D(pixels));
+    }
+
+
+    private LEDStrip getLEDStrip(String name) {
+
         LEDStrip ledStrip = ledStripRepository.get(name);
 
         if (ledStrip == null) {
             throw new LEDStripNotFoundException("LED strip " + name + " not found");
         }
 
-        drawSprite(ledStrip, new Sprite1D(pixels));
+        return ledStrip;
     }
 
 
