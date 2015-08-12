@@ -207,6 +207,6 @@ If you want to extend Sybil's functionality, here's how you operate it "manually
 
 The **DisplayController** communicates with the **LEDStripDTOService**, which communicates with the **LEDStripService**
 which reads the LED strip configuration from the **LEDStripRepository** and communicates with the Tinkerforge API, the
-**BrickService** and the **IlluminanceService**, who each communicate with their own __*Repository__s.
+**BrickService** and the **IlluminanceService**, who each communicate with their own **\*Repository**s.
 
 If you want to add support for further hardware, try to replicate this pattern.
