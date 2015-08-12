@@ -49,7 +49,7 @@ import javax.annotation.PreDestroy;
 public class JenkinsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(JenkinsService.class);
-    private static final long SCHEDULED_TIME_IN_MS = 20000;
+    private static final long SCHEDULED_TIME_IN_MS = 60000;
     private static final int DELAY_DIVISOR = 4;
 
     private final LEDStripService ledStripService;

@@ -106,67 +106,74 @@ src/                                Source code.
   +-main/                           Main.
     +-java/org/synyx/sybil/         Java code base package.
     | +-AppInitializer              Found by Servlet 3.0 container, starts app.
-    | +-AttributeEmptyException     Custom exception, when accessing undef. attributes.
-    | +-DeviceDomain                Interface all Tinkerforge devices inherit from.
     | +-LoadFailedException         Exception for when loading a file fails.
     | |
     | +-brick/                      Brick-specific classes.
-    | | +-domain/                   Domain classes for bricks.
-    | | | +-BrickDomain             Domain for Tinkerforge brick configurations.
-    | | | +-BrickDTO                Data Transfer Object for bricks. 
+    | | +-persistence/              Data persistence for bricks.
+    | | | +-Brick                   Configuration data for Tinkerforge bricks.
+    | | | +-BrickRepository         Repository for brick configurations. 
     | | |
-    | | +-BrickConnectionException  Exception for connection errors.
-    | | +-BrickDTOService           Creates pre-configured Brick DTOs.
-    | | +-BrickNotFoundException    Exception for non-existent bricks.
-    | | +-BrickService              Accepts Brick DTOs and handles them.
+    | | +-service/
+    | |   +-BrickConnectionExcepti… Exception for connection errors.
+    | |   +-BrickNotFoundException  Exception for non-existent bricks.
+    | |   +-BrickService            Service for communicating with bricks.
     | |
     | +-bricklet/                   Bricklet-specific classes.
     | | +-input/                    Bricklets that input data.
     | | | +-illuminance/            Ambient Illuminance sensor bricklets.
-    | | |   +-domain/               Domain classes for illuminance sensors.
-    | | |   | +-IlluminanceDomain   Domain for illuminance sensors.
-    | | |   | +-IlluminanceDTO      Data Transfer Object for ill. sensors.
+    | | |   +-persistence/          Data persistence for illuminance sensors.
+    | | |   | +-Illuminance         Configuration data for illuminance sensors.
+    | | |   | +-IlluminanceRepo…    Repository for illuminance sensor configs.
     | | |   |
-    | | |   +-BrickletAmbie…Wrapper Wrapper for Tinkerforge ill. sensor objects.
-    | | |   +-I…ConnectionException Exception for connection errors.
-    | | |   +-IlluminanceDTOService Creates pre-configured ill. sensor DTOs.
-    | | |   +-Ill…NotFoundException Exception for non-existent ill. sensors.
-    | | |   +-IlluminanceService    Accepts Ill. DTOs and handles them.
+    | | |   +-service/              Services and their utility classes.
+    | | |     +-BrickletAmb…Wrapper Wrapper for Tinkerforge ill. sensor objects.
+    | | |     +-BrickletAmb…Service Service for providing said objects.
+    | | |     +-I…ConnectionExcept… Exception for connection errors.
+    | | |     +-I…NotFoundException Exception for non-existent ill. sensors.
+    | | |     +-IlluminanceService  Service for communicating with ill. sensors.
     | | |
     | | +-output/                   Bricklets that output data.
-    | | | +-ledstrip/               LED strip bricklets.
-    | | |   +-api/                  API-controller & helpers for LED strips.
-    | | |   | +-APIError            Object for returning errors.
-    | | |   | +-DisplayController   MVC Controller for interacting w/ LED strips.
-    | | |   |
-    | | |   +-domain/               Domain classes for LED strips.
-    | | |   | +-LEDStripDomain      Domain for LED strips.
-    | | |   | +-LEDStripDTO         Data Transfer Object for LED strips.
-    | | |   |
-    | | |   +-BrickletLEDS…Wrapper  Wrapper for Tinkerforge LED strip objects.
-    | | |   +-Color                 Color object, for LEDs.
-    | | |   +-L…ConnectionException Exception for connection errors.
-    | | |   +-LEDStripDTOService    Creates pre-configured LED strip DTOs.
-    | | |   +-LED…NotFoundException Exception for non-existent LED strips.
-    | | |   +-LEDStripService       Accepts LED strip DTOs and handles them.
-    | | |   +-Sprite1D              Sprite object, for LED strips.
-    | | |
-    | | +-BrickletProvider          Provides Tinkerforge bricklet objects (or wrappers). 
+    | |   +-ledstrip/               LED strip bricklets.
+    | |     +-api/                  API-controller & helpers for LED strips.
+    | |     | +-APIError            Object for returning errors.
+    | |     | +-BadRequestException Exception for incorrect input to the API.
+    | |     | +-DisplayController   MVC Controller for interacting w/ LED strips.
+    | |     |
+    | |     +-dto/                  Data Transfer to the outside world.
+    | |     | +-LEDStripDTO         Data Transfer Object for LED strips.
+    | |     | +-LEDStripDTOService  Service for communicating with outside world.
+    | |     |
+    | |     +-persistence/
+    | |     | +-LEDStrip            Configuration data for LED strips.
+    | |     | +-LEDStripRepository  Repository for LED strip configs.
+    | |     |
+    | |     +-service/   
+    | |     | +-BrickletLED…Wrapper Wrapper for Tinkerforge LED strip objects.
+    | |     | +-BrickletLED…Service Service for providing said objects.
+    | |     | +-L…ConnectionExcept… Exception for connection errors.
+    | |     | +-L…NotFoundException Exception for non-existent LED strips.
+    | |     | +-LEDStripService     Service for communicating with LED strips.
+    | |     | +-Sprite1D            Sprite object, for LED strips.
+    | |     |
+    | |     +-Color                 Color object, for LEDs.
     | |
     | +-config/                     Configuration classes.
     | | +-SpringConfig              Spring configuration.
     | | +-WebConfig                 Configures the web app.
     | |
     | +-jenkins/                    Jenkins-specific classes.
-    |   +-domain/                   Jenkins-specific domains.
-    |   | +-ConfiguredJob           Object for job configuration.
-    |   | +-ConfiuredServer         Object for server configuration.
-    |   | +-JenkinsJob              Object for a single returned Jenkins job.
-    |   | +-JenkinsProperties       Object for Jenkins jobs returned from Jenkins API.
-    |   | +-Status                  Enum for statuses (OKAY, WARNING & CRITICAL)
-    |   | +-StatusInformation       Status with additional information.
+    |   +-persistence/              Data Persistence for Jenkins configs.
+    |   | +-JenkinsConfigRepository Repository for Jenkins configs.
+    |   | +-JobConfig               Configuration for Jenkins jobs.
+    |   | +-ServerConfig            Configuration for Jenkins servers.
     |   |
-    |   +-JenkinsService            Polls Jenkins servers and feeds statuses to LEDs.
+    |   +-service
+    |   | +-JenkinsService          Polls Jenkins servers and feeds statuses to LEDs.
+    |   |
+    |   +-JenkinsJob                Object for a single returned Jenkins job.
+    |   +-JenkinsProperties         Object for Jenkins jobs returned from Jenkins API.
+    |   +-Status                    Enum for statuses (OKAY, WARNING & CRITICAL)
+    |   +-StatusInformation         Status with additional information.
     |
     +-resources/                    Resources.
       +-logback.xml                 Configures the logback logging engine.
@@ -181,7 +188,7 @@ This then loads:
 * The **WebConfig** class.
     * Which in turn loads all the __*Controller__ classes, since they're annotated with @RestController
 * The Spring configuration in **SpringConfig**, which loads:
-    * All the __*Service__ classes, since they're annotated with @Service.
+    * All the __*Service__ classes, since they're annotated with @Service, etc.
 
 The **JenkinsService** has a *runScheduled* method, which is annotated with @Scheduled which means it is run every 60
 seconds. This method gets a list of all jobs from the Jenkins server(s), compares it to the list loaded from
@@ -198,8 +205,8 @@ For further information on this see [the wiki](https://github.com/synyx/sybil-wi
 
 If you want to extend Sybil's functionality, here's how you operate it "manually":
 
-First, use the **LEDStripDTOService**'s *getDTO* method, to get a DTO, pre-configured with the configuration loaded from
-`ledstrips.json`. Then use the DTO's *setSprite* or *setStatus* methods to add either a sprite or a status to the DTO,
-and pass it to the corresponding method of the **LEDStripServic**, i.e. either *handleSprite* or *handleStatus*.
+The **DisplayController** communicates with the **LEDStripDTOService**, which communicates with the **LEDStripService**
+which reads the LED strip configuration from the **LEDStripRepository** and communicates with the Tinkerforge API, the
+**BrickService** and the **IlluminanceService**, who each communicate with their own __*Repository__s.
 
 If you want to add support for further hardware, try to replicate this pattern.
