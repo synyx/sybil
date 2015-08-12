@@ -117,7 +117,7 @@ src/                                Source code.
       | | +-Brick                   Configuration data for Tinkerforge bricks.
       | | +-BrickRepository         Repository for brick configurations. 
       | |
-      | +-service/
+      | +-service/                  Services and their utility classes.
       |   +-BrickConnectionExcepti… Exception for connection errors.
       |   +-BrickNotFoundException  Exception for non-existent bricks.
       |   +-BrickService            Service for communicating with bricks.
@@ -147,11 +147,11 @@ src/                                Source code.
       |     | +-LEDStripDTO         Data Transfer Object for LED strips.
       |     | +-LEDStripDTOService  Service for communicating with outside world.
       |     |
-      |     +-persistence/
+      |     +-persistence/          Data persistence for LED strips.
       |     | +-LEDStrip            Configuration data for LED strips.
       |     | +-LEDStripRepository  Repository for LED strip configs.
       |     |
-      |     +-service/   
+      |     +-service/              Services and their utility classes.
       |     | +-BrickletLED…Wrapper Wrapper for Tinkerforge LED strip objects.
       |     | +-BrickletLED…Service Service for providing said objects.
       |     | +-L…ConnectionExcept… Exception for connection errors.
@@ -171,7 +171,7 @@ src/                                Source code.
         | +-JobConfig               Configuration for Jenkins jobs.
         | +-ServerConfig            Configuration for Jenkins servers.
         |
-        +-service
+        +-service/                  Services and their utility classes.
         | +-JenkinsService          Polls Jenkins servers and feeds statuses to LEDs.
         |
         +-JenkinsJob                Object for a single returned Jenkins job.
