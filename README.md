@@ -104,80 +104,80 @@ docs/                               Documentation sources.
 src/                                Source code.
   +-test/                           Unit tests.
   +-main/                           Main.
-    +-java/org/synyx/sybil/         Java code base package.
-    | +-AppInitializer              Found by Servlet 3.0 container, starts app.
-    | +-LoadFailedException         Exception for when loading a file fails.
-    | |
-    | +-brick/                      Brick-specific classes.
-    | | +-persistence/              Data persistence for bricks.
-    | | | +-Brick                   Configuration data for Tinkerforge bricks.
-    | | | +-BrickRepository         Repository for brick configurations. 
-    | | |
-    | | +-service/
-    | |   +-BrickConnectionExcepti… Exception for connection errors.
-    | |   +-BrickNotFoundException  Exception for non-existent bricks.
-    | |   +-BrickService            Service for communicating with bricks.
-    | |
-    | +-bricklet/                   Bricklet-specific classes.
-    | | +-input/                    Bricklets that input data.
-    | | | +-illuminance/            Ambient Illuminance sensor bricklets.
-    | | |   +-persistence/          Data persistence for illuminance sensors.
-    | | |   | +-Illuminance         Configuration data for illuminance sensors.
-    | | |   | +-IlluminanceRepo…    Repository for illuminance sensor configs.
-    | | |   |
-    | | |   +-service/              Services and their utility classes.
-    | | |     +-BrickletAmb…Wrapper Wrapper for Tinkerforge ill. sensor objects.
-    | | |     +-BrickletAmb…Service Service for providing said objects.
-    | | |     +-I…ConnectionExcept… Exception for connection errors.
-    | | |     +-I…NotFoundException Exception for non-existent ill. sensors.
-    | | |     +-IlluminanceService  Service for communicating with ill. sensors.
-    | | |
-    | | +-output/                   Bricklets that output data.
-    | |   +-ledstrip/               LED strip bricklets.
-    | |     +-api/                  API-controller & helpers for LED strips.
-    | |     | +-APIError            Object for returning errors.
-    | |     | +-BadRequestException Exception for incorrect input to the API.
-    | |     | +-DisplayController   MVC Controller for interacting w/ LED strips.
-    | |     |
-    | |     +-dto/                  Data Transfer to the outside world.
-    | |     | +-LEDStripDTO         Data Transfer Object for LED strips.
-    | |     | +-LEDStripDTOService  Service for communicating with outside world.
-    | |     |
-    | |     +-persistence/
-    | |     | +-LEDStrip            Configuration data for LED strips.
-    | |     | +-LEDStripRepository  Repository for LED strip configs.
-    | |     |
-    | |     +-service/   
-    | |     | +-BrickletLED…Wrapper Wrapper for Tinkerforge LED strip objects.
-    | |     | +-BrickletLED…Service Service for providing said objects.
-    | |     | +-L…ConnectionExcept… Exception for connection errors.
-    | |     | +-L…NotFoundException Exception for non-existent LED strips.
-    | |     | +-LEDStripService     Service for communicating with LED strips.
-    | |     | +-Sprite1D            Sprite object, for LED strips.
-    | |     |
-    | |     +-Color                 Color object, for LEDs.
-    | |
-    | +-config/                     Configuration classes.
-    | | +-SpringConfig              Spring configuration.
-    | | +-WebConfig                 Configures the web app.
-    | |
-    | +-jenkins/                    Jenkins-specific classes.
-    |   +-persistence/              Data Persistence for Jenkins configs.
-    |   | +-JenkinsConfigRepository Repository for Jenkins configs.
-    |   | +-JobConfig               Configuration for Jenkins jobs.
-    |   | +-ServerConfig            Configuration for Jenkins servers.
-    |   |
-    |   +-service
-    |   | +-JenkinsService          Polls Jenkins servers and feeds statuses to LEDs.
-    |   |
-    |   +-JenkinsJob                Object for a single returned Jenkins job.
-    |   +-JenkinsProperties         Object for Jenkins jobs returned from Jenkins API.
-    |   +-Status                    Enum for statuses (OKAY, WARNING & CRITICAL)
-    |   +-StatusInformation         Status with additional information.
-    |
     +-resources/                    Resources.
-      +-logback.xml                 Configures the logback logging engine.
-      +-config.properties           Contains the path to the config files.
+    | +-logback.xml                 Configures the logback logging engine.
+    | +-config.properties           Contains the path to the config files.
+    |
+    +-java/org/synyx/sybil/         Java code base package.
+      +-AppInitializer              Found by Servlet 3.0 container, starts app.
+      +-LoadFailedException         Exception for when loading a file fails.
+      |
+      +-brick/                      Brick-specific classes.
+      | +-persistence/              Data persistence for bricks.
+      | | +-Brick                   Configuration data for Tinkerforge bricks.
+      | | +-BrickRepository         Repository for brick configurations. 
+      | |
+      | +-service/
+      |   +-BrickConnectionExcepti… Exception for connection errors.
+      |   +-BrickNotFoundException  Exception for non-existent bricks.
+      |   +-BrickService            Service for communicating with bricks.
+      |
+      +-bricklet/                   Bricklet-specific classes.
+      | +-input/                    Bricklets that input data.
+      | | +-illuminance/            Ambient Illuminance sensor bricklets.
+      | |   +-persistence/          Data persistence for illuminance sensors.
+      | |   | +-Illuminance         Configuration data for illuminance sensors.
+      | |   | +-IlluminanceRepo…    Repository for illuminance sensor configs.
+      | |   |
+      | |   +-service/              Services and their utility classes.
+      | |     +-BrickletAmb…Wrapper Wrapper for Tinkerforge ill. sensor objects.
+      | |     +-BrickletAmb…Service Service for providing said objects.
+      | |     +-I…ConnectionExcept… Exception for connection errors.
+      | |     +-I…NotFoundException Exception for non-existent ill. sensors.
+      | |     +-IlluminanceService  Service for communicating with ill. sensors.
+      | |
+      | +-output/                   Bricklets that output data.
+      |   +-ledstrip/               LED strip bricklets.
+      |     +-api/                  API-controller & helpers for LED strips.
+      |     | +-APIError            Object for returning errors.
+      |     | +-BadRequestException Exception for incorrect input to the API.
+      |     | +-DisplayController   MVC Controller for interacting w/ LED strips.
+      |     |
+      |     +-dto/                  Data Transfer to the outside world.
+      |     | +-LEDStripDTO         Data Transfer Object for LED strips.
+      |     | +-LEDStripDTOService  Service for communicating with outside world.
+      |     |
+      |     +-persistence/
+      |     | +-LEDStrip            Configuration data for LED strips.
+      |     | +-LEDStripRepository  Repository for LED strip configs.
+      |     |
+      |     +-service/   
+      |     | +-BrickletLED…Wrapper Wrapper for Tinkerforge LED strip objects.
+      |     | +-BrickletLED…Service Service for providing said objects.
+      |     | +-L…ConnectionExcept… Exception for connection errors.
+      |     | +-L…NotFoundException Exception for non-existent LED strips.
+      |     | +-LEDStripService     Service for communicating with LED strips.
+      |     | +-Sprite1D            Sprite object, for LED strips.
+      |     |
+      |     +-Color                 Color object, for LEDs.
+      |
+      +-config/                     Configuration classes.
+      | +-SpringConfig              Spring configuration.
+      | +-WebConfig                 Configures the web app.
+      |
+      +-jenkins/                    Jenkins-specific classes.
+        +-persistence/              Data Persistence for Jenkins configs.
+        | +-JenkinsConfigRepository Repository for Jenkins configs.
+        | +-JobConfig               Configuration for Jenkins jobs.
+        | +-ServerConfig            Configuration for Jenkins servers.
+        |
+        +-service
+        | +-JenkinsService          Polls Jenkins servers and feeds statuses to LEDs.
+        |
+        +-JenkinsJob                Object for a single returned Jenkins job.
+        +-JenkinsProperties         Object for Jenkins jobs returned from Jenkins API.
+        +-Status                    Enum for statuses (OKAY, WARNING & CRITICAL)
+        +-StatusInformation         Status with additional information.
 ```  
         
 ## How to use
